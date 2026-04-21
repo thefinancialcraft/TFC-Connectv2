@@ -197,3 +197,123 @@ Debug info:
 [00:22:58.514] Browser LOG     🚀 [Logger] Persistant logging initialized.
 [00:22:58.514] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
 [00:22:58.514] Browser LOG     [App] Logger and Interceptors initialized.
+[00:27:33.009] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[00:27:33.014] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[00:27:33.014] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:27:33.015] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:27:33.015] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_ff144635-44d2-40eb-bb57-f5dc6640cc3d
+[00:27:33.477] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[00:27:33.482] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:27:33.663] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:27:34.200] Server  LOG     Using date-holidays fallback
+[00:27:34.702] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:27:34.706] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:27:34.707] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:27:34.709] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:27:35.558] Browser LOG     🚀 [Auth] Starting complete logout...
+[00:27:40.416] Browser LOG     🔐 [Auth Event] SIGNED_OUT
+[00:27:40.417] Browser LOG     👋 [Auth Guard] Manual logout detected. Redirecting...
+[00:27:40.417] Browser LOG     👋 [Auth] Logout complete, redirecting to login...
+[00:27:40.660] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:27:41.298] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:27:41.298] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:27:41.493] Server  LOG     Using date-holidays fallback
+[00:27:41.647] Server  LOG     Using date-holidays fallback
+[00:27:41.798] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:27:41.798] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[00:27:41.798] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:27:51.464] Browser LOG     🔍 [Login] Starting login for ID: TFC-046
+[00:27:52.450] Browser LOG     📧 [Login] Found email via API: N_Sayyad1799@outlook.com
+[00:27:52.923] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:27:52.923] Browser LOG     ✅ [Login] Supabase Auth successful for user: 7badec09-ef03-47de-921d-718c432ab3e5
+[00:27:53.713] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:27:53.713] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:27:53.713] Browser LOG     📋 [Login] Profile status: {"approval":"approved","complete":true,"status":"active"}
+[00:27:53.713] Browser LOG     🚀 [Login] Final redirect to: /dashboard
+[00:27:53.714] Browser LOG     🔄 [Login] Active session found, retrieving profile...
+[00:27:53.714] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:27:55.493] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[00:27:55.879] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:27:56.190] Server  LOG     Using date-holidays fallback
+[00:27:56.446] Browser LOG     🚀 [Login] Existing session, redirecting to: /dashboard
+[00:28:01.256] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:28:01.256] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:28:01.537] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_7badec09-ef03-47de-921d-718c432ab3e5
+[00:28:01.537] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:28:02.652] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:28:02.652] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:28:02.653] Browser LOG     [Dashboard] Filtering users for TL: 7badec09-ef03-47de-921d-718c432ab3e5
+[00:28:03.362] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:28:03.814] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:28:03.814] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:28:03.815] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:28:08.283] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:28:10.764] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[00:28:11.959] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[00:28:14.172] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[00:28:14.571] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[00:28:14.676] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[00:28:15.498] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[00:28:15.514] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 4746ms
+[00:28:15.658] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[00:28:15.787] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 3813ms
+[00:28:15.996] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[00:28:17.240] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 5251ms
+[00:28:18.067] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[00:28:18.099] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[00:28:18.114] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[00:28:18.395] Browser LOG     [Dashboard] Restricting User Selection to 11 members
+[00:28:18.395] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:28:18.395] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:28:18.395] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:28:18.610] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[00:28:18.612] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 2953ms
+[00:28:18.628] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 2470ms
+[00:28:20.194] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 4066ms
+[00:28:25.352] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:28:33.854] Browser LOG     🔐 [Auth Event] SIGNED_IN
+[00:28:35.220] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:28:35.220] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:28:35.373] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:28:56.124] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:29:03.111] Server  LOG      ✓ Compiled in 12.6s
+[00:29:12.746] Server  WARN    Warning: viewport meta tags should not be used in _document.js's <Head>. https://nextjs.org/docs/messages/no-document-viewport-meta
+[00:29:13.070] Browser LOG     [Dashboard] Filtering users for TL: 7badec09-ef03-47de-921d-718c432ab3e5
+[00:29:13.070] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:29:13.070] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:29:13.070] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:29:13.073] Browser LOG     [Dashboard] Restricting User Selection to 11 members
+[00:29:17.458] Browser LOG     🚀 [Logger] Persistant logging initialized.
+[00:29:17.458] Browser LOG     🛠️ [System] Global Network Interceptors initialized.
+[00:29:17.459] Browser LOG     [App] Logger and Interceptors initialized.
+[00:29:32.114] Browser LOG     ⚡ [Auth] Restored User Profile from Session Tab Memory.
+[00:29:32.114] Browser LOG     🔍 [Auth] Background Status Verification Triggered...
+[00:29:32.114] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:29:32.114] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:29:32.114] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:29:32.114] Browser LOG     📡 [Header] Monitoring notifications: agent_notifications_7badec09-ef03-47de-921d-718c432ab3e5
+[00:29:32.114] Browser LOG     [Dashboard] Filtering users for TL: 7badec09-ef03-47de-921d-718c432ab3e5
+[00:29:33.369] Browser LOG     💻 [Bridge] Standard Browser detected. Skipping background sync.
+[00:29:34.158] Server  LOG     Using date-holidays fallback
+[00:29:36.373] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:29:36.419] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[00:29:36.894] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[00:29:37.874] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...

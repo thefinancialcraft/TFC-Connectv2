@@ -16,7 +16,7 @@
     ],
     "/_app": [
       "static/chunks/lib_830a4143._.js",
-      "static/chunks/[root-of-the-server]__15eb9139._.js",
+      "static/chunks/[root-of-the-server]__1f6347cd._.js",
       "static/chunks/node_modules_next_dist_compiled_e2f3cca7._.js",
       "static/chunks/node_modules_next_dist_shared_lib_57404a76._.js",
       "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
@@ -28,7 +28,7 @@
       "static/chunks/node_modules_5bf20ce7._.js",
       "static/chunks/styles_globals_dc36e6c9.css",
       "static/chunks/pages__app_2da965e7._.js",
-      "static/chunks/turbopack-pages__app_10d0b044._.js"
+      "static/chunks/turbopack-pages__app_eee60359._.js"
     ],
     "/portal/call-sessions": [
       "static/chunks/[root-of-the-server]__b0c12194._.js",
@@ -61,8 +61,8 @@
       "static/chunks/turbopack-pages_portal_customer_tsx_ab630f0f._.js"
     ],
     "/portal/dashboard": [
-      "static/chunks/components_dashboard_eded925b._.js",
-      "static/chunks/[root-of-the-server]__b1a68bc2._.js",
+      "static/chunks/components_dashboard_b61e93cb._.js",
+      "static/chunks/[root-of-the-server]__fa0dc4da._.js",
       "static/chunks/node_modules_next_dist_compiled_f60b0554._.js",
       "static/chunks/node_modules_next_dist_shared_lib_41d42037._.js",
       "static/chunks/node_modules_next_dist_client_3ede7da4._.js",
@@ -73,7 +73,7 @@
       "static/chunks/node_modules_@supabase_auth-js_dist_module_e0400d86._.js",
       "static/chunks/node_modules_b0c9384a._.js",
       "static/chunks/pages_portal_dashboard_tsx_2da965e7._.js",
-      "static/chunks/turbopack-pages_portal_dashboard_tsx_449daa80._.js"
+      "static/chunks/turbopack-pages_portal_dashboard_tsx_cb16ff1b._.js"
     ],
     "/portal/login": [
       "static/chunks/lib_flutterBridge_ts_88fbe3e2._.js",

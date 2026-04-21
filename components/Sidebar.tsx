@@ -5,6 +5,7 @@ import AppLogo from "./AppLogo";
 import { supabase } from "../lib/supabase";
 import { getStoredUserData } from "../lib/localStorageUtils";
 import { NAV_ITEMS } from "../config/navigation";
+import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 
 interface SidebarProps {
   user?: {
@@ -132,11 +133,19 @@ const Sidebar = memo(function Sidebar({
     const isAdminState = isAdmin || isInternalStaff;
 
     const filtered = NAV_ITEMS.filter(item => {
-      // 0. Hard Rejection for Call Sessions if NOT global
-      if (item.path === '/call-sessions' && isInternalStaff === false) return false;
+      const level = getUserDashboardLevel({
+        role: userRole,
+        designation: designation,
+        isClient: currentUser.isClient,
+        employeeId: currentUser.employeeId
+      });
 
-      // Global User Check for Call Sessions
-      if (item.path === '/call-sessions' && isInternalStaff) return true;
+      // Special Visibility for Call Sessions (Now for Admins, CEOs, and TLs)
+      if (item.path === '/call-sessions') {
+        if (currentUser.employeeId === 'NXUS-001') return true;
+        if (level === DashboardLevel.LEVEL_4_AGENT_SALES || level === DashboardLevel.UNKNOWN) return false;
+        return true;
+      }
 
       // 1. Admin/Super Admin check
       if (item.adminOnly && !isAdminState) return false;
