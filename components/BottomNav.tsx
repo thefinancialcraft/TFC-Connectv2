@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState, useMemo, memo } from "react";
 import { DashboardLevel, getUserDashboardLevel } from "@/lib/dashboardUtils";
 // Removed unnecessary supabase import as we rely on props
-
+// backup test
 interface BottomNavProps {
   activeNav?: string;
   userRole?: string | null;
@@ -190,7 +190,7 @@ const BottomNav = memo(function BottomNav({
       }`}
       style={{ width: "90%", maxWidth: "400px" }}
     >
-      
+
       {/* Blur background with rounded edges */}
       <div
         className="backdrop-blur-sm bg-white/80 shadow-2xl rounded-2xl"
