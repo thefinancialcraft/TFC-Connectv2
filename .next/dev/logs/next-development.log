@@ -317,3 +317,40 @@ Debug info:
 [00:29:36.419] Server  LOG     ==> Dashboard Overview API Handler Started <==
 [00:29:36.894] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
 [00:29:37.874] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[00:29:38.445] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[00:29:38.451] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 2027ms
+[00:29:38.478] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[00:29:38.562] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[00:29:39.026] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1548ms
+[00:29:40.499] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3070ms
+[00:29:40.733] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:29:40.733] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:29:40.733] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:29:40.734] Browser WARN    The width(-1) and height(-1) of chart should be greater than 0,
+       please check the style of container, or the props width(100%) and height(100%),
+       or add a minWidth(0) or minHeight(0) or use aspect(undefined) to control the
+       height and width.
+[00:29:49.269] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:29:58.869] Browser LOG     [Dashboard] Restricting User Selection to 11 members
+[00:30:02.568] Server  LOG     ==> Dashboard Overview API Handler Started <==
+[00:30:03.063] Server  LOG     [API Params] dateFilter: today, orgId: 5fda76df-9265-46e0-a602-0c5301c8084c, filterUserId: undefined
+[00:30:04.002] Server  LOG     🚀 [Performance] Attempting optimized charts RPC call...
+[00:30:04.073] Server  LOG     🚀 [Performance] Attempting optimized database RPC call...
+[00:30:04.117] Server  LOG     🚀 [Performance] Attempting optimized agent performance RPC call...
+[00:30:04.577] Server  LOG     ✅ [Performance] Agent Performance RPC Success - Duration: 1474ms
+[00:30:04.602] Server  LOG     ✅ [Performance] RPC Success. Metrics aggregated in-database.
+[00:30:04.606] Server  LOG     [API] dashboard_overview - Status: 200 - Duration: 2035ms
+[00:30:04.996] Browser LOG     [Global-Call] 🟢 GlobalCallHandler mounted and listening for bridge messages.
+[00:30:04.996] Browser LOG     🚀 [Auth] User already in memory. Skipping redundant fetch.
+[00:30:05.670] Browser LOG     🔐 [Auth Event] INITIAL_SESSION
+[00:30:05.671] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:30:06.894] Server  LOG     ✅ [Performance] Charts RPC Success - Duration: 3850ms
+[00:30:32.384] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:31:02.348] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
+[00:31:32.341] Browser LOG     💓 [Presence] Portal heartbeat sent successfully.
