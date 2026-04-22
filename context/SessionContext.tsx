@@ -84,17 +84,27 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
     setCurrentSession(hot);
 
     // NEW: URL-based Manual Mode Handling
-    const isManualInUrl = router.query.isManual === 'true';
+    const isManualInUrl = router.query.isManual === 'true' || router.query.ismanual === 'true';
     if (isManualInUrl) {
       const status = hot.manual_status || hot.status;
       const isGenuinelyHot = status === 'active' || status === 'disposition_pending';
       const currentCustomerId = router.query.customerId;
 
-      // If we are on a different CUSTOMER than the server's 'hot' session
-      // AND that server session is NOT active/pending, we STAY on the manual lead.
-      if (String(hot.customer_id) !== String(currentCustomerId) && !isGenuinelyHot) {
+      // If we are on a manual lead, we LOCK the redirection UNLESS 
+      // the server session has an ACTIVE/PENDING call for a DIFFERENT customer,
+      // OR the server session now reports that manual mode is FALSE (Meaning it was just cleared).
+      const isManualStillActive = hot.is_manual !== false;
+      
+      if (isGenuinelyHot && String(hot.customer_id) !== String(currentCustomerId)) {
+        console.log("[Session-Context] 🚨 Server Hot Session detected for different lead. Overtaking manual lock:", hot.id);
+        // Fall through to standard redirection below
+      } else if (!isManualStillActive && String(hot.customer_id) === String(currentCustomerId)) {
+        console.log("[Session-Context] 🔓 Manual flag cleared in DB for current lead. Releasing URL lock.");
+        setIsLocked(false);
+        // We do NOT return here, allowing the Sequential Assignment logic below to handle it.
+      } else {
         setIsLocked(true);
-        console.log("[Session-Context] 🔒 Manual Mode (URL) Active. Ignoring non-hot server session:", hot.id);
+        console.log("[Session-Context] 🔒 Manual Mode (URL) Active. Staying on lead:", currentCustomerId);
         return; 
       }
     }

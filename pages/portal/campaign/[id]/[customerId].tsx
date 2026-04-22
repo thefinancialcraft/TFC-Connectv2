@@ -93,6 +93,7 @@ export default function CallingPage() {
     const [activePreset, setActivePreset] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [isManualMode, setIsManualMode] = useState(false);
+    const isManualUrl = router.query.isManual === 'true' || router.query.ismanual === 'true';
     const [isInterruption, setIsInterruption] = useState(false);
     const expiryDatePickerRef = useRef<HTMLDivElement>(null);
     const detailsEditRef = useRef<HTMLDivElement>(null);
@@ -359,7 +360,8 @@ export default function CallingPage() {
                         body: JSON.stringify({
                             campaign_id: campaignId,
                             customer_id: customerId,
-                            status: 'disposition_pending'
+                            status: 'disposition_pending',
+                            is_manual_event: isManualMode || isManualUrl
                         })
                     });
                     const resData = await response.json();
@@ -651,6 +653,18 @@ export default function CallingPage() {
             // Let's assume the user wants to Disposition it as "Skipped" or just return to queue.
             
             // For now, let's make it trigger the "Post Call" view immediately without dialing.
+            // Reset manual mode in DB immediately if we are skipping 
+            // so that if redirection fails, we aren't stuck.
+            if (user?.uid && campaignId) {
+                await supabase.from('call_sessions').update({
+                    is_manual: false,
+                    manual_campaign_id: null,
+                    manual_customer_id: null,
+                    manual_status: null,
+                    updated_at: new Date().toISOString()
+                }).eq('user_id', user.uid).eq('campaign_id', campaignId);
+            }
+            
             handleEndCall(false); 
         } catch (error) {
             console.error("Error skipping call:", error);
@@ -1802,7 +1816,8 @@ useEffect(() => {
                         body: JSON.stringify({
                             campaign_id: cId,
                             customer_id: custId,
-                            status: 'active'
+                            status: 'active',
+                            is_manual_event: isManualMode || isManualUrl
                         })
                     });
                     const result = await response.json();
@@ -2482,13 +2497,11 @@ Campaign: ${campaign?.name || campaignId}
             }
 
             // 3. Handle Manual Call vs CRM Call differently
-            // USER RULE: 
+            // USER RULE (Updated): 
             // - Interrupted manual dials (Manual != System) restore to the preserved lead.
             // - Same-lead manual dials (Manual == System) proceed to NEXT lead (CRM Flow).
             
-                // Redirect Logic:
-                // Only use "Scenario 1 (Restore)" if it was a manual interruption.
-                // If it was the SAME lead, we treat it like a primary lead disposed.
+                // Redirect Logic
                 if (isAccessDeniedManual || !isAssignedToCampaign || (isManualCall && currentIsInterruption)) {
                     console.log(`[Disposition] Flow Exit Path: IsAccessDeniedManual=${isAccessDeniedManual}, IsManual=${isManualCall}, IsUnassigned=${isUnassignedCall}, IsAuthorized=${isAssignedToCampaign}.`);
                     
@@ -2500,9 +2513,7 @@ Campaign: ${campaign?.name || campaignId}
                             // Scenario 2: Unassigned or Unauthorized Manual Call -> DELETE & REDIRECT
                             console.log(`[Disposition] Cleaning up unauthorized/unassigned session: ${campaignId}`);
                             
-                            // 1. Force unassign lead if it was unauthorizedly dialled
-
-                            // 2. Terminate the session via API for reliable cleanup
+                            // Terminate the session via API for reliable cleanup
                             await fetch("/api/auth/update-call-session", {
                                method: "POST",
                                headers: {
@@ -2515,7 +2526,7 @@ Campaign: ${campaign?.name || campaignId}
                                })
                             });
 
-                            // 3. Find another session to redirect to (Self-correction)
+                            // Find another session to redirect to
                             const { data: otherSessions } = await supabase
                                 .from('call_sessions')
                                 .select('campaign_id, customer_id, is_manual, manual_customer_id, status, manual_status')
@@ -2529,16 +2540,12 @@ Campaign: ${campaign?.name || campaignId}
                                 const target = otherSessions[0];
                                 const isManualTarget = target.manual_status === 'active' || target.manual_status === 'disposition_pending';
                                 const tid = isManualTarget ? target.manual_customer_id : target.customer_id;
-                                console.log(`[Disposition] Redirecting to another available session: ${tid}`);
                                 router.push(`/portal/campaign/${target.campaign_id}/${tid}`);
                             } else {
-                                console.log(`[Disposition] No other sessions found. Returning to campaign dashboard.`);
                                 router.push(`/portal/campaign`);
                             }
                         } else {
                             // Scenario 1: Authorized Manual Interrupt -> RESTORE Primary Lead Context
-                            console.log(`[Disposition] Restoring original lead context for authorized campaign: ${campaignId}`);
-                            
                             if (preservedCampaignId && preservedCustomerId) {
                                 await fetch("/api/auth/update-call-session", {
                                     method: "POST",
@@ -2553,8 +2560,19 @@ Campaign: ${campaign?.name || campaignId}
                                         manual_override: true 
                                     })
                                 });
+                                setIsManualMode(false);
                                 router.push(`/portal/campaign/${preservedCampaignId}/${preservedCustomerId}`);
                             } else {
+                                // Clear manual flags in DB
+                                if (user?.uid && campaignId) {
+                                    await supabase.from('call_sessions').update({
+                                        is_manual: false,
+                                        manual_campaign_id: null,
+                                        manual_customer_id: null,
+                                        manual_status: null
+                                    }).eq('user_id', user.uid).eq('campaign_id', campaignId);
+                                }
+                                setIsManualMode(false);
                                 router.push(`/portal/campaign/${campaignId}`);
                             }
                         }
@@ -2565,31 +2583,25 @@ Campaign: ${campaign?.name || campaignId}
                     setSaving(false);
                     return;
                 } else {
-                    // This is a CRM/Authorized call - we should have a next lead or no more leads.
-                    console.log('[Disposition] CRM/Primary lead disposed. Handling next step...');
-
-                    // 🛡️ Case 3 Check: Network/Timeout Error
+                    // CRM/Primary lead disposed
                     if (prefetchStatus === 'error') {
-                        alert("⚠️ Logic Sync Error: Facing some network issues. Redirection might be delayed. Refreshing page...");
+                        alert("⚠️ Connection issue. Redirection might be delayed. Refreshing...");
                         window.location.reload();
                         setSaving(false);
                         return;
                     }
 
-                    // 🛡️ Case 2 Check: Save Button Lock (Fallback safeguard)
                     if (prefetchStatus === 'fetching') {
-                        alert("Please wait 1 second for system to finalize next lead...");
+                        alert("Please wait a moment for the system to finalize the next lead...");
                         setSaving(false);
                         return;
                     }
 
-                    // 🛡️ Case 1 Check: No More Leads Available
                     if (prefetchStatus === 'none') {
-                        alert("✅ Good job! No more leads available in this campaign.");
-                        
+                        alert("✅ Good job! Campaign completed.");
                         try {
                             const { data: { session: authSession } } = await supabase.auth.getSession();
-                            if (authSession?.access_token) {
+                            if (authSession && authSession.access_token) {
                                 await fetch("/api/auth/update-call-session", {
                                     method: "POST",
                                     headers: {
@@ -2599,24 +2611,16 @@ Campaign: ${campaign?.name || campaignId}
                                     body: JSON.stringify({ campaign_id: campaignId, terminate: true })
                                 });
                             }
-                        } catch (e) {
-                             console.error("Session cleanup error:", e);
-                        }
-                        
+                        } catch (e) { console.error(e); }
                         router.push(`/portal/campaign/${campaignId}`);
                         setSaving(false);
                         return;
                     }
 
-                    let nextLeadId = prefetchedDataRef.current?.id;
-
-                    // Final safeguard for Campaign ID
+                    const nextLeadId = prefetchedDataRef.current?.id;
                     const effectiveCampaignId = campaignId || campaign?.id || preservedCampaignId;
 
-                    if (nextLeadId && user?.uid && effectiveCampaignId) {
-                        // Update session to 'assigned' for the NEW lead
-                        console.log(`[Disposition] Redirecting to next lead: ${nextLeadId}`);
-                        
+                    if (nextLeadId && user && user.uid && effectiveCampaignId) {
                         await supabase.from('call_sessions').upsert({
                             user_id: user.uid,
                             campaign_id: effectiveCampaignId,
@@ -2632,20 +2636,36 @@ Campaign: ${campaign?.name || campaignId}
                         }, { onConflict: 'user_id,campaign_id' });
                         
                         setLocalCallingStatus(null);
-                        setIsAssigning(true); // Trigger modern transition screen
-                        setAssignmentCountdown(3); // Start at 3s
-                        setTargetNextLead({ id: nextLeadId, campaignId: effectiveCampaignId || "" });
-                        fetchDailyStats(); // Refresh stats for the motivational screen
+                        setIsAssigning(true);
+                        setAssignmentCountdown(3);
+                        setTargetNextLead({ id: nextLeadId, campaignId: effectiveCampaignId });
+                        fetchDailyStats();
                         return; 
                     } else {
-                        // Fallback if something went wrong but no specific error state caught
-                        setIsAssigning(true); // Still show transition for consistency
+                        // Fallback
+                        if (user && user.uid && effectiveCampaignId) {
+                            await supabase.from('call_sessions').update({
+                                is_manual: false,
+                                manual_campaign_id: null,
+                                manual_customer_id: null,
+                                manual_status: null,
+                                updated_at: new Date().toISOString()
+                            }).eq('user_id', user.uid).eq('campaign_id', effectiveCampaignId);
+                            
+                            setIsManualMode(false);
+                            router.push({ pathname: `/portal/campaign/${effectiveCampaignId}`, query: {} });
+                            setSaving(false);
+                            return;
+                        }
+                        setIsManualMode(false);
+                        setIsAssigning(true);
                         setAssignmentCountdown(3);
-                        setTargetNextLead({ id: "", campaignId: (campaignId as string) || "" });
+                        setTargetNextLead({ id: "", campaignId: String(effectiveCampaignId || "") });
                         fetchDailyStats();
                         return;
                     }
                 }
+
 
             // Reset state for non-redirecting cases
             setPostCall(false);
@@ -2656,7 +2676,7 @@ Campaign: ${campaign?.name || campaignId}
             setCallDuration(0);
             setCallbackDate("");
             setCallbackTime("");
-           
+            
         } catch (err: any) {
             console.error("Error saving disposition:", err);
             alert("Failed to save disposition. Please try again.");
@@ -2665,6 +2685,7 @@ Campaign: ${campaign?.name || campaignId}
             if (typeof window !== 'undefined') localStorage.removeItem('lead_save_in_progress');
         }
     };
+
 
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const weekDays = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
