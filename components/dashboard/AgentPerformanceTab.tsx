@@ -51,10 +51,6 @@ export default function AgentPerformanceTab({
 }: AgentPerformanceTabProps) {
   const router = useRouter();
   
-  const todayStr = new Date().toLocaleDateString('en-CA'); 
-  const [startDate, setStartDate] = useState(todayStr);
-  const [endDate, setEndDate] = useState(todayStr);
-  const [isFiltered, setIsFiltered] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [metric, setMetric] = useState<'dials' | 'talktime'>('dials');
   const [lastUpdated, setLastUpdated] = useState(new Date());
@@ -100,34 +96,35 @@ export default function AgentPerformanceTab({
       const agentIds = agents.map(a => a.user_id);
       const employeeIds = agents.map(a => a.employee_id?.trim()).filter(Boolean) as string[];
 
-      // BATCH FETCHING to avoid 50k limit truncation
-      const BATCH_SIZE = 20;
-      let allHistory: any[] = [];
-      let allLogs: any[] = [];
+      // PAGINATED FETCHING to overcome Supabase 1000-row limit
+      const fetchAllInRange = async (table: string, column: string, ids: string[], start: string, end: string, idField: string, dateField: string) => {
+        let allData: any[] = [];
+        let from = 0;
+        const PAGE_SIZE = 1000;
+        
+        while (true) {
+          let query = supabase.from(table)
+            .select(column)
+            .in(idField, ids)
+            .gte(dateField, start)
+            .lte(dateField, end)
+            .range(from, from + PAGE_SIZE - 1);
+            
+          const { data, error } = await query;
+          if (error) throw error;
+          if (!data || data.length === 0) break;
+          
+          allData = [...allData, ...data];
+          if (data.length < PAGE_SIZE) break;
+          from += PAGE_SIZE;
+        }
+        return allData;
+      };
 
-      for (let i = 0; i < employeeIds.length; i += BATCH_SIZE) {
-        const batchEmpIds = employeeIds.slice(i, i + BATCH_SIZE);
-        const batchAgentIds = agentIds.slice(i, i + BATCH_SIZE);
-
-        const [historyRes, logRes] = await Promise.all([
-          supabase.from('call_history').select('employee_id, number, timestamp, duration, call_type')
-            .in('employee_id', batchEmpIds)
-            .gte('timestamp', start)
-            .lte('timestamp', end)
-            .limit(40000), // High limit per batch is safe
-          supabase.from('call_logs').select('agent_id, is_connected, duration, disposition, created_at')
-            .in('agent_id', batchAgentIds)
-            .gte('created_at', start)
-            .lte('created_at', end)
-            .limit(20000)
-        ]);
-
-        if (historyRes.data) allHistory = [...allHistory, ...historyRes.data];
-        if (logRes.data) allLogs = [...allLogs, ...logRes.data];
-      }
-
-      const historyData = allHistory;
-      const logData = allLogs;
+      const [historyData, logData] = await Promise.all([
+        fetchAllInRange('call_history', 'employee_id, number, timestamp, duration, call_type', employeeIds, start, end, 'employee_id', 'timestamp'),
+        fetchAllInRange('call_logs', 'agent_id, is_connected, duration, disposition, created_at', agentIds, start, end, 'agent_id', 'created_at')
+      ]);
 
       // EXACT same deduplication logic as Team Page to ensure 1:1 parity
       const uniqueEntries: any[] = [];
@@ -240,23 +237,14 @@ export default function AgentPerformanceTab({
 
   // Primary Data Fetch & Refresh Effect
   useEffect(() => {
-    let interval: NodeJS.Timeout;
-    if (isFiltered && startDate && endDate) {
-      const start = new Date(startDate); start.setHours(0, 0, 0, 0);
-      const end = new Date(endDate); end.setHours(23, 59, 59, 999);
-      fetchRpcPerformance(start.toISOString(), end.toISOString());
-    } else {
-      const { start, end } = getISTDateRange(dateFilter);
-      fetchRpcPerformance(start, end);
-      interval = setInterval(() => {
-        const { start: freshStart, end: freshEnd } = getISTDateRange(dateFilter);
-        fetchRpcPerformance(freshStart, freshEnd);
-      }, 30000);
-    }
-    return () => { if (interval) clearInterval(interval); };
-  }, [selectedOrgId, dateFilter, selectedUserId, restrictedUserIds, isFiltered, startDate, endDate]);
-
-  useEffect(() => { setIsFiltered(false); }, [dateFilter]);
+    const { start, end } = getISTDateRange(dateFilter);
+    fetchRpcPerformance(start, end);
+    const interval = setInterval(() => {
+      const { start: freshStart, end: freshEnd } = getISTDateRange(dateFilter);
+      fetchRpcPerformance(freshStart, freshEnd);
+    }, 30000);
+    return () => clearInterval(interval);
+  }, [selectedOrgId, dateFilter, selectedUserId, restrictedUserIds]);
 
   // Real-time Status Sync
   useEffect(() => {
@@ -384,16 +372,6 @@ export default function AgentPerformanceTab({
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-end items-stretch sm:items-center gap-3">
-        <div className="flex items-center gap-2 flex-1 sm:flex-none">
-          <input type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-500 cursor-pointer focus:outline-none focus:border-[#4b33e8]" />
-          <span className="text-gray-400 font-bold">-</span>
-          <input type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} className="px-4 py-2 bg-white border border-gray-200 rounded-lg text-xs sm:text-sm font-bold text-gray-500 cursor-pointer focus:outline-none focus:border-[#4b33e8]" />
-        </div>
-        <button onClick={() => setIsFiltered(true)} disabled={isLoading} className="px-5 py-2.5 bg-[#4b33e8] hover:bg-[#3b25b8] text-white rounded-xl text-xs sm:text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2">
-          <i className="fi fi-rr-filter flex text-xs"></i><span>Apply Filter</span>
-        </button>
-      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <div className="lg:col-span-8 bg-white rounded-[24px] p-8 flex flex-col relative h-[550px]">

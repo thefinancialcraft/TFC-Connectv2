@@ -16,7 +16,7 @@ export function useActivityData() {
   const { user, mounted } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [source, setSource] = useState<'crm' | 'mobile'>('crm');
+  const [source, setSource] = useState<'crm' | 'mobile'>('mobile');
   const [activities, setActivities] = useState<any[]>([]);
   const [mobileActivities, setMobileActivities] = useState<any[]>([]); // New state for mobile history
   const [selectedDate, setSelectedDate] = useState<string>(() => {
@@ -32,6 +32,15 @@ export function useActivityData() {
   const [orgFilter, setOrgFilter] = useState("All Organizations");
   const [callTypeFilter, setCallTypeFilter] = useState("All Types");
   
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 50;
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, agentFilter, campaignFilter, dispositionFilter, orgFilter, callTypeFilter, selectedDate, source]);
+  
   // Global filter options states
   const [globalOrganizations, setGlobalOrganizations] = useState<any[]>([]);
   const [globalCampaigns, setGlobalCampaigns] = useState<any[]>([]);
@@ -46,6 +55,23 @@ export function useActivityData() {
     lastCallTime: "N/A",
     idleFrom: "N/A"
   });
+
+  // Reset dependent filters when organization changes
+  useEffect(() => {
+    if (orgFilter !== "All Organizations") {
+      const filteredAgents = globalAgents.filter(a => a.organization_id === orgFilter);
+      const isAgentValid = filteredAgents.some(a => a.employee_id === agentFilter);
+      if (agentFilter !== "All Agents" && !isAgentValid) {
+        setAgentFilter("All Agents");
+      }
+
+      const filteredCampaigns = globalCampaigns.filter(c => c.organization_id === orgFilter);
+      const isCampaignValid = filteredCampaigns.some(c => c.name === campaignFilter);
+      if (campaignFilter !== "All Campaigns" && !isCampaignValid) {
+        setCampaignFilter("All Campaigns");
+      }
+    }
+  }, [orgFilter, globalAgents, globalCampaigns]);
 
   const abortControllerRef = useRef<AbortController | null>(null);
   const fetchIdRef = useRef<number>(0);
@@ -69,20 +95,6 @@ export function useActivityData() {
       const startOfDay = new Date(`${selectedDate}T00:00:00+05:30`).toISOString();
       const endOfDay = new Date(`${selectedDate}T23:59:59+05:30`).toISOString();
 
-      // Base query
-      // Note: We use !inner on agent join to allow filtering by agent's organization_id for Level 3
-      let query = supabase
-        .from("call_logs")
-        .select(`
-          *,
-          customer_name,
-          agent:user_profiles!agent_id!inner(user_name, employee_id, organization_id),
-          campaign:campaigns!campaign_id(name)
-        `)
-        .gte("created_at", startOfDay)
-        .lte("created_at", endOfDay)
-        .order("created_at", { ascending: false });
-
       // Apply Security Levels
       const getLevel = () => {
         const designation = (user.designation || '').toLowerCase();
@@ -100,93 +112,107 @@ export function useActivityData() {
 
       const dashboardLevel = getLevel();
 
-      if (dashboardLevel === 4) {
-        // Level 4: Client Agent (Own activities only)
-        if (user.uid) {
-          query = query.eq('agent_id', user.uid);
-        }
-      }
-      else if (dashboardLevel === 3) {
-        // Level 3: Team Leader (Own + Team's activities)
-        let teamMemberIds = [user.uid];
-        if (user.uid) {
-          const { data: teamData } = await supabase
-            .from('teams')
-            .select('members')
-            .eq('leader_id', user.uid)
-            .eq('is_active', true);
-            
-          if (teamData) {
-            teamData.forEach((team: any) => {
-              if (Array.isArray(team.members)) {
-                team.members.forEach((m: any) => { if (typeof m === 'string') teamMemberIds.push(m); });
-              }
-            });
-          }
-        }
-        teamMemberIds = [...new Set(teamMemberIds)];
-        if (teamMemberIds.length > 0) {
-          query = query.in('agent_id', teamMemberIds);
-        }
-      }
-      else if (dashboardLevel === 2) {
-        // Level 2: Client Admin (Organization Wide)
-        if (user.organization_id) {
-          query = query.eq('agent.organization_id', user.organization_id);
-        } else {
-          query = query.eq('id', '00000000-0000-0000-0000-000000000000');
-        }
-      }
-      // Level 4: Internal Staff (!isClient) gets explicit Global Access (no filters added)
-
-      // --- START: COMBINED FETCH LOGIC ---
-      
-      // 1. Fetch Call Logs (Primary source)
-      const { data: callLogs, error: logError } = await query;
-      if (logError) throw logError;
-
-      // 2. Fetch Rejected Leads for the same day
-      let rejectedQuery = supabase
-        .from('rejected_leads')
-        .select('*, agent:user_profiles!agent_id(user_name, employee_id, organization_id), campaign:campaigns!campaign_id(name)')
-        .gte('rejected_at', startOfDay)
-        .lte('rejected_at', endOfDay);
-      
-      // 3. Fetch Closed Deals for the same day
-      let closedQuery = supabase
-        .from('closed_deals')
-        .select('*, agent:user_profiles!agent_id(user_name, employee_id, organization_id), campaign:campaigns!campaign_id(name)')
-        .gte('closed_at', startOfDay)
-        .lte('closed_at', endOfDay);
-
-      // Apply same user filters to rejected/closed queries
-      if (dashboardLevel === 4) {
-        rejectedQuery = rejectedQuery.eq('agent_id', user.uid);
-        closedQuery = closedQuery.eq('agent_id', user.uid);
-      } else if (dashboardLevel === 3) {
-        // Reuse same TL logic for rejected/closed
-        let teamMemberIds = [user.uid];
+      let teamMemberIds: string[] = [];
+      if (dashboardLevel === 3 && user.uid) {
+        teamMemberIds = [user.uid];
         const { data: teamData } = await supabase
           .from('teams')
           .select('members')
           .eq('leader_id', user.uid)
           .eq('is_active', true);
+          
         if (teamData) {
-          teamData.forEach((t: any) => { if (Array.isArray(t.members)) t.members.forEach((m: any) => teamMemberIds.push(String(m))); });
+          teamData.forEach((team: any) => {
+            if (Array.isArray(team.members)) {
+              team.members.forEach((m: any) => { if (typeof m === 'string') teamMemberIds.push(String(m)); });
+            }
+          });
         }
-        const ids = [...new Set(teamMemberIds)];
-        rejectedQuery = rejectedQuery.in('agent_id', ids);
-        closedQuery = closedQuery.in('agent_id', ids);
-      } else if (dashboardLevel === 2) {
-        if (user.organization_id) {
-          rejectedQuery = rejectedQuery.eq('agent.organization_id', user.organization_id);
-          closedQuery = closedQuery.eq('agent.organization_id', user.organization_id);
-        }
+        teamMemberIds = [...new Set(teamMemberIds)];
       }
 
-      const [{ data: rejectedLeads }, { data: closedDeals }] = await Promise.all([
-        rejectedQuery,
-        closedQuery
+      const fetchPaginated = async (buildQueryFn: () => any, throwOnError: boolean = false) => {
+        let allData: any[] = [];
+        let from = 0;
+        const step = 1000;
+        while(true) {
+          const { data, error } = await buildQueryFn().range(from, from + step - 1);
+          if (error) {
+            if (throwOnError) throw error;
+            console.warn("Pagination error for secondary query:", error.message || error);
+            break;
+          }
+          if (data) allData.push(...data);
+          if (!data || data.length < step) break;
+          from += step;
+        }
+        return allData;
+      };
+
+      const buildCallLogsQuery = () => {
+        let q = supabase
+          .from("call_logs")
+          .select(`
+            *,
+            customer_name,
+            agent:user_profiles!agent_id!inner(user_name, employee_id, organization_id),
+            campaign:campaigns!campaign_id(name)
+          `)
+          .gte("created_at", startOfDay)
+          .lte("created_at", endOfDay)
+          .order("created_at", { ascending: false });
+
+        if (dashboardLevel === 4 && user.uid) {
+          q = q.eq('agent_id', user.uid);
+        } else if (dashboardLevel === 3 && teamMemberIds.length > 0) {
+          q = q.in('agent_id', teamMemberIds);
+        } else if (dashboardLevel === 2) {
+          if (user.organization_id) q = q.eq('agent.organization_id', user.organization_id);
+          else q = q.eq('id', '00000000-0000-0000-0000-000000000000');
+        }
+        return q;
+      };
+
+      const buildRejectedQuery = () => {
+        let q = supabase
+          .from('rejected_leads')
+          .select('*, agent:user_profiles!agent_id(user_name, employee_id, organization_id), campaign:campaigns!campaign_id(name)')
+          .gte('rejected_at', startOfDay)
+          .lte('rejected_at', endOfDay);
+        
+        if (dashboardLevel === 4 && user.uid) {
+          q = q.eq('agent_id', user.uid);
+        } else if (dashboardLevel === 3 && teamMemberIds.length > 0) {
+          q = q.in('agent_id', teamMemberIds);
+        } else if (dashboardLevel === 2) {
+          if (user.organization_id) q = q.eq('agent.organization_id', user.organization_id);
+          else q = q.eq('id', '00000000-0000-0000-0000-000000000000');
+        }
+        return q;
+      };
+
+      const buildClosedQuery = () => {
+        let q = supabase
+          .from('closed_deals')
+          .select('*, agent:user_profiles!agent_id(user_name, employee_id, organization_id), campaign:campaigns!campaign_id(name)')
+          .gte('closed_at', startOfDay)
+          .lte('closed_at', endOfDay);
+
+        if (dashboardLevel === 4 && user.uid) {
+          q = q.eq('agent_id', user.uid);
+        } else if (dashboardLevel === 3 && teamMemberIds.length > 0) {
+          q = q.in('agent_id', teamMemberIds);
+        } else if (dashboardLevel === 2) {
+          if (user.organization_id) q = q.eq('agent.organization_id', user.organization_id);
+          else q = q.eq('id', '00000000-0000-0000-0000-000000000000');
+        }
+        return q;
+      };
+
+      const [callLogs, rejectedLeads, closedDeals] = await Promise.all([
+        fetchPaginated(buildCallLogsQuery, true),
+        fetchPaginated(buildRejectedQuery, false),
+        fetchPaginated(buildClosedQuery, false)
       ]);
 
       // --- 4. MAP AND MERGE ---
@@ -333,13 +359,6 @@ export function useActivityData() {
           const startOfDay = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 0, 0, 0, 0).toISOString();
           const endOfDay = new Date(localDate.getFullYear(), localDate.getMonth(), localDate.getDate(), 23, 59, 59, 999).toISOString();
 
-          let query = supabase
-              .from('call_history')
-              .select('*')
-              .gte('timestamp', startOfDay)
-              .lte('timestamp', endOfDay)
-              .order('timestamp', { ascending: false });
-
           // Filter by Employee ID (Security)
           const getLevel = () => {
             const designation = (user.designation || '').toLowerCase();
@@ -357,12 +376,14 @@ export function useActivityData() {
 
           const dashboardLevel = getLevel();
 
+          let allowedEmpIds: string[] | null = null;
+          let enforceEmpty = false;
+
           if (dashboardLevel === 4) {
-            if (user.employeeId) query = query.eq('employee_id', user.employeeId);
-            else if (user.uid) query = query.eq('id', '00000000-0000-0000-0000-000000000000'); 
+            if (user.employeeId) allowedEmpIds = [user.employeeId];
+            else enforceEmpty = true;
           }
           else if (dashboardLevel === 3) {
-            // Team Leader Logic for Mobile History
             let teamMemberIds = [user.uid];
             const { data: teamData } = await supabase
               .from('teams')
@@ -375,21 +396,16 @@ export function useActivityData() {
             }
             const uniqueUserIds = [...new Set(teamMemberIds)];
             
-            // Get employee_ids for these user_ids
             const { data: profiles } = await supabase
               .from('user_profiles')
               .select('employee_id')
               .in('user_id', uniqueUserIds);
             
             const empIds = (profiles || []).map(p => p.employee_id).filter(Boolean);
-            if (empIds.length > 0) {
-              query = query.in('employee_id', empIds);
-            } else {
-              query = query.eq('id', '00000000-0000-0000-0000-000000000000');
-            }
+            if (empIds.length > 0) allowedEmpIds = empIds;
+            else enforceEmpty = true;
           }
           else if (dashboardLevel === 2) {
-            // Client Admin sees all employees in their org
             if (user.organization_id) {
               const { data: orgUsers } = await supabase
                 .from('user_profiles')
@@ -398,18 +414,44 @@ export function useActivityData() {
               
               if (orgUsers) {
                 const empIds = orgUsers.map(u => u.employee_id).filter(Boolean);
-                if (empIds.length > 0) {
-                  query = query.in('employee_id', empIds);
-                } else {
-                  query = query.eq('id', '00000000-0000-0000-0000-000000000000');
-                }
+                if (empIds.length > 0) allowedEmpIds = empIds;
+                else enforceEmpty = true;
+              } else {
+                enforceEmpty = true;
               }
+            } else {
+              enforceEmpty = true;
             }
           }
 
-          const { data, error } = await query;
-          
-          if (error) throw error;
+          const fetchPaginatedMobile = async () => {
+            let allData: any[] = [];
+            let from = 0;
+            const step = 1000;
+            while(true) {
+              let q = supabase
+                .from('call_history')
+                .select('*')
+                .gte('timestamp', startOfDay)
+                .lte('timestamp', endOfDay)
+                .order('timestamp', { ascending: false });
+
+              if (enforceEmpty) {
+                q = q.eq('id', '00000000-0000-0000-0000-000000000000');
+              } else if (allowedEmpIds) {
+                q = q.in('employee_id', allowedEmpIds);
+              }
+
+              const { data, error } = await q.range(from, from + step - 1);
+              if (error) throw error;
+              if (data) allData.push(...data);
+              if (!data || data.length < step) break;
+              from += step;
+            }
+            return allData;
+          };
+
+          const data = await fetchPaginatedMobile();
           
           let finalUniqueData: any[] = [];
           
@@ -429,7 +471,8 @@ export function useActivityData() {
                   const hydratedData = data.map(d => ({
                       ...d,
                       user_name: profileMap[d.employee_id] || "Unknown",
-                      organization_id: orgMap[d.employee_id] || null
+                      organization_id: orgMap[d.employee_id] || null,
+                      is_connected: (d.duration || 0) > 5 ? 'contactable' : 'uncontactable'
                   }));
 
                   // DEDUPLICATION LOGIC
@@ -601,7 +644,7 @@ export function useActivityData() {
       if (orgs) setGlobalOrganizations(orgs);
 
       // 2. All Campaigns
-      let campQuery = supabase.from('campaigns').select('id, name').order('name');
+      let campQuery = supabase.from('campaigns').select('id, name, organization_id').order('name');
       if (dashboardLevel !== 1 && user.organization_id) {
          campQuery = campQuery.eq('organization_id', user.organization_id);
       }
@@ -609,7 +652,7 @@ export function useActivityData() {
       if (camps) setGlobalCampaigns(camps);
 
       // 3. All Agents
-      let agentQuery = supabase.from('user_profiles').select('employee_id, user_name, user_id').order('user_name');
+      let agentQuery = supabase.from('user_profiles').select('employee_id, user_name, user_id, organization_id').order('user_name');
       
       if (dashboardLevel === 4) {
          agentQuery = agentQuery.eq('user_id', user.uid);
@@ -646,13 +689,21 @@ export function useActivityData() {
 
   // Use global options for dropdowns
   const filterOptions = useMemo(() => {
+    let filteredAgents = globalAgents;
+    let filteredCampaigns = globalCampaigns;
+
+    if (orgFilter !== "All Organizations") {
+      filteredAgents = globalAgents.filter(a => a.organization_id === orgFilter);
+      filteredCampaigns = globalCampaigns.filter(c => c.organization_id === orgFilter);
+    }
+
     return {
-      agents: globalAgents.map(a => ({ id: a.employee_id, name: a.user_name })),
-      campaigns: globalCampaigns.map(c => c.name),
+      agents: filteredAgents.map(a => ({ id: a.employee_id, name: a.user_name })),
+      campaigns: filteredCampaigns.map(c => c.name),
       dispositions: globalDispositions,
       organizations: globalOrganizations.map(o => ({ id: o.id, name: o.company_name }))
     };
-  }, [globalAgents, globalCampaigns, globalDispositions, globalOrganizations]);
+  }, [globalAgents, globalCampaigns, globalDispositions, globalOrganizations, orgFilter]);
 
   // Utility formatters memoized or optimized
   const formatSeconds = useCallback((seconds: number) => {
@@ -675,11 +726,24 @@ export function useActivityData() {
     return `${day}/${month}/${year}`;
   }, []);
 
+  // Pagination logic
+  const paginatedActivities = useMemo(() => {
+    const start = (currentPage - 1) * itemsPerPage;
+    return filteredActivities.slice(start, start + itemsPerPage);
+  }, [filteredActivities, currentPage, itemsPerPage]);
+
+  const totalPages = Math.ceil(filteredActivities.length / itemsPerPage);
+
   return {
     loading,
     error,
     activities,
     filteredActivities,
+    paginatedActivities,
+    currentPage,
+    setCurrentPage,
+    totalPages,
+    itemsPerPage,
     stats,
     selectedDate,
     setSelectedDate,
