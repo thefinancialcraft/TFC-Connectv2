@@ -9,7 +9,7 @@ export default function PrivacyPolicy() {
             <Head>
                 <title>Privacy Policy | Rynxly CRM</title>
                 <meta name="description" content="Privacy Policy for Rynxly CRM - Learn how we collect, use, process, and protect your information." />
-                <link rel="canonical" href="https://www.rynxly.in/privacy_policy" />
+                <link rel="canonical" href="https://www.rynxly.in/privacy-policy" />
             </Head>
 
             <LandingNavbar />
@@ -552,7 +552,7 @@ export default function PrivacyPolicy() {
                                 <span>Protected by Rynxly</span>
                             </div>
                             <div className="text-gray-400 text-xs font-medium">
-                                <a href="https://www.rynxly.in/privacy_policy" className="hover:text-[#4b33e8] transition-colors">www.rynxly.in/privacy_policy</a>
+                                <a href="https://www.rynxly.in/privacy-policy" className="hover:text-[#4b33e8] transition-colors">www.rynxly.in/privacy-policy</a>
                             </div>
                         </div>
                     </div>
