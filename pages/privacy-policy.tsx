@@ -29,11 +29,11 @@ export default function PrivacyPolicy() {
                     </h1>
                     <div className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-8 text-sm text-gray-500 font-medium animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
                         <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                            <i className="fi fi-rr-calendar text-indigo-400"></i>
+                            <i className="fi flex fi-rr-calendar text-indigo-400"></i>
                             <span className="text-xs">Effective Date: April 29, 2026</span>
                         </div>
                         <div className="flex items-center gap-2 bg-gray-50 px-3 py-1.5 rounded-lg border border-gray-100">
-                            <i className="fi fi-rr-time-forward text-indigo-400"></i>
+                            <i className="fi flex fi-rr-time-forward text-indigo-400"></i>
                             <span className="text-xs">Last Updated: April 29, 2026</span>
                         </div>
                     </div>
@@ -107,7 +107,7 @@ export default function PrivacyPolicy() {
                                     {/* Call Data */}
                                     <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                                         <h4 className="text-lg font-bold text-[#263238] mb-3 flex items-center gap-3">
-                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi fi-rr-phone-call"></i></span>
+                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi flex fi-rr-phone-call"></i></span>
                                             Call Data
                                         </h4>
                                         <div className="pl-13 space-y-3">
@@ -131,7 +131,7 @@ export default function PrivacyPolicy() {
                                     {/* Phone Numbers */}
                                     <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                                         <h4 className="text-lg font-bold text-[#263238] mb-3 flex items-center gap-3">
-                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi fi-rr-id-badge"></i></span>
+                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi flex fi-rr-id-badge"></i></span>
                                             Phone Numbers
                                         </h4>
                                         <div className="pl-13 space-y-3">
@@ -154,7 +154,7 @@ export default function PrivacyPolicy() {
                                     {/* Device & Technical Information */}
                                     <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                                         <h4 className="text-lg font-bold text-[#263238] mb-3 flex items-center gap-3">
-                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi fi-rr-smartphone"></i></span>
+                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi flex fi-rr-smartphone"></i></span>
                                             Device & Technical Information
                                         </h4>
                                         <div className="pl-13 space-y-3">
@@ -178,7 +178,7 @@ export default function PrivacyPolicy() {
                                     {/* Usage & Diagnostic Data */}
                                     <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                                         <h4 className="text-lg font-bold text-[#263238] mb-3 flex items-center gap-3">
-                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi fi-rr-settings"></i></span>
+                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi flex fi-rr-settings"></i></span>
                                             Usage & Diagnostic Data
                                         </h4>
                                         <div className="pl-13 space-y-3">
@@ -246,7 +246,7 @@ export default function PrivacyPolicy() {
                                     {/* READ_CALL_LOG */}
                                     <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                                         <h4 className="text-lg font-bold text-[#263238] mb-3 flex items-center gap-3">
-                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi fi-rr-phone-call"></i></span>
+                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi flex fi-rr-phone-call"></i></span>
                                             Call Log Access <span className="text-[10px] text-gray-400 font-mono bg-white border border-gray-200 px-2 py-1 rounded ml-2 shadow-sm">(READ_CALL_LOG)</span>
                                         </h4>
                                         <div className="pl-13 space-y-3">
@@ -268,7 +268,7 @@ export default function PrivacyPolicy() {
                                     {/* READ_PHONE_STATE */}
                                     <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                                         <h4 className="text-lg font-bold text-[#263238] mb-3 flex items-center gap-3">
-                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi fi-rr-smartphone"></i></span>
+                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi flex fi-rr-smartphone"></i></span>
                                             Phone State <span className="text-[10px] text-gray-400 font-mono bg-white border border-gray-200 px-2 py-1 rounded ml-2 shadow-sm">(READ_PHONE_STATE)</span>
                                         </h4>
                                         <div className="pl-13 space-y-3">
@@ -290,7 +290,7 @@ export default function PrivacyPolicy() {
                                     {/* SYSTEM_ALERT_WINDOW */}
                                     <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                                         <h4 className="text-lg font-bold text-[#263238] mb-3 flex items-center gap-3">
-                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi fi-rr-browser"></i></span>
+                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi flex fi-rr-browser"></i></span>
                                             Overlay Permission <span className="text-[10px] text-gray-400 font-mono bg-white border border-gray-200 px-2 py-1 rounded ml-2 shadow-sm">(SYSTEM_ALERT_WINDOW)</span>
                                         </h4>
                                         <div className="pl-13 space-y-3">
@@ -312,7 +312,7 @@ export default function PrivacyPolicy() {
                                     {/* Foreground Service */}
                                     <div className="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
                                         <h4 className="text-lg font-bold text-[#263238] mb-3 flex items-center gap-3">
-                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi fi-rr-refresh"></i></span>
+                                            <span className="w-10 h-10 bg-indigo-50 text-[#4b33e8] rounded-xl flex items-center justify-center text-lg border border-indigo-100/50 shadow-sm"><i className="fi flex fi-rr-refresh"></i></span>
                                             Foreground Service
                                         </h4>
                                         <div className="pl-13 space-y-3">
@@ -525,14 +525,14 @@ export default function PrivacyPolicy() {
                                     <div className="bg-indigo-50/50 rounded-2xl p-6 border border-indigo-100/50 inline-block">
                                         <div className="space-y-4">
                                             <div className="flex items-center gap-4">
-                                                <span className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl text-[#4b33e8] shadow-sm border border-indigo-100"><i className="fi fi-rr-envelope"></i></span>
+                                                <span className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl text-[#4b33e8] shadow-sm border border-indigo-100"><i className="fi flex fi-rr-envelope"></i></span>
                                                 <div>
                                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Email Support</p>
                                                     <a href="mailto:support@rynxly.in" className="font-bold text-[#263238] hover:text-[#4b33e8] transition-colors">support@rynxly.in</a>
                                                 </div>
                                             </div>
                                             <div className="flex items-center gap-4">
-                                                <span className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl text-[#4b33e8] shadow-sm border border-indigo-100"><i className="fi fi-rr-globe"></i></span>
+                                                <span className="w-12 h-12 bg-white rounded-xl flex items-center justify-center text-xl text-[#4b33e8] shadow-sm border border-indigo-100"><i className="fi flex fi-rr-globe"></i></span>
                                                 <div>
                                                     <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">Website</p>
                                                     <a href="https://www.rynxly.in" target="_blank" rel="noopener noreferrer" className="font-bold text-[#263238] hover:text-[#4b33e8] transition-colors">www.rynxly.in</a>
@@ -548,7 +548,7 @@ export default function PrivacyPolicy() {
                         {/* Footer decorative element */}
                         <div className="mt-16 pt-8 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
                             <div className="flex items-center gap-2 text-[#4b33e8] font-bold tracking-widest text-[10px] uppercase">
-                                <i className="fi fi-rr-shield-check text-base"></i>
+                                <i className="fi flex fi-rr-shield-check text-base"></i>
                                 <span>Protected by Rynxly</span>
                             </div>
                             <div className="text-gray-400 text-xs font-medium">

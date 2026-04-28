@@ -68,12 +68,13 @@ export default function LandingNavbar() {
               >
                 Login
               </Link>
-              <Link
-                href="/login"
+              <a
+                href="https://rynxly.in/app/rynxly.apk"
+                download
                 className="inline-flex items-center justify-center px-6 py-2.5 border border-transparent text-sm font-bold rounded-full text-white bg-[#4b33e8] hover:bg-[#3b27b8] transition-all shadow-lg shadow-indigo-200 hover:shadow-indigo-300"
               >
-                Get Started
-              </Link>
+                Download App
+              </a>
             </div>
 
             {/* Mobile Hamburger Button */}
@@ -142,13 +143,14 @@ export default function LandingNavbar() {
               >
                 Login to Portal
               </Link>
-              <Link
-                href="/login"
+              <a
+                href="https://rynxly.in/app/rynxly.apk"
+                download
                 onClick={() => setIsOpen(false)}
                 className="flex items-center justify-center w-full py-4 bg-[#4b33e8] text-white font-bold text-sm rounded-2xl shadow-lg shadow-indigo-100 hover:bg-[#3b27b8] transition-all"
               >
-                Get Started Now
-              </Link>
+                Download App
+              </a>
             </div>
             
             <div className="p-6 text-center">
