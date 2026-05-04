@@ -1,6 +1,6 @@
 {
-  "version": "1.0.1",
+  "version": "1.1.0",
   "url": "https://rynxly.com/app/rynxly.apk",
-  "changelog": "Dynamic update testing: Stable release with latest SDK 36 and manual downloader.",
+  "changelog": "🚀 SURPRISE! This is a Fake Update Demo. \n\nIf you see this, it means your Dynamic Update System is 100% working! You can now download and install from the server automatically.",
   "force_update": false
 }
