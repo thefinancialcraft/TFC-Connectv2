@@ -1,5 +1,6 @@
 {
   "version": "1.0.1",
+  "url": "https://rynxly.com/app/rynxly.apk",
   "changelog": "Dynamic update testing: Stable release with latest SDK 36 and manual downloader.",
   "force_update": false
 }
