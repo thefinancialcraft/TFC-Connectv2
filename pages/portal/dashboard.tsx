@@ -286,7 +286,7 @@ export default function Dashboard() {
               </p>
             </div>
             
-            <div className="flex items-center justify-center lg:justify-end gap-3 w-full lg:w-auto">
+            <div className="flex items-center justify-start lg:justify-end gap-3 w-full lg:w-auto">
               {/* Consolidated Filters Dropdown */}
               <div className="relative" ref={filterRef}>
                 <button
@@ -305,7 +305,7 @@ export default function Dashboard() {
                 </button>
 
                 {showFilters && (
-                  <div className="absolute top-full left-1/2 -translate-x-1/2 sm:left-auto sm:right-0 sm:translate-x-0 mt-2 w-[280px] sm:w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-4 z-[100] animate-in fade-in zoom-in duration-200 origin-top sm:origin-top-right">
+                  <div className="fixed inset-x-4 top-1/2 -translate-y-1/2 sm:absolute sm:inset-auto sm:top-full sm:right-0 sm:translate-y-0 mt-2 w-auto sm:w-[300px] bg-white rounded-2xl shadow-2xl border border-gray-100 p-6 sm:p-4 z-[100] animate-in fade-in zoom-in duration-200 origin-center sm:origin-top-right">
                     <div className="space-y-4">
                       {/* Org Filter */}
                       <div className="space-y-1.5">
