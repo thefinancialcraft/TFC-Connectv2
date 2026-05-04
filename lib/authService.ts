@@ -141,7 +141,7 @@ export async function handleLogout(router: NextRouter): Promise<void> {
       if (win.flutter_inappwebview?.callHandler) {
         win.flutter_inappwebview.callHandler("fromWebApp", {
           type: "logout",
-          value: true,
+          payload: true,
         });
       }
 

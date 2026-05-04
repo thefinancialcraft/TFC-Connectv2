@@ -150,7 +150,7 @@ export default function LoggedOutUserCard({ onShowLoginForm, onLoginAnotherAccou
 
       // Notify Bridge
       const { notifyLoginToFlutter, syncUserInfoToFlutter } = await import("../lib/flutterBridge");
-      notifyLoginToFlutter();
+      notifyLoginToFlutter(userData);
       syncUserInfoToFlutter(userData);
 
       showSuccess('Welcome back!', 'Login Success');

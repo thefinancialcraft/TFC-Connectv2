@@ -33,7 +33,7 @@ export function UserProvider({ children }: UserProviderProps) {
         requestDeviceInfoFromFlutter();
         // If it worked, we also send a login event if we just "detected" a session on load
         if (user && !prevUserRef.current) {
-          notifyLoginToFlutter();
+          notifyLoginToFlutter(user);
         }
         
         if (user) prevUserRef.current = user;

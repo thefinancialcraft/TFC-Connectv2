@@ -36,16 +36,32 @@ export const notifyFlutter = (type: string, value: any) => {
 
     if (win.flutter_inappwebview?.callHandler) {
       console.log(`🚀 [Bridge] Sending ${type}:`, value);
-      win.flutter_inappwebview.callHandler('fromWebApp', { type, value });
+      win.flutter_inappwebview.callHandler('fromWebApp', { type, payload: value });
       return true;
     }
   }
   return false;
 };
 
-export const notifyLoginToFlutter = () => {
-  console.log("🚀 [Bridge] Triggering Login Event");
-  return notifyFlutter('login', true);
+export const notifyLoginToFlutter = (user?: any) => {
+  console.log("🚀 [Bridge] Triggering Login Event with Metadata");
+  
+  const payload = {
+    login: true,
+    user_name: user?.displayName || user?.user_name || null,
+    employee_id: user?.employeeId || user?.employee_id || null,
+    organization_id: user?.organization_id || null,
+    email: user?.email || null,
+    role: user?.role || null,
+    designation: user?.designation || user?.role || null,
+    department: user?.department || null,
+    createdAt: user?.createdAt || user?.created_at || null,
+    lastSignInAt: user?.lastSignInAt || user?.last_sign_in_at || null,
+    profilePicUrl: user?.profilePicUrl || user?.profile_pic_url || null,
+    is_client: user?.isClient || user?.is_client || false
+  };
+
+  return notifyFlutter('login', payload);
 };
 
 export const notifyLogoutToFlutter = () => {
@@ -64,13 +80,15 @@ export const syncUserInfoToFlutter = (user: any) => {
   const userInfoPayload = {
     user_name: user.displayName || user.user_name || null,
     employee_id: user.employeeId || user.employee_id || null,
+    organization_id: user.organization_id || null,
     email: user.email,
     role: user.role,
     designation: user.designation || user.role,
     department: user.department || null,
     createdAt: user.createdAt || user.created_at,
     lastSignInAt: user.lastSignInAt || user.last_sign_in_at,
-    profilePicUrl: user.profilePicUrl || user.profile_pic_url
+    profilePicUrl: user.profilePicUrl || user.profile_pic_url,
+    is_client: user.isClient || user.is_client || false
   };
   
   console.log("🚀 [Bridge] Syncing User Profile");
@@ -86,64 +104,81 @@ export const requestDeviceInfoFromFlutter = () => {
 /**
  * Update the call status in sync_meta for the primary connected device
  */
+console.log("🛠️ [Bridge] Flutter Bridge Library Loaded v2.1 (with enhanced logging)");
+
 export const updateSyncMetaCallStatus = async (employeeId: string, type: string, value: string) => {
-  if (!employeeId) return;
+  if (!employeeId) {
+    console.error("❌ [Bridge] updateSyncMetaCallStatus failed: employeeId is missing");
+    return;
+  }
+
+  console.log("%c📡 [Bridge] Starting sync update", "color: blue; font-weight: bold", { employeeId, type, value });
 
   // 0. Master Move: If we are on mobile (bridge active), DO NOT update type/value columns.
-  // These columns are reserved for remote commands from Desktop to Mobile.
-  // Mobile device should only be updated from here via calling_status or native sync.
   if (typeof window !== 'undefined' && (window as any).flutter_inappwebview) {
-    console.log("📱 [Bridge] Mobile context. Skipping command sync (type/value) to DB.");
+    console.log("📱 [Bridge] Mobile context detected. Skipping command sync (type/value) to DB.");
     return;
   }
   
   try {
-    // 1. Fetch current device status to check if it's online
+    // 1. Fetch current device status
     const { data: device, error: fetchError } = await supabase
       .from('sync_meta')
-      .select('last_seen, status')
+      .select('last_seen, status, entry_id, is_primary')
       .eq('employee_id', employeeId)
       .eq('is_primary', true)
       .maybeSingle();
 
-    if (fetchError || !device) {
-      console.warn("⚠️ [Bridge] Cannot sync status: Primary device not found");
+    if (fetchError) {
+      console.error("❌ [Bridge] Database fetch error:", fetchError);
       return;
     }
 
-    // 2. Check if device is actually online (15 second timeout like Header)
+    if (!device) {
+      console.warn(`⚠️ [Bridge] No primary device found for employee ${employeeId}. Check if any device is set as primary.`);
+      return;
+    }
+
+    console.log(`📋 [Bridge] Device Found: ${device.entry_id} | Status: ${device.status} | Last Seen: ${device.last_seen}`);
+
+    // 2. Check if device is actually online (Relaxed to 45 seconds for better stability)
     if (device.last_seen) {
       const lastSeen = new Date(device.last_seen).getTime();
-      const diffSeconds = (Date.now() - lastSeen) / 1000;
+      const now = Date.now();
+      const diffSeconds = (now - lastSeen) / 1000;
       
-      if (diffSeconds >= 15) {
-        console.warn(`⚠️ [Bridge] Device is OFFLINE (${Math.round(diffSeconds)}s ago). Skipping ${type} update.`);
+      console.log(`⏱️ [Bridge] Heartbeat Check: ${Math.round(diffSeconds)}s ago`);
+
+      if (diffSeconds >= 45) { // Relaxed from 15s to 45s
+        console.warn(`⚠️ [Bridge] Device is OFFLINE (${Math.round(diffSeconds)}s gap). Skipping ${type} to avoid ghost commands.`);
         return;
       }
     } else {
-      console.warn("⚠️ [Bridge] Device has never sent a heartbeat. Skipping update.");
+      console.warn(`⚠️ [Bridge] Device ${device.entry_id} has never sent a heartbeat. Skipping update.`);
       return;
     }
 
-    console.log(`📡 [Bridge] Device is online. Syncing ${type} to DB...`);
+    console.log(`🚀 [Bridge] Device is active. Sending update to DB...`);
     
     // 3. Perform the update
-    const { error } = await supabase
+    const { data, error, count } = await supabase
       .from('sync_meta')
       .update({ 
         type: type,
         value: value,
         updated_at: new Date().toISOString()
-      })
+      }, { count: 'exact' }) 
       .eq('employee_id', employeeId)
       .eq('is_primary', true)
-      .eq('status', 'connected');
+      .select();
 
     if (error) {
       console.error("❌ [Bridge] SyncMeta update error:", error);
+    } else {
+      console.log(`✅ [Bridge] SyncMeta update successful! Rows affected: ${count || (data?.length || 0)}`);
     }
   } catch (err) {
-    console.error("❌ [Bridge] SyncMeta connection error:", err);
+    console.error("❌ [Bridge] SyncMeta fatal connection error:", err);
   }
 };
 
