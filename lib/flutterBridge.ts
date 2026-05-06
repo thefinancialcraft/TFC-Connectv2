@@ -102,6 +102,14 @@ export const requestDeviceInfoFromFlutter = () => {
 };
 
 /**
+ * Notify Flutter that CRM is activated
+ */
+export const notifyActivationToFlutter = () => {
+  console.log("🚀 [Bridge] Notifying CRM Activation");
+  return notifyFlutter('crm_activation', { status: true, message: "Rynnxly Crm Activated" });
+};
+
+/**
  * Update the call status in sync_meta for the primary connected device
  */
 console.log("🛠️ [Bridge] Flutter Bridge Library Loaded v2.1 (with enhanced logging)");

@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabase";
 
-type UtilityApp = 'notes' | 'todo' | 'calendar' | 'calculator' | 'age' | 'bmi' | 'alarm' | 'ai';
+type UtilityApp = 'notes' | 'todo' | 'calendar' | 'calculator' | 'age' | 'bmi' | 'alarm' | 'ai' | 'search' | 'settings';
 
 // Google Calendar API Helper (Server-side handled)
 const fetchGoogleHolidays = async (year: number, month: number): Promise<Record<string, any[]>> => {
@@ -383,6 +383,26 @@ export default function UtilitySidebar() {
     const [showAiSettings, setShowAiSettings] = useState(false);
     const chatEndRef = useRef<HTMLDivElement>(null);
 
+    // --- APP CUSTOMIZATION & SEARCH WIDGETS ---
+    const [enabledApps, setEnabledApps] = useState<string[]>(['notes', 'todo', 'calendar', 'calculator', 'age', 'bmi', 'alarm']);
+    const [searchWidgets, setSearchWidgets] = useState<{id: number, name: string, url: string}[]>([
+        { id: 1, name: 'Google', url: 'https://www.google.com/search?q=' },
+        { id: 2, name: 'Bing', url: 'https://www.bing.com/search?q=' }
+    ]);
+    const [activeSearchWidgetId, setActiveSearchWidgetId] = useState<number | null>(1);
+    const [searchQuery, setSearchQuery] = useState('');
+    
+    const ALL_AVAILABLE_APPS = [
+        { id: 'notes', icon: 'fi-rr-note', label: 'Notes' },
+        { id: 'todo', icon: 'fi-rr-list-check', label: 'Tasks' },
+        { id: 'calendar', icon: 'fi-rr-calendar', label: 'Calendar' },
+        { id: 'calculator', icon: 'fi-rr-calculator', label: 'Calc' },
+        { id: 'age', icon: 'fi-rr-user-time', label: 'Age' },
+        { id: 'bmi', icon: 'fi-rr-ruler-combined', label: 'BMI' },
+        { id: 'alarm', icon: 'fi-rr-bell', label: 'Alarm' },
+        { id: 'search', icon: 'fi-rr-search', label: 'Search' },
+    ];
+
     const scrollToBottom = () => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
@@ -403,6 +423,21 @@ export default function UtilitySidebar() {
     const [isResizing, setIsResizing] = useState(false);
     const resizeStartX = useRef(0);
     const resizeStartWidth = useRef(320);
+
+    const [isMobile, setIsMobile] = useState(false);
+    useEffect(() => {
+        const checkMobile = () => setIsMobile(window.innerWidth < 1024); // lg breakpoint usually 1024
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    // Set active app to the first enabled one when opening sidebar
+    useEffect(() => {
+        if (isOpen && enabledApps.length > 0) {
+            setActiveApp(enabledApps[0] as UtilityApp);
+        }
+    }, [isOpen, enabledApps]);
 
     // Load states from localStorage
     useEffect(() => {
@@ -474,6 +509,16 @@ export default function UtilitySidebar() {
         }
 
         if (savedAgeTab) setActiveAgeTab(savedAgeTab as 'single' | 'family');
+
+        const savedEnabledApps = localStorage.getItem('tfc_util_enabled_apps');
+        if (savedEnabledApps) setEnabledApps(JSON.parse(savedEnabledApps));
+
+        const savedSearchWidgets = localStorage.getItem('tfc_util_search_widgets');
+        if (savedSearchWidgets) {
+            const parsed = JSON.parse(savedSearchWidgets);
+            setSearchWidgets(parsed);
+            if (parsed.length > 0) setActiveSearchWidgetId(parsed[0].id);
+        }
     }, []);
 
     // --- SUPABASE SYNC LOGIC ---
@@ -500,6 +545,11 @@ export default function UtilitySidebar() {
                     if (data.alarms) setAlarms(data.alarms);
                     if (data.ai_config) setAiConfig(data.ai_config);
                     if (data.ai_chat_history) setChatMessages(data.ai_chat_history);
+                    if (data.enabled_apps) setEnabledApps(data.enabled_apps);
+                    if (data.search_widgets) {
+                        setSearchWidgets(data.search_widgets);
+                        if (data.search_widgets.length > 0) setActiveSearchWidgetId(data.search_widgets[0].id);
+                    }
                 }
             } catch (e) {
                 console.error("Supabase load error", e);
@@ -530,6 +580,8 @@ export default function UtilitySidebar() {
                     alarms: alarms,
                     ai_config: aiConfig,
                     ai_chat_history: chatMessages,
+                    enabled_apps: enabledApps,
+                    search_widgets: searchWidgets,
                     updated_at: new Date().toISOString()
                 });
             } catch (e) {
@@ -565,6 +617,14 @@ export default function UtilitySidebar() {
     useEffect(() => {
         localStorage.setItem('tfc_util_family_cards', JSON.stringify(familyCards));
     }, [familyCards]);
+
+    useEffect(() => {
+        localStorage.setItem('tfc_util_enabled_apps', JSON.stringify(enabledApps));
+    }, [enabledApps]);
+
+    useEffect(() => {
+        localStorage.setItem('tfc_util_search_widgets', JSON.stringify(searchWidgets));
+    }, [searchWidgets]);
 
     // --- ALARM PERSISTENCE ---
     useEffect(() => {
@@ -1058,16 +1118,37 @@ export default function UtilitySidebar() {
         } : c));
     };
 
-    const apps = [
-        { id: 'notes', icon: 'flex fi-rr-note', label: 'Notes' },
-        { id: 'todo', icon: 'flex fi-rr-list-check', label: 'Tasks' },
-        { id: 'calendar', icon: 'flex fi-rr-calendar', label: 'Calendar' },
-        { id: 'calculator', icon: 'flex fi-rr-calculator', label: 'Calc' },
-        { id: 'age', icon: 'flex fi-rr-user-time', label: 'Age' },
-        { id: 'bmi', icon: 'flex fi-rr-ruler-combined', label: 'BMI' },
-        { id: 'alarm', icon: 'flex fi-rr-bell', label: 'Alarm' },
-        { id: 'ai', icon: 'flex fi-rr-brain', label: 'AI Bot' }
-    ].filter(app => app.id !== 'ai');
+    const apps = enabledApps.map(id => ALL_AVAILABLE_APPS.find(a => a.id === id)).filter(Boolean) as {id: string, icon: string, label: string}[];
+
+    const moveApp = (index: number, direction: 'up' | 'down') => {
+        const newApps = [...enabledApps];
+        const newIndex = direction === 'up' ? index - 1 : index + 1;
+        if (newIndex < 0 || newIndex >= newApps.length) return;
+        [newApps[index], newApps[newIndex]] = [newApps[newIndex], newApps[index]];
+        setEnabledApps(newApps);
+    };
+
+    const toggleAppVisibility = (appId: string) => {
+        if (enabledApps.includes(appId)) {
+            if (enabledApps.length <= 1) return; // Keep at least one
+            setEnabledApps(enabledApps.filter(id => id !== appId));
+        } else {
+            setEnabledApps([...enabledApps, appId]);
+        }
+    };
+
+    const addSearchWidget = (name: string, url: string) => {
+        if (!name || !url) return;
+        setSearchWidgets([...searchWidgets, { id: Date.now(), name, url }]);
+    };
+
+    const deleteSearchWidget = (id: number) => {
+        const newList = searchWidgets.filter(w => w.id !== id);
+        setSearchWidgets(newList);
+        if (activeSearchWidgetId === id) {
+            setActiveSearchWidgetId(newList.length > 0 ? newList[0].id : null);
+        }
+    };
 
     // --- DRAGGING LOGIC ---
     useEffect(() => {
@@ -1189,7 +1270,7 @@ export default function UtilitySidebar() {
             </button>
 
             {/* Sidebar Drawer */}
-            <div className={`fixed inset-0 z-[1000] transition-all duration-500 pointer-events-none ${isOpen ? 'visible' : 'invisible'}`}>
+            <div className={`fixed inset-0 z-[5000] transition-all duration-500 pointer-events-none ${isOpen ? 'visible' : 'invisible'}`}>
                 {/* Minimal Backdrop */}
                 <div 
                     onClick={() => setIsOpen(false)}
@@ -1198,14 +1279,16 @@ export default function UtilitySidebar() {
 
                 {/* Compact Content Panel */}
                 <div 
-                    style={{ width: `${drawerWidth}px` }}
+                    style={{ width: isMobile ? '100%' : `${drawerWidth}px` }}
                     className={`absolute right-0 top-0 h-full bg-white shadow-xl transition-transform duration-400 pointer-events-auto border-l border-gray-100 flex ${isOpen ? 'translate-x-0' : 'translate-x-full'} ${isResizing ? 'transition-none' : ''}`}
                 >
                     {/* Resize Handle */}
-                    <div 
-                        onMouseDown={onResizeStart}
-                        className="absolute left-0 top-0 w-1.5 h-full cursor-ew-resize hover:bg-indigo-400/30 transition-colors z-[1010]"
-                    />
+                    {!isMobile && (
+                        <div 
+                            onMouseDown={onResizeStart}
+                            className="absolute left-0 top-0 w-1.5 h-full cursor-ew-resize hover:bg-indigo-400/30 transition-colors z-[1010]"
+                        />
+                    )}
                     
                     {/* Thin App Bar */}
                     <div className="w-[60px] shrink-0 bg-[#4b33e8] border-r border-indigo-700 flex flex-col items-center py-4 gap-4">
@@ -1225,9 +1308,19 @@ export default function UtilitySidebar() {
                                 className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeApp === app.id ? 'bg-white text-[#4b33e8] shadow-lg' : 'text-white/50 hover:text-white hover:bg-white/10'}`}
                                 title={app.label}
                             >
-                                <i className={`fi flex ${app.icon} text-base flex`}></i>
+                                <i className={`fi flex ${app.icon} text-base`}></i>
                             </button>
                         ))}
+
+                        <div className="mt-auto mb-4">
+                            <button 
+                                onClick={() => setActiveApp('settings')}
+                                className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${activeApp === 'settings' ? 'bg-white text-[#4b33e8] shadow-lg' : 'text-white/50 hover:text-white hover:bg-white/10'}`}
+                                title="Settings"
+                            >
+                                <i className="fi flex fi-rr-settings text-base"></i>
+                            </button>
+                        </div>
                     </div>
 
                     {/* App Content */}
@@ -1241,7 +1334,7 @@ export default function UtilitySidebar() {
                         </div>
 
                         {/* Content Area */}
-                        <div className="flex-1 overflow-y-auto p-4 scroll-smooth custom-scrollbar">
+                        <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 scroll-smooth custom-scrollbar">
                             
                             {/* NOTES APP - Vertical List / Column View */}
                             {activeApp === 'notes' && (
@@ -1588,7 +1681,6 @@ export default function UtilitySidebar() {
                                                     return Number(y) === calDate.getFullYear() && Number(m) === calDate.getMonth() + 1;
                                                 });
                                                 
-                                                // Explode holidays into a flat list for the current month
                                                 const googleEventsList: any[] = [];
                                                 Object.entries(googleHolidays).forEach(([date, list]) => {
                                                     list.forEach(h => {
@@ -1600,41 +1692,25 @@ export default function UtilitySidebar() {
                                                         });
                                                     });
                                                 });
-
-                                                const combined = [
-                                                    ...googleEventsList,
-                                                    ...userEvents
-                                                ].sort((a, b) => a.date.localeCompare(b.date));
-
-                                                if (combined.length === 0) {
-                                                    return <p className="text-[10px] text-gray-300 italic py-2">No events or festivals</p>;
-                                                }
-
-                                                return combined.map((item: any) => (
-                                                    <div key={item.id} className="group flex flex-col p-2 rounded-lg border border-gray-50 hover:bg-gray-50 transition-all cursor-default">
+                                                
+                                                const combined = [...userEvents, ...googleEventsList].sort((a, b) => a.date.localeCompare(b.date));
+                                                
+                                                if (combined.length === 0) return <div className="text-center py-8 text-[10px] font-bold text-gray-300 uppercase">No events this month</div>;
+                                                
+                                                return combined.map((item, idx) => (
+                                                    <div key={idx} className={`p-2 rounded-lg border flex flex-col gap-1 ${item.isGoogle ? 'bg-amber-50/30 border-amber-100' : 'bg-white border-gray-100'}`}>
                                                         <div className="flex items-center justify-between">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className={`text-[9px] font-bold text-white px-1.5 py-0.5 rounded-md ${item.isFestival ? 'bg-amber-400' : item.isPersonal ? 'bg-emerald-400' : 'bg-indigo-400'}`}>
-                                                                    {item.date.split('-')[2]}
-                                                                </span>
-                                                                <span className={`text-xs font-medium truncate max-w-[160px] ${item.isFestival ? 'text-amber-600' : item.isPersonal ? 'text-emerald-600' : 'text-[#263238]'}`}>
-                                                                    {item.title}
-                                                                    {item.isFestival && <span className="ml-1 text-[8px] opacity-70">(Holidays)</span>}
-                                                                    {item.isPersonal && <span className="ml-1 text-[8px] opacity-70">(Google Event)</span>}
-                                                                </span>
+                                                            <div className="flex items-center gap-2 overflow-hidden">
+                                                                <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${item.isGoogle ? 'bg-amber-400' : 'bg-indigo-400'}`}></div>
+                                                                <div className="min-w-0">
+                                                                    <p className="text-[10px] font-bold text-slate-700 truncate">{item.title}</p>
+                                                                    <p className="text-[8px] text-gray-400">{item.date.split('-').reverse().join('/')}</p>
+                                                                </div>
                                                             </div>
                                                             {!item.isGoogle && (
-                                                                <button onClick={() => deleteEvent(item.id)} className="opacity-0 group-hover:opacity-100 text-gray-300 hover:text-red-500 transition-all">
-                                                                    <i className="fi flex fi-rr-cross-small text-base"></i>
-                                                                </button>
+                                                                <button onClick={() => deleteEvent(item.id)} className="text-gray-300 hover:text-red-500"><i className="fi flex fi-rr-trash text-[10px]"></i></button>
                                                             )}
                                                         </div>
-                                                        {(item.isGoogle && (item.description || item.location)) && (
-                                                            <div className="mt-1 pl-7 space-y-0.5">
-                                                                {item.location && <p className="text-[9px] text-gray-400 flex items-center gap-1"><i className="fi flex fi-rr-marker"></i> {item.location}</p>}
-                                                                {item.description && <p className="text-[9px] text-gray-400 italic line-clamp-2 leading-tight">{item.description}</p>}
-                                                            </div>
-                                                        )}
                                                     </div>
                                                 ));
                                             })()}
@@ -2121,6 +2197,149 @@ export default function UtilitySidebar() {
                                     </div>
                                 </div>
                              )}
+
+                             {/* SEARCH APP */}
+                            {activeApp === 'search' && (
+                                <div className="h-full flex flex-col gap-4">
+                                    <div className="flex bg-gray-100 p-1 rounded-xl gap-1 overflow-x-auto custom-scrollbar">
+                                        {searchWidgets.map(w => (
+                                            <button 
+                                                key={w.id}
+                                                onClick={() => setActiveSearchWidgetId(w.id)}
+                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase transition-all whitespace-nowrap truncate max-w-[80px] ${activeSearchWidgetId === w.id ? 'bg-white text-indigo-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                                                title={w.name}
+                                            >
+                                                {w.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                    
+                                    <div className="flex-1 flex flex-col items-center justify-center space-y-6">
+                                        <div className="w-16 h-16 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-500">
+                                            <i className="fi flex fi-rr-search text-3xl"></i>
+                                        </div>
+                                        <div className="w-full max-w-sm space-y-4">
+                                            <div className="relative">
+                                                <input 
+                                                    type="text"
+                                                    value={searchQuery}
+                                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                                    onKeyPress={(e) => {
+                                                        if (e.key === 'Enter' && searchQuery) {
+                                                            const widget = searchWidgets.find(w => w.id === activeSearchWidgetId);
+                                                            if (widget) window.open(widget.url + encodeURIComponent(searchQuery), '_blank');
+                                                        }
+                                                    }}
+                                                    placeholder={`Search with ${searchWidgets.find(w => w.id === activeSearchWidgetId)?.name}...`}
+                                                    className="w-full bg-gray-50 border border-gray-100 rounded-2xl px-5 py-4 text-sm font-medium text-black focus:ring-2 focus:ring-indigo-100 outline-none transition-all pr-12"
+                                                />
+                                                <button 
+                                                    onClick={() => {
+                                                        if (searchQuery) {
+                                                            const widget = searchWidgets.find(w => w.id === activeSearchWidgetId);
+                                                            if (widget) window.open(widget.url + encodeURIComponent(searchQuery), '_blank');
+                                                        }
+                                                    }}
+                                                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-indigo-600 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition-all shadow-md active:scale-95"
+                                                >
+                                                    <i className="fi flex fi-rr-arrow-right"></i>
+                                                </button>
+                                            </div>
+                                            <p className="text-center text-[9px] font-bold text-gray-400 uppercase tracking-widest">Type and press Enter to search</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* SETTINGS APP */}
+                            {activeApp === 'settings' && (
+                                <div className="h-full flex flex-col gap-6">
+                                    <section className="space-y-3">
+                                        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Manage Tools</h3>
+                                        <div className="space-y-2 overflow-y-auto max-h-[250px] custom-scrollbar pr-1">
+                                            {ALL_AVAILABLE_APPS.map((app) => {
+                                                const isEnabled = enabledApps.includes(app.id);
+                                                const appIdx = enabledApps.indexOf(app.id);
+                                                return (
+                                                    <div key={app.id} className="grid grid-cols-[1fr_auto] gap-3 p-3 rounded-xl border border-gray-50 bg-white overflow-hidden w-full h-14 shrink-0">
+                                                        <div className="flex items-center gap-3 min-w-0">
+                                                            <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isEnabled ? 'bg-indigo-50 text-indigo-600' : 'bg-gray-50 text-gray-400'}`}>
+                                                                <i className={`fi flex ${app.icon} text-xs`}></i>
+                                                            </div>
+                                                            <span className={`text-xs font-bold truncate ${isEnabled ? 'text-slate-700' : 'text-gray-400'}`} title={app.label}>{app.label}</span>
+                                                        </div>
+                                                        <div className="flex items-center gap-2">
+                                                            {isEnabled && (
+                                                                <div className="flex gap-1 mr-2">
+                                                                    <button 
+                                                                        onClick={() => moveApp(appIdx, 'up')}
+                                                                        disabled={appIdx === 0}
+                                                                        className="w-6 h-6 rounded-md hover:bg-gray-100 text-gray-400 disabled:opacity-30"
+                                                                    >
+                                                                        <i className="fi flex fi-rr-angle-small-up"></i>
+                                                                    </button>
+                                                                    <button 
+                                                                        onClick={() => moveApp(appIdx, 'down')}
+                                                                        disabled={appIdx === enabledApps.length - 1}
+                                                                        className="w-6 h-6 rounded-md hover:bg-gray-100 text-gray-400 disabled:opacity-30"
+                                                                    >
+                                                                        <i className="fi flex fi-rr-angle-small-down"></i>
+                                                                    </button>
+                                                                </div>
+                                                            )}
+                                                            <button 
+                                                                onClick={() => toggleAppVisibility(app.id)}
+                                                                className={`w-10 h-5 rounded-full relative transition-colors ${isEnabled ? 'bg-green-500' : 'bg-gray-200'}`}
+                                                            >
+                                                                <div className={`absolute top-1 w-3 h-3 bg-white rounded-full transition-all ${isEnabled ? 'right-1' : 'left-1'}`}></div>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </section>
+
+                                    <section className="space-y-3">
+                                        <h3 className="text-[10px] font-bold text-gray-400 uppercase tracking-widest px-1">Search Widgets</h3>
+                                        <div className="space-y-2">
+                                            {searchWidgets.map(w => (
+                                                <div key={w.id} className="grid grid-cols-[1fr_auto] gap-3 p-3 rounded-xl border border-gray-50 bg-white overflow-hidden w-full h-16 shrink-0">
+                                                    <div className="min-w-0 flex flex-col justify-center">
+                                                        <p className="text-xs font-bold text-slate-700 truncate">{w.name}</p>
+                                                        <p className="text-[8px] text-gray-400 truncate mt-0.5">{w.url}</p>
+                                                    </div>
+                                                    <button 
+                                                        onClick={() => deleteSearchWidget(w.id)}
+                                                        className="w-7 h-7 rounded-lg hover:bg-red-50 text-gray-300 hover:text-red-500 transition-all flex items-center justify-center"
+                                                    >
+                                                        <i className="fi flex fi-rr-trash text-[10px]"></i>
+                                                    </button>
+                                                </div>
+                                            ))}
+                                            
+                                            <div className="p-3 rounded-xl border-2 border-dashed border-gray-50 space-y-3">
+                                                <input id="new-widget-name" type="text" placeholder="Widget Name (e.g. YouTube)" className="w-full bg-gray-50 border-none rounded-lg text-[10px] font-bold text-black px-3 py-2 outline-none" />
+                                                <input id="new-widget-url" type="text" placeholder="Search URL (e.g. https://.../search?q=)" className="w-full bg-gray-50 border-none rounded-lg text-[10px] font-bold text-black px-3 py-2 outline-none" />
+                                                <button 
+                                                    onClick={() => {
+                                                        const nameEl = document.getElementById('new-widget-name') as HTMLInputElement;
+                                                        const urlEl = document.getElementById('new-widget-url') as HTMLInputElement;
+                                                        if (nameEl && urlEl) {
+                                                            addSearchWidget(nameEl.value, urlEl.value);
+                                                            nameEl.value = '';
+                                                            urlEl.value = '';
+                                                        }
+                                                    }}
+                                                    className="w-full bg-indigo-600 text-white py-4 rounded-lg text-[9px] font-bold uppercase tracking-widest hover:bg-indigo-700"
+                                                >
+                                                    Add Widget
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </section>
+                                </div>
+                            )}
 
                               {/* AI SALES BOT */}
                               {activeApp === 'ai' && (

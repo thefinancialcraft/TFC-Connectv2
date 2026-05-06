@@ -8,6 +8,7 @@ import HeroSection from "../../components/HeroSection";
 import ErrorNotification from "../../components/ErrorNotification";
 import { supabase } from "../../lib/supabase";
 import { logSystemEvent } from "../../lib/monitoring";
+import { notifyActivationToFlutter } from "../../lib/flutterBridge";
 
 export default function Login() {
   const router = useRouter();
@@ -52,6 +53,8 @@ export default function Login() {
 
             if (profile && isMounted) {
               if (profile.profile_complete === false) {
+                console.log("🚀 [Login] Profile incomplete, notifying activation and redirecting...");
+                notifyActivationToFlutter();
                 router.push("/profile-completion");
                 return;
               }
@@ -64,8 +67,11 @@ export default function Login() {
               };
               
               const redirectPath = pathMap[profile.approval_status || ''] || pathMap[profile.status || ''] || "/dashboard";
-              console.log("🚀 [Login] Existing session, redirecting to:", redirectPath);
+              console.log("🚀 [Login] Existing session, notifying activation and redirecting to:", redirectPath);
               
+              // 🔔 BRIDGE NOTIFICATION: Notify Flutter that CRM is now activated
+              notifyActivationToFlutter();
+
               logSystemEvent({
                   event_type: 'AUTH',
                   description: `Session Recovered: Redirecting to ${redirectPath}`,

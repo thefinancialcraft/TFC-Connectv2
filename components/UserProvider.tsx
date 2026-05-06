@@ -24,7 +24,7 @@ export function UserProvider({ children }: UserProviderProps) {
         return false; 
       }
       
-      const { notifyLoginToFlutter, syncUserInfoToFlutter, requestDeviceInfoFromFlutter } = await import("../lib/flutterBridge");
+      const { notifyLoginToFlutter, syncUserInfoToFlutter, requestDeviceInfoFromFlutter, notifyActivationToFlutter } = await import("../lib/flutterBridge");
       
       const success = (user) ? syncUserInfoToFlutter(user) : true;
       
@@ -34,6 +34,7 @@ export function UserProvider({ children }: UserProviderProps) {
         // If it worked, we also send a login event if we just "detected" a session on load
         if (user && !prevUserRef.current) {
           notifyLoginToFlutter(user);
+          notifyActivationToFlutter(); // 🔔 Notifying activation to Flutter
         }
         
         if (user) prevUserRef.current = user;

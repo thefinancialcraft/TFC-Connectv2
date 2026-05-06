@@ -1,5 +1,5 @@
 {
-  "version": "1.0.1",
+  "version": "1.0.0",
   "url": "https://www.rynxly.in/app/rynxly.apk",
   "changelog": "🚀 Stable Update Test\n\n1. Dynamic URL logic added\n2. SDK 36 Compatibility\n3. Hyper-detailed Log Monitoring",
   "force_update": false
