@@ -126,6 +126,8 @@ export default function Customer() {
 
   const [searchQuery, setSearchQuery] = useState("");
   const [tempSearchQuery, setTempSearchQuery] = useState("");
+  const [searchField, setSearchField] = useState<"name" | "phone">("name");
+  const [showSearchFieldDropdown, setShowSearchFieldDropdown] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCustomers, setTotalCustomers] = useState(0);
   const [freshCustomersCount, setFreshCustomersCount] = useState(0);
@@ -404,14 +406,35 @@ export default function Customer() {
     }
   };
 
-  const fetchCustomers = async (page: number = currentPage) => {
+  const handleSourceChange = async (newSource: "live" | "rejected" | "closed") => {
+    // 1. Clear "Cache" (Local State)
+    setAllCustomers([]);
+    setTotalCustomers(0);
+    setFreshCustomersCount(0);
+    setPendingFollowUps(0);
+    setUpcomingFollowUps(0);
+    setOverdueFollowUps(0);
+    setLoadingCustomers(true);
+    setSelectedCustomers(new Set());
+    setFilters(prev => ({ ...prev, disposition: "" }));
+    
+    // 2. Update Source State
+    setDataSource(newSource);
+    setCurrentPage(1);
+    
+    // 3. Fetch Fresh Data (Pass explicitly to avoid state update delay)
+    await fetchCustomers(1, newSource);
+  };
+
+  const fetchCustomers = async (page: number = currentPage, sourceOverride?: "live" | "rejected" | "closed") => {
+    const activeSource = sourceOverride || dataSource;
     try {
       setLoadingCustomers(true);
       const todayISO = new Date();
       todayISO.setHours(0,0,0,0);
 
-      const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
-      const dispCol = dataSource === "closed" ? "final_disposition" : "disposition";
+      const table = activeSource === "live" ? "customers" : activeSource === "rejected" ? "rejected_leads" : "closed_deals";
+      const dispCol = activeSource === "closed" ? "final_disposition" : "disposition";
 
       // 1. Fetch Shared Team Members for TL (Re-use in all sub-queries)
       let sharedTeamMemberIds: string[] = [];
@@ -444,12 +467,12 @@ export default function Customer() {
       const applyUserFilters = (q: any) => {
           if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
               if (user.organization_id) q = q.eq('organization_id', user.organization_id);
-              if (user.uid) q = q.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
+              if (user.uid) q = q.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
           }
           else if (user?.isClient && user.designation === 'team_leader') {
                if (user.organization_id) q = q.eq('organization_id', user.organization_id);
-               if (sharedTeamMemberIds.length > 0) q = q.in(dataSource === 'live' ? 'assigned_to' : 'agent_id', sharedTeamMemberIds);
-               else q = q.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
+               if (sharedTeamMemberIds.length > 0) q = q.in(activeSource === 'live' ? 'assigned_to' : 'agent_id', sharedTeamMemberIds);
+               else q = q.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
           }
           else if (user?.isClient && ['ceo', 'developer', 'manager'].includes(user.designation || '')) {
               if (user.organization_id) q = q.eq('organization_id', user.organization_id);
@@ -461,14 +484,28 @@ export default function Customer() {
       // 3. Get total count
       let countQuery = supabase.from(table).select("*", { count: "exact", head: true });
       if (searchQuery) {
-        countQuery = countQuery.or(`customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`);
+        if (searchField === "name") {
+          countQuery = countQuery.ilike("customer_name", `%${searchQuery}%`);
+        } else {
+          const cleanSearch = searchQuery.replace(/\D/g, '');
+          if (cleanSearch.length > 0) {
+            const hash = computePhoneHash(cleanSearch);
+            if (hash) {
+              countQuery = countQuery.eq("phone_search_hash", hash);
+            } else {
+              countQuery = countQuery.ilike("phone_no", `%${searchQuery}%`);
+            }
+          } else {
+            countQuery = countQuery.ilike("phone_no", `%${searchQuery}%`);
+          }
+        }
       }
       countQuery = applyUserFilters(countQuery);
       if (filters.organization) countQuery = countQuery.eq("organization_id", filters.organization);
       if (filters.campaign) countQuery = countQuery.eq("campaign_id", filters.campaign);
       if (filters.assignedTo) {
-        if (filters.assignedTo === "unassigned") countQuery = countQuery.is(dataSource === 'live' ? 'assigned_to' : 'agent_id', null);
-        else countQuery = countQuery.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
+        if (filters.assignedTo === "unassigned") countQuery = countQuery.is(activeSource === 'live' ? 'assigned_to' : 'agent_id', null);
+        else countQuery = countQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
       if (filters.disposition) countQuery = countQuery.eq(dispCol, filters.disposition);
       
@@ -476,7 +513,7 @@ export default function Customer() {
       if (filters.startDate) countQuery = countQuery.gte(dateField, `${filters.startDate}T00:00:00`);
       if (filters.endDate) countQuery = countQuery.lte(dateField, `${filters.endDate}T23:59:59`);
       
-      const lifecycleDateField = dataSource === "rejected" ? "rejected_at" : dataSource === "closed" ? "closed_at" : "created_at";
+      const lifecycleDateField = activeSource === "rejected" ? "rejected_at" : activeSource === "closed" ? "closed_at" : "created_at";
       if (filters.createdStartDate) countQuery = countQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
       if (filters.createdEndDate) countQuery = countQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
 
@@ -495,7 +532,7 @@ export default function Customer() {
         overdueQuery = applyUserFilters(overdueQuery);
 
         let freshCountQuery = supabase.from(table).select("*", { count: "exact", head: true });
-        if (dataSource === 'live') {
+        if (activeSource === 'live') {
             freshCountQuery = freshCountQuery.eq("attempt_count", 0).is(dispCol, null);
         } else {
             freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
@@ -513,7 +550,7 @@ export default function Customer() {
             freshCountQuery = freshCountQuery.eq("campaign_id", filters.campaign);
         }
         if (filters.assignedTo) {
-            const agentCol = dataSource === 'live' ? 'assigned_to' : 'agent_id';
+            const agentCol = activeSource === 'live' ? 'assigned_to' : 'agent_id';
             if (filters.assignedTo === "unassigned") {
                 pendingQuery = pendingQuery.is(agentCol, null);
                 overdueQuery = overdueQuery.is(agentCol, null);
@@ -547,7 +584,7 @@ export default function Customer() {
             freshCountQuery = freshCountQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
         }
 
-        if (dataSource === "closed") {
+        if (activeSource === "closed") {
             setPendingFollowUps(0);
             setOverdueFollowUps(0);
             setUpcomingFollowUps(0);
@@ -564,24 +601,33 @@ export default function Customer() {
       }
 
       // 5. Fetch Main Data
-      const orderCol = dataSource === "rejected" ? "rejected_at" : dataSource === "closed" ? "closed_at" : "created_at";
+      const orderCol = activeSource === "rejected" ? "rejected_at" : activeSource === "closed" ? "closed_at" : "created_at";
       let query = supabase.from(table).select("*")
         .order(orderCol, { ascending: false });
 
       if (searchQuery) {
-        let orConditions = `customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`;
-        if (searchQuery.replace(/\D/g, '').length > 0) {
-             const hash = computePhoneHash(searchQuery);
-             if (hash) orConditions += `,phone_search_hash.eq.${hash}`;
+        if (searchField === "name") {
+          query = query.ilike("customer_name", `%${searchQuery}%`);
+        } else {
+          const cleanSearch = searchQuery.replace(/\D/g, '');
+          if (cleanSearch.length > 0) {
+            const hash = computePhoneHash(cleanSearch);
+            if (hash) {
+              query = query.eq("phone_search_hash", hash);
+            } else {
+              query = query.ilike("phone_no", `%${searchQuery}%`);
+            }
+          } else {
+            query = query.ilike("phone_no", `%${searchQuery}%`);
+          }
         }
-        query = query.or(orConditions);
       }
       query = applyUserFilters(query);
       if (filters.organization) query = query.eq("organization_id", filters.organization);
       if (filters.campaign) query = query.eq("campaign_id", filters.campaign);
       if (filters.assignedTo) {
-        if (filters.assignedTo === "unassigned") query = query.is(dataSource === 'live' ? 'assigned_to' : 'agent_id', null);
-        else query = query.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
+        if (filters.assignedTo === "unassigned") query = query.is(activeSource === 'live' ? 'assigned_to' : 'agent_id', null);
+        else query = query.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
       if (filters.disposition) query = query.eq(dispCol, filters.disposition);
       
@@ -604,19 +650,28 @@ export default function Customer() {
             let batchQuery = supabase.from(table).select("*")
                 .order(orderCol, { ascending: false });
             if (searchQuery) {
-                let orConditions = `customer_name.ilike.%${searchQuery}%,phone_no.ilike.%${searchQuery}%,lead_id.ilike.%${searchQuery}%,campaign_id.ilike.%${searchQuery}%`;
-                if (searchQuery.replace(/\D/g, '').length > 0) {
-                     const hash = computePhoneHash(searchQuery);
-                     if (hash) orConditions += `,phone_search_hash.eq.${hash}`;
+                if (searchField === "name") {
+                    batchQuery = batchQuery.ilike("customer_name", `%${searchQuery}%`);
+                } else {
+                    const cleanSearch = searchQuery.replace(/\D/g, '');
+                    if (cleanSearch.length > 0) {
+                        const hash = computePhoneHash(cleanSearch);
+                        if (hash) {
+                            batchQuery = batchQuery.eq("phone_search_hash", hash);
+                        } else {
+                            batchQuery = batchQuery.ilike("phone_no", `%${searchQuery}%`);
+                        }
+                    } else {
+                        batchQuery = batchQuery.ilike("phone_no", `%${searchQuery}%`);
+                    }
                 }
-                batchQuery = batchQuery.or(orConditions);
             }
             batchQuery = applyUserFilters(batchQuery);
             if (filters.organization) batchQuery = batchQuery.eq("organization_id", filters.organization);
             if (filters.campaign) batchQuery = batchQuery.eq("campaign_id", filters.campaign);
             if (filters.assignedTo) {
-                if (filters.assignedTo === "unassigned") batchQuery = batchQuery.is(dataSource === 'live' ? 'assigned_to' : 'agent_id', null);
-                else batchQuery = batchQuery.eq(dataSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
+                if (filters.assignedTo === "unassigned") batchQuery = batchQuery.is(activeSource === 'live' ? 'assigned_to' : 'agent_id', null);
+                else batchQuery = batchQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
             }
             if (filters.disposition) batchQuery = batchQuery.eq(dispCol, filters.disposition);
             
@@ -680,7 +735,7 @@ export default function Customer() {
         const mappedData = (data || []).map((customer: any) => ({
           ...customer,
           assigned_to: customer.assigned_to || customer.agent_id,
-          disposition: customer.disposition || customer.final_disposition || (dataSource === 'closed' ? 'Deal Done' : null),
+          disposition: customer.disposition || customer.final_disposition || (activeSource === 'closed' ? 'Deal Done' : null),
           assigned_user_name: userMap[customer.assigned_to || customer.agent_id]?.user_name || null,
           assigned_employee_id: userMap[customer.assigned_to || customer.agent_id]?.employee_id || null,
           managed_by_name: customer.managed_by ? userMap[customer.managed_by]?.user_name || "Unknown" : "Self",
@@ -866,21 +921,27 @@ export default function Customer() {
       if (fetchError) throw fetchError;
 
       if (rejectedLeads && rejectedLeads.length > 0) {
-        // 2. Map back to customers
-        const liveCustomers = rejectedLeads.map(lead => ({
-          id: lead.customer_id,
-          customer_name: lead.customer_name,
-          phone_no: lead.phone_no,
-          phone_search_hash: lead.phone_search_hash,
-          campaign_id: lead.campaign_id,
-          disposition: lead.disposition,
-          sub_disposition: lead.sub_disposition,
-          assigned_to: lead.agent_id,
-          managed_by: lead.managed_by,
-          organization_id: lead.organization_id,
-          status: "active",
-          updated_at: new Date().toISOString()
-        }));
+        // 2. Map back to customers - Moving all common fields as-is
+        const liveCustomers = rejectedLeads.map(lead => {
+          // Destructure to separate specific transformations from common fields
+          const { 
+            id, // PK of rejected_leads (not needed in customers)
+            customer_id, // Original ID from customers table
+            agent_id, // Needs to be mapped to assigned_to
+            rejected_at, // Not present in customers table
+            status, // Will be forced to 'active'
+            idx, // Auto-increment (not needed)
+            ...commonFields 
+          } = lead;
+
+          return {
+            ...commonFields,
+            id: customer_id,
+            assigned_to: agent_id,
+            status: "active",
+            updated_at: new Date().toISOString()
+          };
+        });
 
         // 3. Insert into customers
         const { error: insertError } = await supabase
@@ -1052,12 +1113,7 @@ export default function Customer() {
                 {/* Data Source Toggle */}
                 <div className="bg-gray-100/80 backdrop-blur-sm p-1.5 rounded-xl gap-2 flex items-center md:min-w-[300px]">
                   <button
-                    onClick={() => {
-                      setDataSource("live");
-                      setFilters(prev => ({ ...prev, disposition: "" }));
-                      setCurrentPage(1);
-                      fetchCustomers(1);
-                    }}
+                    onClick={() => handleSourceChange("live")}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "live"
                         ? "bg-white text-[#4b33e8] scale-[1.02] shadow-sm"
@@ -1068,12 +1124,7 @@ export default function Customer() {
                     <span className="hidden md:inline">Live</span>
                   </button>
                   <button
-                    onClick={() => {
-                      setDataSource("rejected");
-                      setFilters(prev => ({ ...prev, disposition: "" }));
-                      setCurrentPage(1);
-                      fetchCustomers(1);
-                    }}
+                    onClick={() => handleSourceChange("rejected")}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "rejected"
                         ? "bg-white text-rose-600 scale-[1.02] shadow-sm"
@@ -1084,12 +1135,7 @@ export default function Customer() {
                     <span className="hidden md:inline">Rejected</span>
                   </button>
                   <button
-                    onClick={() => {
-                      setDataSource("closed");
-                      setFilters(prev => ({ ...prev, disposition: "" }));
-                      setCurrentPage(1);
-                      fetchCustomers(1);
-                    }}
+                    onClick={() => handleSourceChange("closed")}
                     className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
                       dataSource === "closed"
                         ? "bg-white text-emerald-600 scale-[1.02] shadow-sm"
@@ -1514,12 +1560,38 @@ export default function Customer() {
                           <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
                           <input
                             type="text"
-                            placeholder="Search..."
+                            placeholder={searchField === 'name' ? "Search by Name..." : "Search by Phone..."}
                             value={tempSearchQuery}
                             onChange={(e) => setTempSearchQuery(e.target.value)}
                             onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearchQuery)}
-                            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium"
+                            className="w-full pl-9 pr-10 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium"
                           />
+                          <button 
+                            onClick={() => setShowSearchFieldDropdown(!showSearchFieldDropdown)}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-md bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all active:scale-90 border border-gray-100"
+                            title="Change search field"
+                          >
+                            <i className={`fi flex ${searchField === 'name' ? 'fi-rr-user' : 'fi-rr-phone-call'} text-[10px]`}></i>
+                          </button>
+
+                          {showSearchFieldDropdown && (
+                            <div className="absolute right-0 top-full mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                              <button
+                                onClick={() => { setSearchField("name"); setShowSearchFieldDropdown(false); }}
+                                className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'name' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                              >
+                                <i className="fi flex fi-rr-user text-[10px]"></i>
+                                NAME
+                              </button>
+                              <button
+                                onClick={() => { setSearchField("phone"); setShowSearchFieldDropdown(false); }}
+                                className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'phone' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                              >
+                                <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                PHONE
+                              </button>
+                            </div>
+                          )}
                         </div>
                         <button 
                           onClick={() => setSearchQuery(tempSearchQuery)}
@@ -1870,12 +1942,38 @@ export default function Customer() {
                             <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
                             <input
                               type="text"
-                              placeholder="Search customers..."
+                              placeholder={searchField === 'name' ? "Search by Name..." : "Search by Phone..."}
                               value={tempSearchQuery}
                               onChange={(e) => setTempSearchQuery(e.target.value)}
                               onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearchQuery)}
-                              className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent font-medium"
+                              className="w-full pl-9 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent font-medium"
                             />
+                            <button 
+                              onClick={() => setShowSearchFieldDropdown(!showSearchFieldDropdown)}
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-md bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all active:scale-90 border border-gray-100"
+                              title="Change search field"
+                            >
+                              <i className={`fi flex ${searchField === 'name' ? 'fi-rr-user' : 'fi-rr-phone-call'} text-[10px]`}></i>
+                            </button>
+
+                            {showSearchFieldDropdown && (
+                              <div className="absolute right-0 top-full mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                                <button
+                                  onClick={() => { setSearchField("name"); setShowSearchFieldDropdown(false); }}
+                                  className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'name' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                                >
+                                  <i className="fi flex fi-rr-user text-[10px]"></i>
+                                  NAME
+                                </button>
+                                <button
+                                  onClick={() => { setSearchField("phone"); setShowSearchFieldDropdown(false); }}
+                                  className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'phone' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                                >
+                                  <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                  PHONE
+                                </button>
+                              </div>
+                            )}
                           </div>
                           <button
                             onClick={fetchDuplicates}

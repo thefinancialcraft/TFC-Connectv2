@@ -118,6 +118,11 @@ export default function LoginFormEmailId({
         };
         
         const redirectPath = pathMap[profile?.approval_status || ''] || pathMap[profile?.status || ''] || "/dashboard";
+        
+        // 🔔 BRIDGE NOTIFICATION: Notify Flutter that CRM is now activated
+        const { notifyActivationToFlutter } = await import("../lib/flutterBridge");
+        notifyActivationToFlutter();
+
         router.push(redirectPath);
       }
     } catch (error: any) {

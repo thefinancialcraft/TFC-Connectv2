@@ -156,6 +156,11 @@ export default function LoginFormUserId({
         
         const redirectPath = pathMap[profileData?.approval_status || ''] || pathMap[profileData?.status || ''] || "/dashboard";
         console.log("🚀 [Login] Final redirect to:", redirectPath);
+        
+        // 🔔 BRIDGE NOTIFICATION: Notify Flutter that CRM is now activated
+        const { notifyActivationToFlutter } = await import("../lib/flutterBridge");
+        notifyActivationToFlutter();
+
         router.push(redirectPath);
       }
     } catch (error: any) {
