@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 interface AppLogoProps {
   size?: 'default' | 'small';
@@ -6,49 +6,82 @@ interface AppLogoProps {
 
 export default function AppLogo({ size = 'default' }: AppLogoProps) {
   const isSmall = size === 'small';
+  const [isRingsly, setIsRingsly] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsRingsly(prev => !prev);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
   
   return (
-    <div className="flex flex-col items-start justify-center">
+    <div className="flex flex-col items-start justify-center group select-none">
       {/* Top Row: Icon + App Name */}
-      <div className="flex items-center justify-start gap-2">
-        {/* Icon */}
-        <div 
-          className={`inline-flex items-center justify-center rounded-full shrink-0 ${
-            isSmall ? 'h-5 w-5' : 'h-[24px] w-[24px] md:h-[22px] md:w-[22px]'
-          }`}
-          style={{ background: 'transparent' }} 
-        >
+      <div className="flex items-center justify-start gap-2 h-10 md:h-12">
+        {/* Icon Container */}
+        <div className="inline-flex items-center justify-center shrink-0">
           <i 
-            className={`fi flex mt-2 ml-2 fi-sr-tty-answer ${
-              isSmall ? 'text-base' : 'text-xl md:text-lg' 
+            className={`fi flex fi-sr-tty-answer transition-all duration-700 ${
+              isRingsly ? 'rotate-[360deg]' : 'rotate-0'
+            } ${
+              isSmall ? 'text-base' : 'text-lg' 
             }`}
             style={{ 
-              color: '#4b33e8', // Purple Icon
+              color: '#4b33e8',
               lineHeight: 1
             }}
           ></i>
         </div>
 
-        {/* App Name */}
-        <h1 
-          className={`font-[700]  leading-none mt-1.5 ${
-            isSmall ? 'text-xl md:text-xl' : 'text-[26px] md:text-2xl'
-          }`}
-          style={{ 
-            color: '#4b33e8',
-            fontFamily: "'Roboto', sans-serif"
-          }}
-        >
-          Rynx
-          <span style={{ color: '#263238ff' }}>ly</span>
-          <span style={{ color: 'rgb(38, 50, 56)', fontSize: '1.5em', lineHeight: '0' }}>.</span>
-        </h1>
+        {/* App Name with Full Transition */}
+        <div className={`relative overflow-hidden ${isSmall ? 'h-7' : 'h-8'}`}>
+          <div 
+            className={`flex flex-col transition-all duration-1000 cubic-bezier(0.4, 0, 0.2, 1) ${
+              isRingsly ? '-translate-y-1/2' : 'translate-y-0'
+            }`}
+          >
+            {/* Word 1: Rynxly */}
+            <h1 
+              className={`font-[600] whitespace-nowrap flex items-center transition-opacity duration-700 leading-none ${
+                isRingsly ? 'opacity-0' : 'opacity-100'
+              } ${
+                isSmall ? 'text-xl' : 'text-2xl'
+              }`}
+              style={{ 
+                color: '#4b33e8',
+                fontFamily: "'Inter', 'Roboto', sans-serif",
+                height: isSmall ? '1.75rem' : '2rem'
+              }}
+            >
+              Rynx<span style={{ color: '#263238' }}>ly</span>
+              <span style={{ color: '#263238' }}>.</span>
+            </h1>
+
+            {/* Word 2: Ringsly */}
+            <h1 
+              className={`font-[600] whitespace-nowrap flex items-center transition-opacity duration-700 leading-none ${
+                isRingsly ? 'opacity-100' : 'opacity-0'
+              } ${
+                isSmall ? 'text-xl' : 'text-2xl'
+              }`}
+              style={{ 
+                color: '#4b33e8',
+                fontFamily: "'Inter', 'Roboto', sans-serif",
+                height: isSmall ? '1.75rem' : '2rem'
+              }}
+            >
+              Rings<span style={{ color: '#263238' }}>ly</span>
+              <span style={{ color: '#263238' }}>.</span>
+            </h1>
+          </div>
+        </div>
       </div>
       
       {/* Bottom Row: Tagline */}
       {!isSmall && (
         <p 
-          className="text-[10px] font-medium tracking-wide italic mt-[2px] ml-1"
+          className="text-[10px] font-medium tracking-wide italic mt-[-10px] ml-1 opacity-70"
           style={{ 
             color: '#787E9D',
             fontFamily: "'Poppins', sans-serif",

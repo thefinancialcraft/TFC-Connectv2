@@ -19,6 +19,33 @@ export default function HeroSection() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const [totalCalls, setTotalCalls] = useState<string>("--");
+  const [totalAgents, setTotalAgents] = useState<string>("--");
+
+  useEffect(() => {
+    const fetchPublicStats = async () => {
+      try {
+        const res = await fetch('/api/public-stats');
+        const result = await res.json();
+        if (result.success && result.data) {
+          // Format Calls
+          const calls = result.data.totalCalls;
+          if (calls > 1000000) setTotalCalls(`${(calls / 1000000).toFixed(1)}M+`);
+          else if (calls > 1000) setTotalCalls(`${(calls / 1000).toFixed(1)}K+`);
+          else setTotalCalls(calls.toString());
+
+          // Format Agents
+          const agents = result.data.totalAgents;
+          if (agents > 1000) setTotalAgents(`${(agents / 1000).toFixed(1)}K+`);
+          else setTotalAgents(`${agents}+`);
+        }
+      } catch (err) {
+        console.error("Failed to fetch public stats", err);
+      }
+    };
+    fetchPublicStats();
+  }, []);
+
   // Calculate dynamic width based on scroll
   // Starts at max-w-4xl (896px) and expands as you scroll
   const dynamicWidth = Math.min(980, 796 + (scrollY * 0.25)); 
@@ -117,12 +144,12 @@ export default function HeroSection() {
         <div className="mt-16 flex items-center justify-center gap-8 text-gray-400 grayscale opacity-60 animate-in fade-in zoom-in duration-1000 delay-500">
           {/* Mock Logos or Stats */}
           <div className="flex flex-col items-center">
-            <span className="text-xl font-bold text-gray-800">500+</span>
+            <span className="text-xl font-bold text-gray-800">{totalAgents}</span>
             <span className="text-xs font-medium">Active Agents</span>
           </div>
           <div className="w-px h-6 bg-gray-200"></div>
           <div className="flex flex-col items-center">
-            <span className="text-xl font-bold text-gray-800">5M+</span>
+            <span className="text-xl font-bold text-gray-800">{totalCalls}</span>
             <span className="text-xs font-medium">Calls Logged</span>
           </div>
           <div className="w-px h-6 bg-gray-200"></div>
