@@ -32,7 +32,7 @@ export default function Footer() {
               <li><a href="/features" className="hover:text-[#4b33e8] transition-colors">Features</a></li>
               <li><a href="/pricing" className="hover:text-[#4b33e8] transition-colors">Pricing</a></li>
               <li><Link href="/helper" className="hover:text-[#4b33e8] transition-colors">Download Helper</Link></li>
-              <li><a href="https://rynxly.in/app/rynxly.apk" className="hover:text-[#4b33e8] transition-colors">Download CRM App</a></li>
+              <li><a href="https://rynxly.in/app/rynxly.apk" download="rynxly.apk" className="hover:text-[#4b33e8] transition-colors">Download CRM App</a></li>
               <li><a href="#" className="hover:text-[#4b33e8] transition-colors">Integrations</a></li>
             </ul>
           </div>

@@ -37,7 +37,8 @@ export default function HelperDownloadPage() {
 
                     <div className="flex flex-col gap-4 justify-center items-center">
                         <a 
-                            href="http://rynxly.in/app/rynxly_helper.apk" 
+                            href="https://rynxly.in/app/rynxly_helper.apk" 
+                            download="rynxly_helper.apk"
                             className="px-10 py-5 rounded-2xl bg-[#4b33e8] text-white font-bold text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-indigo-200 flex items-center gap-3"
                         >
                             <i className="fi fi-rr-download text-lg"></i>
