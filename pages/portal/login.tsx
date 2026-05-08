@@ -59,6 +59,18 @@ export default function Login() {
                 return;
               }
 
+              // 🛡️ STATUS CHECK: Prevent login if account is inactive or expired
+              const isInactive = profile.status === 'inactive';
+              const isExpired = profile.expire_at && new Date(profile.expire_at) < new Date();
+
+              if (isInactive || isExpired) {
+                console.warn("🚫 [Login] Account inactive or expired. Signing out.");
+                await supabase.auth.signOut();
+                setCheckingSession(false);
+                setError("Your account is expired or inactive. Please contact your admin.");
+                return;
+              }
+
               const pathMap: Record<string, string> = {
                 rejected: "/rejected",
                 pending: "/pending",

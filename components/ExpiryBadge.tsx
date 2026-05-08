@@ -1,8 +1,16 @@
 
 import React from 'react';
 
-export default function ExpiryBadge({ expireDate }: { expireDate: string | null }) {
-  if (!expireDate) return null;
+export default function ExpiryBadge({ expireDate, onClick }: { expireDate: string | null; onClick?: () => void }) {
+  if (!expireDate) return (
+    <span 
+      onClick={onClick}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 ${onClick ? 'cursor-pointer hover:bg-slate-200 transition-colors' : ''}`}
+    >
+      <i className="fi flex fi-rr-calendar text-[10px]"></i>
+      <span>Set Expiry</span>
+    </span>
+  );
   
   const now = new Date();
   const expire = new Date(expireDate);
@@ -23,9 +31,13 @@ export default function ExpiryBadge({ expireDate }: { expireDate: string | null 
   }
 
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${colorClass}`}>
+    <span 
+      onClick={onClick}
+      className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold ${colorClass} ${onClick ? 'cursor-pointer hover:opacity-80 transition-all active:scale-95' : ''}`}
+    >
       <i className={`fi flex ${iconClass} text-[10px]`}></i>
       <span>{text}</span>
     </span>
   );
 }
+

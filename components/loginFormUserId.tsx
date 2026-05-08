@@ -127,7 +127,7 @@ export default function LoginFormUserId({
         // Fetch profile for redirection
         const { data: profileData, error: fetchError } = await supabase
           .from('user_profiles')
-          .select('profile_complete, approval_status, status')
+          .select('profile_complete, approval_status, status, expire_at')
           .ilike('employee_id', inputId)
           .maybeSingle();
 
@@ -144,6 +144,20 @@ export default function LoginFormUserId({
         if (profileData?.profile_complete === false) {
           console.log("➡️ [Login] Redirecting to profile completion");
           router.push("/profile-completion");
+          return;
+        }
+
+        // 🛡️ STATUS CHECK: Prevent login if account is inactive or expired
+        const isInactive = profileData?.status === 'inactive';
+        const isExpired = profileData?.expire_at && new Date(profileData.expire_at) < new Date();
+
+        if (isInactive || isExpired) {
+          console.warn("🚫 [Login] Account inactive or expired. Signing out.");
+          await supabase.auth.signOut();
+          const statusError = "Your account is expired or inactive. Please contact your admin.";
+          setError(statusError);
+          onError?.(statusError);
+          setIsLoading(false);
           return;
         }
 

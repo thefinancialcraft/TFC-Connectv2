@@ -50,9 +50,11 @@ export default function OrganizationDetail() {
   const [selectedUserToAdd, setSelectedUserToAdd] = useState("");
   const [addingUser, setAddingUser] = useState(false);
   const [showRenewalModal, setShowRenewalModal] = useState(false);
+  const [selectedUserForRenewal, setSelectedUserForRenewal] = useState<OrgUser | null>(null);
   const [renewalMonths, setRenewalMonths] = useState<string>("1");
   const [customMonth, setCustomMonth] = useState("");
   const [customYear, setCustomYear] = useState("");
+  const [customDate, setCustomDate] = useState("");
   const [renewingOrg, setRenewingOrg] = useState(false);
   const [previewExpiryDate, setPreviewExpiryDate] = useState<string | null>(null);
   const [showImportModal, setShowImportModal] = useState(false);
@@ -99,6 +101,7 @@ export default function OrganizationDetail() {
       setRenewalMonths("1");
       setCustomMonth("");
       setCustomYear("");
+      setCustomDate("");
       setPreviewExpiryDate(null);
     }
   }, [showRenewalModal]);
@@ -201,13 +204,13 @@ export default function OrganizationDetail() {
     }
   };
 
-  const handleRenewalOrganization = async () => {
+  const handleRenewal = async () => {
     if (!organization) return;
 
     try {
       setRenewingOrg(true);
-      
       let monthsToAdd = 0;
+      
       if (renewalMonths === "custom") {
         if (!customMonth || !customYear) {
           alert("Please select both month and year for custom renewal");
@@ -218,47 +221,73 @@ export default function OrganizationDetail() {
           alert("Please select a future date for renewal");
           return;
         }
+      } else if (renewalMonths === "date") {
+        if (!customDate) {
+          alert("Please select a custom date");
+          return;
+        }
       } else {
         monthsToAdd = parseInt(renewalMonths);
       }
 
-      const newExpiryString = calculateNewExpiryDate(organization.expiry_date, monthsToAdd);
+      const baseExpiry = selectedUserForRenewal ? selectedUserForRenewal.expire_at : organization.expiry_date;
+      const newExpiryString = renewalMonths === "date" 
+        ? customDate 
+        : calculateNewExpiryDate(baseExpiry, monthsToAdd);
       const renewalDateString = new Date().toISOString().split('T')[0];
 
-      // Update organization
-      const { error } = await supabase
-        .from("organizations")
-        .update({
-          expiry_date: newExpiryString,
-          renewal_date: renewalDateString,
-          is_active: true
-        })
-        .eq("id", organization.id);
+      if (selectedUserForRenewal) {
+        // Update individual user
+        const { error } = await supabase
+          .from("user_profiles")
+          .update({
+            renewal_at: renewalDateString,
+            expire_at: newExpiryString,
+            status: 'active'
+          })
+          .eq("id", selectedUserForRenewal.id);
 
-      if (error) throw error;
+        if (error) throw error;
+        alert(`Member ${selectedUserForRenewal.user_name} renewed successfully!`);
+      } else {
+        // Update organization
+        const { error } = await supabase
+          .from("organizations")
+          .update({
+            expiry_date: newExpiryString,
+            renewal_date: renewalDateString,
+            is_active: true
+          })
+          .eq("id", organization.id);
 
-      // Update all users assigned to this organization
-      const { error: userUpdateError } = await supabase
-        .from("user_profiles")
-        .update({
-          renewal_at: renewalDateString,
-          expire_at: newExpiryString
-        })
-        .eq("organization_id", organization.id);
+        if (error) throw error;
 
-      if (userUpdateError) {
-        console.error("Error updating user dates:", userUpdateError);
+        // Update all users assigned to this organization
+        const { error: userUpdateError } = await supabase
+          .from("user_profiles")
+          .update({
+            renewal_at: renewalDateString,
+            expire_at: newExpiryString
+          })
+          .eq("organization_id", organization.id);
+
+        if (userUpdateError) {
+          console.error("Error updating user dates:", userUpdateError);
+        }
+        alert("Organization and all members renewed successfully!");
       }
 
       await refreshData(true);
       setShowRenewalModal(false);
-      alert("Organization renewed successfully!");
 
       logSystemEvent({
         event_type: 'WRITE',
-        description: `Renew Organization: ${organization.company_name} for ${monthsToAdd} months`,
+        description: selectedUserForRenewal 
+          ? `Renew Member: ${selectedUserForRenewal.user_name} for ${monthsToAdd} months`
+          : `Renew Organization: ${organization.company_name} for ${monthsToAdd} months`,
         metadata: { 
           organization_id: organization.id, 
+          user_id: selectedUserForRenewal?.id,
           months_added: monthsToAdd,
           new_expiry: newExpiryString 
         },
@@ -266,8 +295,8 @@ export default function OrganizationDetail() {
         organization_id: user?.organization_id || undefined
       });
     } catch (err) {
-      console.error("Error renewing organization:", err);
-      alert("Failed to renew organization");
+      console.error("Error renewing:", err);
+      alert("Failed to renew");
     } finally {
       setRenewingOrg(false);
     }
@@ -292,6 +321,11 @@ export default function OrganizationDetail() {
           setPreviewExpiryDate(null);
           return;
         }
+      } else if (renewalMonths === "date") {
+        if (!customDate) {
+          setPreviewExpiryDate(null);
+          return;
+        }
       } else if (renewalMonths) {
         monthsToAdd = parseInt(renewalMonths);
       } else {
@@ -299,11 +333,15 @@ export default function OrganizationDetail() {
         return;
       }
 
-      setPreviewExpiryDate(calculateNewExpiryDate(organization.expiry_date, monthsToAdd));
+      const baseExpiry = selectedUserForRenewal ? selectedUserForRenewal.expire_at : organization.expiry_date;
+      const newExpiry = renewalMonths === "date" 
+        ? customDate 
+        : calculateNewExpiryDate(baseExpiry, monthsToAdd);
+      setPreviewExpiryDate(newExpiry);
     } catch (err) {
       setPreviewExpiryDate(null);
     }
-  }, [renewalMonths, customMonth, customYear, organization, showRenewalModal]);
+  }, [renewalMonths, customMonth, customYear, customDate, organization, showRenewalModal, selectedUserForRenewal]);
 
   if (loading) {
     return (
@@ -430,7 +468,10 @@ export default function OrganizationDetail() {
 
                                   {user?.isClient === false && (
                                     <button
-                                      onClick={() => setShowRenewalModal(true)}
+                                      onClick={() => {
+                                        setSelectedUserForRenewal(null);
+                                        setShowRenewalModal(true);
+                                      }}
                                       className="px-8 ml-3 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-blue-600 text-white text-[12px] font-medium hover:shadow-lg hover:scale-105 transition-all flex items-center gap-1.5"
                                     >
                                       <i className="fi flex fi-rr-refresh text-[10px]"></i>
@@ -506,11 +547,11 @@ export default function OrganizationDetail() {
                      </div>
                  </div>
 
-                 {/* Main Layout Grid */}
-                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
-                     
-                     {/* Left Column: Details */}
-                     <div className="lg:col-span-1 space-y-8 text-left">
+                  {/* Main Layout - Top Hierarchy */}
+                  <div className="space-y-8 mt-8">
+                      
+                      {/* Info Cards Row */}
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                          {/* Compliance Card */}
                          <div className="bg-white rounded-2xl p-6">
                              <h3 className="text-xs font-semibold text-slate-400 mb-6 flex items-center gap-2">
@@ -568,8 +609,9 @@ export default function OrganizationDetail() {
                          </div>
                      </div>
 
-                  {/* Right Column: User Management */}
-                     <div className="lg:col-span-2 space-y-8 text-left">
+
+                  {/* Member Directory - Full Width Section */}
+                     <div className="w-full text-left">
                          <div className="bg-white rounded-2xl overflow-hidden flex flex-col min-h-[500px]">
                              <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                  <h3 className="text-sm font-bold text-slate-700 flex items-center gap-2">
@@ -663,7 +705,7 @@ export default function OrganizationDetail() {
                                                       </div>
                                                   </td>
                                                  <td className="p-4 text-left">
-                                                     <ExpiryBadge expireDate={u.expire_at} />
+                                                     <ExpiryBadge expireDate={u.expire_at} onClick={() => { setSelectedUserForRenewal(u); setShowRenewalModal(true); }} />
                                                  </td>
                                                   <td className="p-4 text-right">
                                                       <div className="flex items-center justify-end gap-2">
@@ -742,10 +784,10 @@ export default function OrganizationDetail() {
         {showUserModal && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
                 <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
-                    <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                    <div className="p-6 flex items-center justify-between bg-slate-50/50">
                         <h3 className="text-lg font-bold text-slate-800">Assign Member</h3>
-                        <button onClick={() => setShowUserModal(false)} className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-800 transition-colors">
-                            <i className="fi flex fi-rr-cross-small"></i>
+                        <button onClick={() => setShowUserModal(false)} className="w-10 h-10 rounded-2xl bg-white flex items-center justify-center text-slate-400 hover:text-slate-800 transition-all shadow-sm">
+                            <i className="fi flex fi-rr-cross-small text-xl"></i>
                         </button>
                     </div>
                     
@@ -775,16 +817,16 @@ export default function OrganizationDetail() {
                         <div className="flex gap-3 pt-2">
                              <button 
                                  onClick={() => setShowUserModal(false)}
-                                 className="flex-1 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-sm hover:bg-slate-50 transition-colors font-poppins"
+                                 className="flex-1 py-4 bg-white text-slate-400 rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 hover:text-slate-600 transition-all active:scale-[0.98] font-poppins"
                              >
                                  Cancel
                              </button>
                              <button 
                                  onClick={handleAddUser}
                                  disabled={!selectedUserToAdd || addingUser}
-                                 className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed font-poppins"
+                                 className="flex-[1.5] py-4 bg-indigo-600 text-white rounded-2xl font-bold text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-xl shadow-indigo-100 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none font-poppins"
                              >
-                                 {addingUser ? 'Assigning...' : 'Assign Selected User'}
+                                 {addingUser ? 'Assigning...' : 'Confirm'}
                              </button>
                         </div>
                     </div>
@@ -794,107 +836,186 @@ export default function OrganizationDetail() {
 
         {/* Renewal Modal */}
         {showRenewalModal && (
-            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-                    <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between rounded-t-2xl z-10 text-left">
-                        <h2 className="text-xl font-semibold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                            Renew Organization
-                        </h2>
-                        <button
-                            onClick={() => setShowRenewalModal(false)}
-                            className="text-gray-500 hover:text-gray-700 transition-colors"
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+                <div className="bg-white rounded-2xl w-full max-w-xl shadow-2xl flex flex-col max-h-[90vh] border border-gray-100 overflow-hidden animate-in fade-in zoom-in duration-300">
+                    
+                    {/* Professional Header */}
+                    <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between bg-white">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600 shadow-sm">
+                                <i className="fi flex fi-rr-refresh text-lg"></i>
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-gray-800 text-lg" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                    {selectedUserForRenewal ? 'Renew Member Access' : 'Renew Organization License'}
+                                </h3>
+                                <p className="text-[11px] text-gray-400 font-semibold uppercase tracking-wider">
+                                    Target: <span className="text-indigo-600">
+                                        {selectedUserForRenewal ? selectedUserForRenewal.user_name : `${organization?.company_name} (All Members)`}
+                                    </span>
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <button 
+                            onClick={() => setShowRenewalModal(false)} 
+                            className="w-10 h-10 rounded-xl hover:bg-gray-50 flex items-center justify-center text-gray-400 transition-all active:scale-95 border border-transparent hover:border-gray-100"
                         >
-                            <i className="fi flex fi-rr-cross text-lg"></i>
+                            <i className="fi flex fi-rr-cross-small text-xl"></i>
                         </button>
                     </div>
-
-                    <div className="px-6 py-6 space-y-6 text-left font-poppins">
-                        <div>
-                            <label className="block text-sm font-medium mb-3 text-gray-700" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                                Select Renewal Period
-                            </label>
+                    
+                    <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                        {/* Period Selection Section */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <span className="w-1 h-4 bg-indigo-500 rounded-full"></span>
+                                <label className="text-[11px] uppercase tracking-widest font-black text-gray-400 font-poppins">Choose Renewal Period</label>
+                            </div>
                             
-                            <div className="grid grid-cols-4 gap-3 mb-4">
-                                {["1", "2", "3", "custom"].map((option) => (
+                            <div className="grid grid-cols-5 p-1.5 bg-gray-50 border border-gray-100 rounded-2xl">
+                                {["1", "2", "3", "custom", "date"].map((option) => (
                                     <button
                                         key={option}
                                         onClick={() => setRenewalMonths(option)}
-                                        className={`py-3 px-4 rounded-xl font-bold text-sm transition-all ${
+                                        className={`py-3 rounded-xl font-bold text-[10px] uppercase tracking-wider transition-all duration-300 ${
                                             renewalMonths === option
-                                                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-200"
-                                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                                ? "bg-white text-indigo-600 shadow-md shadow-indigo-100/50 border border-indigo-100 scale-[1.02]"
+                                                : "text-gray-400 hover:text-gray-600 hover:bg-white/50"
                                         }`}
                                     >
-                                        {option === "custom" ? "Custom" : `${option}M`}
+                                        {option === "custom" ? "Custom" : option === "date" ? "Select Date" : `${option} Month`}
                                     </button>
                                 ))}
                             </div>
 
-                            {renewalMonths === "custom" && (
-                                <div className="grid grid-cols-2 gap-3 mt-4">
-                                    <div>
-                                        <label className="block t text-xs font-medium mb-2 text-gray-600 font-poppins">Month</label>
-                                        <select
-                                            value={customMonth}
-                                            onChange={(e) => setCustomMonth(e.target.value)}
-                                            className="w-full px-3 text-slate-600 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-poppins"
-                                        >
-                                            <option value="">Select Month</option>
-                                            {Array.from({ length: 12 }, (_, i) => (
-                                                <option key={i + 1} value={i + 1}>
-                                                    {new Date(2000, i, 1).toLocaleString('default', { month: 'long' })}
-                                                </option>
-                                            ))}
-                                        </select>
-                                    </div>
-                                    <div>
-                                        <label className="block text-xs font-medium mb-2 text-gray-600 font-poppins">Year</label>
-                                        <select
-                                            value={customYear}
-                                            onChange={(e) => setCustomYear(e.target.value)}
-                                            className="w-full px-3 text-slate-600 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-poppins"
-                                        >
-                                            <option value="">Select Year</option>
-                                            {Array.from({ length: 10 }, (_, i) => {
-                                                const year = new Date().getFullYear() + i;
-                                                return <option key={year} value={year}>{year}</option>;
-                                            })}
-                                        </select>
-                                    </div>
+                            {/* Conditional Inputs */}
+                            {(renewalMonths === "custom" || renewalMonths === "date") && (
+                                <div className="p-4 bg-indigo-50/30 rounded-2xl border border-indigo-50 animate-in slide-in-from-top-2 duration-300">
+                                    {renewalMonths === "custom" ? (
+                                        <div className="grid grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <p className="text-[9px] font-bold text-indigo-400 uppercase ml-1">Target Month</p>
+                                                <div className="relative group">
+                                                    <select
+                                                        value={customMonth}
+                                                        onChange={(e) => setCustomMonth(e.target.value)}
+                                                        className="w-full pl-10 pr-4 py-3 bg-white border border-indigo-100 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 appearance-none transition-all font-poppins"
+                                                    >
+                                                        <option value="">Select Month</option>
+                                                        {Array.from({ length: 12 }, (_, i) => (
+                                                            <option key={i + 1} value={i + 1}>
+                                                                {new Date(2000, i, 1).toLocaleString('default', { month: 'long' })}
+                                                            </option>
+                                                        ))}
+                                                    </select>
+                                                    <i className="fi fi-rr-calendar absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300"></i>
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <p className="text-[9px] font-bold text-indigo-400 uppercase ml-1">Target Year</p>
+                                                <div className="relative group">
+                                                    <select
+                                                        value={customYear}
+                                                        onChange={(e) => setCustomYear(e.target.value)}
+                                                        className="w-full pl-10 pr-4 py-3 bg-white border border-indigo-100 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 appearance-none transition-all font-poppins"
+                                                    >
+                                                        <option value="">Select Year</option>
+                                                        {Array.from({ length: 5 }, (_, i) => {
+                                                            const year = new Date().getFullYear() + i;
+                                                            return <option key={year} value={year}>{year}</option>;
+                                                        })}
+                                                    </select>
+                                                    <i className="fi fi-rr-calendar-lines absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300"></i>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <div className="space-y-2">
+                                            <p className="text-[9px] font-bold text-indigo-400 uppercase ml-1">Pick Expiry Date</p>
+                                            <div className="relative group">
+                                                <input 
+                                                    type="date"
+                                                    value={customDate}
+                                                    onChange={(e) => setCustomDate(e.target.value)}
+                                                    className="w-full pl-10 pr-4 py-3 bg-white border border-indigo-100 rounded-xl text-xs font-bold text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 transition-all font-poppins"
+                                                />
+                                                <i className="fi fi-rr-calendar-clock absolute left-4 top-1/2 -translate-y-1/2 text-indigo-300"></i>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
 
-                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 font-poppins">
-                            <div className="flex items-start gap-2">
-                                <i className="fi flex fi-rr-info text-blue-600 text-sm mt-0.5"></i>
-                                <div className="text-xs text-blue-700">
-                                    <p className="font-semibold mb-1">Renewal Information</p>
-                                    <p>• Current Expiry: <strong>{formatDate(organization?.expiry_date)}</strong></p>
-                                    <p>• Renewal Date: <strong>{formatDate(new Date().toISOString())}</strong></p>
-                                    {previewExpiryDate && (
-                                        <p>• New Expiry: <strong className="text-indigo-600">{formatDate(previewExpiryDate)}</strong></p>
-                                    )}
-                                    <p>• Organization will be marked as Active</p>
+                        {/* Summary Section - Comparison Style */}
+                        <div className="space-y-4">
+                            <div className="flex items-center gap-2">
+                                <span className="w-1 h-4 bg-emerald-500 rounded-full"></span>
+                                <label className="text-[11px] uppercase tracking-widest font-black text-gray-400 font-poppins">Validity Overview</label>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                {/* Current Status */}
+                                <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 group hover:border-gray-200 transition-colors">
+                                    <p className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter mb-2">Current Expiry</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-gray-400 border border-gray-100">
+                                            <i className="fi fi-rr-calendar-minus text-sm"></i>
+                                        </div>
+                                        <span className="text-sm font-bold text-gray-600 font-poppins">
+                                            {formatDate(selectedUserForRenewal ? selectedUserForRenewal.expire_at : organization?.expiry_date)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* New Status */}
+                                <div className={`p-4 rounded-2xl border transition-all duration-500 ${previewExpiryDate ? 'bg-indigo-50 border-indigo-100' : 'bg-gray-50 border-gray-100'}`}>
+                                    <p className={`text-[9px] font-bold uppercase tracking-tighter mb-2 ${previewExpiryDate ? 'text-indigo-400' : 'text-gray-400'}`}>New Expiry</p>
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-8 h-8 rounded-lg flex items-center justify-center border transition-all ${previewExpiryDate ? 'bg-white text-indigo-600 border-indigo-200 shadow-sm animate-pulse-subtle' : 'bg-white text-gray-300 border-gray-100'}`}>
+                                            <i className="fi fi-rr-calendar-check text-sm"></i>
+                                        </div>
+                                        <span className={`text-sm font-black font-poppins transition-all duration-300 ${previewExpiryDate ? "text-indigo-700 scale-105" : "text-gray-300"}`}>
+                                            {previewExpiryDate ? formatDate(previewExpiryDate) : "—"}
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
+                            
+                            {previewExpiryDate && (
+                                <div className="px-4 py-3 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center gap-3 animate-in fade-in zoom-in duration-500">
+                                    <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white">
+                                        <i className="fi fi-rr-check text-[10px]"></i>
+                                    </div>
+                                    <p className="text-[10px] font-bold text-emerald-700">
+                                        Target date verified. Account status will be set to <span className="uppercase">Active</span> upon confirmation.
+                                    </p>
+                                </div>
+                            )}
                         </div>
-
-                        <div className="flex gap-3 pt-2">
-                            <button
-                                onClick={() => setShowRenewalModal(false)}
-                                className="flex-1 py-3 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold text-sm hover:bg-gray-50 transition-colors font-poppins"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={handleRenewalOrganization}
-                                disabled={renewingOrg}
-                                className="flex-1 py-3 bg-indigo-600 text-white rounded-xl font-bold text-sm hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 disabled:opacity-50 disabled:cursor-not-allowed font-poppins"
-                            >
-                                {renewingOrg ? 'Renewing...' : 'Confirm Renewal'}
-                            </button>
-                        </div>
+                    </div>
+                    <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3 bg-gray-50/30">
+                        <button
+                            onClick={() => setShowRenewalModal(false)}
+                            className="px-6 py-2.5 bg-white text-gray-500 border border-gray-200 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-100 hover:text-gray-700 transition-all active:scale-[0.98] font-poppins"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            onClick={handleRenewal}
+                            disabled={renewingOrg || !previewExpiryDate}
+                            className="px-10 py-2.5 bg-indigo-600 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-200 active:scale-[0.98] disabled:opacity-50 disabled:shadow-none font-poppins flex items-center justify-center gap-2"
+                        >
+                            {renewingOrg ? (
+                                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            ) : (
+                                <>
+                                    <i className="fi fi-rr-check-circle flex text-sm"></i>
+                                    <span>Confirm Renewal</span>
+                                </>
+                            )}
+                        </button>
                     </div>
                 </div>
             </div>

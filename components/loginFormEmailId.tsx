@@ -101,12 +101,26 @@ export default function LoginFormEmailId({
         // Fetch profile for redirection
         const { data: profile } = await supabase
           .from('user_profiles')
-          .select('profile_complete, approval_status, status')
+          .select('profile_complete, approval_status, status, expire_at')
           .eq('user_id', data.user.id)
           .maybeSingle();
 
         if (profile?.profile_complete === false) {
           router.push("/profile-completion");
+          return;
+        }
+
+        // 🛡️ STATUS CHECK: Prevent login if account is inactive or expired
+        const isInactive = profile?.status === 'inactive';
+        const isExpired = profile?.expire_at && new Date(profile.expire_at) < new Date();
+
+        if (isInactive || isExpired) {
+          console.warn("🚫 [Login] Account inactive or expired. Signing out.");
+          await supabase.auth.signOut();
+          const statusError = "Your account is expired or inactive. Please contact your admin.";
+          setError(statusError);
+          onError?.(statusError);
+          setIsLoading(false);
           return;
         }
 
