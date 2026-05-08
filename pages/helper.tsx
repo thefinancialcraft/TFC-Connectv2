@@ -45,7 +45,7 @@ export default function HelperDownloadPage() {
                             Download for Android
                         </a>
                         <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">
-                            v1.0.0 • 4.2 MB • .APK
+                            v1.0.0 • 42 MB • .APK
                         </p>
                     </div>
                 </div>
