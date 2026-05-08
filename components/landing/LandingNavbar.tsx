@@ -30,7 +30,6 @@ export default function LandingNavbar() {
     { name: 'Features', href: '/features' },
     { name: 'How it Works', href: '/how-it-works' },
     { name: 'Pricing', href: '/pricing' },
-    { name: 'Helper', href: '/helper' },
     { name: 'Team', href: '/leadership' },
     { name: 'Blog', href: '/blog' },
     { name: 'FAQ', href: '/faq' },

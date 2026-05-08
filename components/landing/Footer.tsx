@@ -29,9 +29,10 @@ export default function Footer() {
           <div>
             <h4 className="font-bold text-gray-900 mb-3 text-sm">Product</h4>
             <ul className="space-y-2 text-xs text-gray-500">
-              <li><a href="#" className="hover:text-[#4b33e8] transition-colors">Features</a></li>
-              <li><a href="#" className="hover:text-[#4b33e8] transition-colors">Pricing</a></li>
-              <li><a href="#" className="hover:text-[#4b33e8] transition-colors">Mobile App</a></li>
+              <li><a href="/features" className="hover:text-[#4b33e8] transition-colors">Features</a></li>
+              <li><a href="/pricing" className="hover:text-[#4b33e8] transition-colors">Pricing</a></li>
+              <li><Link href="/helper" className="hover:text-[#4b33e8] transition-colors">Download Helper</Link></li>
+              <li><a href="https://rynxly.in/app/rynxly.apk" className="hover:text-[#4b33e8] transition-colors">Download CRM App</a></li>
               <li><a href="#" className="hover:text-[#4b33e8] transition-colors">Integrations</a></li>
             </ul>
           </div>

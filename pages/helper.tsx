@@ -27,7 +27,7 @@ export default function HelperDownloadPage() {
                         <span className="w-2 h-2 rounded-full bg-[#4b33e8] animate-pulse"></span>
                         <span className="text-[10px] font-bold text-[#4b33e8] tracking-widest uppercase">Companion Utility</span>
                     </div>
-                    <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-[#263238] mb-6 leading-tight">
+                    <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight text-[#263238] mb-6 leading-tight">
                         Power Up Your CRM with <br/>
                         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#4b33e8] to-[#806bf9]">Rynxly Helper.</span>
                     </h1>
@@ -35,7 +35,7 @@ export default function HelperDownloadPage() {
                         The Helper app acts as a secure bridge between your phone's call logs and the Rynxly CRM, ensuring every interaction is captured instantly.
                     </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <div className="flex flex-col gap-4 justify-center items-center">
                         <a 
                             href="http://rynxly.in/app/rynxly_helper.apk" 
                             className="px-10 py-5 rounded-2xl bg-[#4b33e8] text-white font-bold text-sm uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-indigo-200 flex items-center gap-3"
@@ -43,7 +43,7 @@ export default function HelperDownloadPage() {
                             <i className="fi fi-rr-download text-lg"></i>
                             Download for Android
                         </a>
-                        <p className="text-[10px] text-gray-400 font-medium uppercase tracking-widest italic">
+                        <p className="text-[10px] text-gray-400 font-black uppercase tracking-[0.2em]">
                             v1.0.0 • 4.2 MB • .APK
                         </p>
                     </div>
