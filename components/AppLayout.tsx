@@ -9,7 +9,6 @@ import { handleLogout } from "../lib/authService";
 import { logSystemEvent } from "@/lib/monitoring";
 import UtilitySidebar from "./UtilitySidebar";
 import AppLogo from "./AppLogo";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
 import { supabase } from "@/lib/supabase";
 
 interface AppLayoutProps {

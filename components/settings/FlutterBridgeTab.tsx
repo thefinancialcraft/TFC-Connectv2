@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useAuthGuard } from '../../hooks/useAuthGuard';
+import { useUser } from '../../context/UserContext';
 import { notifyFlutter, requestDeviceInfoFromFlutter } from '../../lib/flutterBridge';
 import { globalBridgeLogger, BridgeLogEntry } from '../../lib/bridgeLogger';
 
@@ -66,7 +66,7 @@ export default function FlutterBridgeTab() {
   };
 
   // Sync User Info Hook
-  const { user } = useAuthGuard();
+  const { user } = useUser();
 
   const syncUserInfoToFlutter = () => {
     if (!user) {

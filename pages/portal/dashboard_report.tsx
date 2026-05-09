@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { useAuthGuard } from "@/hooks/useAuthGuard";
+import { useUser } from "@/context/UserContext";
 import { useDashboardReportData } from "@/hooks/useDashboardReportData";
 import {
   BarChart,
@@ -21,7 +21,7 @@ import {
 const COLORS = ["#4b33e8", "#4f46e5", "#818cf8", "#c7d2fe"];
 
 export default function DashboardReport() {
-  const { user, loading: authLoading } = useAuthGuard();
+  const { user, loading: authLoading } = useUser();
   const router = useRouter();
   const [mounted, setMounted] = useState(false);
   const { orgId, dateFilter, userId } = router.query;

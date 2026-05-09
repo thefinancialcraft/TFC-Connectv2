@@ -170,17 +170,20 @@ export function useAuthGuard(): UseAuthGuardReturn {
   };
 
   // 1. Initial Auth Setup & Global Listener
+  // CRITICAL: We removed router.pathname from dependencies to prevent re-subscribing on every navigation.
+  // This was causing a "Refresh Storm" where every page change triggered a getSession() call.
   useEffect(() => {
     setMounted(true);
     fetchAuth(); // Initial Check
     
+    console.log("🔐 [Auth Guard] Initializing global auth listener...");
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log(`🔐 [Auth Event] ${event}`);
       
       if (event === 'SIGNED_IN') {
         setSessionExpired(false);
         fetchAuth(true); // Sync data only on explicit login
-      } else if (event === 'SIGNED_OUT' || event === 'USER_UPDATED' && !session) {
+      } else if (event === 'SIGNED_OUT' || (event === 'USER_UPDATED' && !session)) {
         // Immediate check for session expiry UI
         const isManualLogout = typeof window !== 'undefined' && localStorage.getItem('manual_logout_intended') === 'true';
         const hasSessionCache = typeof window !== 'undefined' && !!sessionStorage.getItem('active_user_profile');
@@ -206,6 +209,8 @@ export function useAuthGuard(): UseAuthGuardReturn {
             setUser(null);
             router.push("/login");
         }
+      } else if (event === 'TOKEN_REFRESHED') {
+          console.log("🔄 [Auth Guard] Token refreshed successfully.");
       }
     });
 
@@ -218,16 +223,15 @@ export function useAuthGuard(): UseAuthGuardReturn {
         }
     };
 
-    // 2. Immediate check on tab focus
+    // 2. Immediate check on tab focus (debounced or checked if really needed)
     const handleVisibilityChange = () => {
         if (document.visibilityState === 'visible' && (user || sessionStorage.getItem('active_user_profile'))) {
+            // Only fetch if session is actually missing or old
             fetchAuth(); 
         }
     };
 
     // ⚡ LOCAL-LEVEL HEARTBEAT (Instant LocalStorage Monitor)
-    // Every 2 seconds, we check if the Supabase token still exists. 
-    // This catches manual deletions or system-level expiries immediately without server round-trips.
     const localHeartbeat = setInterval(() => {
         if (typeof window === 'undefined') return;
         
@@ -240,19 +244,20 @@ export function useAuthGuard(): UseAuthGuardReturn {
             setSessionExpired(true);
             setUser(null);
             
-            // Clean up
             sessionStorage.removeItem('active_user_profile');
             localStorage.removeItem('cached_user_profile');
         }
-    }, 2000);
+    }, 5000); // Increased interval to 5s to reduce CPU load
 
     return () => {
+      console.log("🔐 [Auth Guard] Cleaning up auth listener...");
       subscription.unsubscribe();
       window.removeEventListener('storage', handleStorageChange);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       clearInterval(localHeartbeat);
     };
-  }, [user, router.pathname, sessionExpired]);
+  }, []); // Empty dependency array: Run ONCE on mount per hook instance. 
+
 
   // 1.5 Real-time Profile Synchronization
   useEffect(() => {
