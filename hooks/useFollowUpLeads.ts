@@ -21,6 +21,7 @@ export interface FollowUpLead {
   status_label: string;
   employee_id?: string;
   outcome?: string;
+  profile_pic_url?: string;
 }
 
 export function useFollowUpLeads() {

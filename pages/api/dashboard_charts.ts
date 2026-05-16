@@ -67,6 +67,8 @@ interface ChartsResponse {
     campaignData: CampaignDataPoint[];
     heatmapData: HeatmapDataPoint[];
     hourlyStats: HourlyStatPoint[];
+    isFallback?: boolean;
+    processingTime?: number;
   };
   error?: string;
 }
@@ -92,7 +94,7 @@ async function fetchAllRows(
 
     const dateCol = filters.dateColumn || "created_at";
 
-    if (filters.orgId && table !== 'call_history') {
+    if (filters.orgId) {
       query = query.eq("organization_id", filters.orgId);
     }
     
@@ -342,8 +344,112 @@ export default async function handler(
       });
 
     } catch (err: any) {
-        console.error("Dashboard charts API error:", err);
-        return res.status(500).json({ success: false, error: err.message || "Internal server error" });
+      console.warn("⚠️ [Performance] RPC failed or timed out. Falling back to manual aggregation strategy.", err.message);
+      
+      try {
+        const logs = await fetchAllRows(dbClient, "call_history", "timestamp, duration, call_type, employee_id", {
+          orgId: targetOrgId,
+          startDate: start,
+          endDate: end,
+          dateColumn: "timestamp",
+          employeeId: filterEmployeeId || restrictedEmployeeIds
+        });
+
+        console.log(`[Charts Fallback] Fetched ${logs.length} records for aggregation.`);
+
+        // 1. Process Chart Data (Trend)
+        const trendMap: Record<string, ChartPoint> = {};
+        logs.forEach(log => {
+          const date = new Date(log.timestamp).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
+          if (!trendMap[date]) trendMap[date] = { name: date, dials: 0, connected: 0 };
+          trendMap[date].dials++;
+          if (log.duration > 0) trendMap[date].connected++;
+        });
+        const chartData = Object.values(trendMap).sort((a, b) => a.name.localeCompare(b.name));
+
+        // 2. Process Hourly Stats
+        const hourMap: Record<string, HourlyStatPoint> = {};
+        for (let i = 6; i <= 23; i++) {
+          const label = `${i > 12 ? i - 12 : (i === 0 ? 12 : i)} ${i >= 12 ? "PM" : "AM"}`;
+          hourMap[label] = { hour: label, total: 0, connected: 0, outgoing: 0, incoming: 0, missed: 0, talktime: 0 };
+        }
+
+        logs.forEach(log => {
+          const istHourStr = new Date(log.timestamp).toLocaleString("en-US", { 
+            hour: 'numeric', 
+            hour12: true, 
+            timeZone: "Asia/Kolkata" 
+          });
+          const label = istHourStr.replace(/^0/, '');
+          if (hourMap[label]) {
+            hourMap[label].total++;
+            if (log.duration > 0) hourMap[label].connected++;
+            if (log.call_type === 'outgoing') hourMap[label].outgoing++;
+            else if (log.call_type === 'incoming') hourMap[label].incoming++;
+            hourMap[label].talktime += (log.duration || 0);
+          }
+        });
+
+        // 3. Process Heatmap Data
+        const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        const heatmapData: HeatmapDataPoint[] = days.map(day => {
+          const point: HeatmapDataPoint = { day };
+          for (let i = 6; i <= 23; i++) {
+            const label = `${i > 12 ? i - 12 : (i === 0 ? 12 : i)} ${i >= 12 ? "PM" : "AM"}`;
+            point[label] = 0;
+          }
+          return point;
+        });
+
+        logs.forEach(log => {
+          const date = new Date(log.timestamp);
+          let dayIndex = date.getDay() - 1;
+          if (dayIndex < 0) dayIndex = 6;
+          const hour = date.getHours();
+          if (hour >= 6 && hour <= 23 && dayIndex >= 0 && dayIndex < 7) {
+            const label = `${hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour)} ${hour >= 12 ? "PM" : "AM"}`;
+            (heatmapData[dayIndex] as any)[label]++;
+          }
+        });
+
+        // 4. Pie Data
+        const callLogs = await fetchAllRows(dbClient, "call_logs", "disposition", {
+          orgId: targetOrgId,
+          startDate: start,
+          endDate: end,
+          userId: filterUserId || restrictedUserIds
+        });
+
+        const dispMap: Record<string, number> = {};
+        callLogs.forEach(l => {
+          const d = l.disposition || "Unknown";
+          dispMap[d] = (dispMap[d] || 0) + 1;
+        });
+        const pieData = Object.entries(dispMap)
+          .map(([name, value]) => ({ name, value }))
+          .sort((a, b) => b.value - a.value)
+          .slice(0, 10);
+
+        return res.status(200).json({
+          success: true,
+          data: {
+            chartData,
+            pieData,
+            campaignData: [],
+            heatmapData,
+            hourlyStats: Object.values(hourMap),
+            isFallback: true,
+            processingTime: Date.now() - startTime
+          }
+        });
+
+      } catch (fallbackErr: any) {
+        console.error("Dashboard charts fallback error:", fallbackErr);
+        return res.status(500).json({ 
+          success: false, 
+          error: "Database statement timeout. Try a smaller date range or contact support to optimize your database indexes." 
+        });
+      }
     }
   } catch (error: any) {
     console.error("Fatal Dashboard charts API error:", error);

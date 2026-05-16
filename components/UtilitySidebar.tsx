@@ -580,8 +580,6 @@ export default function UtilitySidebar() {
                     alarms: alarms,
                     ai_config: aiConfig,
                     ai_chat_history: chatMessages,
-                    enabled_apps: enabledApps,
-                    search_widgets: searchWidgets,
                     updated_at: new Date().toISOString()
                 });
             } catch (e) {

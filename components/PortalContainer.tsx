@@ -23,11 +23,12 @@ export default function PortalContainer({ children }: { children: React.ReactNod
   ];
 
   const isMinimal = minimalPages.includes(router.pathname);
+  const hideGlobalHeader = isMinimal || router.pathname === '/portal/dashboard_v2';
 
   return (
     <UserProvider>
       <SessionProvider>
-        <AppLayout hideSidebar={isMinimal} hideHeader={isMinimal}>
+        <AppLayout hideSidebar={isMinimal} hideHeader={hideGlobalHeader}>
           {children}
           <GlobalCallHandler />
           <CallReminderOverlay />

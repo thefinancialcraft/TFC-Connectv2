@@ -131,20 +131,21 @@ export function useActivityData() {
         teamMemberIds = [...new Set(teamMemberIds)];
       }
 
-      const fetchPaginated = async (buildQueryFn: () => any, throwOnError: boolean = false) => {
+      const fetchPaginated = async (buildQueryFn: () => any, throwOnError: boolean = false, maxRecords: number = 5000) => {
         let allData: any[] = [];
         let from = 0;
         const step = 1000;
-        while(true) {
-          const { data, error } = await buildQueryFn().range(from, from + step - 1);
-          if (error) {
-            if (throwOnError) throw error;
-            console.warn("Pagination error for secondary query:", error.message || error);
-            break;
+        try {
+          while(allData.length < maxRecords) {
+            const { data, error } = await buildQueryFn().range(from, from + step - 1);
+            if (error) throw error;
+            if (data) allData.push(...data);
+            if (!data || data.length < step) break;
+            from += step;
           }
-          if (data) allData.push(...data);
-          if (!data || data.length < step) break;
-          from += step;
+        } catch (error: any) {
+          if (throwOnError) throw error;
+          console.error("Pagination error:", error.message || error);
         }
         return allData;
       };
@@ -176,17 +177,14 @@ export function useActivityData() {
       const buildRejectedQuery = () => {
         let q = supabase
           .from('rejected_leads')
-          .select('*, agent:user_profiles!agent_id(user_name, employee_id, organization_id), campaign:campaigns!campaign_id(name)')
+          .select('*')
           .gte('rejected_at', startOfDay)
           .lte('rejected_at', endOfDay);
         
         if (dashboardLevel === 4 && user.uid) {
           q = q.eq('agent_id', user.uid);
-        } else if (dashboardLevel === 3 && teamMemberIds.length > 0) {
+        } else if ((dashboardLevel === 3 || dashboardLevel === 2) && teamMemberIds.length > 0) {
           q = q.in('agent_id', teamMemberIds);
-        } else if (dashboardLevel === 2) {
-          if (user.organization_id) q = q.eq('agent.organization_id', user.organization_id);
-          else q = q.eq('id', '00000000-0000-0000-0000-000000000000');
         }
         return q;
       };
@@ -194,17 +192,14 @@ export function useActivityData() {
       const buildClosedQuery = () => {
         let q = supabase
           .from('closed_deals')
-          .select('*, agent:user_profiles!agent_id(user_name, employee_id, organization_id), campaign:campaigns!campaign_id(name)')
+          .select('*')
           .gte('closed_at', startOfDay)
           .lte('closed_at', endOfDay);
 
         if (dashboardLevel === 4 && user.uid) {
           q = q.eq('agent_id', user.uid);
-        } else if (dashboardLevel === 3 && teamMemberIds.length > 0) {
+        } else if ((dashboardLevel === 3 || dashboardLevel === 2) && teamMemberIds.length > 0) {
           q = q.in('agent_id', teamMemberIds);
-        } else if (dashboardLevel === 2) {
-          if (user.organization_id) q = q.eq('agent.organization_id', user.organization_id);
-          else q = q.eq('id', '00000000-0000-0000-0000-000000000000');
         }
         return q;
       };
@@ -215,12 +210,58 @@ export function useActivityData() {
         fetchPaginated(buildClosedQuery, false)
       ]);
 
+      // --- FETCH MOBILE HISTORY (LATEST 8) ---
+      let historyQuery = supabase
+        .from('call_history')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(8);
+
+      if (dashboardLevel === 4 && user.uid) {
+        historyQuery = historyQuery.eq('employee_id', user.uid);
+      } else if (dashboardLevel === 3 && teamMemberIds.length > 0) {
+        historyQuery = historyQuery.in('employee_id', teamMemberIds);
+      } else if (dashboardLevel === 2 && user.organization_id) {
+        historyQuery = historyQuery.eq('organization_id', user.organization_id);
+      }
+      
+      const { data: historyData } = await historyQuery;
+      if (historyData) setMobileActivities(historyData);
+
+      // --- HYDRATE AGENT AND CAMPAIGN DATA MANUALLY ---
+      const allAgentIds = [...new Set([
+        ...callLogs.map(l => l.agent_id),
+        ...rejectedLeads.map(l => l.agent_id),
+        ...closedDeals.map(l => l.agent_id)
+      ])].filter(Boolean);
+
+      const allCampaignIds = [...new Set([
+        ...callLogs.map(l => l.campaign_id),
+        ...rejectedLeads.map(l => l.campaign_id),
+        ...closedDeals.map(l => l.campaign_id)
+      ])].filter(Boolean);
+
+      let profileMap: Record<string, any> = {};
+      let campaignMap: Record<string, any> = {};
+
+      if (allAgentIds.length > 0) {
+        const { data: profiles } = await supabase.from('user_profiles').select('user_id, user_name, employee_id, organization_id').in('user_id', allAgentIds);
+        (profiles || []).forEach(p => { profileMap[p.user_id] = p; });
+      }
+
+      if (allCampaignIds.length > 0) {
+        const { data: camps } = await supabase.from('campaigns').select('id, name').in('id', allCampaignIds);
+        (camps || []).forEach(c => { campaignMap[c.id] = c; });
+      }
+
       // --- 4. MAP AND MERGE ---
       const mappedLogs = (callLogs || []).map(log => ({
         ...log,
-        created_at: log.created_at, // Use standard
+        created_at: log.created_at,
         customer: log.customer_name ? { customer_name: log.customer_name } : null,
-        activity_type: 'call'
+        activity_type: 'call',
+        agent: log.agent || profileMap[log.agent_id], // logs already have it but being safe
+        campaign: log.campaign || campaignMap[log.campaign_id]
       }));
 
       const mappedRejected = (rejectedLeads || [])
@@ -231,7 +272,9 @@ export function useActivityData() {
           created_at: r.rejected_at,
           customer: { customer_name: r.customer_name },
           is_connected: 'contactable',
-          activity_type: 'rejection'
+          activity_type: 'rejection',
+          agent: profileMap[r.agent_id],
+          campaign: campaignMap[r.campaign_id]
         }));
 
       const mappedClosed = (closedDeals || [])
@@ -244,12 +287,23 @@ export function useActivityData() {
           status: 'closed',
           is_connected: 'contactable',
           activity_type: 'closing',
-          disposition: c.final_disposition
+          disposition: c.final_disposition,
+          agent: profileMap[c.agent_id],
+          campaign: campaignMap[c.campaign_id]
         }));
 
-      const combined = [...mappedLogs, ...mappedRejected, ...mappedClosed].sort((a, b) => 
-        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-      );
+      const combined = [...mappedLogs, ...mappedRejected, ...mappedClosed]
+        .filter(act => {
+           // Post-fetch filter for LEVEL 2 (Org) if relationship was missing
+           if (dashboardLevel === 2 && user.organization_id) {
+              const orgId = act.agent?.organization_id || act.organization_id;
+              return orgId === user.organization_id;
+           }
+           return true;
+        })
+        .sort((a, b) => 
+          new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
 
       setActivities(combined);
 

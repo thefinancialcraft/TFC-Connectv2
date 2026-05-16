@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useRouter } from "next/router";
 // TopStats is now dynamically imported below with other chart components
 
@@ -21,6 +21,9 @@ const TopStats = dynamic(() => import("@/components/dashboard/TopStats"), { ssr:
 const ProspectTab = dynamic(() => import("@/components/dashboard/ProspectTab"), { ssr: false });
 const AgentPerformanceTab = dynamic(() => import("@/components/dashboard/AgentPerformanceTab"), { ssr: false });
 const HourlyAnalyticsTab = dynamic(() => import("@/components/dashboard/HourlyAnalyticsTab"), { ssr: false });
+
+// Modern Dashboard V2
+import NewDashboard from "./dashboard_v2";
 
 
 
@@ -67,10 +70,33 @@ export default function Dashboard() {
   const [isUserLocked, setIsUserLocked] = useState(false);
   const hasInitialized = useRef(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const [hasCheckedDevice, setHasCheckedDevice] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024); // Covering both mobile and tablets for the new UI
+      setHasCheckedDevice(true);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const shouldShowNewDashboard = useMemo(() => {
+    if (!user || !isMobile) return false;
+    
+    // Exact criteria provided by user
+    const hasCorrectRole = user.role?.toLowerCase() === 'user';
+    const hasCorrectClientStatus = user.isClient === true;
+    const hasCorrectDesignation = user.designation?.toLowerCase() === 'agent';
+    
+    return hasCorrectRole && hasCorrectClientStatus && hasCorrectDesignation;
+  }, [user, isMobile]);
 
   // Initialize Dashboard Level Logic & Constraints
   useEffect(() => {
-    if (!mounted || !user) return;
+    if (!mounted || !user || !hasCheckedDevice) return;
 
     const level = getUserDashboardLevel(user);
     const currentId = user.uid || (user as any).id || (user as any).user_id;
@@ -254,6 +280,18 @@ export default function Dashboard() {
       setIsInitialLoad(false);
     }
   }, [loading]);
+
+  if (!mounted || !hasCheckedDevice) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-[#f6f5ff]">
+        <div className="w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (shouldShowNewDashboard) {
+    return <NewDashboard />;
+  }
 
   return (
     <>

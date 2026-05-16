@@ -34,6 +34,9 @@ interface DashboardOverviewResponse {
     };
     secondaryStats: {
       todayCalls: number;
+      incomingCount: number;
+      outgoingCount: number;
+      missedCount: number;
       assignedMembers: number;
       freshProspects: number;
       followupCalls: number;
@@ -269,10 +272,20 @@ export default async function handler(
       const allTimeFollowups = rpcStats.allTimeFollowups || 0;
       const allTimeOverdue = rpcStats.allTimeOverdue || 0;
       const allTimeConnections = rpcStats.allTimeConnections || 0;
+      
+      // Safety Check: If the RPC is old and doesn't return the new fields, fall back
+      if (rpcStats.incomingCount === undefined && rpcStats.outgoingCount === undefined) {
+        throw new Error("RPC missing new call type counters. Falling back.");
+      }
+
+      const incomingCount = rpcStats.incomingCount || 0;
+      const outgoingCount = rpcStats.outgoingCount || 0;
+      const missedCount = rpcStats.missedCount || 0;
 
       return sendDashboardResponse(res, {
         totalCustomers, totalConverted, totalPremium, totalDials, totalTalktime,
-        totalConnections, todayCallsCount, campaignsCount, teamCount, freshGlobalCount,
+        totalConnections, todayCallsCount, incomingCount, outgoingCount, missedCount, 
+        campaignsCount, teamCount, freshGlobalCount,
         allTimeRecords, allTimeFollowups, allTimeOverdue, allTimeConnections, startTime
       });
 
@@ -319,12 +332,36 @@ export default async function handler(
         else if (restrictedEmployeeIds && restrictedEmployeeIds.length > 0) q = q.in('employee_id', restrictedEmployeeIds);
         const { count } = await q; return count || 0;
       })(),
-      // 7. Today Calls
+      // 7. Today Calls + Detailed Breakdown
       (async () => {
-        let q = dbClient.from("call_history").select("*", { count: "exact", head: true }).gte("timestamp", todayStart).lte("timestamp", todayEnd);
-        if (filterEmployeeId) q = q.eq('employee_id', filterEmployeeId);
-        else if (restrictedEmployeeIds && restrictedEmployeeIds.length > 0) q = q.in('employee_id', restrictedEmployeeIds);
-        const { count } = await q; return count || 0;
+        const getBase = () => {
+          let q = dbClient.from("call_history")
+            .select("*", { count: "exact", head: true })
+            .gte("timestamp", range.start)
+            .lte("timestamp", range.end);
+          
+          if (targetOrgId) q = q.eq('organization_id', targetOrgId);
+          
+          if (filterEmployeeId) q = q.eq('employee_id', filterEmployeeId);
+          else if (restrictedEmployeeIds && restrictedEmployeeIds.length > 0) q = q.in('employee_id', restrictedEmployeeIds);
+          return q;
+        };
+        
+        console.log(`[Dashboard Counts] Querying call_history. Range: ${range.start} to ${range.end}, Org: ${targetOrgId || 'All'}`);
+
+        const [total, incoming, outgoing, missed] = await Promise.all([
+          getBase(),
+          getBase().ilike('call_type', 'incoming'),
+          getBase().ilike('call_type', 'outgoing'),
+          getBase().ilike('call_type', 'missed')
+        ]);
+
+        return { 
+          total: total.count || 0, 
+          incoming: incoming.count || 0, 
+          outgoing: outgoing.count || 0, 
+          missed: missed.count || 0 
+        };
       })(),
       // 10-13. Global Counts
       (async () => {
@@ -383,7 +420,11 @@ export default async function handler(
     const totalDials = results[2];
     const totalTalktime = results[3];
     const totalConnections = results[4];
-    const todayCallsCount = results[5];
+    const todayCallsCount = results[5].total;
+    const incomingCount = results[5].incoming;
+    const outgoingCount = results[5].outgoing;
+    const missedCount = results[5].missed;
+    
     const freshGlobalCount = results[6].fresh;
     const allTimeRecords = results[6].totalRecs;
     const allTimeFollowups = results[6].followups;
@@ -394,7 +435,8 @@ export default async function handler(
 
     return sendDashboardResponse(res, {
         totalCustomers, totalConverted, totalPremium, totalDials, totalTalktime,
-        totalConnections, todayCallsCount, campaignsCount, teamCount, freshGlobalCount,
+        totalConnections, todayCallsCount, incomingCount, outgoingCount, missedCount,
+        campaignsCount, teamCount, freshGlobalCount,
         allTimeRecords, allTimeFollowups, allTimeOverdue, allTimeConnections, startTime
     });
   } catch (err: any) {
@@ -410,7 +452,8 @@ export default async function handler(
 function sendDashboardResponse(res: NextApiResponse, data: any) {
     const { 
         totalCustomers, totalConverted, totalPremium, totalDials, totalTalktime,
-        totalConnections, todayCallsCount, campaignsCount, teamCount, freshGlobalCount,
+        totalConnections, todayCallsCount, incomingCount, outgoingCount, missedCount,
+        campaignsCount, teamCount, freshGlobalCount,
         allTimeRecords, allTimeFollowups, allTimeOverdue, allTimeConnections, startTime
     } = data;
 
@@ -443,6 +486,9 @@ function sendDashboardResponse(res: NextApiResponse, data: any) {
         },
         secondaryStats: {
           todayCalls: todayCallsCount,
+          incomingCount,
+          outgoingCount,
+          missedCount,
           assignedMembers: teamCount,
           freshProspects: freshGlobalCount,
           followupCalls: allTimeFollowups,

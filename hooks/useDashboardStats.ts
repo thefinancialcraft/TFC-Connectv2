@@ -16,6 +16,9 @@ export interface DashboardStats {
 
 export interface SecondaryStats {
   todayCalls: number;
+  incomingCount: number;
+  outgoingCount: number;
+  missedCount: number;
   freshProspects: number;
   followupCalls: number;
   overdueFollowups: number;
@@ -64,6 +67,9 @@ export function useDashboardStats(): UseDashboardStatsReturn {
 
   const [secondaryStats, setSecondaryStats] = useState<SecondaryStats>({
     todayCalls: 0,
+    incomingCount: 0,
+    outgoingCount: 0,
+    missedCount: 0,
     freshProspects: 0,
     followupCalls: 0,
     overdueFollowups: 0,

@@ -12,7 +12,8 @@ export interface ChartPoint {
 export interface PieDataPoint {
   name: string;
   value: number;
-  [key: string]: string | number;
+  color?: string;
+  [key: string]: string | number | undefined;
 }
 export interface HeatmapDataPoint {
   day: string;

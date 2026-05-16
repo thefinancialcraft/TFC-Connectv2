@@ -39,6 +39,24 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
     }
   }, [router.pathname, user?.uid, mounted]);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const isModernDashboardActive = 
+    isMobile && 
+    user?.role?.toLowerCase() === 'user' && 
+    user?.isClient === true && 
+    user?.designation?.toLowerCase() === 'agent' &&
+    router.pathname === '/portal/dashboard';
+
   // Session Expired UI logic
   // NOTE: Conditional rendering happens AFTER all hooks are declared
   if (sessionExpired) {
@@ -134,7 +152,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
       {/* Main Content Area */}
       <div className={`flex-1 flex flex-col ${!hideSidebar ? 'lg:ml-52' : ''} w-full min-w-0 overflow-x-hidden`}>
         {/* Top Header */}
-        {!hideHeader && (
+        {!hideHeader && !isModernDashboardActive && (
           <Header
             user={user as any}
             onLogout={handleLogoutClick}
@@ -144,7 +162,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
 
         {/* Main Page Content */}
         <main
-          className={`flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ${!hideHeader ? 'pt-[60px] lg:pt-[70px]' : ''}`}
+          className={`flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ${(!hideHeader && !isModernDashboardActive) ? 'pt-[60px] lg:pt-[70px]' : ''}`}
           style={{ backgroundColor: "#f6f5f7" }}
         >
           {children}

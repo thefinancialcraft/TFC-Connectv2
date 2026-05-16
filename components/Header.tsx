@@ -18,9 +18,11 @@ interface HeaderProps {
   };
   onLogout?: (tokenId?: string) => void;
   hideSidebar?: boolean;
+  isStatic?: boolean;
+  hideBorder?: boolean;
 }
 
-function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
+function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false, hideBorder = false }: HeaderProps) {
   const router = useRouter();
   const [serverStatus, setServerStatus] = useState<'online' | 'offline' | 'checking'>('online');
   const [showFullStatus, setShowFullStatus] = useState<boolean>(true);
@@ -455,7 +457,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
     <>
       {/* Mobile Header */}
       <header
-        className="lg:hidden border-b fixed top-0 left-0 right-0 z-50 backdrop-blur-sm"
+        className={`lg:hidden ${hideBorder ? '' : 'border-b'} ${isStatic ? 'relative' : 'fixed top-0 left-0 right-0'} z-50 backdrop-blur-sm`}
         style={{ borderColor: "#E0E0E0", backgroundColor: "rgba(255, 255, 255, 0.8)" }}
       >
         <div className="px-4 py-3 flex items-center justify-between">
@@ -534,11 +536,11 @@ function HeaderComponent({ user, onLogout, hideSidebar = false }: HeaderProps) {
 
       {/* Desktop Header */}
       <header
-        className="hidden lg:block border-b fixed top-0 z-50 backdrop-blur-sm h-[70px]"
+        className={`hidden lg:block ${hideBorder ? '' : 'border-b'} ${isStatic ? 'relative' : 'fixed top-0'} z-50 backdrop-blur-sm h-[70px]`}
         style={{ 
           borderColor: "#E0E0E0", 
-          left: hideSidebar ? "0" : "208px", 
-          width: hideSidebar ? "100%" : "calc(100% - 208px)",
+          left: isStatic ? "0" : (hideSidebar ? "0" : "208px"), 
+          width: isStatic ? "100%" : (hideSidebar ? "100%" : "calc(100% - 208px)"),
           backgroundColor: "rgba(255, 255, 255, 0.8)" 
         }}
       >
