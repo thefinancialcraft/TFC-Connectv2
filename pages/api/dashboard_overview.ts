@@ -208,6 +208,7 @@ export default async function handler(
         if (
           userProfile.role === "admin" ||
           userProfile.role === "super_admin" ||
+          userProfile.role === "superadmin" ||
           orgId === userProfile.organization_id
         ) {
           targetOrgId = orgId as string;

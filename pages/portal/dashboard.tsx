@@ -104,7 +104,6 @@ export default function Dashboard() {
     setDashboardLevel(level);
 
     // Apply Constraints based on level
-    // Apply Constraints based on level
     if (level === DashboardLevel.LEVEL_1_ADMIN) {
       // Level 1: Full Access, default to ALL stats
       setIsOrgLocked(false);
@@ -113,21 +112,24 @@ export default function Dashboard() {
       setSelectedUserId("all");
       setRestrictedUserIds(null);
     } else if (level === DashboardLevel.LEVEL_2_CLIENT_CEO) {
+      // Level 2: Locked to Org, Full Access within Org
       setIsOrgLocked(true);
       setIsUserLocked(false);
       if (user.organization_id) setSelectedOrgId(user.organization_id);
+      setSelectedUserId("all");
       setRestrictedUserIds(null);
     } else if (level === DashboardLevel.LEVEL_3_TL_SALES) {
+      // Level 3: Locked to Org, User selection available but restricted to team
       setIsOrgLocked(true);
       setIsUserLocked(false);
       if (user.organization_id) setSelectedOrgId(user.organization_id);
+      setSelectedUserId("all");
       // Fail secure: Default to self only until team members are fetched
       setRestrictedUserIds([currentId]);
     } else if (level === DashboardLevel.LEVEL_4_AGENT_SALES) {
+      // Level 4: Completely Locked to self
       setIsOrgLocked(true);
       setIsUserLocked(true);
-      
-      // FORCE selections immediately for Level 4
       if (user.organization_id) setSelectedOrgId(user.organization_id);
       if (currentId) {
         setSelectedUserId(currentId);
@@ -136,7 +138,7 @@ export default function Dashboard() {
     }
     
     hasInitialized.current = true;
-  }, [mounted, user?.uid, user?.organization_id]); // Trigger when key user info changes
+  }, [mounted, user?.uid, user?.organization_id, user?.role, user?.designation, user?.isClient, hasCheckedDevice]); // Trigger when key user info changes
 
   // Fetch organizations
   useEffect(() => {
@@ -159,31 +161,38 @@ export default function Dashboard() {
     if (isUserLocked) return;
 
     const fetchUsers = async () => {
-      // Basic query for profiles
-      const queryBase = supabase
-        .from("user_profiles")
-        .select("user_id, user_name, role")
-        .neq("approval_status", "rejected");
+      // EXPLICIT LOGIC FOR LEVEL 2 (CLIENT CEO)
+      if (dashboardLevel === DashboardLevel.LEVEL_2_CLIENT_CEO && user?.organization_id) {
+          const { data, error } = await supabase
+              .from("user_profiles")
+              .select("user_id, user_name, role, designation")
+              .eq("organization_id", user.organization_id)
+              .neq("approval_status", "rejected")
+              .order("user_name");
+              
+          if (error) {
+              console.error("[Dashboard] Error fetching Level 2 users:", error);
+              setUsers([]);
+          } else {
+              setUsers(data || []);
+          }
+          setRestrictedUserIds(null);
+          return;
+      }
 
-      let finalQuery;
-
-      // Stage for Level 3: Strictly Fetch Team Members
+      // EXPLICIT LOGIC FOR LEVEL 3 (TEAM LEADER)
       if (dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES && user?.uid) {
         console.log(`[Dashboard] Filtering users for TL:`, user.uid);
-        
-        // Fetch teams where current user is leader
         const { data: teamData, error: teamError } = await supabase
           .from('teams')
           .select('members')
           .eq('leader_id', user.uid)
           .eq('is_active', true);
         
-        if (teamError) {
-          console.error("[Dashboard] Error fetching TL teams:", teamError);
-        }
+        if (teamError) console.error("[Dashboard] Error fetching TL teams:", teamError);
 
         const memberIds = new Set<string>();
-        memberIds.add(user.uid); // Always include the TL themself
+        memberIds.add(user.uid);
         
         if (teamData && teamData.length > 0) {
           teamData.forEach(team => {
@@ -196,33 +205,44 @@ export default function Dashboard() {
         }
 
         const finalIds = Array.from(memberIds);
-        console.log(`[Dashboard] Restricting User Selection to ${finalIds.length} members`);
-
         setRestrictedUserIds(finalIds);
 
-        // Apply membership filter
-        finalQuery = queryBase.in("user_id", finalIds);
+        const { data, error } = await supabase
+          .from("user_profiles")
+          .select("user_id, user_name, role, designation")
+          .in("user_id", finalIds)
+          .neq("approval_status", "rejected")
+          .order("user_name");
 
-      } else if (selectedOrgId !== "all") {
-        // Fallback for CEO (Level 2) or Admin (Level 1) selecting an org
+        if (error) {
+            console.error("[Dashboard] Error fetching Level 3 users:", error);
+            setUsers([]);
+        } else {
+            setUsers(data || []);
+        }
+        return;
+      }
+
+      // FALLBACK FOR LEVEL 1 (ADMIN)
+      let queryBase = supabase
+        .from("user_profiles")
+        .select("user_id, user_name, role, designation")
+        .neq("approval_status", "rejected");
+
+      let finalQuery = queryBase;
+      if (selectedOrgId !== "all") {
         finalQuery = queryBase.eq("organization_id", selectedOrgId);
-      } else {
-        // Global view for Admin (Level 1)
-        finalQuery = queryBase;
-        setRestrictedUserIds(null);
       }
 
       const { data, error: userError } = await finalQuery.order("user_name");
       
       if (userError) {
-        console.error("[Dashboard] Error fetching users:", userError);
-      }
-      
-      if (data) {
-        setUsers(data);
-      } else {
+        console.error("[Dashboard] Error fetching Admin users:", userError);
         setUsers([]);
+      } else {
+        setUsers(data || []);
       }
+      setRestrictedUserIds(null);
     };
 
     if (mounted) {
@@ -257,10 +277,14 @@ export default function Dashboard() {
       let orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
       let userFilter = selectedUserId === "all" ? undefined : selectedUserId;
       
-      // --- CRITICAL OVERRIDE FOR LEVEL 4 (AGENT) ---
-      // This ensures that even if UI state is in transition, the data fetched is always their own.
-      if (dashboardLevel === DashboardLevel.LEVEL_4_AGENT_SALES) {
+      // --- CRITICAL OVERRIDE FOR NON-ADMINS ---
+      // This ensures that even if UI state is in transition or reset, the data fetched is always strictly bound to their own org.
+      if (dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN) {
           orgFilter = user.organization_id || undefined;
+      }
+      
+      // --- CRITICAL OVERRIDE FOR LEVEL 4 (AGENT) ---
+      if (dashboardLevel === DashboardLevel.LEVEL_4_AGENT_SALES) {
           userFilter = currentId || undefined;
       }
       
@@ -320,8 +344,10 @@ export default function Dashboard() {
                 <span className="font-semibold text-[#4b33e8]">
                   {mounted ? user?.displayName || "User" : "User"}
                 </span>
-                . Here's what's happening today.
-              </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  Here's what's happening with your business today.
+                </p>
+                </p>
             </div>
             
             <div className="flex items-center justify-start lg:justify-end gap-3 w-full lg:w-auto">
@@ -352,18 +378,21 @@ export default function Dashboard() {
                           <select
                             value={selectedOrgId}
                             onChange={(e) => setSelectedOrgId(e.target.value)}
-                            className={`w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${isOrgLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
-                            disabled={isOrgLocked}
+                            className={`w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
+                            disabled={dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN}
                           >
-                            <option value="all" disabled={isOrgLocked}>Global (All Orgs)</option>
-                            {organizations.map((org) => (
-                              <option key={org.id} value={org.id} disabled={isOrgLocked && selectedOrgId !== org.id}>
+                            {dashboardLevel === DashboardLevel.LEVEL_1_ADMIN && <option value="all">Global (All Orgs)</option>}
+                            {dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN && selectedOrgId === "all" && <option value="all">Your Organization</option>}
+                            {organizations
+                              .filter((org) => dashboardLevel === DashboardLevel.LEVEL_1_ADMIN || org.id === user?.organization_id)
+                              .map((org) => (
+                              <option key={org.id} value={org.id}>
                                 {org.company_name}
                               </option>
                             ))}
                           </select>
                           <i className="fi fi-rr-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                          <i className={`fi ${isOrgLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`}></i>
+                          <i className={`fi ${dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`}></i>
                         </div>
                       </div>
 
@@ -377,9 +406,11 @@ export default function Dashboard() {
                             className={`w-full appearance-none pl-9 pr-8 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs sm:text-sm font-bold text-[#263238] focus:outline-none focus:border-[#4b33e8] transition-all ${isUserLocked ? 'opacity-70 cursor-not-allowed' : 'cursor-pointer'}`}
                             disabled={isUserLocked}
                           >
-                            <option value="all" disabled={isUserLocked}>
-                              {dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES ? "All Team Members" : "All Users"}
-                            </option>
+                            {!isUserLocked && (
+                              <option value="all">
+                                {dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES ? "All Team Members" : "All Users"}
+                              </option>
+                            )}
                             {isUserLocked ? (
                                 <option value={user?.uid}>{user?.displayName || 'Me'}</option>
                             ) : (
@@ -422,8 +453,17 @@ export default function Dashboard() {
                       <div className="pt-2">
                         <button
                           onClick={() => {
-                            setSelectedOrgId(isOrgLocked ? selectedOrgId : "all");
-                            setSelectedUserId(isUserLocked ? selectedUserId : "all");
+                            if (dashboardLevel === DashboardLevel.LEVEL_1_ADMIN) {
+                                setSelectedOrgId("all");
+                                setSelectedUserId("all");
+                            } else if (dashboardLevel === DashboardLevel.LEVEL_4_AGENT_SALES) {
+                                setSelectedOrgId(user?.organization_id || "all");
+                                setSelectedUserId(user?.uid || "all");
+                            } else {
+                                // Level 2 & 3
+                                setSelectedOrgId(user?.organization_id || "all");
+                                setSelectedUserId("all");
+                            }
                             setDateFilter("all_time");
                             setShowFilters(false);
                           }}

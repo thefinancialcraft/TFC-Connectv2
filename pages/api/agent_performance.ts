@@ -223,6 +223,7 @@ export default async function handler(
         if (
           userProfile.role === "admin" ||
           userProfile.role === "super_admin" ||
+          userProfile.role === "superadmin" ||
           orgId === userProfile.organization_id
         ) {
           targetOrgId = orgId as string;
@@ -233,7 +234,7 @@ export default async function handler(
         targetOrgId = orgId as string;
       }
     } else if (orgId !== "all") {
-      if (userProfile && userProfile.role !== "admin" && userProfile.role !== "super_admin") {
+      if (userProfile && userProfile.role !== "admin" && userProfile.role !== "super_admin" && userProfile.role !== "superadmin") {
         targetOrgId = userProfile.organization_id;
       }
     }

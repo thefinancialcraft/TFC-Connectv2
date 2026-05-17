@@ -376,6 +376,7 @@ export default function Customer() {
     endDate: "",
     createdStartDate: "",
     createdEndDate: "",
+    attemptCount: "",
   });
 
   // Bulk Action States
@@ -508,6 +509,7 @@ export default function Customer() {
         else countQuery = countQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
       if (filters.disposition) countQuery = countQuery.eq(dispCol, filters.disposition);
+      if (filters.attemptCount) countQuery = countQuery.eq("attempt_count", parseInt(filters.attemptCount));
       
       const dateField = "expiry_date";
       if (filters.startDate) countQuery = countQuery.gte(dateField, `${filters.startDate}T00:00:00`);
@@ -560,6 +562,13 @@ export default function Customer() {
                 overdueQuery = overdueQuery.eq(agentCol, filters.assignedTo);
                 freshCountQuery = freshCountQuery.eq(agentCol, filters.assignedTo);
             }
+        }
+
+        if (filters.attemptCount) {
+            const countVal = parseInt(filters.attemptCount);
+            pendingQuery = pendingQuery.eq("attempt_count", countVal);
+            overdueQuery = overdueQuery.eq("attempt_count", countVal);
+            freshCountQuery = freshCountQuery.eq("attempt_count", countVal);
         }
 
         if (filters.startDate) {
@@ -630,6 +639,7 @@ export default function Customer() {
         else query = query.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
       if (filters.disposition) query = query.eq(dispCol, filters.disposition);
+      if (filters.attemptCount) query = query.eq("attempt_count", parseInt(filters.attemptCount));
       
       if (filters.startDate) query = query.gte(dateField, `${filters.startDate}T00:00:00`);
       if (filters.endDate) query = query.lte(dateField, `${filters.endDate}T23:59:59`);
@@ -674,6 +684,7 @@ export default function Customer() {
                 else batchQuery = batchQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
             }
             if (filters.disposition) batchQuery = batchQuery.eq(dispCol, filters.disposition);
+            if (filters.attemptCount) batchQuery = batchQuery.eq("attempt_count", parseInt(filters.attemptCount));
             
             if (filters.startDate) batchQuery = batchQuery.gte(dateField, `${filters.startDate}T00:00:00`);
             if (filters.endDate) batchQuery = batchQuery.lte(dateField, `${filters.endDate}T23:59:59`);
@@ -3319,6 +3330,21 @@ export default function Customer() {
                 </div>
               </div>
  
+              {/* Attempt Count */}
+              <div>
+                <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">
+                  Attempt Count
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="Filter by exact attempt count (e.g. 0, 1, 2...)"
+                  value={filters.attemptCount}
+                  onChange={(e) => setFilters(prev => ({ ...prev, attemptCount: e.target.value }))}
+                  className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
+                />
+              </div>
+ 
               {/* Date Ranges */}
               <div className="pt-3 border-t border-gray-100 space-y-4">
                 {/* Lead Generation Date */}
@@ -3373,7 +3399,8 @@ export default function Customer() {
                     startDate: "",
                     endDate: "",
                     createdStartDate: "",
-                    createdEndDate: ""
+                    createdEndDate: "",
+                    attemptCount: ""
                   });
                 }}
                 className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all"
