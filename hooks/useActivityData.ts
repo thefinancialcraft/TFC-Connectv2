@@ -400,7 +400,15 @@ export function useActivityData() {
     } finally {
       if (!isBackground) setLoading(false);
     }
-  }, [selectedDate, user, mounted]);
+  }, [
+    selectedDate, 
+    user?.uid, 
+    user?.role, 
+    user?.designation, 
+    user?.organization_id, 
+    user?.isClient, 
+    mounted
+  ]);
 
   // Fetch Mobile History
   const fetchMobileHistory = useCallback(async (isBackground = false) => {
@@ -552,7 +560,17 @@ export function useActivityData() {
       } finally {
           if (!isBackground) setLoading(false);
       }
-  }, [selectedDate, user, mounted, source]);
+  }, [
+    selectedDate, 
+    user?.uid, 
+    user?.employeeId, 
+    user?.role, 
+    user?.designation, 
+    user?.organization_id, 
+    user?.isClient, 
+    mounted, 
+    source
+  ]);
 
   // Reset data when date changes to force a fresh fetch
   useEffect(() => {

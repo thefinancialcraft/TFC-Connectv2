@@ -25,10 +25,16 @@ export function useAuthGuard(): UseAuthGuardReturn {
   const [statusMessage, setStatusMessage] = useState("Checking session...");
   const [sessionExpired, setSessionExpired] = useState(false);
   const loadingRef = useRef(false);
+  const userRef = useRef<UserProfile | null>(null);
+
+  useEffect(() => {
+    userRef.current = user;
+  }, [user]);
 
   const fetchAuth = async (force = false) => {
+    const currentUser = userRef.current;
     // Production Pattern: If we already have a user and aren't forcing a refresh, skip the loading screen and call.
-    if (!force && user && !loadingRef.current) {
+    if (!force && currentUser && !loadingRef.current) {
         console.log("🚀 [Auth] User already in memory. Skipping redundant fetch.");
         return;
     }
@@ -36,7 +42,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
     if (loadingRef.current) return;
     loadingRef.current = true;
     
-    if (!user) setLoading(true);
+    if (!currentUser) setLoading(true);
     
     try {
       const isLoginPage = router.pathname === "/login" || router.pathname === "/auth/login" || router.pathname === "/portal/login";
@@ -102,7 +108,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         const result = await checkAuthAndFetchProfile();
         
         if (result.user) {
-          if (!user) setStatusMessage("Finalizing setup...");
+          if (!userRef.current) setStatusMessage("Finalizing setup...");
           
           setUser(result.user);
           // Store securely in Tab Memory
@@ -132,7 +138,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
           
           // Logged in: if on login/root, move to dashboard or last path
           if ((isLoginPage || isRootPath) && !isPublicLandingPage) {
-            if (!user) setStatusMessage("Restoring your screen...");
+            if (!userRef.current) setStatusMessage("Restoring your screen...");
             const lastPath = typeof window !== 'undefined' ? localStorage.getItem('last_visited_path') : null;
             router.push(lastPath || "/dashboard");
           }
@@ -148,7 +154,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         setUser(null);
         if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
             // If we had a user before, but now we don't, it might be an expiration
-          if (user || typeof window !== 'undefined' && sessionStorage.getItem('active_user_profile')) {
+          if (userRef.current || typeof window !== 'undefined' && sessionStorage.getItem('active_user_profile')) {
               setSessionExpired(true);
           } else {
               setStatusMessage("Access denied. Please login...");
@@ -182,7 +188,11 @@ export function useAuthGuard(): UseAuthGuardReturn {
       
       if (event === 'SIGNED_IN') {
         setSessionExpired(false);
-        fetchAuth(true); // Sync data only on explicit login
+        if (!userRef.current) {
+          fetchAuth(true); // Sync data only on explicit login
+        } else {
+          fetchAuth(false); // Silent check, no loading screen
+        }
       } else if (event === 'SIGNED_OUT' || (event === 'USER_UPDATED' && !session)) {
         // Immediate check for session expiry UI
         const isManualLogout = typeof window !== 'undefined' && localStorage.getItem('manual_logout_intended') === 'true';
@@ -197,7 +207,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
             return;
         }
 
-        if (user || hasSessionCache) {
+        if (userRef.current || hasSessionCache) {
             console.log("🚫 [Auth Guard] Detected expiry event. Showing UI.");
             if (typeof window !== "undefined") {
                 localStorage.removeItem("cached_user_profile");
@@ -217,7 +227,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
     // ⚡ PROACTIVE LISTENERS
     // 1. Cross-tab logout detection
     const handleStorageChange = (e: StorageEvent) => {
-        if (e.key && e.key.includes('auth-token') && !e.newValue && (user || sessionStorage.getItem('active_user_profile'))) {
+        if (e.key && e.key.includes('auth-token') && !e.newValue && (userRef.current || sessionStorage.getItem('active_user_profile'))) {
             setSessionExpired(true);
             setUser(null);
         }
@@ -225,11 +235,15 @@ export function useAuthGuard(): UseAuthGuardReturn {
 
     // 2. Immediate check on tab focus (debounced or checked if really needed)
     const handleVisibilityChange = () => {
-        if (document.visibilityState === 'visible' && (user || sessionStorage.getItem('active_user_profile'))) {
+        if (document.visibilityState === 'visible' && (userRef.current || sessionStorage.getItem('active_user_profile'))) {
             // Only fetch if session is actually missing or old
             fetchAuth(); 
         }
     };
+
+    // Register proactive listeners
+    window.addEventListener('storage', handleStorageChange);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
     // ⚡ LOCAL-LEVEL HEARTBEAT (Instant LocalStorage Monitor)
     const localHeartbeat = setInterval(() => {
@@ -239,7 +253,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
         const hasProfile = !!sessionStorage.getItem('active_user_profile');
         const isManualLogout = localStorage.getItem('manual_logout_intended') === 'true';
         
-        if (!hasToken && (user || hasProfile) && !sessionExpired && !isManualLogout) {
+        if (!hasToken && (userRef.current || hasProfile) && !sessionExpired && !isManualLogout) {
             console.log("🚨 [Auth Guard] Local token missing. Locking system.");
             setSessionExpired(true);
             setUser(null);

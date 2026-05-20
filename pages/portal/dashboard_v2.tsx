@@ -102,7 +102,17 @@ export default function NewDashboard() {
       fetchAgentPerformance(orgId, selectedFilter, undefined, false, undefined, undefined);
       fetchActivities();
     }
-  }, [user, selectedFilter, fetchStats, fetchChartData, fetchAgentPerformance, fetchActivities]);
+  }, [
+    user?.uid, 
+    user?.role, 
+    user?.designation, 
+    user?.organization_id, 
+    selectedFilter, 
+    fetchStats, 
+    fetchChartData, 
+    fetchAgentPerformance, 
+    fetchActivities
+  ]);
 
   // Format Talk Time Helper
   const formatTalkTime = (seconds: number) => {

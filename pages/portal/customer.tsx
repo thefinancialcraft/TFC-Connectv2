@@ -437,6 +437,14 @@ export default function Customer() {
       const table = activeSource === "live" ? "customers" : activeSource === "rejected" ? "rejected_leads" : "closed_deals";
       const dispCol = activeSource === "closed" ? "final_disposition" : "disposition";
 
+      // 0. Parse attempt count filter (can be a comma-separated list of numbers like "1,2,3")
+      const getAttemptCountArray = (val: string): number[] | null => {
+        if (!val) return null;
+        const nums = val.split(/[,\s]+/).map(p => parseInt(p.trim())).filter(num => !isNaN(num));
+        return nums.length > 0 ? nums : null;
+      };
+      const attemptCountArray = getAttemptCountArray(filters.attemptCount);
+
       // 1. Fetch Shared Team Members for TL (Re-use in all sub-queries)
       let sharedTeamMemberIds: string[] = [];
       if (user?.isClient && user.designation === 'team_leader') {
@@ -509,7 +517,13 @@ export default function Customer() {
         else countQuery = countQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
       if (filters.disposition) countQuery = countQuery.eq(dispCol, filters.disposition);
-      if (filters.attemptCount) countQuery = countQuery.eq("attempt_count", parseInt(filters.attemptCount));
+      if (attemptCountArray) {
+        if (attemptCountArray.length === 1) {
+          countQuery = countQuery.eq("attempt_count", attemptCountArray[0]);
+        } else {
+          countQuery = countQuery.in("attempt_count", attemptCountArray);
+        }
+      }
       
       const dateField = "expiry_date";
       if (filters.startDate) countQuery = countQuery.gte(dateField, `${filters.startDate}T00:00:00`);
@@ -564,11 +578,16 @@ export default function Customer() {
             }
         }
 
-        if (filters.attemptCount) {
-            const countVal = parseInt(filters.attemptCount);
-            pendingQuery = pendingQuery.eq("attempt_count", countVal);
-            overdueQuery = overdueQuery.eq("attempt_count", countVal);
-            freshCountQuery = freshCountQuery.eq("attempt_count", countVal);
+        if (attemptCountArray) {
+            if (attemptCountArray.length === 1) {
+                pendingQuery = pendingQuery.eq("attempt_count", attemptCountArray[0]);
+                overdueQuery = overdueQuery.eq("attempt_count", attemptCountArray[0]);
+                freshCountQuery = freshCountQuery.eq("attempt_count", attemptCountArray[0]);
+            } else {
+                pendingQuery = pendingQuery.in("attempt_count", attemptCountArray);
+                overdueQuery = overdueQuery.in("attempt_count", attemptCountArray);
+                freshCountQuery = freshCountQuery.in("attempt_count", attemptCountArray);
+            }
         }
 
         if (filters.startDate) {
@@ -639,7 +658,13 @@ export default function Customer() {
         else query = query.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
       }
       if (filters.disposition) query = query.eq(dispCol, filters.disposition);
-      if (filters.attemptCount) query = query.eq("attempt_count", parseInt(filters.attemptCount));
+      if (attemptCountArray) {
+        if (attemptCountArray.length === 1) {
+          query = query.eq("attempt_count", attemptCountArray[0]);
+        } else {
+          query = query.in("attempt_count", attemptCountArray);
+        }
+      }
       
       if (filters.startDate) query = query.gte(dateField, `${filters.startDate}T00:00:00`);
       if (filters.endDate) query = query.lte(dateField, `${filters.endDate}T23:59:59`);
@@ -684,7 +709,13 @@ export default function Customer() {
                 else batchQuery = batchQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
             }
             if (filters.disposition) batchQuery = batchQuery.eq(dispCol, filters.disposition);
-            if (filters.attemptCount) batchQuery = batchQuery.eq("attempt_count", parseInt(filters.attemptCount));
+            if (attemptCountArray) {
+                if (attemptCountArray.length === 1) {
+                    batchQuery = batchQuery.eq("attempt_count", attemptCountArray[0]);
+                } else {
+                    batchQuery = batchQuery.in("attempt_count", attemptCountArray);
+                }
+            }
             
             if (filters.startDate) batchQuery = batchQuery.gte(dateField, `${filters.startDate}T00:00:00`);
             if (filters.endDate) batchQuery = batchQuery.lte(dateField, `${filters.endDate}T23:59:59`);
@@ -3336,9 +3367,8 @@ export default function Customer() {
                   Attempt Count
                 </label>
                 <input
-                  type="number"
-                  min="0"
-                  placeholder="Filter by exact attempt count (e.g. 0, 1, 2...)"
+                  type="text"
+                  placeholder="Filter by attempt counts (e.g. 1, 2, 3 or 3)"
                   value={filters.attemptCount}
                   onChange={(e) => setFilters(prev => ({ ...prev, attemptCount: e.target.value }))}
                   className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"

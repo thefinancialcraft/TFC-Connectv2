@@ -264,10 +264,13 @@ export default function Dashboard() {
   useEffect(() => {
     if (mounted && user && dashboardLevel !== DashboardLevel.UNKNOWN) {
       if (dashboardLevel === DashboardLevel.LEVEL_4_AGENT_SALES) {
-        setRestrictedUserIds([user.uid]);
+        setRestrictedUserIds(prev => {
+          if (prev && prev.length === 1 && prev[0] === user.uid) return prev;
+          return [user.uid];
+        });
       }
     }
-  }, [mounted, user, dashboardLevel]);
+  }, [mounted, user?.uid, dashboardLevel]);
 
   // Fetch all dashboard data when filters change
   useEffect(() => {

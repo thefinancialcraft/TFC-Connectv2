@@ -117,21 +117,33 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete,
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center mb-1 text-blue-600">
                             <i className="fi flex  fi-rr-clock text-base"></i>
                         </div>
-                        <span className="text-lg font-bold text-gray-700">{campaign.pending_calls ?? 0}</span>
+                        {campaign.pending_calls === undefined ? (
+                            <span className="text-sm font-semibold text-blue-400/80 animate-pulse">—</span>
+                        ) : (
+                            <span className="text-lg font-bold text-gray-700">{campaign.pending_calls ?? 0}</span>
+                        )}
                         <span className="text-[10px] text-gray-500 uppercase tracking-wide">Fresh</span>
                     </div>
                     <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-gray-50 group-hover:bg-purple-50/50 transition-colors border border-gray-100">
                         <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center mb-1 text-purple-600">
                             <i className="fi flex  fi-rr-calendar-clock text-base"></i>
                         </div>
-                        <span className="text-lg font-bold text-gray-700">{campaign.upcoming_followups ?? 0}</span>
+                        {campaign.upcoming_followups === undefined ? (
+                            <span className="text-sm font-semibold text-purple-400/80 animate-pulse">—</span>
+                        ) : (
+                            <span className="text-lg font-bold text-gray-700">{campaign.upcoming_followups ?? 0}</span>
+                        )}
                         <span className="text-[10px] text-gray-500 uppercase tracking-wide">Upcoming</span>
                     </div>
                     <div className="flex flex-col items-center justify-center p-2 rounded-xl bg-gray-50 group-hover:bg-purple-50/50 transition-colors border border-gray-100">
                         <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center mb-1 text-red-600">
                             <i className="fi flex  fi-rr-time-watch-calendar text-base"></i>
                         </div>
-                        <span className="text-lg font-bold text-gray-700">{campaign.overdue_followups ?? 0}</span>
+                        {campaign.overdue_followups === undefined ? (
+                            <span className="text-sm font-semibold text-red-400/80 animate-pulse">—</span>
+                        ) : (
+                            <span className="text-lg font-bold text-gray-700">{campaign.overdue_followups ?? 0}</span>
+                        )}
                         <span className="text-[10px] text-gray-500 uppercase tracking-wide">Overdue</span>
                     </div>
                 </div>
@@ -140,11 +152,19 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete,
                 <div className="grid grid-cols-2 gap-2 mb-2">
                     <div className="flex items-center justify-center gap-2 h-[35px] rounded-xl bg-gray-50/80 group-hover:bg-purple-50/50 transition-colors border border-gray-100" title="Talktime">
                         <i className="fi flex fi-rr-microphone-alt text-blue-500 text-[10px]"></i>
-                        <span className="text-xs font-bold text-gray-700">{campaign.talktime ?? '0h 0m'}</span>
+                        {campaign.talktime === undefined ? (
+                            <span className="text-xs font-semibold text-blue-400/80 animate-pulse">—</span>
+                        ) : (
+                            <span className="text-xs font-bold text-gray-700">{campaign.talktime ?? '0h 0m'}</span>
+                        )}
                     </div>
                     <div className="flex items-center justify-center gap-2 h-[35px] rounded-xl bg-gray-50/80 group-hover:bg-purple-50/50 transition-colors border border-gray-100" title="Total Dials">
                         <i className="fi flex fi-rr-phone-call text-purple-500 text-[10px]"></i>
-                        <span className="text-xs font-bold text-gray-700">{campaign.total_dials ?? 0}</span>
+                        {campaign.total_dials === undefined ? (
+                            <span className="text-xs font-semibold text-purple-400/80 animate-pulse">—</span>
+                        ) : (
+                            <span className="text-xs font-bold text-gray-700">{campaign.total_dials ?? 0}</span>
+                        )}
                     </div>
                 </div>
 

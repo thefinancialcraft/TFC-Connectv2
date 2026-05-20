@@ -97,11 +97,11 @@
 			};
 		}, [user, mounted]);
 
-		const fetchCampaigns = async () => {
+		const fetchCampaigns = async (silent = false) => {
 			if (!user) return; // Wait for user
 
 			try {
-				setLoadingCampaigns(true);
+				if (!silent) setLoadingCampaigns(true);
 				
 				// 1. Base Query
 				let query = supabase
@@ -218,39 +218,60 @@
 				
 				const baseCampaigns = finalBaseCampaigns;
 				
-				// 2. Fetch all campaign stats via high-performance RPC
-				const { data: statsData, error: statsError } = await supabase.rpc('get_campaign_stats');
+				// Set base campaigns immediately with undefined stats to trigger loading skeletons!
+				setCampaigns(baseCampaigns.map(camp => ({
+					...camp,
+					pending_calls: undefined,
+					upcoming_followups: undefined,
+					overdue_followups: undefined,
+					total_dials: undefined,
+					talktime: undefined
+				})));
 				
-				if (statsError) {
-					console.error("Error fetching campaign stats:", statsError);
-					setCampaigns(baseCampaigns);
-					return;
-				}
+				// Hide main spinner immediately so the UI is fully interactive!
+				setLoadingCampaigns(false);
 
-				// 3. Map stats back to campaigns
-				const enrichedCampaigns = baseCampaigns.map(camp => {
-					const stats = statsData?.find((s: any) => s.campaign_id === camp.id);
-					
-					const totalSeconds = stats?.total_duration || 0;
-					const hours = Math.floor(totalSeconds / 3600);
-					const minutes = Math.floor((totalSeconds % 3600) / 60);
-					const talktimeFormatted = `${hours}h ${minutes}m`;
+				// Now, fetch campaign stats asynchronously in the background!
+				supabase.rpc('get_campaign_stats').then(({ data: statsData, error: statsError }) => {
+					if (statsError) {
+						console.error("Error fetching campaign stats:", statsError);
+						// Fall back to 0 stats
+						setCampaigns(prevCampaigns => 
+							prevCampaigns.map(camp => ({
+								...camp,
+								pending_calls: camp.pending_calls ?? 0,
+								upcoming_followups: camp.upcoming_followups ?? 0,
+								overdue_followups: camp.overdue_followups ?? 0,
+								total_dials: camp.total_dials ?? 0,
+								talktime: camp.talktime ?? '0h 0m'
+							}))
+						);
+						return;
+					}
 
-					return {
-						...camp,
-						pending_calls: stats?.fresh_count || 0,
-						upcoming_followups: stats?.upcoming_count || 0,
-						overdue_followups: stats?.overdue_count || 0,
-						total_dials: stats?.total_dials || 0,
-						talktime: talktimeFormatted
-					};
+					setCampaigns(prevCampaigns => {
+						return prevCampaigns.map(camp => {
+							const stats = statsData?.find((s: any) => s.campaign_id === camp.id);
+							
+							const totalSeconds = stats?.total_duration || 0;
+							const hours = Math.floor(totalSeconds / 3600);
+							const minutes = Math.floor((totalSeconds % 3600) / 60);
+							const talktimeFormatted = `${hours}h ${minutes}m`;
+
+							return {
+								...camp,
+								pending_calls: stats?.fresh_count ?? 0,
+								upcoming_followups: stats?.upcoming_count ?? 0,
+								overdue_followups: stats?.overdue_count ?? 0,
+								total_dials: stats?.total_dials ?? 0,
+								talktime: talktimeFormatted
+							};
+						});
+					});
 				});
-
-				setCampaigns(enrichedCampaigns);
 			} catch (e) {
 				console.error("Error fetching campaigns:", e);
 				setCampaigns([]);
-			} finally {
 				setLoadingCampaigns(false);
 			}
 		};
@@ -290,15 +311,15 @@
 
 		useEffect(() => {
 			if (mounted && user) {
-				fetchCampaigns();
+				fetchCampaigns(false);
 			}
 			const handleFocus = () => {
-				if (mounted && user) fetchCampaigns();
+				if (mounted && user) fetchCampaigns(true);
 			};
 			window.addEventListener("focus", handleFocus);
 			return () => window.removeEventListener("focus", handleFocus);
 			// eslint-disable-next-line react-hooks/exhaustive-deps
-		}, [router, user, mounted]);
+		}, [router, user?.uid, mounted]);
 
 
 		const handleCampaignSaved = () => {

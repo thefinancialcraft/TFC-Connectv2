@@ -74,6 +74,31 @@ export function useUsersActions(refreshData: () => Promise<void>) {
         return;
       }
 
+      if (approvalStatus === "rejected") {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          alert("You must be logged in to reject users");
+          return;
+        }
+        const response = await fetch(`/api/auth/delete-user?userId=${userId}`, {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        if (!response.ok) throw new Error("Failed to reject and delete user");
+        await refreshData();
+        window.location.reload();
+
+        logSystemEvent({
+            event_type: 'WRITE',
+            description: `Reject & Delete User: ${userId}`,
+            metadata: { user_id: userId },
+            payload_size: estimateSize({ userId }),
+            user_name: user?.displayName || 'Admin',
+            organization_id: user?.organization_id || undefined
+        });
+        return;
+      }
+
       // Direct update for other statuses
       await refreshData();
 
@@ -144,6 +169,7 @@ export function useUsersActions(refreshData: () => Promise<void>) {
       });
       if (!response.ok) throw new Error("Failed to delete user");
       await refreshData();
+      window.location.reload();
 
       logSystemEvent({
           event_type: 'WRITE',

@@ -235,85 +235,16 @@ export default function CampaignDetails() {
             if (isLevel1User && userId) qRecentCount = qRecentCount.eq('agent_id', userId);
             if (isLevel2User) qRecentCount = effectiveTeamMembers.length > 0 ? qRecentCount.in('agent_id', effectiveTeamMembers) : qRecentCount.eq('agent_id', '00000000-0000-0000-0000-000000000000');
 
-            // Analytics (Client-side aggregation to avoid RPC timeout)
-            const rangeStart = new Date(selectedDate);
-            rangeStart.setHours(0, 0, 0, 0);
-            const rangeEnd = new Date(selectedDate);
-            rangeEnd.setHours(23, 59, 59, 999);
-            
-            const startISO = rangeStart.toISOString();
-            const endISO = rangeEnd.toISOString();
-
+            // Analytics (Server-side RPC to bypass 1000-row PostgREST limits)
             const analyticsPromise = (async () => {
                 try {
-                    const { data: logs, error: logsError } = await supabase
-                        .from('call_logs')
-                        .select('agent_id, duration, created_at, disposition, is_connected')
-                        .eq('campaign_id', id)
-                        .gte('created_at', startISO)
-                        .lte('created_at', endISO);
-
-                    if (logsError) throw logsError;
-
-                    const hourlyMap: Record<number, any> = {};
-                    const callerMap: Record<string, any> = {};
-                    const dispMap: Record<string, number> = {};
-
-                    (logs || []).forEach(log => {
-                        // Hourly Stats
-                        const hour = new Date(log.created_at).getHours();
-                        if (!hourlyMap[hour]) {
-                            hourlyMap[hour] = { hour, total_calls: 0, connected_calls: 0, outgoing_calls: 0, incoming_calls: 0, missed_calls: 0, total_duration: 0 };
-                        }
-                        const hStats = hourlyMap[hour];
-                        hStats.total_calls++;
-                        hStats.total_duration += (log.duration || 0);
-
-                        // Disposition Stats
-                        const disp = log.disposition || 'No Disposition';
-                        dispMap[disp] = (dispMap[disp] || 0) + 1;
-
-                        // Caller Performance
-                        const agentId = log.agent_id;
-                        if (!callerMap[agentId]) {
-                            callerMap[agentId] = {
-                                user_id: agentId,
-                                total_calls: 0,
-                                connected_calls: 0,
-                                total_duration: 0,
-                                incoming_calls: 0, 
-                                outgoing_calls: 0, 
-                                missed_calls: 0
-                            };
-                        }
-                        const cStats = callerMap[agentId];
-                        cStats.total_calls++;
-                        cStats.total_duration += (log.duration || 0);
-
-                        const isConnected = (log.duration || 0) > 0 || String(log.is_connected).toLowerCase() === 'true' || String(log.is_connected).toLowerCase() === 'yes';
-                        if (isConnected) {
-                            hStats.connected_calls++;
-                            cStats.connected_calls++;
-                        } else {
-                            hStats.missed_calls++;
-                            cStats.missed_calls++;
-                        }
-                        
-                        // Assuming outgoing for campaign dashboard stats
-                        hStats.outgoing_calls++;
-                        cStats.outgoing_calls++;
+                    const { data, error } = await supabase.rpc('get_campaign_daily_analytics', {
+                        campaign_id_input: id,
+                        target_date_input: selectedDate
                     });
 
-                    return {
-                        data: {
-                            hourly_calls: Object.values(hourlyMap).map(h => ({ hour: h.hour, count: h.total_calls })).sort((a,b) => a.hour - b.hour),
-                            agent_performance: [], 
-                            disposition_stats: Object.entries(dispMap).map(([d, c]) => ({ name: d, value: c })), // mapping to name/value for Recharts
-                            hourly_detailed: Object.values(hourlyMap).sort((a,b) => a.hour - b.hour),
-                            caller_performance: Object.values(callerMap)
-                        },
-                        error: null
-                    };
+                    if (error) throw error;
+                    return { data, error: null };
                 } catch (e: any) {
                     console.error("Failed to aggregate analytics:", e);
                     return { data: null, error: e };
@@ -328,8 +259,7 @@ export default function CampaignDetails() {
                 { count: upcomingCount },
                 { count: recentCount },
                 { count: managedCount },
-                analyticsResponse,
-                todayStatsResponse
+                analyticsResponse
             ] = await Promise.all([
                 qTotal, // 0
                 qFollowup, // 1
@@ -338,8 +268,7 @@ export default function CampaignDetails() {
                 qUpcoming, // 4
                 qRecentCount, // 5
                 qManaged, // 6
-                analyticsPromise, // 7
-                supabase.rpc('get_today_campaign_stats', { campaign_id_input: id }) // 8
+                analyticsPromise // 7
             ]);
 
             setStats({

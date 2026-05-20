@@ -180,7 +180,13 @@ export function useFollowUpLeads() {
     } finally {
       if (!isBackground) setLoading(false);
     }
-  }, [user, mounted]);
+  }, [
+    user?.uid, 
+    user?.isClient, 
+    user?.designation, 
+    user?.organization_id, 
+    mounted
+  ]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -201,7 +207,7 @@ export function useFollowUpLeads() {
       }
       if (interval) clearInterval(interval);
     };
-  }, [fetchLeads, mounted, user]);
+  }, [fetchLeads, mounted, user?.uid]);
   const filteredLeads = useMemo(() => {
     let result = leads;
 
