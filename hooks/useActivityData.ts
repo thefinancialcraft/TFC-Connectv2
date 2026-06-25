@@ -210,24 +210,6 @@ export function useActivityData() {
         fetchPaginated(buildClosedQuery, false)
       ]);
 
-      // --- FETCH MOBILE HISTORY (LATEST 8) ---
-      let historyQuery = supabase
-        .from('call_history')
-        .select('*')
-        .order('timestamp', { ascending: false })
-        .limit(8);
-
-      if (dashboardLevel === 4 && user.uid) {
-        historyQuery = historyQuery.eq('employee_id', user.uid);
-      } else if (dashboardLevel === 3 && teamMemberIds.length > 0) {
-        historyQuery = historyQuery.in('employee_id', teamMemberIds);
-      } else if (dashboardLevel === 2 && user.organization_id) {
-        historyQuery = historyQuery.eq('organization_id', user.organization_id);
-      }
-      
-      const { data: historyData } = await historyQuery;
-      if (historyData) setMobileActivities(historyData);
-
       // --- HYDRATE AGENT AND CAMPAIGN DATA MANUALLY ---
       const allAgentIds = [...new Set([
         ...callLogs.map(l => l.agent_id),

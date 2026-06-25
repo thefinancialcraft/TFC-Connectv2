@@ -23,6 +23,10 @@ export default async function handler(
     return res.status(400).json({ error: 'Phone number is required' });
   }
 
+  if (!organization_id) {
+    return res.status(400).json({ error: 'Organization ID is strictly required to prevent cross-organization data matching.' });
+  }
+
   // Normalize phone number
   const searchPhone = String(phone).replace(/\D/g, '');
   const phoneHash = computePhoneHash(searchPhone);

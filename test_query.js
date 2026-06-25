@@ -6,31 +6,17 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function test() {
   try {
-    const startOfDay = new Date(`2026-04-27T00:00:00+05:30`).toISOString();
-    const endOfDay = new Date(`2026-04-27T23:59:59+05:30`).toISOString();
+    const { data, error } = await supabase
+      .from("customers")
+      .select(`*`)
+      .order("created_at", { ascending: false })
+      .limit(2);
 
-    const buildQueryFn = () => {
-      let q = supabase
-        .from("call_logs")
-        .select(`
-          *,
-          customer_name,
-          agent:user_profiles!agent_id!inner(user_name, employee_id, organization_id),
-          campaign:campaigns!campaign_id(name)
-        `)
-        .gte("created_at", startOfDay)
-        .lte("created_at", endOfDay)
-        .order("created_at", { ascending: false });
-      return q;
-    };
-
-    const q = buildQueryFn();
-    const { data, error } = await q.range(0, 999);
-    
     if (error) {
       console.error("Error:", error);
     } else {
-      console.log("Success. Rows:", data.length);
+      console.log("Total matched logs:", data.length);
+      console.log(JSON.stringify(data, null, 2));
     }
   } catch (err) {
     console.error("Caught exception:", err);

@@ -199,30 +199,21 @@ export default async function handler(
 
 
     // Determine which org to query
-    // If user requests specific org, validate they have access
     let targetOrgId: string | undefined = undefined;
-    
+    const isSuperAdmin = userProfile?.role === "super_admin" || userProfile?.role === "superadmin";
+
     if (orgId && orgId !== "all") {
-      // If user has profile, validate org access
-      if (userProfile) {
-        if (
-          userProfile.role === "admin" ||
-          userProfile.role === "super_admin" ||
-          userProfile.role === "superadmin" ||
-          orgId === userProfile.organization_id
-        ) {
-          targetOrgId = orgId as string;
-        } else {
-          return res.status(403).json({ success: false, error: "Organization access denied" });
-        }
-      } else {
-        // No profile - allow access to requested org (or could restrict here)
+      // User requested a specific org
+      if (isSuperAdmin || orgId === userProfile?.organization_id) {
         targetOrgId = orgId as string;
+      } else {
+        return res.status(403).json({ success: false, error: "Organization access denied" });
       }
-    } else if (orgId !== "all") {
-      // Default to user's org if not admin viewing all
-      if (userProfile && userProfile.role !== "admin" && userProfile.role !== "super_admin") {
-        targetOrgId = userProfile.organization_id;
+    } else {
+      // User requested "all" or didn't specify orgId
+      if (!isSuperAdmin) {
+        // Non-super-admins ALWAYS get restricted to their own org!
+        targetOrgId = userProfile?.organization_id;
       }
     }
 
@@ -405,10 +396,13 @@ export default async function handler(
       })(),
       // Misc
       (async () => {
-          const [campaigns, team] = await Promise.all([
-              dbClient.from("campaigns").select("*", { count: "exact", head: true }).eq("status", "active"),
-              dbClient.from("user_profiles").select("*", { count: "exact", head: true }).eq("approval_status", "approved")
-          ]);
+          let campQuery = dbClient.from("campaigns").select("*", { count: "exact", head: true }).eq("status", "active");
+          if (targetOrgId) campQuery = campQuery.eq("organization_id", targetOrgId);
+
+          let teamQuery = dbClient.from("user_profiles").select("*", { count: "exact", head: true }).eq("approval_status", "approved");
+          if (targetOrgId) teamQuery = teamQuery.eq("organization_id", targetOrgId);
+
+          const [campaigns, team] = await Promise.all([campQuery, teamQuery]);
           return { campaigns: campaigns.count || 0, team: team.count || 0 };
       })()
     ];
