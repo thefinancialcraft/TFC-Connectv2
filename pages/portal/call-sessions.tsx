@@ -247,12 +247,22 @@ export default function CallSessionsPage() {
     if (!window.confirm("Are you sure you want to delete this session? This will force the agent off their current lead session.")) return;
 
     try {
-        const { error } = await supabase
-            .from('call_sessions')
-            .delete()
-            .match({ user_id: userId, campaign_id: campaignId });
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("No active session");
 
-        if (error) throw error;
+        const response = await fetch("/api/auth/delete-call-session", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ user_id: userId, campaign_id: campaignId }),
+        });
+
+        const result = await response.json();
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || "Failed to delete session");
+        }
         
         // Update local state
         const updated = sessions.filter(s => !(s.user_id === userId && s.campaign_id === campaignId));
@@ -272,22 +282,25 @@ export default function CallSessionsPage() {
 
     try {
         setIsRefetching(true);
-        // Supabase delete doesn't support multiple .match in one go easily for composite keys in a simple way
-        // We can use an RPC or run multiple deletes, or use a filter that matches the combination
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("No active session");
         
-        // For composite keys, the safest/cleanest way without a custom RPC is to run them in parallel or loop
-        const deletePromises = selectedKeys.map((key: string) => {
-            const [uId, cId] = key.split('|'); // Using | as separator to avoid - issues in UUIDs
-            return supabase
-                .from('call_sessions')
-                .delete()
-                .match({ user_id: uId, campaign_id: cId });
+        const deletePromises = selectedKeys.map(async (key: string) => {
+            const [uId, cId] = key.split('|'); 
+            const response = await fetch("/api/auth/delete-call-session", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${session.access_token}`,
+                },
+                body: JSON.stringify({ user_id: uId, campaign_id: cId }),
+            });
+            const result = await response.json();
+            if (!response.ok || !result.success) throw new Error(result.error);
+            return result;
         });
 
-        const results = await Promise.all(deletePromises);
-        const errors = results.filter((r: any) => r.error);
-        
-        if (errors.length > 0) throw errors[0].error;
+        await Promise.all(deletePromises);
 
         // Update local state
         const updated = sessions.filter(s => !selectedKeys.includes(`${s.user_id}|${s.campaign_id}`));
