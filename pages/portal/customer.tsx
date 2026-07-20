@@ -361,6 +361,8 @@ export default function Customer() {
       "Language barrier",
       "DND",
       "Wrong NO",
+      "Ported / Expired",
+      "Already Renewed",
       "Not Contactable",
       "Call Back",
       "Deal Done",

@@ -148,6 +148,14 @@ const Sidebar = memo(function Sidebar({
         return canAccess;
       }
 
+      // Special Visibility for System Logs (Only visible to Client CEO, Developer, or Super Admin)
+      if (item.path === '/system-logs') {
+        const isClientCEO = currentUser.isClient === true && designation === 'ceo';
+        const isDeveloper = designation === 'developer';
+        const isInternalAdmin = currentUser.isClient === false && (userRole === 'admin' || userRole === 'super_admin' || isSuperAdmin === true);
+        return isClientCEO || isDeveloper || isInternalAdmin;
+      }
+
       // 1. Admin/Super Admin check
       if (item.adminOnly && !isAdminState) return false;
 

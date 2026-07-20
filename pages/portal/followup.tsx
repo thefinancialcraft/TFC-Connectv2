@@ -65,6 +65,7 @@ export default function FollowUp() {
     "DND": [],
     "Wrong NO": [],
     "Ported / Expired": [],
+    "Already Renewed": [],
     "Not Contactable": ["busy","Switch off", "Ring", "not reacable", "others"],
     "Call Back": ["Interested", "Follow up", "Not Connected"],
     "Deal Done": [],

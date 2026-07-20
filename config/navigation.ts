@@ -61,4 +61,10 @@ export const NAV_ITEMS: NavItemType[] = [
     icon: "fi-rr-headset",
     adminOnly: true,
   },
+  {
+    name: "System Logs",
+    path: "/system-logs",
+    icon: "fi-rr-list",
+    adminOnly: false,
+  },
 ];

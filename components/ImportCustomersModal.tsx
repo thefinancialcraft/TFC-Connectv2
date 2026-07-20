@@ -45,6 +45,8 @@ export default function ImportCustomersModal({
   const [selectedOrgId, setSelectedOrgId] = useState(preselectedOrgId);
   const [selectedCampaignId, setSelectedCampaignId] = useState(preselectedCampaignId);
   const [customExpiryDate, setCustomExpiryDate] = useState("");
+  const [sourceId, setSourceId] = useState("");
+  const [sourceName, setSourceName] = useState("");
   const [duplicates, setDuplicates] = useState<any[]>([]);
   const [showConflictModal, setShowConflictModal] = useState(false);
 
@@ -85,6 +87,8 @@ export default function ImportCustomersModal({
       setCustomFields([]);
       setImportError("");
       setImportSuccess("");
+      setSourceId("");
+      setSourceName("");
       setDuplicates([]);
       setFileConflicts([]);
       setShowFileConflictModal(false);
@@ -209,6 +213,11 @@ export default function ImportCustomersModal({
   };
 
     const verifyFileData = async () => {
+      if (!sourceName.trim()) {
+        setImportError("Please enter a Source Name.");
+        return;
+      }
+
       if (!importFile) {
         setImportError("Please select a file to upload");
         return;
@@ -307,6 +316,7 @@ export default function ImportCustomersModal({
               expiry_date: parsedExpiryDate,
               campaign_id: selectedCampaignId || null,
               organization_id: selectedOrgId || null,
+              source_id: sourceId.trim(),
               customer_details: {
                 active_details: "details-1",
                 history: {
@@ -613,6 +623,23 @@ export default function ImportCustomersModal({
 
             if (firstError) throw firstError;
 
+            // Log to system_logs table
+            const duplicateLeadsCount = initialRecordCount - fullyProcessedCustomers.length;
+            const { error: logTableError } = await supabase
+                .from("system_logs")
+                .insert({
+                    source_name: sourceName.trim(),
+                    source_id: sourceId.trim(),
+                    total_leads: initialRecordCount,
+                    duplicate_leads: duplicateLeadsCount,
+                    organization_id: selectedOrgId || null,
+                    campaign_id: selectedCampaignId || null,
+                    created_by: user?.uid || null
+                });
+            if (logTableError) {
+                console.error("Failed to write to system_logs:", logTableError);
+            }
+
             // Log monitoring event
             const totalRecords = toUpdate.length + toInsert.length;
             const inputSize = estimateSize([...toUpdate, ...toInsert]);
@@ -740,6 +767,11 @@ export default function ImportCustomersModal({
     const file = e.target.files?.[0];
     if (!file) return;
     setImportFile(file);
+
+    const generatedSourceId = `SRC-${Math.random().toString(36).substring(2, 10).toUpperCase()}`;
+    setSourceId(generatedSourceId);
+    setSourceName(file.name);
+
     const text = await file.text();
     const firstLine = text.split("\n")[0];
     if (firstLine) {
@@ -1064,6 +1096,8 @@ export default function ImportCustomersModal({
                 </div>
               </div>
 
+
+
               <div className="relative border-2 border-dashed border-gray-300 rounded-lg p-10 text-center hover:border-[#4b33e8] transition-colors">
                 <input ref={fileInputRef} type="file" accept=".csv" onChange={handleFileUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 <i className="fi flex fi-rr-upload text-3xl text-gray-400 mb-2 justify-center"></i>
@@ -1260,6 +1294,17 @@ export default function ImportCustomersModal({
                 )}
               </div>
               
+              <div className="mb-4 border-t pt-4">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider block mb-1">Source Name</label>
+                <input 
+                  type="text" 
+                  placeholder="Enter Source Name"
+                  value={sourceName} 
+                  onChange={(e) => setSourceName(e.target.value)}
+                  className="w-full px-4 py-2.5 text-gray-600 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:bg-white focus:border-[#4b33e8]/30 outline-none font-semibold"
+                />
+              </div>
+
               {importError && <div className="mb-4 p-3 bg-red-50 text-red-600 rounded text-sm">{importError}</div>}
               {importSuccess && <div className="mb-4 p-3 bg-green-50 text-green-600 rounded text-sm">{importSuccess}</div>}
 

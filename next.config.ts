@@ -25,6 +25,7 @@ const nextConfig: NextConfig = {
       { source: '/hold', destination: '/portal/hold' },
       { source: '/profile-completion', destination: '/portal/profile-completion' },
       { source: '/call-sessions', destination: '/portal/call-sessions' },
+      { source: '/system-logs', destination: '/portal/system-logs' },
     ];
   },
 };

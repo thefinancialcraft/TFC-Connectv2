@@ -573,7 +573,8 @@ export default function CallingPage() {
         "DND": [],
         "Wrong NO": [],
         "Ported / Expired": [],
-        "Not Contactable": ["busy","Switch off", "Ring", "not reacable", "others"],
+        "Already Renewed": [],
+        "Not Contactable": ["busy","Switch off", "Ring", "not reachable", "others"],
       "Call Back": ["Interested", "Follow up", "Not Connected"],
         "Deal Done": [],
     };
@@ -2155,12 +2156,12 @@ useEffect(() => {
             const now = new Date().toISOString();
 
             // Determine Connection Status
-            const isConnected = (disposition === 'Call Back' || disposition === 'Deal Done' || disposition === 'Not Intrested' || disposition === 'Language barrier' || disposition === 'DND' || disposition === 'Wrong NO') 
+            const isConnected = (disposition === 'Call Back' || disposition === 'Deal Done' || disposition === 'Not Intrested' || disposition === 'Language barrier' || disposition === 'DND' || disposition === 'Wrong NO' || disposition === 'Already Renewed') 
                 ? 'contactable' 
                 : (disposition === 'Not Contactable' ? 'uncontactable' : null);
 
             // Calculate preliminary log values
-            const isRejected = disposition === 'DND' || disposition === 'Language barrier' || disposition === 'Wrong NO' || disposition === 'Ported / Expired' || disposition === 'Not Intrested';
+            const isRejected = disposition === 'DND' || disposition === 'Language barrier' || disposition === 'Wrong NO' || disposition === 'Ported / Expired' || disposition === 'Not Intrested' || disposition === 'Already Renewed';
             const isClosed = disposition === 'Deal Done';
             
             let logNextCalledAt = null;
