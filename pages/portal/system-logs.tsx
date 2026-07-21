@@ -17,6 +17,7 @@ interface SystemLog {
   organizations?: { company_name: string } | null;
 }
 
+
 interface LeadCounts {
   source_id: string;
   active_count: number;
