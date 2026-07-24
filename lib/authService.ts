@@ -77,8 +77,13 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       .eq("user_id", authUser.id)
       .maybeSingle();
 
-    if (profileError) {
-      console.error("Error fetching user profile:", profileError);
+    if (profileError || !profileData) {
+      console.error("Error fetching user profile or profile not found:", profileError);
+      return {
+        user: null,
+        error: profileError?.message || "User profile not found in database",
+        shouldRedirect: true,
+      };
     }
 
     const userData: UserProfile = {

@@ -19,6 +19,14 @@ export default function Login() {
   const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
+    if (router.isReady && router.query.error) {
+      setError(decodeURIComponent(router.query.error as string));
+      // Remove query parameter from URL after showing error to keep URL clean
+      router.replace(router.pathname, undefined, { shallow: true });
+    }
+  }, [router.isReady, router.query, router.pathname]);
+
+  useEffect(() => {
     let isMounted = true;
 
     // 🛡️ SAFETY FALLBACK: If checking takes too long (e.g. 12s), force show login form.

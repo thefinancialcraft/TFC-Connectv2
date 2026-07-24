@@ -67,7 +67,6 @@ export function useAuthGuard(): UseAuthGuardReturn {
                 setUser(cachedProfile);
                 console.log("⚡ [Auth] Restored User Profile from Session Tab Memory.");
                 
-                // If it's a critical page, we force a background verification
                 if (router.pathname.includes('/portal')) {
                     console.log("🔍 [Auth] Background Status Verification Triggered...");
                     checkAuthAndFetchProfile().then(result => {
@@ -87,6 +86,11 @@ export function useAuthGuard(): UseAuthGuardReturn {
                                 setUser(result.user);
                                 sessionStorage.setItem('active_user_profile', JSON.stringify(result.user));
                             }
+                        } else if (result.shouldRedirect) {
+                            console.warn("🚨 [Auth] Background validation failed. Profile missing or error. Redirecting to login...");
+                            setUser(null);
+                            sessionStorage.removeItem('active_user_profile');
+                            router.push(`/login?error=${encodeURIComponent("Internal syncing error. Try to relogin.")}`);
                         }
                     });
                 }
@@ -146,7 +150,12 @@ export function useAuthGuard(): UseAuthGuardReturn {
            setUser(null);
            if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
              setStatusMessage("Auth failed. Redirecting...");
-             router.push("/login");
+             const errorMsg = result.error || "";
+             const isSyncError = errorMsg.includes("profile not found") || errorMsg.includes("User profile not found");
+             const redirectUrl = isSyncError 
+               ? `/login?error=${encodeURIComponent("Internal syncing error. Try to relogin.")}`
+               : "/login";
+             router.push(redirectUrl);
            }
         }
       } else {
