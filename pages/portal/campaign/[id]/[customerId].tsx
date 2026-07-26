@@ -2257,6 +2257,16 @@ useEffect(() => {
                     p_outcome: outcome
                 });
                 if (rejectError) throw rejectError;
+
+                // Ensure is_connected column is updated on rejected_leads
+                await supabase
+                    .from('rejected_leads')
+                    .update({ 
+                        is_connected: isConnected || 'contactable',
+                        ...(customer?.source_id ? { source_id: customer.source_id } : {})
+                    })
+                    .or(`id.eq.${customerId},customer_id.eq.${customerId}`);
+
                 fetchSchedules();
             } else if (isClosed) {
                 // Move to closed table and delete from customers
@@ -2270,6 +2280,16 @@ useEffect(() => {
                     p_outcome: outcome
                 });
                 if (closeError) throw closeError;
+
+                // Ensure is_connected column is updated on closed_deals
+                await supabase
+                    .from('closed_deals')
+                    .update({ 
+                        is_connected: isConnected || 'contactable',
+                        ...(customer?.source_id ? { source_id: customer.source_id } : {})
+                    })
+                    .or(`id.eq.${customerId},customer_id.eq.${customerId}`);
+
                 fetchSchedules();
             } else if (disposition === 'Not Contactable') {
                 // Return to General Pool immediately (per new user requirement)

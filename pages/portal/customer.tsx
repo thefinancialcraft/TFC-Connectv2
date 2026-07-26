@@ -879,7 +879,10 @@ export default function Customer() {
 
           if (fetchError) throw fetchError;
 
-          if (leads && leads.length > 0) {
+            const isConn = (updates.disposition === 'Call Back' || updates.disposition === 'Deal Done' || updates.disposition === 'Not Intrested' || updates.disposition === 'Language barrier' || updates.disposition === 'DND' || updates.disposition === 'Wrong NO' || updates.disposition === 'Already Renewed')
+              ? 'contactable'
+              : (updates.disposition === 'Not Contactable' ? 'uncontactable' : 'contactable');
+
             const rejectedLeads = leads.map(lead => ({
               customer_id: lead.id,
               customer_name: lead.customer_name,
@@ -891,7 +894,9 @@ export default function Customer() {
               agent_id: updates.assigned_to || lead.assigned_to,
               rejected_at: new Date().toISOString(),
               managed_by: lead.managed_by,
-              organization_id: updates.organization_id || lead.organization_id
+              organization_id: updates.organization_id || lead.organization_id,
+              is_connected: isConn,
+              source_id: (lead as any).source_id || null
             }));
 
             // 2. Insert into rejected
@@ -908,17 +913,16 @@ export default function Customer() {
               .in("id", ids);
 
             if (deleteError) throw deleteError;
-          }
-        } else {
-          // Standard bulk update for any fields provided
-          const { error } = await supabase
-            .from("customers")
-            .update(updates)
-            .in("id", ids);
+          } else {
+            // Standard bulk update for any fields provided
+            const { error } = await supabase
+              .from("customers")
+              .update(updates)
+              .in("id", ids);
 
-          if (error) throw error;
+            if (error) throw error;
+          }
         }
-      }
 
       setSelectedCustomers(new Set());
       await fetchCustomers(currentPage);
