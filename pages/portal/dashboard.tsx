@@ -347,10 +347,8 @@ export default function Dashboard() {
                 <span className="font-semibold text-[#4b33e8]">
                   {mounted ? user?.displayName || "User" : "User"}
                 </span>
-                <p className="text-sm text-gray-500 mt-1">
-                  Here's what's happening with your business today.
-                </p>
-                </p>
+                . Here's what's happening with your business today.
+              </p>
             </div>
             
             <div className="flex items-center justify-start lg:justify-end gap-3 w-full lg:w-auto">
@@ -481,12 +479,6 @@ export default function Dashboard() {
               </div>
 
               <div className="flex items-center gap-2">
-                <div className="px-3 h-10 bg-[#4b33e8] rounded-xl text-xs font-bold text-white cursor-default flex items-center gap-2">
-                  <span className={`w-1.5 h-1.5 rounded-full bg-white ${(statsLoading || chartsLoading || agentLoading) ? '' : 'animate-pulse'}`}></span>
-                  <span className="hidden sm:inline">{(statsLoading || chartsLoading || agentLoading) ? "Updating..." : "Live Updates"}</span>
-                  <span className="sm:hidden">{(statsLoading || chartsLoading || agentLoading) ? "..." : "Live"}</span>
-                </div>
-                
                 <button
                     onClick={() => {
                         const oid = selectedOrgId === "all" ? "all" : selectedOrgId;
@@ -557,74 +549,79 @@ export default function Dashboard() {
           {/* Secondary Stats Grid (Only depends on stats) */}
           <SecondaryStats stats={stats} secondaryStats={secondaryStats} loading={statsLoading} />
 
-          {/* Analytics Segmented Toggle Selector */}
-          <div className="flex justify-center lg:justify-start">
-            <div className="bg-white border border-gray-100 p-1 rounded-xl inline-flex w-full sm:w-auto relative overflow-hidden">
-              {/* Sliding Background Indicator */}
-              <div 
-                className="absolute top-1 bottom-1 transition-all duration-300 ease-out bg-[#4b33e8] rounded-lg z-0"
-                style={{
-                  width: 'calc((100% - 8px) / 3)', // Assuming 3 tabs
-                  left: `calc(4px + (${["prospect", "callDetails", "agentPerf"].indexOf(activeTab)} * (100% - 8px) / 3))`
-                }}
-              />
-              
-              {[
-                { id: "prospect", label: "Prospect Wise ", short: "Prospects" },
-                { id: "callDetails", label: "Call Hourly Analytics", short: "Hours" },
-                { id: "agentPerf", label: "Agent Performance", short: "Agents" },
-              ].map((tab) => (
+          {/* Analytics Segmented Toggle Selector - Equal Width Tabs with Smooth Sliding Underline */}
+          <div className="border-b border-gray-200 grid grid-cols-3 max-w-2xl text-sm font-medium relative mt-4 pt-2">
+            {[
+              { id: "prospect", label: "Prospect Wise Analytics", short: "Prospects" },
+              { id: "callDetails", label: "Call Hourly Analytics", short: "Hours" },
+              { id: "agentPerf", label: "Agent Performance", short: "Agents" },
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex-1 sm:w-56 px-4 py-2 rounded-lg text-[10px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 relative z-10 ${
-                    activeTab === tab.id
-                      ? "text-white"
-                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-50/50"
+                  className={`pb-3 text-center transition-colors relative font-semibold text-xs sm:text-sm ${
+                    isActive ? "text-[#4b33e8]" : "text-gray-500 hover:text-gray-800"
                   }`}
-                  style={{ fontFamily: "'Poppins', sans-serif" }}
                 >
                   <span className="hidden sm:inline">{tab.label}</span>
                   <span className="sm:hidden">{tab.short}</span>
                 </button>
-              ))}
-            </div>
+              );
+            })}
+            {/* Sliding Underline Indicator Line (Centered Compact Width) */}
+            <div 
+              className="absolute bottom-0 h-0.5 bg-[#4b33e8] rounded-full transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+              style={{
+                width: '16.666%',
+                left: activeTab === "prospect" ? '8.333%' : activeTab === "callDetails" ? '41.666%' : '75%'
+              }}
+            />
           </div>
 
-          {/* Tab Content */}
-          {activeTab === "prospect" && (
-            <ProspectTab
-              stats={stats}
-              performanceMetrics={performanceMetrics}
-              campaignData={campaignData}
-              pieData={pieData}
-              loading={statsLoading || chartsLoading}
-            />
-          )}
+          {/* Tab Content Container with Smooth Fade & Slide Transition */}
+          <div className="transition-all duration-300">
+            {activeTab === "prospect" && (
+              <div key="prospect" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
+                <ProspectTab
+                  stats={stats}
+                  performanceMetrics={performanceMetrics}
+                  campaignData={campaignData}
+                  pieData={pieData}
+                  loading={statsLoading || chartsLoading}
+                />
+              </div>
+            )}
 
-          {activeTab === "agentPerf" && (
-            <AgentPerformanceTab
-              agentData={agentData}
-              totalDials={stats.totalDials}
-              selectedOrgId={selectedOrgId}
-              selectedUserId={selectedUserId}
-              dateFilter={dateFilter}
-              restrictedUserIds={restrictedUserIds}
-              loading={agentLoading}
-              onTotalsChange={setSyncedTotals}
-            />
-          )}
+            {activeTab === "agentPerf" && (
+              <div key="agentPerf" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
+                <AgentPerformanceTab
+                  agentData={agentData}
+                  totalDials={stats.totalDials}
+                  selectedOrgId={selectedOrgId}
+                  selectedUserId={selectedUserId}
+                  dateFilter={dateFilter}
+                  restrictedUserIds={restrictedUserIds}
+                  loading={agentLoading}
+                  onTotalsChange={setSyncedTotals}
+                />
+              </div>
+            )}
 
-          {activeTab === "callDetails" && (
-            <HourlyAnalyticsTab
-              heatmapData={heatmapData}
-              hourlyStats={hourlyStats}
-              selectedOrgId={selectedOrgId}
-              selectedUserId={selectedUserId}
-              dateFilter={dateFilter}
-              loading={chartsLoading}
-            />
-          )}
+            {activeTab === "callDetails" && (
+              <div key="callDetails" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
+                <HourlyAnalyticsTab
+                  heatmapData={heatmapData}
+                  hourlyStats={hourlyStats}
+                  selectedOrgId={selectedOrgId}
+                  selectedUserId={selectedUserId}
+                  dateFilter={dateFilter}
+                  loading={chartsLoading}
+                />
+              </div>
+            )}
+          </div>
 
         </div>
         )}

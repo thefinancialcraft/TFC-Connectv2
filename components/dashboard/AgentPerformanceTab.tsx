@@ -197,6 +197,19 @@ export default function AgentPerformanceTab({
           avgGapStr = (mins > 0 ? `${mins}m ` : '') + `${secs}s`;
         }
 
+        // Calculate disposition counts for call_logs
+        const dispositionCounts: Record<string, number> = {};
+        let totalDispositions = 0;
+        agentPortalLogs.forEach(l => {
+          if (l.disposition) {
+            const disp = l.disposition.trim();
+            if (disp) {
+              dispositionCounts[disp] = (dispositionCounts[disp] || 0) + 1;
+              totalDispositions++;
+            }
+          }
+        });
+
         return {
           user_id_val: uId,
           employee_id_val: a.employee_id,
@@ -208,7 +221,9 @@ export default function AgentPerformanceTab({
           last_call_at: lastCallAt,
           streak_gap: `${streakCount}/${avgGapStr}`,
           avg_talk: `${Math.floor(avgTalkSec / 60)}m ${avgTalkSec % 60}s`,
-          profile_pic_url: a.profile_pic_url
+          profile_pic_url: a.profile_pic_url,
+          dispositions: dispositionCounts,
+          total_dispositions: totalDispositions
         };
       });
 
@@ -253,7 +268,7 @@ export default function AgentPerformanceTab({
       const employeeIds = rpcData.map(i => i.employee_id_val).filter(Boolean);
       const fetchStatus = async () => {
         const [syncRes, sessionRes, profileRes] = await Promise.all([
-          supabase.from('sync_meta').select('employee_id, on_call, is_personal, last_seen').in('employee_id', employeeIds),
+          supabase.from('sync_meta').select('employee_id, on_call, is_personal, updated_at').in('employee_id', employeeIds),
           supabase.from('user_sessions').select('user_id, last_accessed_at').in('user_id', userIds).order('last_accessed_at', { ascending: false }),
           supabase.from('user_profiles').select('user_id, last_online').in('user_id', userIds)
         ]);
@@ -280,16 +295,21 @@ export default function AgentPerformanceTab({
       const sessionData = rawSessions.find(s => s.user_id === uId);
       const profileData = rawProfiles.find(p => p.user_id === uId);
       
-      // Robust Last Active: Max of (Call History, Portal Activity, Device Sync)
+      // Robust Last Active: Max of (Call History, Portal Activity, Sync Updated At)
       const callLastActive = item.last_call_at ? new Date(item.last_call_at).getTime() : 0;
       const portalLastActive = profileData?.last_online ? new Date(profileData.last_online).getTime() : 0;
-      const deviceLastActive = syncData?.last_seen ? new Date(syncData.last_seen).getTime() : 0;
+      const syncUpdatedAt = syncData?.updated_at ? new Date(syncData.updated_at).getTime() : 0;
       const sessionLastActive = sessionData?.last_accessed_at ? new Date(sessionData.last_accessed_at).getTime() : 0;
       
-      const maxLastActiveTs = Math.max(callLastActive, portalLastActive, deviceLastActive, sessionLastActive);
+      const maxLastActiveTs = Math.max(callLastActive, portalLastActive, syncUpdatedAt, sessionLastActive);
       const lastActive = maxLastActiveTs > 0 ? new Date(maxLastActiveTs).toISOString() : null;
 
       const isActuallyOnline = (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 60000); // 1m threshold
+
+      // Freshness check for on_call status using strictly updated_at (within 3 minutes)
+      const isSyncFresh = syncUpdatedAt > 0 && (now.getTime() - syncUpdatedAt) < 180000;
+      const isOnCall = !!(syncData?.on_call && isSyncFresh);
+      const isPersonal = !!(syncData?.is_personal && isOnCall);
       
       let idleTimeStr = "N/A";
       if (lastActive) {
@@ -317,11 +337,14 @@ export default function AgentPerformanceTab({
         utilization: utilRaw.toFixed(1) + '%',
         utilizationRaw: utilRaw,
         lastActive,
+        lastCallAt: item.last_call_at,
         idleTime: idleTimeStr,
-        status: syncData?.on_call ? (syncData.is_personal ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle'),
-        onCall: !!syncData?.on_call,
-        isPersonal: !!syncData?.is_personal,
-        lastOnline: profileData?.last_online || syncData?.last_seen || sessionData?.last_accessed_at || null
+        status: isOnCall ? (isPersonal ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle'),
+        onCall: isOnCall,
+        isPersonal: isPersonal,
+        lastOnline: profileData?.last_online || syncData?.updated_at || sessionData?.last_accessed_at || null,
+        dispositions: item.dispositions || {},
+        totalDispositions: item.total_dispositions || 0
       };
     });
     return map;
