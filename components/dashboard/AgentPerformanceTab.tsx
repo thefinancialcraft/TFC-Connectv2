@@ -39,6 +39,8 @@ interface AgentPerformanceRecord {
   streak_gap: string;
   avg_talk: string;
   profile_pic_url: string | null;
+  dispositions?: Record<string, number>;
+  total_dispositions?: number;
 }
 
 export default function AgentPerformanceTab({
