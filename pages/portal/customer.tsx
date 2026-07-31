@@ -513,7 +513,13 @@ export default function Customer() {
       }
       countQuery = applyUserFilters(countQuery);
       if (filters.organization) countQuery = countQuery.eq("organization_id", filters.organization);
-      if (filters.campaign) countQuery = countQuery.eq("campaign_id", filters.campaign);
+      if (filters.campaign) {
+        if (filters.campaign === "unassigned") {
+          countQuery = countQuery.is("campaign_id", null);
+        } else {
+          countQuery = countQuery.eq("campaign_id", filters.campaign);
+        }
+      }
       if (filters.assignedTo) {
         if (filters.assignedTo === "unassigned") countQuery = countQuery.is(activeSource === 'live' ? 'assigned_to' : 'agent_id', null);
         else countQuery = countQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
@@ -563,9 +569,15 @@ export default function Customer() {
             freshCountQuery = freshCountQuery.eq("organization_id", filters.organization);
         }
         if (filters.campaign) {
-            pendingQuery = pendingQuery.eq("campaign_id", filters.campaign);
-            overdueQuery = overdueQuery.eq("campaign_id", filters.campaign);
-            freshCountQuery = freshCountQuery.eq("campaign_id", filters.campaign);
+            if (filters.campaign === "unassigned") {
+                pendingQuery = pendingQuery.is("campaign_id", null);
+                overdueQuery = overdueQuery.is("campaign_id", null);
+                freshCountQuery = freshCountQuery.is("campaign_id", null);
+            } else {
+                pendingQuery = pendingQuery.eq("campaign_id", filters.campaign);
+                overdueQuery = overdueQuery.eq("campaign_id", filters.campaign);
+                freshCountQuery = freshCountQuery.eq("campaign_id", filters.campaign);
+            }
         }
         if (filters.assignedTo) {
             const agentCol = activeSource === 'live' ? 'assigned_to' : 'agent_id';
@@ -654,7 +666,13 @@ export default function Customer() {
       }
       query = applyUserFilters(query);
       if (filters.organization) query = query.eq("organization_id", filters.organization);
-      if (filters.campaign) query = query.eq("campaign_id", filters.campaign);
+      if (filters.campaign) {
+        if (filters.campaign === "unassigned") {
+          query = query.is("campaign_id", null);
+        } else {
+          query = query.eq("campaign_id", filters.campaign);
+        }
+      }
       if (filters.assignedTo) {
         if (filters.assignedTo === "unassigned") query = query.is(activeSource === 'live' ? 'assigned_to' : 'agent_id', null);
         else query = query.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
@@ -705,7 +723,13 @@ export default function Customer() {
             }
             batchQuery = applyUserFilters(batchQuery);
             if (filters.organization) batchQuery = batchQuery.eq("organization_id", filters.organization);
-            if (filters.campaign) batchQuery = batchQuery.eq("campaign_id", filters.campaign);
+            if (filters.campaign) {
+                if (filters.campaign === "unassigned") {
+                    batchQuery = batchQuery.is("campaign_id", null);
+                } else {
+                    batchQuery = batchQuery.eq("campaign_id", filters.campaign);
+                }
+            }
             if (filters.assignedTo) {
                 if (filters.assignedTo === "unassigned") batchQuery = batchQuery.is(activeSource === 'live' ? 'assigned_to' : 'agent_id', null);
                 else batchQuery = batchQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
@@ -3313,6 +3337,7 @@ export default function Customer() {
                   className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all cursor-pointer font-sans"
                 >
                   <option value="">All Campaigns</option>
+                  <option value="unassigned">Unassigned Campaign Leads</option>
                   {filterStats.campaigns
                     .filter(camp => filters.organization && camp.organization_id === filters.organization)
                     .map(camp => (
@@ -3341,7 +3366,7 @@ export default function Customer() {
                       return filterStats.agents
                         .filter(agent => {
                           const orgMatch = filters.organization && agent.organization_id === filters.organization;
-                          const campaignMatch = !filters.campaign || campaignUserIds.includes(agent.user_id);
+                          const campaignMatch = !filters.campaign || filters.campaign === "unassigned" || campaignUserIds.includes(agent.user_id);
                           return orgMatch && campaignMatch;
                         })
                         .map(agent => (

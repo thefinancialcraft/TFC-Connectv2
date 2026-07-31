@@ -269,9 +269,11 @@ export default async function handler(
     // Conversion rate
     const conversionRate = totalLeads > 0 ? (closedLeads / totalLeads) * 100 : 0;
 
-    // Avg talk time across all call logs for this source_id
-    const totalDuration = allSourceCallLogs.reduce((acc, curr) => acc + (curr.duration || 0), 0);
-    const avgTalkTime = totalCalls > 0 ? totalDuration / totalCalls : 0;
+    // Avg talk time across connected call logs for this source_id
+    const connectedCallLogs = allSourceCallLogs.filter((cl) => cl.is_connected === 'contactable');
+    const connectedCallsCount = connectedCallLogs.length;
+    const totalDuration = connectedCallLogs.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+    const avgTalkTime = connectedCallsCount > 0 ? totalDuration / connectedCallsCount : 0;
 
     // Unique agents
     const uniqueAgentIds = new Set(customers.map((c) => c.assigned_to).filter(Boolean));
@@ -456,14 +458,14 @@ export default async function handler(
       agentPerfMap[agentId].calls++;
       if (cl.is_connected === 'contactable') {
         agentPerfMap[agentId].connectedCalls++;
+        agentPerfMap[agentId].totalDuration += (cl.duration || 0);
       }
-      agentPerfMap[agentId].totalDuration += (cl.duration || 0);
     });
 
     const agentPerformance = Object.values(agentPerfMap).map((a: any) => {
       const connectedRate = a.calls > 0 ? (a.connectedCalls / a.calls) * 100 : 0;
       const convRate = a.leads > 0 ? (a.deals / a.leads) * 100 : 0;
-      const avgTalk = a.calls > 0 ? a.totalDuration / a.calls : 0;
+      const avgTalk = a.connectedCalls > 0 ? a.totalDuration / a.connectedCalls : 0;
       const score = Math.round(Math.min(100, (connectedRate * 0.4) + (convRate * 10) + (Math.min(avgTalk, 180) / 1.8)));
       return {
         ...a,
