@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, memo, useCallback } from "react";
 import { useRouter } from "next/router";
 import Head from "next/head";
 import { useUser } from "@/components/AppLayout";
@@ -35,6 +35,187 @@ interface Customer {
   rejected_at?: string | null;
 }
 
+
+const CustomerTableRow = memo(({
+  customer,
+  isSelected,
+  permissionFlags,
+  dataSource,
+  onToggleSelect,
+  onViewDetails,
+  onDeleteCustomer,
+  formatDate,
+}: {
+  customer: Customer;
+  isSelected: boolean;
+  permissionFlags: any;
+  dataSource: "live" | "rejected" | "closed";
+  onToggleSelect: (id: string, checked: boolean) => void;
+  onViewDetails: (customer: Customer) => void;
+  onDeleteCustomer: (customer: Customer) => void;
+  formatDate: (dateString: string | null | undefined) => string;
+}) => {
+  return (
+    <tr className="group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0">
+      <td className="px-4 py-4">
+        {permissionFlags.isCheckBoxVisible && (
+          <div className="flex items-center justify-center">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={(e) => onToggleSelect(customer.id, e.target.checked)}
+              className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
+            />
+          </div>
+        )}
+      </td>
+      <td className="px-4 py-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-indigo-100 uppercase">
+            {customer.customer_name
+              ? customer.customer_name.charAt(0).toUpperCase()
+              : "C"}
+          </div>
+          <span
+            className="text-xs font-medium text-gray-800"
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              color: "#263238",
+            }}
+          >
+            {customer.customer_name || "N/A"}
+          </span>
+        </div>
+      </td>
+
+      <td className="px-4 py-4 text-center">
+        <div className="flex justify-center">
+          <div
+            className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
+              dataSource === "closed"
+                ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                : dataSource === "rejected"
+                ? "bg-rose-50 text-rose-600 border border-rose-100"
+                : customer.status === "active"
+                ? "bg-green-50 text-green-600 border border-green-100"
+                : customer.status === "inactive"
+                ? "bg-gray-50 text-gray-600 border border-gray-100"
+                : "bg-orange-50 text-orange-600 border border-orange-100"
+            }`}
+          >
+            {dataSource === "closed"
+              ? "Deal Done"
+              : dataSource === "rejected"
+              ? "Rejected"
+              : customer.status === "active"
+              ? "Active"
+              : customer.status === "inactive"
+              ? "Inactive"
+              : "Pending"}
+          </div>
+        </div>
+      </td>
+      <td className="px-4 py-4">
+        <span className="px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wide">
+          {customer.campaign_name || "No Campaign"}
+        </span>
+      </td>
+      <td className="px-4 py-4">
+        <div className="flex items-center gap-2">
+          <i className="fi flex fi-rr-building text-[#4b33e8] text-xs"></i>
+          <span
+            className="text-[12px] font-medium text-gray-700"
+            style={{
+              fontFamily: "'Roboto', sans-serif",
+            }}
+          >
+            {customer.organization_name || "N/A"}
+          </span>
+        </div>
+      </td>
+      <td className="px-4 py-4">
+        <span className="text-xs font-medium text-gray-600">
+          {customer.assigned_user_name ||
+            customer.assigned_employee_id ||
+            "Unassigned"}
+        </span>
+      </td>
+      <td className="px-4 py-4">
+        <div className="flex flex-col">
+          <span className="text-xs font-semibold text-gray-800">
+            {customer.managed_by_name || "Self"}
+          </span>
+          {customer.managed_by_id && (
+            <span className="text-[10px] text-gray-400 font-medium">
+              ID: {customer.managed_by_id}
+            </span>
+          )}
+        </div>
+      </td>
+      <td className="px-4 py-4">
+        <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100 uppercase tracking-tighter">
+          {customer.disposition || "No Status"}
+        </span>
+      </td>
+      <td className="px-4 py-4">
+        <div className="flex flex-col">
+          <span className="text-xs font-medium text-gray-700 leading-none mb-1">
+            {dataSource === "closed" || dataSource === "rejected"
+              ? customer.disposition || "N/A"
+              : customer.expiry_date
+              ? formatDate(customer.expiry_date)
+              : "---"}
+          </span>
+          <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
+            {dataSource === "closed" || dataSource === "rejected"
+              ? "Disposition"
+              : "Expires"}
+          </span>
+        </div>
+      </td>
+      <td className="px-4 py-4">
+        <div className="flex flex-col">
+          <span className="text-xs font-medium text-gray-700 leading-none mb-1">
+            {formatDate(
+              dataSource === "closed"
+                ? customer.closed_at
+                : dataSource === "rejected"
+                ? customer.rejected_at
+                : customer.created_at
+            )}
+          </span>
+          <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
+            {dataSource === "closed"
+              ? "Closed"
+              : dataSource === "rejected"
+              ? "Rejected"
+              : "Created"}
+          </span>
+        </div>
+      </td>
+      <td className="px-4 py-4 text-right">
+        <div className="flex items-center justify-end gap-2">
+          <button
+            onClick={() => onViewDetails(customer)}
+            className="text-purple-600 hover:text-purple-700 transition-colors p-1.5 hover:bg-purple-50 rounded"
+            title="View Details"
+          >
+            <i className="fi flex fi-rr-info text-sm"></i>
+          </button>
+          {permissionFlags.isDeleteFromLeadButtonVisible && (
+            <button
+              className="text-red-600 hover:text-red-700 transition-colors p-1.5 hover:bg-red-50 rounded"
+              title="Delete"
+              onClick={() => onDeleteCustomer(customer)}
+            >
+              <i className="fi flex fi-rr-trash text-sm"></i>
+            </button>
+          )}
+        </div>
+      </td>
+    </tr>
+  );
+});
 
 export default function Customer() {
   const router = useRouter();
@@ -871,82 +1052,92 @@ export default function Customer() {
     setIsUpdatingBulk(true);
     try {
       const ids = Array.from(selectedCustomers);
+      const batchSize = 50;
 
       // Check for special "Move Fresh" action
       if (updates.action === "Move Fresh") {
-        const { error: resetError } = await supabase
-          .from("customers")
-          .update({
-            disposition: null,
-            sub_disposition: null,
-            assigned_to: null,
-            status: "active",
-            last_called_at: null,
-            last_updated_by: null,
-            is_connected: null,
-            attempt_count: 0,
-            last_attempt_at: null,
-            managed_by: null
-          })
-          .in("id", ids);
+        for (let i = 0; i < ids.length; i += batchSize) {
+          const batch = ids.slice(i, i + batchSize);
+          const { error: resetError } = await supabase
+            .from("customers")
+            .update({
+              disposition: null,
+              sub_disposition: null,
+              assigned_to: null,
+              status: "active",
+              last_called_at: null,
+              last_updated_by: null,
+              is_connected: null,
+              attempt_count: 0,
+              last_attempt_at: null,
+              managed_by: null
+            })
+            .in("id", batch);
 
-        if (resetError) throw resetError;
+          if (resetError) throw resetError;
+        }
       } else {
         // Check for Rejected Disposition move
         const rejectedValue = updates.disposition;
         if (rejectedValue && ["Wrong NO", "DND", "Language barrier"].includes(rejectedValue)) {
-          // 1. Fetch the leads first to move them
-          const { data: leads, error: fetchError } = await supabase
-            .from("customers")
-            .select("*")
-            .in("id", ids);
-
-          if (fetchError) throw fetchError;
-
-            const isConn = (updates.disposition === 'Call Back' || updates.disposition === 'Deal Done' || updates.disposition === 'Not Intrested' || updates.disposition === 'Language barrier' || updates.disposition === 'DND' || updates.disposition === 'Wrong NO' || updates.disposition === 'Already Renewed')
-              ? 'contactable'
-              : (updates.disposition === 'Not Contactable' ? 'uncontactable' : 'contactable');
-
-            const rejectedLeads = leads.map(lead => ({
-              customer_id: lead.id,
-              customer_name: lead.customer_name,
-              phone_no: lead.phone_no,
-              phone_search_hash: lead.phone_search_hash || computePhoneHash(decryptPhone(lead.phone_no)),
-              campaign_id: updates.campaign_id || lead.campaign_id,
-              disposition: updates.disposition || lead.disposition,
-              sub_disposition: lead.sub_disposition,
-              agent_id: updates.assigned_to || lead.assigned_to,
-              rejected_at: new Date().toISOString(),
-              managed_by: lead.managed_by,
-              organization_id: updates.organization_id || lead.organization_id,
-              is_connected: isConn,
-              source_id: (lead as any).source_id || null
-            }));
-
-            // 2. Insert into rejected
-            const { error: insertError } = await supabase
-              .from("rejected_leads")
-              .insert(rejectedLeads);
-
-            if (insertError) throw insertError;
-
-            // 3. Delete from customers
-            const { error: deleteError } = await supabase
+          for (let i = 0; i < ids.length; i += batchSize) {
+            const batch = ids.slice(i, i + batchSize);
+            const { data: leads, error: fetchError } = await supabase
               .from("customers")
-              .delete()
-              .in("id", ids);
+              .select("*")
+              .in("id", batch);
 
-            if (deleteError) throw deleteError;
-          } else {
-            // Standard bulk update for any fields provided
+            if (fetchError) throw fetchError;
+
+            if (leads && leads.length > 0) {
+              const isConn = (updates.disposition === 'Call Back' || updates.disposition === 'Deal Done' || updates.disposition === 'Not Intrested' || updates.disposition === 'Language barrier' || updates.disposition === 'DND' || updates.disposition === 'Wrong NO' || updates.disposition === 'Already Renewed')
+                ? 'contactable'
+                : (updates.disposition === 'Not Contactable' ? 'uncontactable' : 'contactable');
+
+              const rejectedLeads = leads.map(lead => ({
+                customer_id: lead.id,
+                customer_name: lead.customer_name,
+                phone_no: lead.phone_no,
+                phone_search_hash: lead.phone_search_hash || computePhoneHash(decryptPhone(lead.phone_no)),
+                campaign_id: updates.campaign_id || lead.campaign_id,
+                disposition: updates.disposition || lead.disposition,
+                sub_disposition: lead.sub_disposition,
+                agent_id: updates.assigned_to || lead.assigned_to,
+                rejected_at: new Date().toISOString(),
+                managed_by: lead.managed_by,
+                organization_id: updates.organization_id || lead.organization_id,
+                is_connected: isConn,
+                source_id: (lead as any).source_id || null
+              }));
+
+              const { error: insertError } = await supabase
+                .from("rejected_leads")
+                .insert(rejectedLeads);
+
+              if (insertError) throw insertError;
+
+              const { error: deleteError } = await supabase
+                .from("customers")
+                .delete()
+                .in("id", batch);
+
+              if (deleteError) throw deleteError;
+            }
+          }
+        } else {
+          // Standard bulk update for any fields provided
+          const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
+          for (let i = 0; i < ids.length; i += batchSize) {
+            const batch = ids.slice(i, i + batchSize);
             const { error } = await supabase
-              .from("customers")
+              .from(table)
               .update(updates)
-              .in("id", ids);
+              .in("id", batch);
 
             if (error) throw error;
           }
         }
+      }
 
       setSelectedCustomers(new Set());
       await fetchCustomers(currentPage);
@@ -983,52 +1174,51 @@ export default function Customer() {
     setIsMovingToLive(true);
     try {
       const ids = Array.from(selectedCustomers);
+      const batchSize = 50;
 
-      // 1. Fetch from rejected_leads
-      const { data: rejectedLeads, error: fetchError } = await supabase
-        .from("rejected_leads")
-        .select("*")
-        .in("id", ids);
-
-      if (fetchError) throw fetchError;
-
-      if (rejectedLeads && rejectedLeads.length > 0) {
-        // 2. Map back to customers - Moving all common fields as-is
-        const liveCustomers = rejectedLeads.map(lead => {
-          // Destructure to separate specific transformations from common fields
-          const { 
-            id, // PK of rejected_leads (not needed in customers)
-            customer_id, // Original ID from customers table
-            agent_id, // Needs to be mapped to assigned_to
-            rejected_at, // Not present in customers table
-            status, // Will be forced to 'active'
-            idx, // Auto-increment (not needed)
-            ...commonFields 
-          } = lead;
-
-          return {
-            ...commonFields,
-            id: customer_id,
-            assigned_to: agent_id,
-            status: "active",
-            updated_at: new Date().toISOString()
-          };
-        });
-
-        // 3. Insert into customers
-        const { error: insertError } = await supabase
-          .from("customers")
-          .upsert(liveCustomers); // Use upsert in case the record somehow exists
-
-        if (insertError) throw insertError;
-
-        // 4. Delete from rejected_leads
-        const { error: deleteError } = await supabase
+      for (let i = 0; i < ids.length; i += batchSize) {
+        const batch = ids.slice(i, i + batchSize);
+        const { data: rejectedLeads, error: fetchError } = await supabase
           .from("rejected_leads")
-          .delete()
-          .in("id", ids);
+          .select("*")
+          .in("id", batch);
 
-        if (deleteError) throw deleteError;
+        if (fetchError) throw fetchError;
+
+        if (rejectedLeads && rejectedLeads.length > 0) {
+          const liveCustomers = rejectedLeads.map(lead => {
+            const { 
+              id,
+              customer_id,
+              agent_id,
+              rejected_at,
+              status,
+              idx,
+              ...commonFields 
+            } = lead;
+
+            return {
+              ...commonFields,
+              id: customer_id,
+              assigned_to: agent_id,
+              status: "active",
+              updated_at: new Date().toISOString()
+            };
+          });
+
+          const { error: insertError } = await supabase
+            .from("customers")
+            .upsert(liveCustomers);
+
+          if (insertError) throw insertError;
+
+          const { error: deleteError } = await supabase
+            .from("rejected_leads")
+            .delete()
+            .in("id", batch);
+
+          if (deleteError) throw deleteError;
+        }
       }
 
       setSelectedCustomers(new Set());
@@ -1036,14 +1226,14 @@ export default function Customer() {
       
       logSystemEvent({
           event_type: 'WRITE',
-          description: `Move to Live: ${rejectedLeads?.length || 0} records restored from rejected_leads`,
-          metadata: { record_count: rejectedLeads?.length || 0, source: 'rejected_leads', target: 'customers' },
-          payload_size: estimateSize(rejectedLeads),
+          description: `Move to Live: ${ids.length} records restored from rejected_leads`,
+          metadata: { record_count: ids.length, source: 'rejected_leads', target: 'customers' },
+          payload_size: estimateSize(ids),
           user_name: user?.displayName || 'Admin',
           organization_id: user?.organization_id || undefined
       });
 
-      alert(`Successfully moved ${rejectedLeads?.length} lead(s) back to Live.`);
+      alert(`Successfully moved ${ids.length} lead(s) back to Live.`);
     } catch (err) {
       console.error("Error moving to live:", err);
       alert("Failed to move leads back to live. Please try again.");
@@ -1059,18 +1249,193 @@ export default function Customer() {
     }
 
     try {
+      // 1. Gather all potential IDs, clean phone numbers, and customer names for complete call_logs matching
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+      const initialCustomerIds = allCustomers.map(c => c.id).filter(id => id && uuidRegex.test(id));
+      const leadIds = allCustomers.map(c => c.lead_id).filter(Boolean) as string[];
+
+      const leadToCustomerMap: Record<string, string> = {};
+      const phoneToCustomerMap: Record<string, string> = {};
+      const nameToCustomerMap: Record<string, string> = {};
+
+      allCustomers.forEach(c => {
+        if (c.id) leadToCustomerMap[c.id] = c.id;
+        if (c.lead_id && c.id) leadToCustomerMap[c.lead_id] = c.id;
+
+        const rawPhone = decryptPhone(c.phone_no, c.organization_id || undefined);
+        if (rawPhone && c.id) {
+          const cleanPhone = rawPhone.replace(/\D/g, '');
+          if (cleanPhone) {
+            phoneToCustomerMap[cleanPhone] = c.id;
+            if (cleanPhone.length >= 10) {
+              phoneToCustomerMap[cleanPhone.slice(-10)] = c.id;
+            }
+          }
+        }
+
+        if (c.customer_name && c.id) {
+          const trimmed = c.customer_name.trim();
+          nameToCustomerMap[trimmed] = c.id;
+          nameToCustomerMap[trimmed.toLowerCase()] = c.id;
+        }
+      });
+
+      let allTargetCustomerUuids = new Set<string>(initialCustomerIds);
+
+      // 2. If lead_ids exist, find matching customer UUIDs across all 3 tables (customers, rejected_leads, closed_deals)
+      if (leadIds.length > 0) {
+        const chunkSize = 100;
+        const tables = ["customers", "rejected_leads", "closed_deals"];
+        for (const tbl of tables) {
+          for (let i = 0; i < leadIds.length; i += chunkSize) {
+            const chunk = leadIds.slice(i, i + chunkSize);
+            const { data: matchedRows } = await supabase
+              .from(tbl)
+              .select("id, lead_id, customer_name, phone_no, organization_id")
+              .in("lead_id", chunk);
+
+            if (matchedRows) {
+              matchedRows.forEach(row => {
+                if (row.id && uuidRegex.test(row.id)) {
+                  allTargetCustomerUuids.add(row.id);
+                  if (row.lead_id && leadToCustomerMap[row.lead_id]) {
+                    leadToCustomerMap[row.id] = leadToCustomerMap[row.lead_id];
+                  }
+                  if (row.customer_name && leadToCustomerMap[row.lead_id]) {
+                    nameToCustomerMap[row.customer_name.trim().toLowerCase()] = leadToCustomerMap[row.lead_id];
+                  }
+                }
+              });
+            }
+          }
+        }
+      }
+
+      const searchUuidsArray = Array.from(allTargetCustomerUuids);
+      const searchNamesArray = Object.keys(nameToCustomerMap);
+
+      // 3. Fetch call_logs history for all matched customer UUIDs in chunks of 100
+      let callLogsMap: Record<string, Array<{ id?: string; created_at?: string; disposition?: string; sub_disposition?: string; remarks?: string; notes?: string }>> = {};
+
+      if (searchUuidsArray.length > 0) {
+        const chunkSize = 100;
+        for (let i = 0; i < searchUuidsArray.length; i += chunkSize) {
+          const chunk = searchUuidsArray.slice(i, i + chunkSize);
+          const { data: logs, error: logsError } = await supabase
+            .from("call_logs")
+            .select("*")
+            .in("customer_id", chunk)
+            .order("created_at", { ascending: false });
+
+          if (!logsError && logs) {
+            logs.forEach(log => {
+              if (log.customer_id) {
+                const targetCustId = leadToCustomerMap[log.customer_id] || log.customer_id;
+                if (!callLogsMap[targetCustId]) {
+                  callLogsMap[targetCustId] = [];
+                }
+                const exists = callLogsMap[targetCustId].some(existing => 
+                  (existing.id && log.id && existing.id === log.id) || 
+                  (existing.created_at === log.created_at && existing.disposition === log.disposition)
+                );
+                if (!exists) {
+                  callLogsMap[targetCustId].push(log);
+                }
+              }
+            });
+          }
+        }
+      }
+
+      // 4. Fallback matching by Customer Name for call_logs if ID didn't match
+      if (searchNamesArray.length > 0) {
+        const chunkSize = 50;
+        for (let i = 0; i < searchNamesArray.length; i += chunkSize) {
+          const nameChunk = searchNamesArray.slice(i, i + chunkSize);
+          const { data: nameLogs } = await supabase
+            .from("call_logs")
+            .select("*")
+            .in("customer_name", nameChunk)
+            .order("created_at", { ascending: false });
+
+          if (nameLogs) {
+            nameLogs.forEach(log => {
+              if (log.customer_name) {
+                const logNameKey = log.customer_name.trim();
+                const matchedCustId = nameToCustomerMap[logNameKey] || nameToCustomerMap[logNameKey.toLowerCase()];
+                if (matchedCustId) {
+                  if (!callLogsMap[matchedCustId]) {
+                    callLogsMap[matchedCustId] = [];
+                  }
+                  const exists = callLogsMap[matchedCustId].some(existing => 
+                    (existing.id && log.id && existing.id === log.id) || 
+                    (existing.created_at === log.created_at && existing.disposition === log.disposition)
+                  );
+                  if (!exists) {
+                    callLogsMap[matchedCustId].push(log);
+                  }
+                }
+              }
+            });
+          }
+        }
+      }
+
       // Create CSV content
-      const headers = ["Lead ID", "Name", "Phone", "Organization", "Campaign", "Assigned To", "Disposition", "Created At"];
-      const csvData = allCustomers.map(customer => [
-        `"${customer.lead_id || ''}"`,
-        `"${customer.customer_name || ''}"`,
-        `"${customer.phone_no || ''}"`,
-        `"${customer.organization_name || ''}"`,
-        `"${customer.campaign_name || ''}"`,
-        `"${customer.assigned_user_name || ''}"`,
-        `"${customer.disposition || ''}"`,
-        `"${customer.created_at || ''}"`
-      ]);
+      const headers = [
+        "Lead ID",
+        "Name",
+        "Phone",
+        "Organization",
+        "Campaign",
+        "Assigned To",
+        "Current Disposition",
+        "Total Calls Made",
+        "Latest Call Date",
+        "Call History (Date - Disposition - Sub-Disposition)",
+        "Remarks History",
+        "Created At"
+      ];
+
+      const csvData = allCustomers.map(customer => {
+        const logs = (callLogsMap[customer.id] || []).sort((a, b) => {
+          return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
+        });
+        const totalCalls = logs.length;
+        const latestCallDate = logs.length > 0 && logs[0].created_at ? new Date(logs[0].created_at).toLocaleString() : '';
+        
+        // Format history strings (Separated by | for multiple calls)
+        const callHistoryStr = logs.map(l => {
+          const dateStr = l.created_at ? new Date(l.created_at).toLocaleDateString() : '';
+          const disp = l.disposition || 'N/A';
+          const subDisp = l.sub_disposition ? ` (${l.sub_disposition})` : '';
+          return `${dateStr}: ${disp}${subDisp}`;
+        }).join(" | ");
+
+        const remarksHistoryStr = logs.map(l => {
+          const dateStr = l.created_at ? new Date(l.created_at).toLocaleDateString() : '';
+          const noteStr = l.notes || l.remarks || '';
+          const remarkText = noteStr.replace(/[\r\n",]+/g, " ").trim();
+          return remarkText ? `${dateStr}: ${remarkText}` : '';
+        }).filter(Boolean).join(" | ");
+
+        const decryptedPhone = decryptPhone(customer.phone_no, customer.organization_id || undefined);
+
+        return [
+          `"${customer.lead_id || ''}"`,
+          `"${customer.customer_name || ''}"`,
+          `"${decryptedPhone || ''}"`,
+          `"${customer.organization_name || ''}"`,
+          `"${customer.campaign_name || ''}"`,
+          `"${customer.assigned_user_name || ''}"`,
+          `"${customer.disposition || ''}"`,
+          `"${totalCalls}"`,
+          `"${latestCallDate}"`,
+          `"${callHistoryStr.replace(/"/g, '""')}"`,
+          `"${remarksHistoryStr.replace(/"/g, '""')}"`,
+          `"${customer.created_at || ''}"`
+        ];
+      });
 
       const csvContent = [headers, ...csvData].map(e => e.join(",")).join("\n");
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -1085,7 +1450,7 @@ export default function Customer() {
 
       logSystemEvent({
           event_type: 'READ',
-          description: `Export Customers: ${allCustomers.length} records exported to CSV`,
+          description: `Export Customers: ${allCustomers.length} records exported to CSV with call logs history`,
           metadata: { record_count: allCustomers.length, format: 'csv' },
           payload_size: estimateSize(allCustomers),
           user_name: user?.displayName || 'Admin',
@@ -1131,6 +1496,61 @@ export default function Customer() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage]);
+
+  // Selection and Row Action Handlers (Optimized with useCallback)
+  const handleToggleSelect = useCallback((id: string, checked: boolean) => {
+    setSelectedCustomers((prev) => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(id);
+      } else {
+        next.delete(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleViewCustomerDetails = useCallback((customer: Customer) => {
+    setSelectedCustomer(customer);
+    setShowCustomerDetailsModal(true);
+  }, []);
+
+  const handleDeleteCustomerSingle = useCallback(
+    async (customer: Customer) => {
+      if (confirm("Are you sure you want to delete this customer?")) {
+        try {
+          const { error } = await supabase
+            .from("customers")
+            .delete()
+            .eq("id", customer.id);
+
+          if (error) {
+            console.error("Error deleting customer:", error);
+            alert("Failed to delete customer");
+          } else {
+            await fetchCustomers(currentPage);
+            logSystemEvent({
+              event_type: "WRITE",
+              description: `Delete Customer: ${
+                customer.customer_name || "N/A"
+              } (ID: ${customer.id}) removed`,
+              metadata: {
+                customer_id: customer.id,
+                customer_name: customer.customer_name,
+              },
+              payload_size: 0,
+              user_name: user?.displayName || "Admin",
+              organization_id: user?.organization_id || undefined,
+            });
+          }
+        } catch (err) {
+          console.error("Error deleting customer:", err);
+          alert("Failed to delete customer");
+        }
+      }
+    },
+    [currentPage, user]
+  );
 
   // Use allCustomers directly since it is now filtered by the API
   const filteredCustomers = allCustomers;
@@ -2213,29 +2633,32 @@ export default function Customer() {
                       </p>
                     </div>
                   ) : viewType === "list" ? (
-                    <div className="overflow-x-auto">
-                      <div className="overflow-x-auto -mx-2">
-                          <table className="w-full text-left">
-                            <thead>
-                              <tr className="border-b border-gray-50">
+                    <div className="overflow-auto max-h-[1500px] border border-gray-200 rounded-xl bg-white ">
+                      <table className="w-full text-left relative border-collapse">
+                        <thead className="sticky top-0 bg-gray-50/95 backdrop-blur-xs z-20 border-b border-gray-200 shadow-xs">
+                          <tr className="border-b border-gray-100">
                                  <th className="px-4 py-4 w-10">
                                   {permissionFlags.isCheckBoxVisible && (
                                   <div className="flex items-center justify-center">
                                     <input
                                       type="checkbox"
                                       checked={
-                                        allCustomers.length > 0 &&
-                                        selectedCustomers.size ===
-                                        allCustomers.length
+                                        filteredCustomers.length > 0 &&
+                                        filteredCustomers.every((c) => c.id && selectedCustomers.has(c.id))
                                       }
                                       onChange={(e) => {
                                         if (e.target.checked) {
-                                          const allIds = new Set(
-                                            allCustomers.map((c) => c.id)
-                                          );
+                                          const allIds = new Set(selectedCustomers);
+                                          filteredCustomers.forEach((c) => {
+                                            if (c.id) allIds.add(c.id);
+                                          });
                                           setSelectedCustomers(allIds);
                                         } else {
-                                          setSelectedCustomers(new Set());
+                                          const next = new Set(selectedCustomers);
+                                          filteredCustomers.forEach((c) => {
+                                            if (c.id) next.delete(c.id);
+                                          });
+                                          setSelectedCustomers(next);
                                         }
                                       }}
                                       className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
@@ -2276,211 +2699,27 @@ export default function Customer() {
                               </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-50">
-                              {filteredCustomers.map((customer) => (
-                                <tr
-                                  key={customer.id}
-                                  className="group hover:bg-indigo-50/30 transition-all cursor-pointer border-b border-gray-50/50 last:border-0"
-                                >
-                                  <td className="px-4 py-4">
-                                    {permissionFlags.isCheckBoxVisible && (
-                                    <div className="flex items-center justify-center">
-                                      <input
-                                        type="checkbox"
-                                        checked={selectedCustomers.has(customer.id)}
-                                        onChange={(e) => {
-                                          const newSelected = new Set(
-                                            selectedCustomers
-                                          );
-                                          if (e.target.checked) {
-                                            newSelected.add(customer.id);
-                                          } else {
-                                            newSelected.delete(customer.id);
-                                          }
-                                          setSelectedCustomers(newSelected);
-                                        }}
-                                        className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
-                                      />
-                                    </div>
-                                    )}
-                                  </td>
-                                  <td className="px-4 py-4">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-10 h-10 flex-shrink-0 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shadow-lg shadow-indigo-100 uppercase">
-                                        {customer.customer_name
-                                          ? customer.customer_name
-                                            .charAt(0)
-                                            .toUpperCase()
-                                          : "C"}
-                                      </div>
-                                      <span
-                                        className="text-xs font-medium text-gray-800"
-                                        style={{
-                                          fontFamily: "'Poppins', sans-serif",
-                                          color: "#263238",
-                                        }}
-                                      >
-                                        {customer.customer_name || "N/A"}
-                                      </span>
-                                    </div>
-                                  </td>
-
-                                  <td className="px-4 py-4 text-center">
-                                    <div className="flex justify-center">
-                                      <div
-                                        className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
-                                            dataSource === "closed" ? "bg-emerald-50 text-emerald-600 border border-emerald-100" :
-                                            dataSource === "rejected" ? "bg-rose-50 text-rose-600 border border-rose-100" :
-                                            customer.status === "active" ? "bg-green-50 text-green-600 border border-green-100" :
-                                            customer.status === "inactive" ? "bg-gray-50 text-gray-600 border border-gray-100" :
-                                            "bg-orange-50 text-orange-600 border border-orange-100"
-                                          }`}
-                                      >
-                                        {dataSource === "closed" ? "Deal Done" : 
-                                         dataSource === "rejected" ? "Rejected" :
-                                         customer.status === "active" ? "Active" :
-                                         customer.status === "inactive" ? "Inactive" : "Pending"}
-                                      </div>
-                                    </div>
-                                  </td>
-                                   <td className="px-4 py-4">
-                                    <span className="px-2 py-1 rounded-md bg-indigo-50 text-indigo-700 text-[10px] font-bold uppercase tracking-wide">
-                                      {customer.campaign_name || "No Campaign"}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-4">
-                                    <div className="flex items-center gap-2">
-                                      <i className="fi flex fi-rr-building text-[#4b33e8] text-xs"></i>
-                                      <span
-                                        className="text-[12px] font-medium text-gray-700"
-                                        style={{
-                                          fontFamily: "'Roboto', sans-serif",
-                                        }}
-                                      >
-                                        {customer.organization_name || "N/A"}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4">
-                                    <span className="text-xs font-medium text-gray-600">
-                                      {customer.assigned_user_name ||
-                                        customer.assigned_employee_id ||
-                                        "Unassigned"}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-4">
-                                    <div className="flex flex-col">
-                                      <span className="text-xs font-semibold text-gray-800">
-                                        {customer.managed_by_name || "Self"}
-                                      </span>
-                                      {customer.managed_by_id && (
-                                        <span className="text-[10px] text-gray-400 font-medium">
-                                          ID: {customer.managed_by_id}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </td>
-                                   <td className="px-4 py-4">
-                                    <span className="text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-lg border border-amber-100 uppercase tracking-tighter">
-                                      {customer.disposition || "No Status"}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-4">
-                                    <div className="flex flex-col">
-                                      <span className="text-xs font-medium text-gray-700 leading-none mb-1">
-                                        {dataSource === "closed" || dataSource === "rejected" 
-                                          ? customer.disposition || "N/A"
-                                          : customer.expiry_date ? formatDate(customer.expiry_date) : "---"}
-                                      </span>
-                                      <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
-                                        {dataSource === "closed" || dataSource === "rejected" ? "Disposition" : "Expires"}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4">
-                                    <div className="flex flex-col">
-                                      <span className="text-xs font-medium text-gray-700 leading-none mb-1">
-                                        {formatDate(dataSource === "closed" ? customer.closed_at : dataSource === "rejected" ? customer.rejected_at : customer.created_at)}
-                                      </span>
-                                      <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
-                                        {dataSource === "closed" ? "Closed" : dataSource === "rejected" ? "Rejected" : "Created"}
-                                      </span>
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-right">
-                                    <div className="flex items-center justify-end gap-2">
-                                      <button
-                                        onClick={() => {
-                                          setSelectedCustomer(customer);
-                                          setShowCustomerDetailsModal(true);
-                                        }}
-                                        className="text-purple-600 hover:text-purple-700 transition-colors p-1.5 hover:bg-purple-50 rounded"
-                                        title="View Details"
-                                      >
-                                        <i className="fi flex fi-rr-info text-sm"></i>
-                                      </button>
-                                      {permissionFlags.isDeleteFromLeadButtonVisible && (
-                                      <button
-                                        className="text-red-600 hover:text-red-700 transition-colors p-1.5 hover:bg-red-50 rounded"
-                                        title="Delete"
-                                        onClick={async () => {
-                                          if (
-                                            confirm(
-                                              "Are you sure you want to delete this customer?"
-                                            )
-                                          ) {
-                                            try {
-                                              const { error } = await supabase
-                                                .from("customers")
-                                                .delete()
-                                                .eq("id", customer.id);
-
-                                              if (error) {
-                                                console.error(
-                                                  "Error deleting customer:",
-                                                  error
-                                                );
-                                                alert(
-                                                  "Failed to delete customer"
-                                                );
-                                              } else {
-                                                await fetchCustomers(currentPage);
-                                                logSystemEvent({
-                                                    event_type: 'WRITE',
-                                                    description: `Delete Customer: ${customer.customer_name || 'N/A'} (ID: ${customer.id}) removed`,
-                                                    metadata: { customer_id: customer.id, customer_name: customer.customer_name },
-                                                    payload_size: 0,
-                                                    user_name: user?.displayName || 'Admin',
-                                                    organization_id: user?.organization_id || undefined
-                                                });
-                                              }
-                                            } catch (err) {
-                                              console.error(
-                                                "Error deleting customer:",
-                                                err
-                                              );
-                                              alert(
-                                                "Failed to delete customer"
-                                              );
-                                            }
-                                          }
-                                        }}
-                                      >
-                                        <i className="fi flex fi-rr-trash text-sm"></i>
-                                      </button>
-                                      )}
-                                    </div>
-                                  </td>
-                                </tr>
+                              {filteredCustomers.map((customer, index) => (
+                                <CustomerTableRow
+                                  key={`${customer.id || "cust"}-${index}`}
+                                  customer={customer}
+                                  isSelected={selectedCustomers.has(customer.id)}
+                                  permissionFlags={permissionFlags}
+                                  dataSource={dataSource}
+                                  onToggleSelect={handleToggleSelect}
+                                  onViewDetails={handleViewCustomerDetails}
+                                  onDeleteCustomer={handleDeleteCustomerSingle}
+                                  formatDate={formatDate}
+                                />
                               ))}
                             </tbody>
                           </table>
-                        </div>
                     </div>
                   ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                      {filteredCustomers.map((customer) => (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto p-1">
+                      {filteredCustomers.map((customer, index) => (
                         <div
-                          key={customer.id}
+                          key={`${customer.id || 'cust'}-${index}`}
                           className="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
                         >
                           {/* Action Buttons - Top Right Corner */}
@@ -2751,6 +2990,8 @@ export default function Customer() {
                             <option value="50">50</option>
                             <option value="100">100</option>
                             <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
                             <option value="all">All</option>
                           </select>
                         </div>
