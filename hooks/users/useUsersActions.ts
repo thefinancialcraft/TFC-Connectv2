@@ -21,7 +21,7 @@ export function useUsersActions(refreshData: () => Promise<void>) {
     work_type: "on_site" as any,
     user_type: "employee" as any,
     status: "active" as any,
-    is_client: false as boolean,
+    is_client: true as boolean,
     is_caller: true as boolean,
   });
 
@@ -53,7 +53,7 @@ export function useUsersActions(refreshData: () => Promise<void>) {
           work_type: fullUserData.work_type || "on_site",
           user_type: fullUserData.user_type || "employee",
           status: fullUserData.status || "active",
-          is_client: !!fullUserData.is_client,
+          is_client: fullUserData.is_client !== false,
           is_caller: fullUserData.is_caller !== false, // default to true if null
         });
         setShowApprovalModal(true);

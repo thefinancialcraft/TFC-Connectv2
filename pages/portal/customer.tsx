@@ -1077,8 +1077,8 @@ export default function Customer() {
           if (resetError) throw resetError;
         }
       } else {
-        // Check for Rejected Disposition move
-        const rejectedValue = updates.disposition;
+       // Check for Rejected Disposition move
+       const rejectedValue = updates.disposition;
         if (rejectedValue && ["Wrong NO", "DND", "Language barrier"].includes(rejectedValue)) {
           for (let i = 0; i < ids.length; i += batchSize) {
             const batch = ids.slice(i, i + batchSize);

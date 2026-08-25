@@ -5,6 +5,7 @@ type Data = {
   success?: boolean;
   error?: string;
   message?: string;
+  rootCause?: string;
 };
 
 /**
@@ -84,13 +85,46 @@ export default async function handler(
       expire_at,
     } = updateFields;
 
+
+
+    // Use admin client to update any user's profile
+    if (!supabaseAdmin) {
+      return res.status(500).json({ 
+        error: 'Admin client not configured. This endpoint requires admin access.' 
+      });
+    }
+
+    // First, fetch target user's existing profile to compare & preserve dates/name
+    const { data: targetProfile, error: fetchError } = await supabaseAdmin
+      .from('user_profiles')
+      .select('user_id, user_name, contact_no, expire_at, renewal_at, is_client')
+      .eq('id', targetUserId)
+      .single();
+
+    if (fetchError || !targetProfile) {
+      console.error('Error fetching target user profile:', fetchError);
+      return res.status(404).json({ error: 'Target user not found' });
+    }
+
+    // Safety Logging: Check if admin is updating own profile
+    if (authUser.id === targetProfile.user_id) {
+       console.warn('ALERT: Admin is updating their own profile via update-user-profile.ts', {
+         adminId: authUser.id,
+         targetProfileId: targetUserId,
+         targetAuthId: targetProfile.user_id
+       });
+    }
+
     // Prepare update data (only include provided fields)
     const updateData: any = {
       updated_at: new Date().toISOString(),
     };
 
-    // basic_info
-    if (user_name !== undefined) updateData.user_name = user_name || null;
+    // basic_info: Prevent user_name from being set to null/empty string
+    if (user_name !== undefined) {
+      const trimmedName = typeof user_name === 'string' ? user_name.trim() : '';
+      updateData.user_name = trimmedName !== '' ? trimmedName : (targetProfile.user_name || null);
+    }
     if (contact_no !== undefined) updateData.contact_no = contact_no || null;
     
     // personal_info
@@ -132,44 +166,45 @@ export default async function handler(
     if (qualification_marksheet_url !== undefined) updateData.qualification_marksheet_url = qualification_marksheet_url || null;
     if (bank_passbook_url !== undefined) updateData.bank_passbook_url = bank_passbook_url || null;
 
-    // Client Lifecycle
-    if (is_client !== undefined) updateData.is_client = is_client === 'true' || is_client === true;
+    // Client Lifecycle: Default is_client to true unless explicitly passed false/false string
+    if (is_client !== undefined) {
+      updateData.is_client = is_client === true || is_client === 'true';
+    } else if (targetProfile.is_client === undefined || targetProfile.is_client === null) {
+      updateData.is_client = true;
+    }
+
     if (joined_at !== undefined) updateData.joined_at = joined_at || null;
-    if (renewal_at !== undefined) updateData.renewal_at = renewal_at || null;
-    if (expire_at !== undefined) updateData.expire_at = expire_at || null;
+    if (renewal_at !== undefined) {
+      updateData.renewal_at = renewal_at || targetProfile.renewal_at || new Date().toISOString();
+    }
+
+    // Expiry Date Logic:
+    // If existing expiry date is in future, retain it unless a valid new date is passed.
+    // If no existing future date or empty string passed, fallback to Current Date + 3 Days.
+    const now = new Date();
+    const existingExpiry = targetProfile.expire_at ? new Date(targetProfile.expire_at) : null;
+    const hasValidFutureExistingExpiry = existingExpiry && !isNaN(existingExpiry.getTime()) && existingExpiry > now;
+
+    if (expire_at) {
+      const parsedNewExpiry = new Date(expire_at);
+      if (!isNaN(parsedNewExpiry.getTime())) {
+        updateData.expire_at = parsedNewExpiry.toISOString();
+      } else if (hasValidFutureExistingExpiry) {
+        updateData.expire_at = targetProfile.expire_at;
+      } else {
+        const threeDaysAhead = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+        updateData.expire_at = threeDaysAhead.toISOString();
+      }
+    } else if (hasValidFutureExistingExpiry) {
+      updateData.expire_at = targetProfile.expire_at;
+    } else {
+      const threeDaysAhead = new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000);
+      updateData.expire_at = threeDaysAhead.toISOString();
+    }
     
     // profile_complete flag
     if (req.body.profile_complete !== undefined) {
       updateData.profile_complete = req.body.profile_complete;
-    }
-
-    // Use admin client to update any user's profile
-    if (!supabaseAdmin) {
-      return res.status(500).json({ 
-        error: 'Admin client not configured. This endpoint requires admin access.' 
-      });
-    }
-
-    // First, get the target user's profile to get their user_id
-    const { data: targetProfile, error: fetchError } = await supabaseAdmin
-      .from('user_profiles')
-      .select('user_id, user_name, contact_no')
-      .eq('id', targetUserId)
-      .single();
-
-    if (fetchError || !targetProfile) {
-      console.error('Error fetching target user profile:', fetchError);
-      return res.status(404).json({ error: 'Target user not found' });
-    }
-
-    // Safety Logging: Check if the admin is updating their own profile via this admin route
-    // This helps debug scenarios where the frontend might be passing the wrong targetUserId
-    if (authUser.id === targetProfile.user_id) {
-       console.warn('ALERT: Admin is updating their own profile via update-user-profile.ts', {
-         adminId: authUser.id,
-         targetProfileId: targetUserId,
-         targetAuthId: targetProfile.user_id
-       });
     }
 
     // Update user profile in user_profiles table using id (primary key)
@@ -180,17 +215,21 @@ export default async function handler(
 
     if (updateError) {
       console.error('Profile update error:', updateError);
-      return res.status(400).json({ error: updateError.message || 'Failed to update profile' });
+      return res.status(400).json({ 
+        error: 'Failed to update profile. Account has some issue. Please contact Admin.', 
+        rootCause: updateError.message 
+      });
     }
 
     // Also update auth metadata if user_name or contact_no changed
     if ((user_name !== undefined || contact_no !== undefined) && targetProfile.user_id) {
+      const finalName = updateData.user_name || targetProfile.user_name;
       const { error: metadataError } = await supabaseAdmin.auth.admin.updateUserById(
         targetProfile.user_id,
         {
           user_metadata: {
-            display_name: user_name !== undefined ? (user_name || null) : undefined,
-            user_name: user_name !== undefined ? (user_name || null) : undefined,
+            display_name: finalName || undefined,
+            user_name: finalName || undefined,
             phone: contact_no !== undefined ? (contact_no || null) : undefined,
             contact_no: contact_no !== undefined ? (contact_no || null) : undefined,
           },
@@ -199,7 +238,10 @@ export default async function handler(
 
       if (metadataError) {
         console.error('Metadata update error:', metadataError);
-        // Don't fail the request if metadata update fails
+        return res.status(400).json({
+          error: 'Account metadata update failed. Please contact Admin.',
+          rootCause: `Auth Metadata Error: ${metadataError.message}`,
+        });
       }
     }
 
@@ -209,7 +251,11 @@ export default async function handler(
     });
   } catch (error: any) {
     console.error('Update user profile error:', error);
-    return res.status(500).json({ error: 'An error occurred while updating profile' });
+    return res.status(500).json({ 
+      error: 'An error occurred while updating profile. Account has some issue. Please contact Admin.',
+      rootCause: error.message || String(error)
+    });
   }
 }
+
 

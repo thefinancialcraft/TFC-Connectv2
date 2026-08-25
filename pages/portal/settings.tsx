@@ -9,6 +9,7 @@ import { getStoredUserData } from "@/lib/localStorageUtils";
 import FlutterBridgeTab from "@/components/settings/FlutterBridgeTab";
 import DevicesTab from "@/components/settings/DevicesTab";
 import ConsoleLogsTab from "@/components/settings/ConsoleLogsTab";
+import AccountIssueModal from "@/components/modals/AccountIssueModal";
 
 interface SettingsFormData {
   email: string;
@@ -71,7 +72,7 @@ export default function Settings() {
     emergency_contact_no: "",
     date_of_joining: "",
     in_hand_salary: "",
-    is_client: "false",
+    is_client: "true",
     joined_at: "",
     renewal_at: "",
     expire_at: "",
@@ -114,6 +115,17 @@ export default function Settings() {
     return getStoredUserData()?.token_id;
   }, []);
   const [showIdentityErrorPopup, setShowIdentityErrorPopup] = useState(false);
+
+  const [accountModal, setAccountModal] = useState<{
+    isOpen: boolean;
+    type: 'session_expired' | 'account_expired' | 'account_issue';
+    title?: string;
+    message?: string;
+    rootCause?: string;
+  }>({
+    isOpen: false,
+    type: 'account_issue',
+  });
 
 
 
@@ -188,7 +200,7 @@ export default function Settings() {
               emergency_contact_no: fullProfile?.emergency_contact_no || "",
               date_of_joining: fullProfile?.date_of_joining || "",
               in_hand_salary: fullProfile?.in_hand_salary?.toString() || "",
-              is_client: String(fullProfile?.is_client || "false"),
+              is_client: fullProfile?.is_client !== false ? "true" : "false",
               joined_at: fullProfile?.joined_at?.split('T')[0] || "",
               renewal_at: fullProfile?.renewal_at?.split('T')[0] || "",
               expire_at: fullProfile?.expire_at?.split('T')[0] || "",
@@ -261,16 +273,28 @@ export default function Settings() {
       });
       
       const result = await res.json();
-      if (res.ok) {
+      if (res.ok && !result.error) {
         console.log("✅ [Settings] Profile update successful:", result);
         showSuccess("Profile saved", "Success");
       } else {
         console.error("❌ [Settings] Profile update failed:", result);
-        showError("Failed to save", "Error");
+        setAccountModal({
+          isOpen: true,
+          type: 'account_issue',
+          title: 'Account Has Some Issue',
+          message: result.error || 'Failed to save profile. Please contact Admin.',
+          rootCause: result.rootCause || result.error || 'Failed to update profile.',
+        });
       }
-    } catch (error) { 
+    } catch (error: any) { 
       console.error("❌ [Settings] Connection error while saving:", error);
-      showError("An error occurred", "Error"); 
+      setAccountModal({
+        isOpen: true,
+        type: 'account_issue',
+        title: 'Account Has Some Issue',
+        message: 'A connection error occurred while saving profile.',
+        rootCause: error.message || String(error),
+      });
     }
     finally { setIsSaving(false); }
   };
@@ -938,6 +962,18 @@ export default function Settings() {
           </div>
         </div>
       )}
+
+      {/* Account Issue Modal */}
+      <AccountIssueModal
+        isOpen={accountModal.isOpen}
+        type={accountModal.type}
+        title={accountModal.title}
+        message={accountModal.message}
+        rootCause={accountModal.rootCause}
+        onClose={() => setAccountModal(prev => ({ ...prev, isOpen: false }))}
+        onRelogin={() => router.push('/login')}
+        onContactAdmin={() => setAccountModal(prev => ({ ...prev, isOpen: false }))}
+      />
     </>
   );
 }

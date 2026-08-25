@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import { supabase } from "@/lib/supabase";
 import { useUser } from "@/components/AppLayout";
 import UserMenuDropdown from "@/components/UserMenuDropdown";
+import AccountIssueModal from "@/components/modals/AccountIssueModal";
 
 // Dynamically import component to prevent hydration errors
 const SettingsFormFields = dynamic(() => import("@/components/SettingsFormFields"), { ssr: false });
@@ -85,6 +86,16 @@ function UserProfilePage() {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editFormData, setEditFormData] = useState<any>({});
+    const [accountModal, setAccountModal] = useState<{
+      isOpen: boolean;
+      type: 'session_expired' | 'account_expired' | 'account_issue';
+      title?: string;
+      message?: string;
+      rootCause?: string;
+    }>({
+      isOpen: false,
+      type: 'account_issue',
+    });
 
     useEffect(() => {
         setMounted(true);
@@ -234,8 +245,8 @@ function UserProfilePage() {
           aadhar_back_url: profileData.aadhar_back_url || "",
           qualification_marksheet_url: profileData.qualification_marksheet_url || "",
           bank_passbook_url: profileData.bank_passbook_url || "",
-          // Client Lifecycle
-          is_client: profileData.is_client !== undefined ? String(profileData.is_client) : "false",
+          // Client Lifecycle: Default is_client to true unless explicitly false
+          is_client: profileData.is_client !== false ? "true" : "false",
           joined_at: profileData.joined_at ? profileData.joined_at.split('T')[0] : "",
           renewal_at: profileData.renewal_at ? profileData.renewal_at.split('T')[0] : "",
           expire_at: profileData.expire_at ? profileData.expire_at.split('T')[0] : "",
@@ -831,7 +842,6 @@ function UserProfilePage() {
                                                 return;
                                             }
 
-                                            // Use admin endpoint to update the target user's profile (not current user)
                                             const response = await fetch("/api/auth/update-user-profile", {
                                                 method: "PUT",
                                                 headers: {
@@ -846,8 +856,14 @@ function UserProfilePage() {
 
                                             const data = await response.json();
 
-                                            if (!response.ok) {
-                                                alert(data.error || "Failed to save changes");
+                                            if (!response.ok || data.error) {
+                                                setAccountModal({
+                                                  isOpen: true,
+                                                  type: 'account_issue',
+                                                  title: 'Account Has Some Issue',
+                                                  message: data.error || 'Failed to save changes. Please contact Admin.',
+                                                  rootCause: data.rootCause || data.error || 'Failed to update user profile.',
+                                                });
                                                 return;
                                             }
 
@@ -886,6 +902,17 @@ function UserProfilePage() {
                     </div>
                 </div>
             </div>
+
+            <AccountIssueModal
+              isOpen={accountModal.isOpen}
+              type={accountModal.type}
+              title={accountModal.title}
+              message={accountModal.message}
+              rootCause={accountModal.rootCause}
+              onClose={() => setAccountModal(prev => ({ ...prev, isOpen: false }))}
+              onRelogin={() => router.push('/login')}
+              onContactAdmin={() => setAccountModal(prev => ({ ...prev, isOpen: false }))}
+            />
         </div>
     );
 }
