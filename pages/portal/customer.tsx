@@ -91,26 +91,27 @@ const CustomerTableRow = memo(({
       <td className="px-4 py-4 text-center">
         <div className="flex justify-center">
           <div
-            className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${dataSource === "closed"
+            className={`px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest flex items-center gap-1.5 ${
+              dataSource === "closed"
                 ? "bg-emerald-50 text-emerald-600 border border-emerald-100"
                 : dataSource === "rejected"
-                  ? "bg-rose-50 text-rose-600 border border-rose-100"
-                  : customer.status === "active"
-                    ? "bg-green-50 text-green-600 border border-green-100"
-                    : customer.status === "inactive"
-                      ? "bg-gray-50 text-gray-600 border border-gray-100"
-                      : "bg-orange-50 text-orange-600 border border-orange-100"
-              }`}
+                ? "bg-rose-50 text-rose-600 border border-rose-100"
+                : customer.status === "active"
+                ? "bg-green-50 text-green-600 border border-green-100"
+                : customer.status === "inactive"
+                ? "bg-gray-50 text-gray-600 border border-gray-100"
+                : "bg-orange-50 text-orange-600 border border-orange-100"
+            }`}
           >
             {dataSource === "closed"
               ? "Deal Done"
               : dataSource === "rejected"
-                ? "Rejected"
-                : customer.status === "active"
-                  ? "Active"
-                  : customer.status === "inactive"
-                    ? "Inactive"
-                    : "Pending"}
+              ? "Rejected"
+              : customer.status === "active"
+              ? "Active"
+              : customer.status === "inactive"
+              ? "Inactive"
+              : "Pending"}
           </div>
         </div>
       </td>
@@ -162,8 +163,8 @@ const CustomerTableRow = memo(({
             {dataSource === "closed" || dataSource === "rejected"
               ? customer.disposition || "N/A"
               : customer.expiry_date
-                ? formatDate(customer.expiry_date)
-                : "---"}
+              ? formatDate(customer.expiry_date)
+              : "---"}
           </span>
           <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
             {dataSource === "closed" || dataSource === "rejected"
@@ -179,16 +180,16 @@ const CustomerTableRow = memo(({
               dataSource === "closed"
                 ? customer.closed_at
                 : dataSource === "rejected"
-                  ? customer.rejected_at
-                  : customer.created_at
+                ? customer.rejected_at
+                : customer.created_at
             )}
           </span>
           <span className="text-[9px] text-gray-400 font-medium uppercase tracking-tighter">
             {dataSource === "closed"
               ? "Closed"
               : dataSource === "rejected"
-                ? "Rejected"
-                : "Created"}
+              ? "Rejected"
+              : "Created"}
           </span>
         </div>
       </td>
@@ -224,7 +225,7 @@ export default function Customer() {
   useEffect(() => {
     setMounted(true);
   }, []);
-
+  
   // Permission Flags Logic
   const permissionFlags = useMemo(() => {
     // Default: Hide all restricted actions
@@ -248,58 +249,58 @@ export default function Customer() {
     // Only assigned organization and self-assigned leads shown
     // All buttons remain HIDDEN (default false)
     if (user.isClient && (user.designation === 'agent' || !user.designation)) {
-      return flags;
+        return flags;
     }
-
+    
     // Level 2: Team Leader (isClient: true, designation: team_leader)
     // Assigned organization and team members' leads shown
     // All buttons remain HIDDEN (default false)
     if (user.isClient && user.designation === 'team_leader') {
       return flags;
     }
-
+    
     // Level 3: Client Admin (isClient: true, designation: ceo | developer)
     // Assigned organization leads shown (Filtered in fetchCustomers)
     // All buttons VISIBLE
     if (user.isClient && ['ceo', 'developer'].includes(user.designation || '')) {
-      return {
-        isImportButtonVisible: true,
-        isExportButtonVisible: true,
-        isAddCustomerButtonVisible: true,
-        isChangeOrganizationButtonVisible: true,
-        isChangeCampaginButtonVisible: true,
-        isChangeAssignedButtonVisible: true,
-        isChangeDispostionButtonVisible: true,
-        isDeleteButtonVisible: true,
-        isCheckBoxVisible: true,
-        isDeleteFromLeadButtonVisible: true,
-        isMoveFreshButtonVisible: true,
-      };
+         return {
+            isImportButtonVisible: true,
+            isExportButtonVisible: true,
+            isAddCustomerButtonVisible: true,
+            isChangeOrganizationButtonVisible: true,
+            isChangeCampaginButtonVisible: true,
+            isChangeAssignedButtonVisible: true,
+            isChangeDispostionButtonVisible: true,
+            isDeleteButtonVisible: true,
+            isCheckBoxVisible: true,
+            isDeleteFromLeadButtonVisible: true,
+            isMoveFreshButtonVisible: true,
+         };
     }
 
     // Level 4: Internal Staff (isClient: false)
     // All leads shown (No hard filters)
     // All buttons VISIBLE
     if (!user.isClient) {
-      return {
-        isImportButtonVisible: true,
-        isExportButtonVisible: true,
-        isAddCustomerButtonVisible: true,
-        isChangeOrganizationButtonVisible: true,
-        isChangeCampaginButtonVisible: true,
-        isChangeAssignedButtonVisible: true,
-        isChangeDispostionButtonVisible: true,
-        isDeleteButtonVisible: true,
-        isCheckBoxVisible: true,
-        isDeleteFromLeadButtonVisible: true,
-        isMoveFreshButtonVisible: true,
-      };
+         return {
+            isImportButtonVisible: true,
+            isExportButtonVisible: true,
+            isAddCustomerButtonVisible: true,
+            isChangeOrganizationButtonVisible: true,
+            isChangeCampaginButtonVisible: true,
+            isChangeAssignedButtonVisible: true,
+            isChangeDispostionButtonVisible: true,
+            isDeleteButtonVisible: true,
+            isCheckBoxVisible: true,
+            isDeleteFromLeadButtonVisible: true,
+            isMoveFreshButtonVisible: true,
+         };
     }
 
     return flags;
   }, [user, mounted]);
 
-
+  
   const [activeNav] = useState("customer");
   const [allCustomers, setAllCustomers] = useState<Customer[]>([]);
   const [loadingCustomers, setLoadingCustomers] = useState(true);
@@ -328,7 +329,7 @@ export default function Customer() {
   );
   const [isDeleting, setIsDeleting] = useState(false);
   const [dataSource, setDataSource] = useState<"live" | "rejected" | "closed">("live");
-
+  
   // Duplicate Modal States
   const [showDuplicateModal, setShowDuplicateModal] = useState(false);
   const [duplicateLeads, setDuplicateLeads] = useState<any[]>([]);
@@ -341,13 +342,13 @@ export default function Customer() {
   useEffect(() => {
     if (selectedCustomer?.customer_details) {
       try {
-        const data = typeof selectedCustomer.customer_details === 'string'
-          ? JSON.parse(selectedCustomer.customer_details)
+        const data = typeof selectedCustomer.customer_details === 'string' 
+          ? JSON.parse(selectedCustomer.customer_details) 
           : selectedCustomer.customer_details;
         if (data?.active_details) {
           setViewingDetailsKey(data.active_details);
         }
-      } catch (e) { }
+      } catch (e) {}
     }
   }, [selectedCustomer]);
 
@@ -355,32 +356,32 @@ export default function Customer() {
     try {
       setLoadingDuplicates(true);
       setShowDuplicateModal(true);
-
+      
       // 1. Get duplicate summaries from RPC
       const { data: initialData, error: rpcError } = await supabase.rpc('get_duplicate_leads');
       if (rpcError) throw rpcError;
 
       let items = initialData || [];
-
+      
       if (items.length > 0) {
         // 2. Fetch full records from ALL tables to ensure all fields are present
         const leadIds = items.map((i: any) => i.lead_id).filter(Boolean);
         if (leadIds.length > 0) {
-          const [liveRes, rejRes, closedRes] = await Promise.all([
-            supabase.from('customers').select('*').in('lead_id', leadIds),
-            supabase.from('rejected_leads').select('*').in('lead_id', leadIds),
-            supabase.from('closed_deals').select('*').in('lead_id', leadIds)
-          ]);
-
-          const allFullRecords = [...(liveRes.data || []), ...(rejRes.data || []), ...(closedRes.data || [])];
-
-          if (allFullRecords.length > 0) {
-            const recordMap = new Map(allFullRecords.map(r => [r.lead_id, r]));
-            items = items.map((item: any) => ({
-              ...item,
-              ...(recordMap.get(item.lead_id) || {})
-            }));
-          }
+           const [liveRes, rejRes, closedRes] = await Promise.all([
+             supabase.from('customers').select('*').in('lead_id', leadIds),
+             supabase.from('rejected_leads').select('*').in('lead_id', leadIds),
+             supabase.from('closed_deals').select('*').in('lead_id', leadIds)
+           ]);
+           
+           const allFullRecords = [...(liveRes.data || []), ...(rejRes.data || []), ...(closedRes.data || [])];
+           
+           if (allFullRecords.length > 0) {
+             const recordMap = new Map(allFullRecords.map(r => [r.lead_id, r]));
+             items = items.map((item: any) => ({
+               ...item,
+               ...(recordMap.get(item.lead_id) || {})
+             }));
+           }
         }
 
         // 3. Resolve Campaign Names
@@ -410,11 +411,11 @@ export default function Customer() {
         const mappedData = items.map((item: any) => {
           const agentId = item.assigned_to || item.agent_id;
           const campId = item.campaign_id || item.campaign;
-
+          
           // Campaign logic: Use resolved name, or string in 'campaign' field if it's not a UUID
           let resolvedCampaign = item.campaign_name;
           if (!resolvedCampaign && campId) {
-            resolvedCampaign = campaignMap[campId] || (campId.length < 20 ? campId : null);
+             resolvedCampaign = campaignMap[campId] || (campId.length < 20 ? campId : null);
           }
 
           return {
@@ -439,7 +440,7 @@ export default function Customer() {
   const handleDeleteDuplicateEntry = async (item: any) => {
     // Using lead_id as the primary identifier (e.g., LEAD-1772796342061-975)
     const targetLeadId = item.lead_id;
-
+    
     if (!targetLeadId) {
       console.error("No Lead ID found for item:", item);
       alert("Error: Could not find Lead ID. Deletion failed.");
@@ -447,31 +448,31 @@ export default function Customer() {
     }
 
     if (!confirm(`Are you sure you want to delete this specific lead record (${targetLeadId}) for ${item.customer_name}?`)) return;
-
+    
     try {
       // Determine the correct table based on the item stage
       const table = item.stage === "Live" ? "customers" : item.stage === "Rejected" ? "rejected_leads" : "closed_deals";
-
+      
       // Attempt to delete. This uses lead_id to ensure the exact business record is removed
       const { error } = await supabase.from(table).delete().eq("lead_id", targetLeadId);
-
+      
       if (error) throw error;
-
+      
       // Update local duplicateLeads state to reflect deletion
       setDuplicateLeads(prev => prev.filter(lead => !(lead.lead_id === targetLeadId && lead.stage === item.stage)));
-
+      
       // Also refresh the main customer table if it's currently showing that data source
       fetchCustomers(currentPage);
 
       logSystemEvent({
-        event_type: 'WRITE',
-        description: `Delete Duplicate: Record ${targetLeadId} removed from ${table} for ${item.customer_name}`,
-        metadata: { lead_id: targetLeadId, table, customer_name: item.customer_name },
-        payload_size: 0,
-        user_name: user?.displayName || 'Admin',
-        organization_id: user?.organization_id || undefined
+          event_type: 'WRITE',
+          description: `Delete Duplicate: Record ${targetLeadId} removed from ${table} for ${item.customer_name}`,
+          metadata: { lead_id: targetLeadId, table, customer_name: item.customer_name },
+          payload_size: 0,
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
       });
-
+      
     } catch (err: any) {
       console.error("Error deleting duplicate entry:", err);
       alert("Failed to delete entry: " + (err.message || "Unknown error"));
@@ -489,7 +490,7 @@ export default function Customer() {
   const handleDeleteMultipleDuplicates = async (items: any[]) => {
     if (items.length === 0) return;
     if (!confirm(`Are you sure you want to delete ${items.length} selected lead(s)?`)) return;
-
+    
     setLoadingDuplicates(true);
     try {
       // Group by table stage
@@ -512,12 +513,12 @@ export default function Customer() {
       await fetchCustomers(currentPage);
 
       logSystemEvent({
-        event_type: 'WRITE',
-        description: `Bulk Delete Duplicates: ${items.length} records removed (${liveItems.length} Live, ${rejectedItems.length} Rejected, ${closedItems.length} Closed)`,
-        metadata: { record_count: items.length, live_count: liveItems.length, rejected_count: rejectedItems.length, closed_count: closedItems.length },
-        payload_size: estimateSize(items),
-        user_name: user?.displayName || 'Admin',
-        organization_id: user?.organization_id || undefined
+          event_type: 'WRITE',
+          description: `Bulk Delete Duplicates: ${items.length} records removed (${liveItems.length} Live, ${rejectedItems.length} Rejected, ${closedItems.length} Closed)`,
+          metadata: { record_count: items.length, live_count: liveItems.length, rejected_count: rejectedItems.length, closed_count: closedItems.length },
+          payload_size: estimateSize(items),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
       });
 
       alert(`Successfully deleted ${items.length} records.`);
@@ -541,7 +542,8 @@ export default function Customer() {
       "Language barrier",
       "DND",
       "Wrong NO",
-      "Inactive / Expired",
+      "Ported / Expired",
+      "Already Renewed",
       "Not Contactable",
       "Call Back",
       "Deal Done",
@@ -599,11 +601,11 @@ export default function Customer() {
     setLoadingCustomers(true);
     setSelectedCustomers(new Set());
     setFilters(prev => ({ ...prev, disposition: "" }));
-
+    
     // 2. Update Source State
     setDataSource(newSource);
     setCurrentPage(1);
-
+    
     // 3. Fetch Fresh Data (Pass explicitly to avoid state update delay)
     await fetchCustomers(1, newSource);
   };
@@ -613,7 +615,7 @@ export default function Customer() {
     try {
       setLoadingCustomers(true);
       const todayISO = new Date();
-      todayISO.setHours(0, 0, 0, 0);
+      todayISO.setHours(0,0,0,0);
 
       const table = activeSource === "live" ? "customers" : activeSource === "rejected" ? "rejected_leads" : "closed_deals";
       const dispCol = activeSource === "closed" ? "final_disposition" : "disposition";
@@ -629,46 +631,46 @@ export default function Customer() {
       // 1. Fetch Shared Team Members for TL (Re-use in all sub-queries)
       let sharedTeamMemberIds: string[] = [];
       if (user?.isClient && user.designation === 'team_leader') {
-        const { data: teamData } = await supabase
-          .from('teams')
-          .select('members')
-          .eq('leader_id', user.uid)
-          .eq('is_active', true);
+         const { data: teamData } = await supabase
+           .from('teams')
+           .select('members')
+           .eq('leader_id', user.uid)
+           .eq('is_active', true);
 
-        if (teamData) {
-          teamData.forEach(team => {
-            if (Array.isArray(team.members)) {
-              team.members.forEach((member: any) => {
-                if (typeof member === 'string') sharedTeamMemberIds.push(member);
-              });
-            } else if (typeof team.members === 'string') {
-              try {
-                const parsedIds = JSON.parse(team.members);
-                if (Array.isArray(parsedIds)) parsedIds.forEach((id: any) => sharedTeamMemberIds.push(String(id)));
-              } catch (e) { }
-            }
-          });
-        }
-        sharedTeamMemberIds.push(user.uid);
-        sharedTeamMemberIds = [...new Set(sharedTeamMemberIds)];
+         if (teamData) {
+           teamData.forEach(team => {
+             if (Array.isArray(team.members)) {
+                team.members.forEach((member: any) => {
+                  if (typeof member === 'string') sharedTeamMemberIds.push(member);
+                });
+             } else if (typeof team.members === 'string') {
+                try {
+                  const parsedIds = JSON.parse(team.members);
+                  if (Array.isArray(parsedIds)) parsedIds.forEach((id: any) => sharedTeamMemberIds.push(String(id))); 
+                } catch (e) {}
+             }
+           });
+         }
+         sharedTeamMemberIds.push(user.uid);
+         sharedTeamMemberIds = [...new Set(sharedTeamMemberIds)];
       }
 
       // 2. Helper function to apply user filters consistently
       const applyUserFilters = (q: any) => {
-        if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
-          if (user.organization_id) q = q.eq('organization_id', user.organization_id);
-          if (user.uid) q = q.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
-        }
-        else if (user?.isClient && user.designation === 'team_leader') {
-          if (user.organization_id) q = q.eq('organization_id', user.organization_id);
-          if (sharedTeamMemberIds.length > 0) q = q.in(activeSource === 'live' ? 'assigned_to' : 'agent_id', sharedTeamMemberIds);
-          else q = q.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
-        }
-        else if (user?.isClient && ['ceo', 'developer', 'manager'].includes(user.designation || '')) {
-          if (user.organization_id) q = q.eq('organization_id', user.organization_id);
-          else q = q.eq('id', '00000000-0000-0000-0000-000000000000');
-        }
-        return q;
+          if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
+              if (user.organization_id) q = q.eq('organization_id', user.organization_id);
+              if (user.uid) q = q.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
+          }
+          else if (user?.isClient && user.designation === 'team_leader') {
+               if (user.organization_id) q = q.eq('organization_id', user.organization_id);
+               if (sharedTeamMemberIds.length > 0) q = q.in(activeSource === 'live' ? 'assigned_to' : 'agent_id', sharedTeamMemberIds);
+               else q = q.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
+          }
+          else if (user?.isClient && ['ceo', 'developer', 'manager'].includes(user.designation || '')) {
+              if (user.organization_id) q = q.eq('organization_id', user.organization_id);
+              else q = q.eq('id', '00000000-0000-0000-0000-000000000000');
+          }
+          return q;
       };
 
       // 3. Get total count
@@ -711,11 +713,11 @@ export default function Customer() {
           countQuery = countQuery.in("attempt_count", attemptCountArray);
         }
       }
-
+      
       const dateField = "expiry_date";
       if (filters.startDate) countQuery = countQuery.gte(dateField, `${filters.startDate}T00:00:00`);
       if (filters.endDate) countQuery = countQuery.lte(dateField, `${filters.endDate}T23:59:59`);
-
+      
       const lifecycleDateField = activeSource === "rejected" ? "rejected_at" : activeSource === "closed" ? "closed_at" : "created_at";
       if (filters.createdStartDate) countQuery = countQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
       if (filters.createdEndDate) countQuery = countQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
@@ -736,86 +738,86 @@ export default function Customer() {
 
         let freshCountQuery = supabase.from(table).select("*", { count: "exact", head: true });
         if (activeSource === 'live') {
-          freshCountQuery = freshCountQuery.eq("attempt_count", 0).is(dispCol, null);
+            freshCountQuery = freshCountQuery.eq("attempt_count", 0).is(dispCol, null);
         } else {
-          freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
+            freshCountQuery = freshCountQuery.eq('id', '00000000-0000-0000-0000-000000000000');
         }
         freshCountQuery = applyUserFilters(freshCountQuery);
 
         if (filters.organization) {
-          pendingQuery = pendingQuery.eq("organization_id", filters.organization);
-          overdueQuery = overdueQuery.eq("organization_id", filters.organization);
-          freshCountQuery = freshCountQuery.eq("organization_id", filters.organization);
+            pendingQuery = pendingQuery.eq("organization_id", filters.organization);
+            overdueQuery = overdueQuery.eq("organization_id", filters.organization);
+            freshCountQuery = freshCountQuery.eq("organization_id", filters.organization);
         }
         if (filters.campaign) {
-          if (filters.campaign === "unassigned") {
-            pendingQuery = pendingQuery.is("campaign_id", null);
-            overdueQuery = overdueQuery.is("campaign_id", null);
-            freshCountQuery = freshCountQuery.is("campaign_id", null);
-          } else {
-            pendingQuery = pendingQuery.eq("campaign_id", filters.campaign);
-            overdueQuery = overdueQuery.eq("campaign_id", filters.campaign);
-            freshCountQuery = freshCountQuery.eq("campaign_id", filters.campaign);
-          }
+            if (filters.campaign === "unassigned") {
+                pendingQuery = pendingQuery.is("campaign_id", null);
+                overdueQuery = overdueQuery.is("campaign_id", null);
+                freshCountQuery = freshCountQuery.is("campaign_id", null);
+            } else {
+                pendingQuery = pendingQuery.eq("campaign_id", filters.campaign);
+                overdueQuery = overdueQuery.eq("campaign_id", filters.campaign);
+                freshCountQuery = freshCountQuery.eq("campaign_id", filters.campaign);
+            }
         }
         if (filters.assignedTo) {
-          const agentCol = activeSource === 'live' ? 'assigned_to' : 'agent_id';
-          if (filters.assignedTo === "unassigned") {
-            pendingQuery = pendingQuery.is(agentCol, null);
-            overdueQuery = overdueQuery.is(agentCol, null);
-            freshCountQuery = freshCountQuery.is(agentCol, null);
-          } else {
-            pendingQuery = pendingQuery.eq(agentCol, filters.assignedTo);
-            overdueQuery = overdueQuery.eq(agentCol, filters.assignedTo);
-            freshCountQuery = freshCountQuery.eq(agentCol, filters.assignedTo);
-          }
+            const agentCol = activeSource === 'live' ? 'assigned_to' : 'agent_id';
+            if (filters.assignedTo === "unassigned") {
+                pendingQuery = pendingQuery.is(agentCol, null);
+                overdueQuery = overdueQuery.is(agentCol, null);
+                freshCountQuery = freshCountQuery.is(agentCol, null);
+            } else {
+                pendingQuery = pendingQuery.eq(agentCol, filters.assignedTo);
+                overdueQuery = overdueQuery.eq(agentCol, filters.assignedTo);
+                freshCountQuery = freshCountQuery.eq(agentCol, filters.assignedTo);
+            }
         }
 
         if (attemptCountArray) {
-          if (attemptCountArray.length === 1) {
-            pendingQuery = pendingQuery.eq("attempt_count", attemptCountArray[0]);
-            overdueQuery = overdueQuery.eq("attempt_count", attemptCountArray[0]);
-            freshCountQuery = freshCountQuery.eq("attempt_count", attemptCountArray[0]);
-          } else {
-            pendingQuery = pendingQuery.in("attempt_count", attemptCountArray);
-            overdueQuery = overdueQuery.in("attempt_count", attemptCountArray);
-            freshCountQuery = freshCountQuery.in("attempt_count", attemptCountArray);
-          }
+            if (attemptCountArray.length === 1) {
+                pendingQuery = pendingQuery.eq("attempt_count", attemptCountArray[0]);
+                overdueQuery = overdueQuery.eq("attempt_count", attemptCountArray[0]);
+                freshCountQuery = freshCountQuery.eq("attempt_count", attemptCountArray[0]);
+            } else {
+                pendingQuery = pendingQuery.in("attempt_count", attemptCountArray);
+                overdueQuery = overdueQuery.in("attempt_count", attemptCountArray);
+                freshCountQuery = freshCountQuery.in("attempt_count", attemptCountArray);
+            }
         }
 
         if (filters.startDate) {
-          pendingQuery = pendingQuery.gte(dateField, `${filters.startDate}T00:00:00`);
-          overdueQuery = overdueQuery.gte(dateField, `${filters.startDate}T00:00:00`);
-          freshCountQuery = freshCountQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+            pendingQuery = pendingQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+            overdueQuery = overdueQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+            freshCountQuery = freshCountQuery.gte(dateField, `${filters.startDate}T00:00:00`);
         }
         if (filters.endDate) {
-          pendingQuery = pendingQuery.lte(dateField, `${filters.endDate}T23:59:59`);
-          overdueQuery = overdueQuery.lte(dateField, `${filters.endDate}T23:59:59`);
-          freshCountQuery = freshCountQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+            pendingQuery = pendingQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+            overdueQuery = overdueQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+            freshCountQuery = freshCountQuery.lte(dateField, `${filters.endDate}T23:59:59`);
         }
-
+        
         if (filters.createdStartDate) {
-          pendingQuery = pendingQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
-          overdueQuery = overdueQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
-          freshCountQuery = freshCountQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+            pendingQuery = pendingQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+            overdueQuery = overdueQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+            freshCountQuery = freshCountQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
         }
         if (filters.createdEndDate) {
-          pendingQuery = pendingQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
-          overdueQuery = overdueQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
-          freshCountQuery = freshCountQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+            pendingQuery = pendingQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+            overdueQuery = overdueQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
+            freshCountQuery = freshCountQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
         }
 
         if (activeSource === "closed") {
-          setPendingFollowUps(0);
-          setOverdueFollowUps(0);
-          setUpcomingFollowUps(0);
-          setFreshCustomersCount(0);
+            setPendingFollowUps(0);
+            setOverdueFollowUps(0);
+            setUpcomingFollowUps(0);
+            setFreshCustomersCount(0);
         } else {
-          const [pStats, oStats, fStats] = await Promise.all([pendingQuery, overdueQuery, freshCountQuery]);
-          setPendingFollowUps(pStats.count || 0);
-          setOverdueFollowUps(oStats.count || 0);
-          setUpcomingFollowUps((pStats.count || 0) - (oStats.count || 0));
-          setFreshCustomersCount(fStats.count || 0);
+            const [pStats, oStats, fStats] = await Promise.all([pendingQuery, overdueQuery, freshCountQuery]);
+            setPendingFollowUps(pStats.count || 0);
+            setOverdueFollowUps(oStats.count || 0);
+            setUpcomingFollowUps((pStats.count || 0) - (oStats.count || 0));
+            setFreshCustomersCount(fStats.count || 0);
         }
       } catch (statsErr) {
         console.warn("Follow-up/Fresh stats failed to load:", statsErr);
@@ -864,10 +866,10 @@ export default function Customer() {
           query = query.in("attempt_count", attemptCountArray);
         }
       }
-
+      
       if (filters.startDate) query = query.gte(dateField, `${filters.startDate}T00:00:00`);
       if (filters.endDate) query = query.lte(dateField, `${filters.endDate}T23:59:59`);
-
+      
       if (filters.createdStartDate) query = query.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
       if (filters.createdEndDate) query = query.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
 
@@ -881,61 +883,61 @@ export default function Customer() {
         let pageIndex = 0;
         const batchSize = 1000;
         while (hasMore) {
-          let batchQuery = supabase.from(table).select("*")
-            .order(orderCol, { ascending: false });
-          if (searchQuery) {
-            if (searchField === "name") {
-              batchQuery = batchQuery.ilike("customer_name", `%${searchQuery}%`);
-            } else {
-              const cleanSearch = searchQuery.replace(/\D/g, '');
-              if (cleanSearch.length > 0) {
-                const hash = computePhoneHash(cleanSearch);
-                if (hash) {
-                  batchQuery = batchQuery.eq("phone_search_hash", hash);
+            let batchQuery = supabase.from(table).select("*")
+                .order(orderCol, { ascending: false });
+            if (searchQuery) {
+                if (searchField === "name") {
+                    batchQuery = batchQuery.ilike("customer_name", `%${searchQuery}%`);
                 } else {
-                  batchQuery = batchQuery.ilike("phone_no", `%${searchQuery}%`);
+                    const cleanSearch = searchQuery.replace(/\D/g, '');
+                    if (cleanSearch.length > 0) {
+                        const hash = computePhoneHash(cleanSearch);
+                        if (hash) {
+                            batchQuery = batchQuery.eq("phone_search_hash", hash);
+                        } else {
+                            batchQuery = batchQuery.ilike("phone_no", `%${searchQuery}%`);
+                        }
+                    } else {
+                        batchQuery = batchQuery.ilike("phone_no", `%${searchQuery}%`);
+                    }
                 }
-              } else {
-                batchQuery = batchQuery.ilike("phone_no", `%${searchQuery}%`);
-              }
             }
-          }
-          batchQuery = applyUserFilters(batchQuery);
-          if (filters.organization) batchQuery = batchQuery.eq("organization_id", filters.organization);
-          if (filters.campaign) {
-            if (filters.campaign === "unassigned") {
-              batchQuery = batchQuery.is("campaign_id", null);
-            } else {
-              batchQuery = batchQuery.eq("campaign_id", filters.campaign);
+            batchQuery = applyUserFilters(batchQuery);
+            if (filters.organization) batchQuery = batchQuery.eq("organization_id", filters.organization);
+            if (filters.campaign) {
+                if (filters.campaign === "unassigned") {
+                    batchQuery = batchQuery.is("campaign_id", null);
+                } else {
+                    batchQuery = batchQuery.eq("campaign_id", filters.campaign);
+                }
             }
-          }
-          if (filters.assignedTo) {
-            if (filters.assignedTo === "unassigned") batchQuery = batchQuery.is(activeSource === 'live' ? 'assigned_to' : 'agent_id', null);
-            else batchQuery = batchQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
-          }
-          if (filters.disposition) batchQuery = batchQuery.eq(dispCol, filters.disposition);
-          if (attemptCountArray) {
-            if (attemptCountArray.length === 1) {
-              batchQuery = batchQuery.eq("attempt_count", attemptCountArray[0]);
-            } else {
-              batchQuery = batchQuery.in("attempt_count", attemptCountArray);
+            if (filters.assignedTo) {
+                if (filters.assignedTo === "unassigned") batchQuery = batchQuery.is(activeSource === 'live' ? 'assigned_to' : 'agent_id', null);
+                else batchQuery = batchQuery.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', filters.assignedTo);
             }
-          }
+            if (filters.disposition) batchQuery = batchQuery.eq(dispCol, filters.disposition);
+            if (attemptCountArray) {
+                if (attemptCountArray.length === 1) {
+                    batchQuery = batchQuery.eq("attempt_count", attemptCountArray[0]);
+                } else {
+                    batchQuery = batchQuery.in("attempt_count", attemptCountArray);
+                }
+            }
+            
+            if (filters.startDate) batchQuery = batchQuery.gte(dateField, `${filters.startDate}T00:00:00`);
+            if (filters.endDate) batchQuery = batchQuery.lte(dateField, `${filters.endDate}T23:59:59`);
+            
+            if (filters.createdStartDate) batchQuery = batchQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
+            if (filters.createdEndDate) batchQuery = batchQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
 
-          if (filters.startDate) batchQuery = batchQuery.gte(dateField, `${filters.startDate}T00:00:00`);
-          if (filters.endDate) batchQuery = batchQuery.lte(dateField, `${filters.endDate}T23:59:59`);
 
-          if (filters.createdStartDate) batchQuery = batchQuery.gte(lifecycleDateField, `${filters.createdStartDate}T00:00:00`);
-          if (filters.createdEndDate) batchQuery = batchQuery.lte(lifecycleDateField, `${filters.createdEndDate}T23:59:59`);
-
-
-          const { data: batch, error: batchError } = await batchQuery.range(pageIndex * batchSize, (pageIndex + 1) * batchSize - 1);
-          if (batchError) { error = batchError; break; }
-          if (batch && batch.length > 0) {
-            allData = [...allData, ...batch];
-            if (batch.length < batchSize) hasMore = false;
-            pageIndex++;
-          } else { hasMore = false; }
+            const { data: batch, error: batchError } = await batchQuery.range(pageIndex * batchSize, (pageIndex + 1) * batchSize - 1);
+            if (batchError) { error = batchError; break; }
+            if (batch && batch.length > 0) {
+                allData = [...allData, ...batch];
+                if (batch.length < batchSize) hasMore = false;
+                pageIndex++;
+            } else { hasMore = false; }
         }
         data = allData;
       } else {
@@ -957,9 +959,9 @@ export default function Customer() {
             .or(`user_id.in.("${allUserIds.join('","')}"),id.in.("${allUserIds.join('","')}")`);
           if (userData) {
             userData.forEach(u => {
-              const info = { user_name: u.user_name, employee_id: u.employee_id };
-              userMap[u.user_id] = info;
-              userMap[u.id] = info;
+                const info = { user_name: u.user_name, employee_id: u.employee_id };
+                userMap[u.user_id] = info;
+                userMap[u.id] = info;
             });
           }
         }
@@ -1046,7 +1048,7 @@ export default function Customer() {
 
   const handleBulkUpdate = async (updates: Record<string, any>) => {
     if (!selectedCustomers.size || Object.keys(updates).length === 0) return;
-
+    
     setIsUpdatingBulk(true);
     try {
       const ids = Array.from(selectedCustomers);
@@ -1075,8 +1077,8 @@ export default function Customer() {
           if (resetError) throw resetError;
         }
       } else {
-        // Check for Rejected Disposition move
-        const rejectedValue = updates.disposition;
+       // Check for Rejected Disposition move
+       const rejectedValue = updates.disposition;
         if (rejectedValue && ["Wrong NO", "DND", "Language barrier"].includes(rejectedValue)) {
           for (let i = 0; i < ids.length; i += batchSize) {
             const batch = ids.slice(i, i + batchSize);
@@ -1088,7 +1090,7 @@ export default function Customer() {
             if (fetchError) throw fetchError;
 
             if (leads && leads.length > 0) {
-              const isConn = (updates.disposition === 'Call Back' || updates.disposition === 'Deal Done' || updates.disposition === 'Not Intrested' || updates.disposition === 'Language barrier' || updates.disposition === 'DND' || updates.disposition === 'Wrong NO' || updates.disposition === 'Inactive / Expired' || updates.disposition === 'Ported / Expired' || updates.disposition === 'Already Renewed')
+              const isConn = (updates.disposition === 'Call Back' || updates.disposition === 'Deal Done' || updates.disposition === 'Not Intrested' || updates.disposition === 'Language barrier' || updates.disposition === 'DND' || updates.disposition === 'Wrong NO' || updates.disposition === 'Already Renewed')
                 ? 'contactable'
                 : (updates.disposition === 'Not Contactable' ? 'uncontactable' : 'contactable');
 
@@ -1141,14 +1143,14 @@ export default function Customer() {
       await fetchCustomers(currentPage);
 
       logSystemEvent({
-        event_type: 'WRITE',
-        description: `Bulk Update: Applied changes ${JSON.stringify(updates)} to ${ids.length} records.`,
-        metadata: { updates, record_count: ids.length },
-        payload_size: estimateSize({ updates, ids }),
-        user_name: user?.displayName || 'Admin',
-        organization_id: user?.organization_id || undefined
+          event_type: 'WRITE',
+          description: `Bulk Update: Applied changes ${JSON.stringify(updates)} to ${ids.length} records.`,
+          metadata: { updates, record_count: ids.length },
+          payload_size: estimateSize({ updates, ids }),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
       });
-
+      
       setShowBulkActionModal(false);
       setBulkUpdates({
         organization_id: "",
@@ -1168,7 +1170,7 @@ export default function Customer() {
 
   const handleMoveToLive = async () => {
     if (!selectedCustomers.size || dataSource !== 'rejected') return;
-
+    
     setIsMovingToLive(true);
     try {
       const ids = Array.from(selectedCustomers);
@@ -1185,14 +1187,14 @@ export default function Customer() {
 
         if (rejectedLeads && rejectedLeads.length > 0) {
           const liveCustomers = rejectedLeads.map(lead => {
-            const {
+            const { 
               id,
               customer_id,
               agent_id,
               rejected_at,
               status,
               idx,
-              ...commonFields
+              ...commonFields 
             } = lead;
 
             return {
@@ -1221,14 +1223,14 @@ export default function Customer() {
 
       setSelectedCustomers(new Set());
       await fetchCustomers(currentPage);
-
+      
       logSystemEvent({
-        event_type: 'WRITE',
-        description: `Move to Live: ${ids.length} records restored from rejected_leads`,
-        metadata: { record_count: ids.length, source: 'rejected_leads', target: 'customers' },
-        payload_size: estimateSize(ids),
-        user_name: user?.displayName || 'Admin',
-        organization_id: user?.organization_id || undefined
+          event_type: 'WRITE',
+          description: `Move to Live: ${ids.length} records restored from rejected_leads`,
+          metadata: { record_count: ids.length, source: 'rejected_leads', target: 'customers' },
+          payload_size: estimateSize(ids),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
       });
 
       alert(`Successfully moved ${ids.length} lead(s) back to Live.`);
@@ -1332,8 +1334,8 @@ export default function Customer() {
                 if (!callLogsMap[targetCustId]) {
                   callLogsMap[targetCustId] = [];
                 }
-                const exists = callLogsMap[targetCustId].some(existing =>
-                  (existing.id && log.id && existing.id === log.id) ||
+                const exists = callLogsMap[targetCustId].some(existing => 
+                  (existing.id && log.id && existing.id === log.id) || 
                   (existing.created_at === log.created_at && existing.disposition === log.disposition)
                 );
                 if (!exists) {
@@ -1365,8 +1367,8 @@ export default function Customer() {
                   if (!callLogsMap[matchedCustId]) {
                     callLogsMap[matchedCustId] = [];
                   }
-                  const exists = callLogsMap[matchedCustId].some(existing =>
-                    (existing.id && log.id && existing.id === log.id) ||
+                  const exists = callLogsMap[matchedCustId].some(existing => 
+                    (existing.id && log.id && existing.id === log.id) || 
                     (existing.created_at === log.created_at && existing.disposition === log.disposition)
                   );
                   if (!exists) {
@@ -1401,7 +1403,7 @@ export default function Customer() {
         });
         const totalCalls = logs.length;
         const latestCallDate = logs.length > 0 && logs[0].created_at ? new Date(logs[0].created_at).toLocaleString() : '';
-
+        
         // Format history strings (Separated by | for multiple calls)
         const callHistoryStr = logs.map(l => {
           const dateStr = l.created_at ? new Date(l.created_at).toLocaleDateString() : '';
@@ -1447,12 +1449,12 @@ export default function Customer() {
       document.body.removeChild(link);
 
       logSystemEvent({
-        event_type: 'READ',
-        description: `Export Customers: ${allCustomers.length} records exported to CSV with call logs history`,
-        metadata: { record_count: allCustomers.length, format: 'csv' },
-        payload_size: estimateSize(allCustomers),
-        user_name: user?.displayName || 'Admin',
-        organization_id: user?.organization_id || undefined
+          event_type: 'READ',
+          description: `Export Customers: ${allCustomers.length} records exported to CSV with call logs history`,
+          metadata: { record_count: allCustomers.length, format: 'csv' },
+          payload_size: estimateSize(allCustomers),
+          user_name: user?.displayName || 'Admin',
+          organization_id: user?.organization_id || undefined
       });
 
     } catch (err) {
@@ -1529,8 +1531,9 @@ export default function Customer() {
             await fetchCustomers(currentPage);
             logSystemEvent({
               event_type: "WRITE",
-              description: `Delete Customer: ${customer.customer_name || "N/A"
-                } (ID: ${customer.id}) removed`,
+              description: `Delete Customer: ${
+                customer.customer_name || "N/A"
+              } (ID: ${customer.id}) removed`,
               metadata: {
                 customer_id: customer.id,
                 customer_name: customer.customer_name,
@@ -1572,931 +1575,553 @@ export default function Customer() {
         <title>Customers | TFC Connect</title>
       </Head>
 
-      {/* Main Content */}
+        {/* Main Content */}
 
-      <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
-        <div className="space-y-6 sm:space-y-8">
-          {/* Page Header */}
-          <div className="mb-6 flex items-start justify-between">
-            <div>
-              <h1
-                className="text-xl sm:text-2xl md:text-3xl font-bold mb-2"
-                style={{
-                  color: "#263238",
-                  fontFamily: "'Poppins', sans-serif",
-                }}
-              >
-                Customers
-              </h1>
-              <p
-                className="text-sm sm:text-base"
-                style={{
-                  color: "#787E9D",
-                  fontFamily: "'Roboto', sans-serif",
-                }}
-              >
-                View and manage all customers in the system
-              </p>
-            </div>
-
-            {/* Data Source Toggle */}
-            <div className="bg-gray-100/80 backdrop-blur-sm p-1.5 rounded-xl gap-2 flex items-center md:min-w-[300px]">
-              <button
-                onClick={() => handleSourceChange("live")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${dataSource === "live"
-                    ? "bg-white text-[#4b33e8] scale-[1.02] shadow-sm"
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
-                  }`}
-              >
-                <i className={`fi text-base flex ${dataSource === "live" ? "fi-sr-bolt" : "fi-rr-bolt"}`}></i>
-                <span className="hidden md:inline">Live</span>
-              </button>
-              <button
-                onClick={() => handleSourceChange("rejected")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${dataSource === "rejected"
-                    ? "bg-white text-rose-600 scale-[1.02] shadow-sm"
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
-                  }`}
-              >
-                <i className={`fi text-base flex ${dataSource === "rejected" ? "fi-sr-cross-circle" : "fi-rr-cross-circle"}`}></i>
-                <span className="hidden md:inline">Rejected</span>
-              </button>
-              <button
-                onClick={() => handleSourceChange("closed")}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${dataSource === "closed"
-                    ? "bg-white text-emerald-600 scale-[1.02] shadow-sm"
-                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
-                  }`}
-              >
-                <i className={`fi text-base flex ${dataSource === "closed" ? "fi-sr-check-circle" : "fi-rr-check-circle"}`}></i>
-                <span className="hidden md:inline">Closed</span>
-              </button>
-            </div>
-          </div>
-
-          {/* 4 Tiles Grid - 3 Main Tiles + 1 Container with 2 Sub-tiles (hidden border) */}
-          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-            {/* Tile 1: Total Customer */}
-            <div
-              className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-shadow duration-200 flex flex-col hover:shadow-md"
-              style={{ backgroundColor: "white" }}
-            >
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(circle at top right, rgba(75, 51, 232, 0.08), transparent 60%)",
-                }}
-              />
-              <div className="absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-purple-100/30 blur-2xl" />
-              {/* Decorative Graphics */}
-              <div className="absolute top-0 left-0 w-32 h-32 rounded-full bg-purple-200/20 blur-xl" />
-              <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-purple-300/15 blur-lg" />
-              {/* Background Icon */}
-              <div className="absolute -right-2 -bottom-2 opacity-5">
-                <i
-                  className="fi flex fi-rr-users text-5xl sm:text-6xl"
-                  style={{ color: "#4b33e8" }}
-                ></i>
-              </div>
-              {/* Pattern Overlay */}
-              <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle, #4b33e8 1px, transparent 1px)",
-                  backgroundSize: "20px 20px",
-                }}
-              />
-              <div className="relative flex flex-col h-full z-10">
-                <div className="flex items-start justify-between mb-auto">
+          <div className="container mx-auto px-3 sm:px-4 md:px-6 py-6 sm:py-8 pb-20 sm:pb-24 lg:pb-8 max-w-7xl">
+            <div className="space-y-6 sm:space-y-8">
+              {/* Page Header */}
+              <div className="mb-6 flex items-start justify-between">
+                <div>
+                  <h1
+                    className="text-xl sm:text-2xl md:text-3xl font-bold mb-2"
+                    style={{
+                      color: "#263238",
+                      fontFamily: "'Poppins', sans-serif",
+                    }}
+                  >
+                    Customers
+                  </h1>
                   <p
-                    className="text-xs sm:text-sm font-medium"
+                    className="text-sm sm:text-base"
                     style={{
                       color: "#787E9D",
                       fontFamily: "'Roboto', sans-serif",
                     }}
                   >
-                    Total Customer
+                    View and manage all customers in the system
                   </p>
-                  <div
-                    className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl"
-                    style={{
-                      backgroundColor: "transparent",
-                    }}
+                </div>
+
+                {/* Data Source Toggle */}
+                <div className="bg-gray-100/80 backdrop-blur-sm p-1.5 rounded-xl gap-2 flex items-center md:min-w-[300px]">
+                  <button
+                    onClick={() => handleSourceChange("live")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                      dataSource === "live"
+                        ? "bg-white text-[#4b33e8] scale-[1.02] shadow-sm"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    }`}
                   >
+                    <i className={`fi text-base flex ${dataSource === "live" ? "fi-sr-bolt" : "fi-rr-bolt"}`}></i>
+                    <span className="hidden md:inline">Live</span>
+                  </button>
+                  <button
+                    onClick={() => handleSourceChange("rejected")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                      dataSource === "rejected"
+                        ? "bg-white text-rose-600 scale-[1.02] shadow-sm"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    }`}
+                  >
+                    <i className={`fi text-base flex ${dataSource === "rejected" ? "fi-sr-cross-circle" : "fi-rr-cross-circle"}`}></i>
+                    <span className="hidden md:inline">Rejected</span>
+                  </button>
+                  <button
+                    onClick={() => handleSourceChange("closed")}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 md:px-4 rounded-xl text-sm font-bold transition-all duration-300 ${
+                      dataSource === "closed"
+                        ? "bg-white text-emerald-600 scale-[1.02] shadow-sm"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200/50"
+                    }`}
+                  >
+                    <i className={`fi text-base flex ${dataSource === "closed" ? "fi-sr-check-circle" : "fi-rr-check-circle"}`}></i>
+                    <span className="hidden md:inline">Closed</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* 4 Tiles Grid - 3 Main Tiles + 1 Container with 2 Sub-tiles (hidden border) */}
+              <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                {/* Tile 1: Total Customer */}
+                <div
+                  className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-shadow duration-200 flex flex-col hover:shadow-md"
+                  style={{ backgroundColor: "white" }}
+                >
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "radial-gradient(circle at top right, rgba(75, 51, 232, 0.08), transparent 60%)",
+                    }}
+                  />
+                  <div className="absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-purple-100/30 blur-2xl" />
+                  {/* Decorative Graphics */}
+                  <div className="absolute top-0 left-0 w-32 h-32 rounded-full bg-purple-200/20 blur-xl" />
+                  <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-purple-300/15 blur-lg" />
+                  {/* Background Icon */}
+                  <div className="absolute -right-2 -bottom-2 opacity-5">
                     <i
-                      className="fi flex fi-rr-users text-lg sm:text-xl"
+                      className="fi flex fi-rr-users text-5xl sm:text-6xl"
                       style={{ color: "#4b33e8" }}
                     ></i>
                   </div>
-                </div>
-                <div className="mt-auto">
-                  <p
-                    className="text-3xl sm:text-4xl font-semibold"
-                    style={{
-                      color: "#263238",
-                      fontFamily: "'Poppins', sans-serif",
-                    }}
-                  >
-                    {totalCustomers}
-                  </p>
-                  <p
-                    className="text-xs sm:text-sm mt-1"
-                    style={{
-                      color: "#787E9D",
-                      fontFamily: "'Roboto', sans-serif",
-                    }}
-                  >
-                    Total customers
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Tile 2: Fresh Customers */}
-            <div
-              className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-shadow duration-200 flex flex-col hover:shadow-md"
-              style={{ backgroundColor: "white" }}
-            >
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 60%)",
-                }}
-              />
-              <div className="absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-green-100/30 blur-2xl" />
-              {/* Decorative Graphics */}
-              <div className="absolute top-0 left-0 w-32 h-32 rounded-full bg-green-200/20 blur-xl" />
-              <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-green-300/15 blur-lg" />
-              {/* Background Icon */}
-              <div className="absolute -right-2 -bottom-2 opacity-5">
-                <i
-                  className="fi flex fi-rr-user-add text-5xl sm:text-6xl"
-                  style={{ color: "#10b981" }}
-                ></i>
-              </div>
-              {/* Pattern Overlay */}
-              <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle, #10b981 1px, transparent 1px)",
-                  backgroundSize: "20px 20px",
-                }}
-              />
-              <div className="relative flex flex-col h-full z-10">
-                <div className="flex items-start justify-between mb-auto">
-                  <p
-                    className="text-xs sm:text-sm font-medium"
-                    style={{
-                      color: "#787E9D",
-                      fontFamily: "'Roboto', sans-serif",
-                    }}
-                  >
-                    Fresh Customers
-                  </p>
+                  {/* Pattern Overlay */}
                   <div
-                    className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl"
+                    className="absolute inset-0 opacity-[0.03]"
                     style={{
-                      backgroundColor: "transparent",
+                      backgroundImage:
+                        "radial-gradient(circle, #4b33e8 1px, transparent 1px)",
+                      backgroundSize: "20px 20px",
                     }}
-                  >
+                  />
+                  <div className="relative flex flex-col h-full z-10">
+                    <div className="flex items-start justify-between mb-auto">
+                      <p
+                        className="text-xs sm:text-sm font-medium"
+                        style={{
+                          color: "#787E9D",
+                          fontFamily: "'Roboto', sans-serif",
+                        }}
+                      >
+                        Total Customer
+                      </p>
+                      <div
+                        className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl"
+                        style={{
+                          backgroundColor: "transparent",
+                        }}
+                      >
+                        <i
+                          className="fi flex fi-rr-users text-lg sm:text-xl"
+                          style={{ color: "#4b33e8" }}
+                        ></i>
+                      </div>
+                    </div>
+                    <div className="mt-auto">
+                      <p
+                        className="text-3xl sm:text-4xl font-semibold"
+                        style={{
+                          color: "#263238",
+                          fontFamily: "'Poppins', sans-serif",
+                        }}
+                      >
+                        {totalCustomers}
+                      </p>
+                      <p
+                        className="text-xs sm:text-sm mt-1"
+                        style={{
+                          color: "#787E9D",
+                          fontFamily: "'Roboto', sans-serif",
+                        }}
+                      >
+                        Total customers
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tile 2: Fresh Customers */}
+                <div
+                  className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-shadow duration-200 flex flex-col hover:shadow-md"
+                  style={{ backgroundColor: "white" }}
+                >
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "radial-gradient(circle at top right, rgba(16, 185, 129, 0.08), transparent 60%)",
+                    }}
+                  />
+                  <div className="absolute -bottom-16 -right-16 h-48 w-48 rounded-full bg-green-100/30 blur-2xl" />
+                  {/* Decorative Graphics */}
+                  <div className="absolute top-0 left-0 w-32 h-32 rounded-full bg-green-200/20 blur-xl" />
+                  <div className="absolute top-8 right-8 w-16 h-16 rounded-full bg-green-300/15 blur-lg" />
+                  {/* Background Icon */}
+                  <div className="absolute -right-2 -bottom-2 opacity-5">
                     <i
-                      className="fi flex fi-rr-user-add text-lg sm:text-xl"
+                      className="fi flex fi-rr-user-add text-5xl sm:text-6xl"
                       style={{ color: "#10b981" }}
                     ></i>
                   </div>
-                </div>
-                <div className="mt-auto">
-                  <p
-                    className="text-3xl sm:text-4xl font-semibold"
-                    style={{
-                      color: "#263238",
-                      fontFamily: "'Poppins', sans-serif",
-                    }}
-                  >
-                    {freshCustomersCount}
-                  </p>
-                  <p
-                    className="text-xs sm:text-sm mt-1"
-                    style={{
-                      color: "#787E9D",
-                      fontFamily: "'Roboto', sans-serif",
-                    }}
-                  >
-                    Unassigned leads
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Tile 3: Follow ups */}
-            <div
-              className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 backdrop-blur flex flex-col text-white hover:shadow-md"
-              style={{ backgroundColor: "#4b33e8" }}
-            >
-              <div
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "radial-gradient(circle at top left, rgba(255,255,255,0.28), transparent 55%)",
-                }}
-              />
-              <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
-              {/* Decorative Graphics */}
-              <div className="absolute top-4 left-4 w-24 h-24 rounded-full bg-white/5 blur-xl" />
-              <div className="absolute top-12 right-12 w-20 h-20 rounded-full bg-white/8 blur-lg" />
-              {/* Background Icon */}
-              <div className="absolute -right-2 -bottom-2 opacity-10">
-                <i className="fi flex fi-rr-calendar-check text-5xl sm:text-6xl text-white"></i>
-              </div>
-              {/* Pattern Overlay */}
-              <div
-                className="absolute inset-0 opacity-[0.05]"
-                style={{
-                  backgroundImage:
-                    "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)",
-                  backgroundSize: "25px 25px",
-                }}
-              />
-              <div className="relative flex flex-col h-full z-10">
-                <div className="flex items-start justify-between mb-auto">
-                  <p
-                    className="text-xs sm:text-sm font-medium"
-                    style={{
-                      color: "#ffffff",
-                      fontFamily: "'Roboto', sans-serif",
-                    }}
-                  >
-                    Follow ups
-                  </p>
-                  <div
-                    className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl border border-white/30 bg-white/10 backdrop-blur-lg"
-                    style={{
-                      color: "#ffffff",
-                    }}
-                  >
-                    <i
-                      className="fi flex fi-rr-calendar-check text-lg sm:text-xl"
-                      style={{ color: "#ffffff" }}
-                    ></i>
-                  </div>
-                </div>
-                <div className="mt-auto">
-                  <p
-                    className="text-3xl sm:text-4xl font-semibold"
-                    style={{
-                      color: "#ffffff",
-                      fontFamily: "'Poppins', sans-serif",
-                    }}
-                  >
-                    {pendingFollowUps}
-                  </p>
-                  <p
-                    className="text-xs sm:text-sm mt-1"
-                    style={{
-                      color: "rgba(255, 255, 255, 0.8)",
-                      fontFamily: "'Roboto', sans-serif",
-                    }}
-                  >
-                    Pending follow ups
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Tile 4: Container with 2 Sub-tiles (hidden outer border) */}
-            <div
-              className="relative p-0 flex flex-col overflow-hidden"
-              style={{ backgroundColor: "transparent", border: "none" }}
-            >
-              <div className="flex flex-col gap-3 h-full">
-                {/* Sub-tile 1: Upcoming follow ups */}
-                <div
-                  className="relative overflow-hidden flex-1 rounded-xl p-3 transition-shadow duration-200 hover:shadow-md"
-                  style={{
-                    background: "linear-gradient(135deg, #3b82f6, #2563eb)",
-                  }}
-                >
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "radial-gradient(circle at top left, rgba(255,255,255,0.15), transparent 50%)",
-                    }}
-                  />
-                  <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-                  {/* Decorative Graphics */}
-                  <div className="absolute top-2 left-2 w-16 h-16 rounded-full bg-white/8 blur-lg" />
-                  <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/6 blur-md" />
-                  {/* Background Icon */}
-                  <div className="absolute -right-1 -bottom-1 opacity-10">
-                    <i className="fi flex fi-rr-clock text-3xl text-white"></i>
-                  </div>
                   {/* Pattern Overlay */}
                   <div
-                    className="absolute inset-0 opacity-[0.08]"
+                    className="absolute inset-0 opacity-[0.03]"
                     style={{
                       backgroundImage:
-                        "radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)",
-                      backgroundSize: "15px 15px",
+                        "radial-gradient(circle, #10b981 1px, transparent 1px)",
+                      backgroundSize: "20px 20px",
                     }}
                   />
-                  <div className="relative flex items-start justify-between z-10">
-                    <div className="flex-1">
+                  <div className="relative flex flex-col h-full z-10">
+                    <div className="flex items-start justify-between mb-auto">
                       <p
-                        className="text-xs font-medium mb-1"
+                        className="text-xs sm:text-sm font-medium"
                         style={{
-                          color: "#ffffff",
+                          color: "#787E9D",
                           fontFamily: "'Roboto', sans-serif",
                         }}
                       >
-                        Upcoming follow ups
+                        Fresh Customers
                       </p>
-                      <p
-                        className="text-xl font-bold"
+                      <div
+                        className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl"
                         style={{
-                          color: "#ffffff",
-                          fontFamily: "'Poppins', sans-serif",
+                          backgroundColor: "transparent",
                         }}
                       >
-                        {upcomingFollowUps}
-                      </p>
-                    </div>
-                    <div
-                      className="flex h-8 w-8 items-center justify-center rounded-lg"
-                      style={{
-                        backgroundColor: "transparent",
-                      }}
-                    >
-                      <i
-                        className="fi flex fi-rr-clock text-sm"
-                        style={{ color: "#ffffff" }}
-                      ></i>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Sub-tile 2: Overdue follow ups */}
-                <div
-                  className="relative overflow-hidden flex-1 rounded-xl p-3 transition-shadow duration-200 hover:shadow-md"
-                  style={{
-                    background: "linear-gradient(135deg, #ef4444, #dc2626)",
-                  }}
-                >
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background:
-                        "radial-gradient(circle at top left, rgba(255,255,255,0.15), transparent 50%)",
-                    }}
-                  />
-                  <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
-                  {/* Decorative Graphics */}
-                  <div className="absolute top-2 left-2 w-16 h-16 rounded-full bg-white/8 blur-lg" />
-                  <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/6 blur-md" />
-                  {/* Background Icon */}
-                  <div className="absolute -right-1 -bottom-1 opacity-10">
-                    <i className="fi flex fi-rr-clock text-3xl text-white"></i>
-                  </div>
-                  {/* Pattern Overlay */}
-                  <div
-                    className="absolute inset-0 opacity-[0.08]"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)",
-                      backgroundSize: "15px 15px",
-                    }}
-                  />
-                  <div className="relative flex items-start justify-between z-10">
-                    <div className="flex-1">
-                      <p
-                        className="text-xs font-medium mb-1"
-                        style={{
-                          color: "#ffffff",
-                          fontFamily: "'Roboto', sans-serif",
-                        }}
-                      >
-                        Overdue follow ups
-                      </p>
-                      <p
-                        className="text-xl font-bold"
-                        style={{
-                          color: "#ffffff",
-                          fontFamily: "'Poppins', sans-serif",
-                        }}
-                      >
-                        {overdueFollowUps}
-                      </p>
-                    </div>
-                    <div
-                      className="flex h-10 w-10 items-center justify-center rounded-lg"
-                      style={{
-                        backgroundColor: "transparent",
-                      }}
-                    >
-                      <i
-                        className="fi flex fi-rr-clock text-sm"
-                        style={{ color: "#ffffff" }}
-                      ></i>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* All Customers Table Section */}
-          <div className="mt-8">
-            <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
-              {/* Mobile: Table Header */}
-              <div className="mb-4 sm:hidden">
-                <h2
-                  className="text-lg font-bold mb-1"
-                  style={{
-                    color: "#263238",
-                    fontFamily: "'Poppins', sans-serif",
-                  }}
-                >
-                  All Customers
-                  {selectedCustomers.size > 0 && (
-                    <span className="ml-2 bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-4 duration-300 align-middle">
-                      {selectedCustomers.size} SELECTED
-                    </span>
-                  )}
-                </h2>
-                <p
-                  className="text-xs"
-                  style={{
-                    color: "#787E9D",
-                    fontFamily: "'Roboto', sans-serif",
-                  }}
-                >
-                  Manage and view all your customers
-                </p>
-              </div>
-
-              {/* Mobile: Search Bar (Full Width) */}
-              {!selectedCustomers.size && (
-                <div className="mb-4 sm:hidden">
-                  <div className="flex gap-2 w-full">
-                    <div className="relative flex-1">
-                      <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                      <input
-                        type="text"
-                        placeholder={searchField === 'name' ? "Search by Name..." : "Search by Phone..."}
-                        value={tempSearchQuery}
-                        onChange={(e) => setTempSearchQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearchQuery)}
-                        className="w-full pl-9 pr-10 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium"
-                      />
-                      <button
-                        onClick={() => setShowSearchFieldDropdown(!showSearchFieldDropdown)}
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-md bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all active:scale-90 border border-gray-100"
-                        title="Change search field"
-                      >
-                        <i className={`fi flex ${searchField === 'name' ? 'fi-rr-user' : 'fi-rr-phone-call'} text-[10px]`}></i>
-                      </button>
-
-                      {showSearchFieldDropdown && (
-                        <div className="absolute right-0 top-full mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                          <button
-                            onClick={() => { setSearchField("name"); setShowSearchFieldDropdown(false); }}
-                            className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'name' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
-                          >
-                            <i className="fi flex fi-rr-user text-[10px]"></i>
-                            NAME
-                          </button>
-                          <button
-                            onClick={() => { setSearchField("phone"); setShowSearchFieldDropdown(false); }}
-                            className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'phone' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
-                          >
-                            <i className="fi flex fi-rr-phone-call text-[10px]"></i>
-                            PHONE
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <button
-                      onClick={() => setSearchQuery(tempSearchQuery)}
-                      className="px-4 bg-[#4b33e8] text-white rounded-lg text-sm font-bold flex items-center justify-center shadow-sm active:scale-95 transition-transform"
-                    >
-                      Search
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Mobile: Action Buttons (Below Search) */}
-              <div className="mb-4 sm:hidden flex flex-wrap items-center gap-2">
-                {/* Bulk Action Buttons */}
-                {selectedCustomers.size > 0 && (
-                  <>
-                    {dataSource !== 'rejected' && (
-                      <>
-                        <>
-                          <button
-                            onClick={() => setShowBulkActionModal(true)}
-                            className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
-                            title="Bulk Actions"
-                          >
-                            <i className="fi flex fi-rr-menu-dots-vertical text-sm"></i>
-                            <span className="text-xs font-bold uppercase tracking-wider">Actions ({selectedCustomers.size})</span>
-                          </button>
-                        </>
-                      </>
-                    )}
-                  </>
-                )}
-                {/* Move to Live Button - Only for Rejected Data source */}
-                {selectedCustomers.size > 0 && dataSource === 'rejected' && (
-                  <button
-                    onClick={handleMoveToLive}
-                    disabled={isMovingToLive}
-                    className="h-10 px-3 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-1.5"
-                    title="Move to Live"
-                  >
-                    {isMovingToLive ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-emerald-600 border-t-transparent"></div>
-                    ) : (
-                      <>
-                        <i className="fi flex fi-rr-redo text-sm"></i>
-                        <span className="text-[10px] font-bold">LIVE</span>
-                      </>
-                    )}
-                  </button>
-                )}
-                {/* Delete Button - Show when customers are selected */}
-                {selectedCustomers.size > 0 && permissionFlags.isDeleteButtonVisible && (
-                  <button
-                    onClick={async () => {
-                      if (
-                        confirm(
-                          `Are you sure you want to delete ${selectedCustomers.size} customer(s)?`
-                        )
-                      ) {
-                        setIsDeleting(true);
-                        try {
-                          const customerIds = Array.from(selectedCustomers);
-
-                          // Delete in batches of 50 to avoid URL length and query limits
-                          const batchSize = 50;
-                          let successCount = 0;
-                          let failCount = 0;
-                          const errors: string[] = [];
-
-                          for (
-                            let i = 0;
-                            i < customerIds.length;
-                            i += batchSize
-                          ) {
-                            const batch = customerIds.slice(
-                              i,
-                              i + batchSize
-                            );
-                            const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
-                            const { error } = await supabase
-                              .from(table)
-                              .delete()
-                              .in("id", batch);
-
-                            if (error) {
-                              console.error(
-                                `Error deleting batch ${Math.floor(i / batchSize) + 1
-                                }:`,
-                                error
-                              );
-                              failCount += batch.length;
-                              errors.push(
-                                `Batch ${Math.floor(i / batchSize) + 1}: ${error.message
-                                }`
-                              );
-                            } else {
-                              successCount += batch.length;
-                            }
-                          }
-
-                          if (failCount > 0) {
-                            alert(
-                              `Deleted ${successCount} customer(s). ${failCount} failed. ${errors
-                                .slice(0, 2)
-                                .join("; ")}`
-                            );
-                          } else {
-                            // All successful
-                            setSelectedCustomers(new Set());
-                            await fetchCustomers(currentPage);
-
-                            logSystemEvent({
-                              event_type: 'WRITE',
-                              description: `Bulk Delete: ${customerIds.length} records removed from ${dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals"} (Mobile View)`,
-                              metadata: { record_count: customerIds.length },
-                              payload_size: estimateSize(customerIds),
-                              user_name: user?.displayName || 'Admin',
-                              organization_id: user?.organization_id || undefined
-                            });
-                          }
-                        } catch (err) {
-                          console.error("Error deleting customers:", err);
-                          alert(
-                            "Failed to delete customers. Please try again."
-                          );
-                        } finally {
-                          setIsDeleting(false);
-                        }
-                      }
-                    }}
-                    disabled={isDeleting}
-                    className="h-10 px-3 border border-red-300 rounded-lg bg-red-50 hover:bg-red-100 transition-colors flex items-center justify-center text-red-600"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    {isDeleting ? (
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
-                    ) : (
-                      <i className="fi flex fi-rr-trash text-sm"></i>
-                    )}
-                  </button>
-                )}
-                <button
-                  onClick={() => fetchCustomers(currentPage)}
-                  className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center text-gray-600 ${loadingCustomers ? 'opacity-50' : ''}`}
-                  title="Refresh Data"
-                  disabled={loadingCustomers}
-                >
-                  <i className={`fi flex fi-rr-refresh text-sm ${loadingCustomers ? 'animate-spin' : ''}`}></i>
-                </button>
-                {/* Filter Button */}
-                <button
-                  onClick={() => setShowFilterModal(true)}
-                  className={`h-10 px-3 border rounded-lg transition-colors flex items-center justify-center gap-2 ${Object.values(filters).some(v => v)
-                      ? "bg-indigo-50 border-indigo-200 text-indigo-600"
-                      : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
-                    }`}
-                  style={{ fontFamily: "'Roboto', sans-serif" }}
-                >
-                  <i className="fi flex fi-rr-filter text-sm"></i>
-                  {Object.values(filters).some(v => v) && (
-                    <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
-                  )}
-                </button>
-                {/* Import Button */}
-                {permissionFlags.isImportButtonVisible && (
-                  <button
-                    onClick={() => setShowImportModal(true)}
-                    className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    <i className="fi flex fi-rr-upload text-sm text-gray-600"></i>
-                  </button>
-                )}
-                {/* Export Button */}
-                {permissionFlags.isExportButtonVisible && (
-                  <button
-                    onClick={handleExportCustomers}
-                    className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
-                    title="Export Data"
-                  >
-                    <i className="fi flex fi-rr-download text-sm text-gray-600"></i>
-                  </button>
-                )}
-                {/* View Toggle */}
-                <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 h-10">
-                  <button
-                    onClick={() => setViewType("list")}
-                    className={`px-3 h-full rounded text-xs font-medium transition-colors flex items-center justify-center ${viewType === "list"
-                      ? "bg-white text-purple-600 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900"
-                      }`}
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    <i className="fi flex fi-rr-list"></i>
-                  </button>
-                  <button
-                    onClick={() => setViewType("grid")}
-                    className={`px-3 h-full rounded text-xs font-medium transition-colors flex items-center justify-center ${viewType === "grid"
-                      ? "bg-white text-purple-600 shadow-sm"
-                      : "text-gray-600 hover:text-gray-900"
-                      }`}
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    <i className="fi flex fi-rr-grid"></i>
-                  </button>
-                </div>
-                {/* Add Customer Button */}
-                {permissionFlags.isAddCustomerButtonVisible && (
-                  <button
-                    onClick={() => setShowAddCustomerModal(true)}
-                    className="h-10 w-10 rounded-lg transition-colors flex items-center justify-center hover:opacity-90"
-                    style={{
-                      fontFamily: "'Roboto', sans-serif",
-                      backgroundColor: "#4b33e8",
-                    }}
-                  >
-                    <i className="fi flex fi-rr-user-add text-sm text-white"></i>
-                  </button>
-                )}
-              </div>
-
-              {/* Desktop: Title and Search/Actions in Same Row */}
-              <div className="hidden sm:flex sm:items-center sm:justify-between mb-6">
-                <div>
-                  <h2
-                    className="text-xl font-bold mb-1"
-                    style={{
-                      color: "#263238",
-                      fontFamily: "'Poppins', sans-serif",
-                    }}
-                  >
-                    All Customers
-                    {selectedCustomers.size > 0 && (
-                      <span className="ml-2 bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-4 duration-300 align-middle">
-                        {selectedCustomers.size} SELECTED
-                      </span>
-                    )}
-                  </h2>
-                  <p
-                    className="text-sm"
-                    style={{
-                      color: "#787E9D",
-                      fontFamily: "'Roboto', sans-serif",
-                    }}
-                  >
-                    Manage and view all your customers
-                  </p>
-                </div>
-                <div className="flex items-center gap-3">
-                  {/* Delete Button - Show when customers are selected */}
-                  {selectedCustomers.size > 0 && permissionFlags.isDeleteButtonVisible && (
-                    <button
-                      onClick={async () => {
-                        if (
-                          confirm(
-                            `Are you sure you want to delete ${selectedCustomers.size} customer(s)?`
-                          )
-                        ) {
-                          setIsDeleting(true);
-                          try {
-                            const customerIds =
-                              Array.from(selectedCustomers);
-
-                            // Delete in batches of 50 to avoid URL length and query limits
-                            const batchSize = 50;
-                            let successCount = 0;
-                            let failCount = 0;
-                            const errors: string[] = [];
-
-                            for (
-                              let i = 0;
-                              i < customerIds.length;
-                              i += batchSize
-                            ) {
-                              const batch = customerIds.slice(
-                                i,
-                                i + batchSize
-                              );
-                              const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
-                              const { error } = await supabase
-                                .from(table)
-                                .delete()
-                                .in("id", batch);
-
-                              if (error) {
-                                console.error(
-                                  `Error deleting batch ${Math.floor(i / batchSize) + 1
-                                  }:`,
-                                  error
-                                );
-                                failCount += batch.length;
-                                errors.push(
-                                  `Batch ${Math.floor(i / batchSize) + 1
-                                  }: ${error.message}`
-                                );
-                              } else {
-                                successCount += batch.length;
-                              }
-                            }
-
-                            if (failCount > 0) {
-                              alert(
-                                `Deleted ${successCount} customer(s). ${failCount} failed. ${errors
-                                  .slice(0, 2)
-                                  .join("; ")}`
-                              );
-                            } else {
-                              // All successful
-                              setSelectedCustomers(new Set());
-                              await fetchCustomers(currentPage);
-
-                              logSystemEvent({
-                                event_type: 'WRITE',
-                                description: `Bulk Delete: ${customerIds.length} records removed from ${dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals"} (Desktop View)`,
-                                metadata: { record_count: customerIds.length },
-                                payload_size: estimateSize(customerIds),
-                                user_name: user?.displayName || 'Admin',
-                                organization_id: user?.organization_id || undefined
-                              });
-                            }
-                          } catch (err) {
-                            console.error("Error deleting customers:", err);
-                            alert(
-                              "Failed to delete customers. Please try again."
-                            );
-                          } finally {
-                            setIsDeleting(false);
-                          }
-                        }
-                      }}
-                      disabled={isDeleting}
-                      className="h-10 px-3 border border-red-300 rounded-lg bg-red-50 hover:bg-red-100 transition-colors flex items-center justify-center text-red-600"
-                      style={{ fontFamily: "'Roboto', sans-serif" }}
-                    >
-                      {isDeleting ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
-                      ) : (
-                        <i className="fi flex fi-rr-trash text-sm"></i>
-                      )}
-                    </button>
-                  )}
-                  {/* Search / Bulk Actions */}
-                  {!selectedCustomers.size ? (
-                    <div className="flex gap-2">
-                      <div className="relative w-64 text-gray-800">
-                        <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
-                        <input
-                          type="text"
-                          placeholder={searchField === 'name' ? "Search by Name..." : "Search by Phone..."}
-                          value={tempSearchQuery}
-                          onChange={(e) => setTempSearchQuery(e.target.value)}
-                          onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearchQuery)}
-                          className="w-full pl-9 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent font-medium"
-                        />
-                        <button
-                          onClick={() => setShowSearchFieldDropdown(!showSearchFieldDropdown)}
-                          className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-md bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all active:scale-90 border border-gray-100"
-                          title="Change search field"
-                        >
-                          <i className={`fi flex ${searchField === 'name' ? 'fi-rr-user' : 'fi-rr-phone-call'} text-[10px]`}></i>
-                        </button>
-
-                        {showSearchFieldDropdown && (
-                          <div className="absolute right-0 top-full mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-                            <button
-                              onClick={() => { setSearchField("name"); setShowSearchFieldDropdown(false); }}
-                              className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'name' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
-                            >
-                              <i className="fi flex fi-rr-user text-[10px]"></i>
-                              NAME
-                            </button>
-                            <button
-                              onClick={() => { setSearchField("phone"); setShowSearchFieldDropdown(false); }}
-                              className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'phone' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
-                            >
-                              <i className="fi flex fi-rr-phone-call text-[10px]"></i>
-                              PHONE
-                            </button>
-                          </div>
-                        )}
+                        <i
+                          className="fi flex fi-rr-user-add text-lg sm:text-xl"
+                          style={{ color: "#10b981" }}
+                        ></i>
                       </div>
-                      <button
-                        onClick={fetchDuplicates}
-                        className="h-[38px] px-4 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg text-sm font-bold hover:bg-rose-100 transition-all flex items-center gap-2"
-                        title="Scan for Duplicate Numbers"
-                      >
-                        <i className="fi flex fi-rr-copy-alt text-xs"></i>
-
-                      </button>
-                      {/* <button 
-                            onClick={() => setSearchQuery(tempSearchQuery)}
-                            className="px-4 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold hover:bg-[#3d29c2] transition-colors shadow-sm active:scale-95 flex items-center gap-2"
-                          >
-                            <i className="fi flex fi-rr-search text-xs"></i>
-                            Search
-                          </button> */}
                     </div>
-                  ) : (
-                    <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
-                      {dataSource !== 'rejected' && (
-                        <>
-                          <button
-                            onClick={() => setShowBulkActionModal(true)}
-                            className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
-                            title="Bulk Actions"
-                          >
-                            <i className="fi flex fi-rr-menu-dots-vertical text-sm"></i>
-                            <span className="text-xs font-bold uppercase tracking-widest">Bulk Actions ({selectedCustomers.size})</span>
-                          </button>
-                        </>
-                      )}
+                    <div className="mt-auto">
+                      <p
+                        className="text-3xl sm:text-4xl font-semibold"
+                        style={{
+                          color: "#263238",
+                          fontFamily: "'Poppins', sans-serif",
+                        }}
+                      >
+                        {freshCustomersCount}
+                      </p>
+                      <p
+                        className="text-xs sm:text-sm mt-1"
+                        style={{
+                          color: "#787E9D",
+                          fontFamily: "'Roboto', sans-serif",
+                        }}
+                      >
+                        Unassigned leads
+                      </p>
+                    </div>
+                  </div>
+                </div>
 
+                {/* Tile 3: Follow ups */}
+                <div
+                  className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 backdrop-blur flex flex-col text-white hover:shadow-md"
+                  style={{ backgroundColor: "#4b33e8" }}
+                >
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background:
+                        "radial-gradient(circle at top left, rgba(255,255,255,0.28), transparent 55%)",
+                    }}
+                  />
+                  <div className="absolute -bottom-24 -right-24 h-64 w-64 rounded-full bg-white/10 blur-3xl" />
+                  {/* Decorative Graphics */}
+                  <div className="absolute top-4 left-4 w-24 h-24 rounded-full bg-white/5 blur-xl" />
+                  <div className="absolute top-12 right-12 w-20 h-20 rounded-full bg-white/8 blur-lg" />
+                  {/* Background Icon */}
+                  <div className="absolute -right-2 -bottom-2 opacity-10">
+                    <i className="fi flex fi-rr-calendar-check text-5xl sm:text-6xl text-white"></i>
+                  </div>
+                  {/* Pattern Overlay */}
+                  <div
+                    className="absolute inset-0 opacity-[0.05]"
+                    style={{
+                      backgroundImage:
+                        "radial-gradient(circle, rgba(255,255,255,0.3) 1px, transparent 1px)",
+                      backgroundSize: "25px 25px",
+                    }}
+                  />
+                  <div className="relative flex flex-col h-full z-10">
+                    <div className="flex items-start justify-between mb-auto">
+                      <p
+                        className="text-xs sm:text-sm font-medium"
+                        style={{
+                          color: "#ffffff",
+                          fontFamily: "'Roboto', sans-serif",
+                        }}
+                      >
+                        Follow ups
+                      </p>
+                      <div
+                        className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl border border-white/30 bg-white/10 backdrop-blur-lg"
+                        style={{
+                          color: "#ffffff",
+                        }}
+                      >
+                        <i
+                          className="fi flex fi-rr-calendar-check text-lg sm:text-xl"
+                          style={{ color: "#ffffff" }}
+                        ></i>
+                      </div>
+                    </div>
+                    <div className="mt-auto">
+                      <p
+                        className="text-3xl sm:text-4xl font-semibold"
+                        style={{
+                          color: "#ffffff",
+                          fontFamily: "'Poppins', sans-serif",
+                        }}
+                      >
+                        {pendingFollowUps}
+                      </p>
+                      <p
+                        className="text-xs sm:text-sm mt-1"
+                        style={{
+                          color: "rgba(255, 255, 255, 0.8)",
+                          fontFamily: "'Roboto', sans-serif",
+                        }}
+                      >
+                        Pending follow ups
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tile 4: Container with 2 Sub-tiles (hidden outer border) */}
+                <div
+                  className="relative p-0 flex flex-col overflow-hidden"
+                  style={{ backgroundColor: "transparent", border: "none" }}
+                >
+                  <div className="flex flex-col gap-3 h-full">
+                    {/* Sub-tile 1: Upcoming follow ups */}
+                    <div
+                      className="relative overflow-hidden flex-1 rounded-xl p-3 transition-shadow duration-200 hover:shadow-md"
+                      style={{
+                        background: "linear-gradient(135deg, #3b82f6, #2563eb)",
+                      }}
+                    >
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "radial-gradient(circle at top left, rgba(255,255,255,0.15), transparent 50%)",
+                        }}
+                      />
+                      <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+                      {/* Decorative Graphics */}
+                      <div className="absolute top-2 left-2 w-16 h-16 rounded-full bg-white/8 blur-lg" />
+                      <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/6 blur-md" />
+                      {/* Background Icon */}
+                      <div className="absolute -right-1 -bottom-1 opacity-10">
+                        <i className="fi flex fi-rr-clock text-3xl text-white"></i>
+                      </div>
+                      {/* Pattern Overlay */}
+                      <div
+                        className="absolute inset-0 opacity-[0.08]"
+                        style={{
+                          backgroundImage:
+                            "radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)",
+                          backgroundSize: "15px 15px",
+                        }}
+                      />
+                      <div className="relative flex items-start justify-between z-10">
+                        <div className="flex-1">
+                          <p
+                            className="text-xs font-medium mb-1"
+                            style={{
+                              color: "#ffffff",
+                              fontFamily: "'Roboto', sans-serif",
+                            }}
+                          >
+                            Upcoming follow ups
+                          </p>
+                          <p
+                            className="text-xl font-bold"
+                            style={{
+                              color: "#ffffff",
+                              fontFamily: "'Poppins', sans-serif",
+                            }}
+                          >
+                            {upcomingFollowUps}
+                          </p>
+                        </div>
+                        <div
+                          className="flex h-8 w-8 items-center justify-center rounded-lg"
+                          style={{
+                            backgroundColor: "transparent",
+                          }}
+                        >
+                          <i
+                            className="fi flex fi-rr-clock text-sm"
+                            style={{ color: "#ffffff" }}
+                          ></i>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Sub-tile 2: Overdue follow ups */}
+                    <div
+                      className="relative overflow-hidden flex-1 rounded-xl p-3 transition-shadow duration-200 hover:shadow-md"
+                      style={{
+                        background: "linear-gradient(135deg, #ef4444, #dc2626)",
+                      }}
+                    >
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "radial-gradient(circle at top left, rgba(255,255,255,0.15), transparent 50%)",
+                        }}
+                      />
+                      <div className="absolute -bottom-12 -right-12 h-32 w-32 rounded-full bg-white/10 blur-2xl" />
+                      {/* Decorative Graphics */}
+                      <div className="absolute top-2 left-2 w-16 h-16 rounded-full bg-white/8 blur-lg" />
+                      <div className="absolute top-4 right-4 w-12 h-12 rounded-full bg-white/6 blur-md" />
+                      {/* Background Icon */}
+                      <div className="absolute -right-1 -bottom-1 opacity-10">
+                        <i className="fi flex fi-rr-clock text-3xl text-white"></i>
+                      </div>
+                      {/* Pattern Overlay */}
+                      <div
+                        className="absolute inset-0 opacity-[0.08]"
+                        style={{
+                          backgroundImage:
+                            "radial-gradient(circle, rgba(255,255,255,0.4) 1px, transparent 1px)",
+                          backgroundSize: "15px 15px",
+                        }}
+                      />
+                      <div className="relative flex items-start justify-between z-10">
+                        <div className="flex-1">
+                          <p
+                            className="text-xs font-medium mb-1"
+                            style={{
+                              color: "#ffffff",
+                              fontFamily: "'Roboto', sans-serif",
+                            }}
+                          >
+                            Overdue follow ups
+                          </p>
+                          <p
+                            className="text-xl font-bold"
+                            style={{
+                              color: "#ffffff",
+                              fontFamily: "'Poppins', sans-serif",
+                            }}
+                          >
+                            {overdueFollowUps}
+                          </p>
+                        </div>
+                        <div
+                          className="flex h-10 w-10 items-center justify-center rounded-lg"
+                          style={{
+                            backgroundColor: "transparent",
+                          }}
+                        >
+                          <i
+                            className="fi flex fi-rr-clock text-sm"
+                            style={{ color: "#ffffff" }}
+                          ></i>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* All Customers Table Section */}
+              <div className="mt-8">
+                <div className="bg-white rounded-xl border border-gray-200 p-4 sm:p-6">
+                  {/* Mobile: Table Header */}
+                  <div className="mb-4 sm:hidden">
+                    <h2
+                      className="text-lg font-bold mb-1"
+                      style={{
+                        color: "#263238",
+                        fontFamily: "'Poppins', sans-serif",
+                      }}
+                    >
+                      All Customers
+                      {selectedCustomers.size > 0 && (
+                        <span className="ml-2 bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-4 duration-300 align-middle">
+                          {selectedCustomers.size} SELECTED
+                        </span>
+                      )}
+                    </h2>
+                    <p
+                      className="text-xs"
+                      style={{
+                        color: "#787E9D",
+                        fontFamily: "'Roboto', sans-serif",
+                      }}
+                    >
+                      Manage and view all your customers
+                    </p>
+                  </div>
+
+                  {/* Mobile: Search Bar (Full Width) */}
+                  {!selectedCustomers.size && (
+                    <div className="mb-4 sm:hidden">
+                      <div className="flex gap-2 w-full">
+                        <div className="relative flex-1">
+                          <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                          <input
+                            type="text"
+                            placeholder={searchField === 'name' ? "Search by Name..." : "Search by Phone..."}
+                            value={tempSearchQuery}
+                            onChange={(e) => setTempSearchQuery(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearchQuery)}
+                            className="w-full pl-9 pr-10 py-2 text-sm border border-gray-300 text-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent font-medium"
+                          />
+                          <button 
+                            onClick={() => setShowSearchFieldDropdown(!showSearchFieldDropdown)}
+                            className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-md bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all active:scale-90 border border-gray-100"
+                            title="Change search field"
+                          >
+                            <i className={`fi flex ${searchField === 'name' ? 'fi-rr-user' : 'fi-rr-phone-call'} text-[10px]`}></i>
+                          </button>
+
+                          {showSearchFieldDropdown && (
+                            <div className="absolute right-0 top-full mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                              <button
+                                onClick={() => { setSearchField("name"); setShowSearchFieldDropdown(false); }}
+                                className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'name' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                              >
+                                <i className="fi flex fi-rr-user text-[10px]"></i>
+                                NAME
+                              </button>
+                              <button
+                                onClick={() => { setSearchField("phone"); setShowSearchFieldDropdown(false); }}
+                                className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'phone' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                              >
+                                <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                PHONE
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <button 
+                          onClick={() => setSearchQuery(tempSearchQuery)}
+                          className="px-4 bg-[#4b33e8] text-white rounded-lg text-sm font-bold flex items-center justify-center shadow-sm active:scale-95 transition-transform"
+                        >
+                          Search
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile: Action Buttons (Below Search) */}
+                  <div className="mb-4 sm:hidden flex flex-wrap items-center gap-2">
+                    {/* Bulk Action Buttons */}
+                    {selectedCustomers.size > 0 && (
+                      <>
+                        {dataSource !== 'rejected' && (
+                          <>
+                          <>
+                            <button
+                              onClick={() => setShowBulkActionModal(true)}
+                              className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
+                              title="Bulk Actions"
+                            >
+                              <i className="fi flex fi-rr-menu-dots-vertical text-sm"></i>
+                              <span className="text-xs font-bold uppercase tracking-wider">Actions ({selectedCustomers.size})</span>
+                            </button>
+                          </>
+                          </>
+                        )}
+                      </>
+                    )}
                       {/* Move to Live Button - Only for Rejected Data source */}
-                      {dataSource === 'rejected' && (
+                      {selectedCustomers.size > 0 && dataSource === 'rejected' && (
                         <button
                           onClick={handleMoveToLive}
                           disabled={isMovingToLive}
-                          className="h-10 px-4 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-2 font-bold text-xs"
+                          className="h-10 px-3 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-1.5"
                           title="Move to Live"
                         >
                           {isMovingToLive ? (
@@ -2504,43 +2129,127 @@ export default function Customer() {
                           ) : (
                             <>
                               <i className="fi flex fi-rr-redo text-sm"></i>
-                              MOVE TO LIVE
+                              <span className="text-[10px] font-bold">LIVE</span>
                             </>
                           )}
                         </button>
                       )}
-                    </div>
-                  )}
-                  {/* Refresh Button - Before Filter */}
-                  <button
-                    onClick={() => fetchCustomers(currentPage)}
-                    className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center text-gray-600 ${loadingCustomers ? 'opacity-50' : ''}`}
-                    title="Refresh Data"
-                    disabled={loadingCustomers}
-                  >
-                    <i className={`fi flex fi-rr-refresh text-sm ${loadingCustomers ? 'animate-spin' : ''}`}></i>
-                  </button>
+                    {/* Delete Button - Show when customers are selected */}
+                    {selectedCustomers.size > 0 && permissionFlags.isDeleteButtonVisible && (
+                      <button
+                        onClick={async () => {
+                          if (
+                            confirm(
+                              `Are you sure you want to delete ${selectedCustomers.size} customer(s)?`
+                            )
+                          ) {
+                            setIsDeleting(true);
+                            try {
+                              const customerIds = Array.from(selectedCustomers);
 
-                  {/* Filter Button */}
-                  <button
-                    onClick={() => setShowFilterModal(true)}
-                    className={`h-10 px-3 border rounded-lg transition-colors flex items-center justify-center gap-2 ${Object.values(filters).some(v => v)
-                        ? "bg-indigo-50 border-indigo-200 text-indigo-600 font-bold"
-                        : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 font-medium"
-                      }`}
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    <i className="fi flex fi-rr-filter text-sm"></i>
-                    <span>Filter</span>
-                    {Object.values(filters).some(v => v) && (
-                      <span className="ml-1 px-1.5 py-0.5 rounded-full bg-indigo-600 text-white text-[10px]">
-                        {Object.values(filters).filter(v => v).length}
-                      </span>
+                              // Delete in batches of 50 to avoid URL length and query limits
+                              const batchSize = 50;
+                              let successCount = 0;
+                              let failCount = 0;
+                              const errors: string[] = [];
+
+                              for (
+                                let i = 0;
+                                i < customerIds.length;
+                                i += batchSize
+                              ) {
+                                const batch = customerIds.slice(
+                                  i,
+                                  i + batchSize
+                                );
+                                const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
+                                const { error } = await supabase
+                                  .from(table)
+                                  .delete()
+                                  .in("id", batch);
+
+                                if (error) {
+                                  console.error(
+                                    `Error deleting batch ${Math.floor(i / batchSize) + 1
+                                    }:`,
+                                    error
+                                  );
+                                  failCount += batch.length;
+                                  errors.push(
+                                    `Batch ${Math.floor(i / batchSize) + 1}: ${error.message
+                                    }`
+                                  );
+                                } else {
+                                  successCount += batch.length;
+                                }
+                              }
+
+                              if (failCount > 0) {
+                                alert(
+                                  `Deleted ${successCount} customer(s). ${failCount} failed. ${errors
+                                    .slice(0, 2)
+                                    .join("; ")}`
+                                );
+                                } else {
+                                  // All successful
+                                  setSelectedCustomers(new Set());
+                                  await fetchCustomers(currentPage);
+
+                                  logSystemEvent({
+                                      event_type: 'WRITE',
+                                      description: `Bulk Delete: ${customerIds.length} records removed from ${dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals"} (Mobile View)`,
+                                      metadata: { record_count: customerIds.length },
+                                      payload_size: estimateSize(customerIds),
+                                      user_name: user?.displayName || 'Admin',
+                                      organization_id: user?.organization_id || undefined
+                                  });
+                                }
+                            } catch (err) {
+                              console.error("Error deleting customers:", err);
+                              alert(
+                                "Failed to delete customers. Please try again."
+                              );
+                            } finally {
+                              setIsDeleting(false);
+                            }
+                          }
+                        }}
+                        disabled={isDeleting}
+                        className="h-10 px-3 border border-red-300 rounded-lg bg-red-50 hover:bg-red-100 transition-colors flex items-center justify-center text-red-600"
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                      >
+                        {isDeleting ? (
+                          <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
+                        ) : (
+                          <i className="fi flex fi-rr-trash text-sm"></i>
+                        )}
+                      </button>
                     )}
-                  </button>
-
-                  {/* Import Button */}
-                  {permissionFlags.isImportButtonVisible && (
+                    <button
+                      onClick={() => fetchCustomers(currentPage)}
+                      className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center text-gray-600 ${loadingCustomers ? 'opacity-50' : ''}`}
+                      title="Refresh Data"
+                      disabled={loadingCustomers}
+                    >
+                      <i className={`fi flex fi-rr-refresh text-sm ${loadingCustomers ? 'animate-spin' : ''}`}></i>
+                    </button>
+                    {/* Filter Button */}
+                    <button
+                      onClick={() => setShowFilterModal(true)}
+                      className={`h-10 px-3 border rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                        Object.values(filters).some(v => v) 
+                        ? "bg-indigo-50 border-indigo-200 text-indigo-600" 
+                        : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                      }`}
+                      style={{ fontFamily: "'Roboto', sans-serif" }}
+                    >
+                      <i className="fi flex fi-rr-filter text-sm"></i>
+                      {Object.values(filters).some(v => v) && (
+                        <span className="w-2 h-2 rounded-full bg-indigo-600"></span>
+                      )}
+                    </button>
+                    {/* Import Button */}
+                    {permissionFlags.isImportButtonVisible && (
                     <button
                       onClick={() => setShowImportModal(true)}
                       className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
@@ -2548,9 +2257,9 @@ export default function Customer() {
                     >
                       <i className="fi flex fi-rr-upload text-sm text-gray-600"></i>
                     </button>
-                  )}
-                  {/* Export Button */}
-                  {permissionFlags.isExportButtonVisible && (
+                    )}
+                    {/* Export Button */}
+                    {permissionFlags.isExportButtonVisible && (
                     <button
                       onClick={handleExportCustomers}
                       className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
@@ -2559,32 +2268,32 @@ export default function Customer() {
                     >
                       <i className="fi flex fi-rr-download text-sm text-gray-600"></i>
                     </button>
-                  )}
-                  {/* View Toggle */}
-                  <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 h-10">
-                    <button
-                      onClick={() => setViewType("list")}
-                      className={`px-3 h-full rounded text-xs font-medium transition-colors flex items-center justify-center ${viewType === "list"
-                        ? "bg-white text-purple-600 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
-                        }`}
-                      style={{ fontFamily: "'Roboto', sans-serif" }}
-                    >
-                      <i className="fi flex fi-rr-list"></i>
-                    </button>
-                    <button
-                      onClick={() => setViewType("grid")}
-                      className={`px-3 h-full rounded text-xs font-medium transition-colors flex items-center justify-center ${viewType === "grid"
-                        ? "bg-white text-purple-600 shadow-sm"
-                        : "text-gray-600 hover:text-gray-900"
-                        }`}
-                      style={{ fontFamily: "'Roboto', sans-serif" }}
-                    >
-                      <i className="fi flex fi-rr-grid"></i>
-                    </button>
-                  </div>
-                  {/* Add Customer Button */}
-                  {permissionFlags.isAddCustomerButtonVisible && (
+                    )}
+                    {/* View Toggle */}
+                    <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 h-10">
+                      <button
+                        onClick={() => setViewType("list")}
+                        className={`px-3 h-full rounded text-xs font-medium transition-colors flex items-center justify-center ${viewType === "list"
+                          ? "bg-white text-purple-600 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
+                          }`}
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                      >
+                        <i className="fi flex fi-rr-list"></i>
+                      </button>
+                      <button
+                        onClick={() => setViewType("grid")}
+                        className={`px-3 h-full rounded text-xs font-medium transition-colors flex items-center justify-center ${viewType === "grid"
+                          ? "bg-white text-purple-600 shadow-sm"
+                          : "text-gray-600 hover:text-gray-900"
+                          }`}
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                      >
+                        <i className="fi flex fi-rr-grid"></i>
+                      </button>
+                    </div>
+                    {/* Add Customer Button */}
+                    {permissionFlags.isAddCustomerButtonVisible && (
                     <button
                       onClick={() => setShowAddCustomerModal(true)}
                       className="h-10 w-10 rounded-lg transition-colors flex items-center justify-center hover:opacity-90"
@@ -2595,471 +2304,773 @@ export default function Customer() {
                     >
                       <i className="fi flex fi-rr-user-add text-sm text-white"></i>
                     </button>
-                  )}
-                </div>
-              </div>
+                    )}
+                  </div>
 
-              {/* Table Content */}
-              {loadingCustomers ? (
-                <div className="text-center py-12">
-                  <div
-                    className="animate-spin rounded-full h-8 w-8 border-4 border-t-transparent mx-auto mb-4"
-                    style={{ borderColor: "#4b33e8" }}
-                  ></div>
-                  <p
-                    className="text-gray-500 text-sm"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    Loading customers...
-                  </p>
-                </div>
-              ) : filteredCustomers.length === 0 ? (
-                <div className="text-center py-12">
-                  <p
-                    className="text-gray-500"
-                    style={{ fontFamily: "'Roboto', sans-serif" }}
-                  >
-                    {searchQuery
-                      ? "No customers found matching your search."
-                      : "No customers found."}
-                  </p>
-                </div>
-              ) : viewType === "list" ? (
-                <div className="overflow-auto max-h-[1500px] border border-gray-200 rounded-xl bg-white ">
-                  <table className="w-full text-left relative border-collapse">
-                    <thead className="sticky top-0 bg-gray-50/95 backdrop-blur-xs z-20 border-b border-gray-200 shadow-xs">
-                      <tr className="border-b border-gray-100">
-                        <th className="px-4 py-4 w-10">
-                          {permissionFlags.isCheckBoxVisible && (
-                            <div className="flex items-center justify-center">
-                              <input
-                                type="checkbox"
-                                checked={
-                                  filteredCustomers.length > 0 &&
-                                  filteredCustomers.every((c) => c.id && selectedCustomers.has(c.id))
-                                }
-                                onChange={(e) => {
-                                  if (e.target.checked) {
-                                    const allIds = new Set(selectedCustomers);
-                                    filteredCustomers.forEach((c) => {
-                                      if (c.id) allIds.add(c.id);
-                                    });
-                                    setSelectedCustomers(allIds);
-                                  } else {
-                                    const next = new Set(selectedCustomers);
-                                    filteredCustomers.forEach((c) => {
-                                      if (c.id) next.delete(c.id);
-                                    });
-                                    setSelectedCustomers(next);
-                                  }
-                                }}
-                                className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
-                              />
-                            </div>
-                          )}
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                          Customer Name
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">
-                          Status
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                          Campaign
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                          Organization
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                          Assigned To
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                          Managed By
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                          Disposition
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                          {dataSource === "closed" ? "Final Status" : dataSource === "rejected" ? "Rejection Reason" : "Expiry Date"}
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
-                          {dataSource === "closed" ? "Closed Date" : dataSource === "rejected" ? "Rejected Date" : "Created Date"}
-                        </th>
-                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-right">
-                          Action
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-50">
-                      {filteredCustomers.map((customer, index) => (
-                        <CustomerTableRow
-                          key={`${customer.id || "cust"}-${index}`}
-                          customer={customer}
-                          isSelected={selectedCustomers.has(customer.id)}
-                          permissionFlags={permissionFlags}
-                          dataSource={dataSource}
-                          onToggleSelect={handleToggleSelect}
-                          onViewDetails={handleViewCustomerDetails}
-                          onDeleteCustomer={handleDeleteCustomerSingle}
-                          formatDate={formatDate}
-                        />
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto p-1">
-                  {filteredCustomers.map((customer, index) => (
-                    <div
-                      key={`${customer.id || 'cust'}-${index}`}
-                      className="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
-                    >
-                      {/* Action Buttons - Top Right Corner */}
-                      <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
+                  {/* Desktop: Title and Search/Actions in Same Row */}
+                  <div className="hidden sm:flex sm:items-center sm:justify-between mb-6">
+                    <div>
+                      <h2
+                        className="text-xl font-bold mb-1"
+                        style={{
+                          color: "#263238",
+                          fontFamily: "'Poppins', sans-serif",
+                        }}
+                      >
+                        All Customers
+                        {selectedCustomers.size > 0 && (
+                          <span className="ml-2 bg-[#4b33e8] text-white px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider animate-in fade-in slide-in-from-left-4 duration-300 align-middle">
+                            {selectedCustomers.size} SELECTED
+                          </span>
+                        )}
+                      </h2>
+                      <p
+                        className="text-sm"
+                        style={{
+                          color: "#787E9D",
+                          fontFamily: "'Roboto', sans-serif",
+                        }}
+                      >
+                        Manage and view all your customers
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      {/* Delete Button - Show when customers are selected */}
+                      {selectedCustomers.size > 0 && permissionFlags.isDeleteButtonVisible && (
                         <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setSelectedCustomer(customer);
-                            setShowCustomerDetailsModal(true);
-                          }}
-                          className="text-purple-600 hover:text-purple-700 transition-colors p-1.5 hover:bg-purple-50 rounded"
-                          title="View Details"
-                          style={{
-                            fontFamily: "'Roboto', sans-serif",
-                          }}
-                        >
-                          <i className="fi flex fi-rr-info text-sm"></i>
-                        </button>
-                        {permissionFlags.isDeleteFromLeadButtonVisible && (
-                          <button
-                            onClick={async (e) => {
-                              e.stopPropagation();
-                              if (
-                                confirm(
-                                  "Are you sure you want to delete this customer?"
-                                )
-                              ) {
-                                try {
+                          onClick={async () => {
+                            if (
+                              confirm(
+                                `Are you sure you want to delete ${selectedCustomers.size} customer(s)?`
+                              )
+                            ) {
+                              setIsDeleting(true);
+                              try {
+                                const customerIds =
+                                  Array.from(selectedCustomers);
+
+                                // Delete in batches of 50 to avoid URL length and query limits
+                                const batchSize = 50;
+                                let successCount = 0;
+                                let failCount = 0;
+                                const errors: string[] = [];
+
+                                for (
+                                  let i = 0;
+                                  i < customerIds.length;
+                                  i += batchSize
+                                ) {
+                                  const batch = customerIds.slice(
+                                    i,
+                                    i + batchSize
+                                  );
+                                  const table = dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals";
                                   const { error } = await supabase
-                                    .from("customers")
+                                    .from(table)
                                     .delete()
-                                    .eq("id", customer.id);
+                                    .in("id", batch);
 
                                   if (error) {
                                     console.error(
-                                      "Error deleting customer:",
+                                      `Error deleting batch ${Math.floor(i / batchSize) + 1
+                                      }:`,
                                       error
                                     );
-                                    alert("Failed to delete customer");
+                                    failCount += batch.length;
+                                    errors.push(
+                                      `Batch ${Math.floor(i / batchSize) + 1
+                                      }: ${error.message}`
+                                    );
                                   } else {
+                                    successCount += batch.length;
+                                  }
+                                }
+
+                                if (failCount > 0) {
+                                  alert(
+                                    `Deleted ${successCount} customer(s). ${failCount} failed. ${errors
+                                      .slice(0, 2)
+                                      .join("; ")}`
+                                  );
+                                  } else {
+                                    // All successful
+                                    setSelectedCustomers(new Set());
                                     await fetchCustomers(currentPage);
+
                                     logSystemEvent({
-                                      event_type: 'WRITE',
-                                      description: `Delete Customer: ${customer.customer_name || 'N/A'} (ID: ${customer.id}) removed from Grid`,
-                                      metadata: { customer_id: customer.id, customer_name: customer.customer_name },
-                                      payload_size: 0,
-                                      user_name: user?.displayName || 'Admin',
-                                      organization_id: user?.organization_id || undefined
+                                        event_type: 'WRITE',
+                                        description: `Bulk Delete: ${customerIds.length} records removed from ${dataSource === "live" ? "customers" : dataSource === "rejected" ? "rejected_leads" : "closed_deals"} (Desktop View)`,
+                                        metadata: { record_count: customerIds.length },
+                                        payload_size: estimateSize(customerIds),
+                                        user_name: user?.displayName || 'Admin',
+                                        organization_id: user?.organization_id || undefined
                                     });
                                   }
-                                } catch (err) {
-                                  console.error(
-                                    "Error deleting customer:",
-                                    err
-                                  );
-                                  alert("Failed to delete customer");
-                                }
+                              } catch (err) {
+                                console.error("Error deleting customers:", err);
+                                alert(
+                                  "Failed to delete customers. Please try again."
+                                );
+                              } finally {
+                                setIsDeleting(false);
                               }
-                            }}
-                            className="text-red-600 hover:text-red-700 transition-colors p-1.5 hover:bg-red-50 rounded"
-                            title="Delete"
-                            style={{
-                              fontFamily: "'Roboto', sans-serif",
-                            }}
-                          >
+                            }
+                          }}
+                          disabled={isDeleting}
+                          className="h-10 px-3 border border-red-300 rounded-lg bg-red-50 hover:bg-red-100 transition-colors flex items-center justify-center text-red-600"
+                          style={{ fontFamily: "'Roboto', sans-serif" }}
+                        >
+                          {isDeleting ? (
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-600 border-t-transparent"></div>
+                          ) : (
                             <i className="fi flex fi-rr-trash text-sm"></i>
+                          )}
+                        </button>
+                      )}
+                      {/* Search / Bulk Actions */}
+                      {!selectedCustomers.size ? (
+                        <div className="flex gap-2">
+                          <div className="relative w-64 text-gray-800">
+                            <i className="fi flex fi-rr-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input
+                              type="text"
+                              placeholder={searchField === 'name' ? "Search by Name..." : "Search by Phone..."}
+                              value={tempSearchQuery}
+                              onChange={(e) => setTempSearchQuery(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && setSearchQuery(tempSearchQuery)}
+                              className="w-full pl-9 pr-10 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent font-medium"
+                            />
+                            <button 
+                              onClick={() => setShowSearchFieldDropdown(!showSearchFieldDropdown)}
+                              className="absolute right-2 top-1/2 transform -translate-y-1/2 h-7 w-7 flex items-center justify-center rounded-md bg-gray-50 hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-all active:scale-90 border border-gray-100"
+                              title="Change search field"
+                            >
+                              <i className={`fi flex ${searchField === 'name' ? 'fi-rr-user' : 'fi-rr-phone-call'} text-[10px]`}></i>
+                            </button>
+
+                            {showSearchFieldDropdown && (
+                              <div className="absolute right-0 top-full mt-2 w-32 bg-white border border-gray-100 rounded-xl shadow-xl z-[100] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+                                <button
+                                  onClick={() => { setSearchField("name"); setShowSearchFieldDropdown(false); }}
+                                  className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'name' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                                >
+                                  <i className="fi flex fi-rr-user text-[10px]"></i>
+                                  NAME
+                                </button>
+                                <button
+                                  onClick={() => { setSearchField("phone"); setShowSearchFieldDropdown(false); }}
+                                  className={`w-full px-4 py-2.5 text-left text-xs font-bold transition-colors flex items-center gap-2 ${searchField === 'phone' ? 'bg-indigo-50 text-indigo-600' : 'text-gray-600 hover:bg-gray-50'}`}
+                                >
+                                  <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                  PHONE
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                          <button
+                            onClick={fetchDuplicates}
+                            className="h-[38px] px-4 bg-rose-50 text-rose-600 border border-rose-100 rounded-lg text-sm font-bold hover:bg-rose-100 transition-all flex items-center gap-2"
+                            title="Scan for Duplicate Numbers"
+                          >
+                            <i className="fi flex fi-rr-copy-alt text-xs"></i>
+                           
                           </button>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
-                          {customer.customer_name
-                            ? customer.customer_name.charAt(0).toUpperCase()
-                            : "C"}
+                          {/* <button 
+                            onClick={() => setSearchQuery(tempSearchQuery)}
+                            className="px-4 py-2 bg-[#4b33e8] text-white rounded-lg text-sm font-bold hover:bg-[#3d29c2] transition-colors shadow-sm active:scale-95 flex items-center gap-2"
+                          >
+                            <i className="fi flex fi-rr-search text-xs"></i>
+                            Search
+                          </button> */}
                         </div>
-                        <div className="flex-1 min-w-0">
-                          <h3
-                            className="text-sm font-semibold text-gray-900 truncate"
-                            style={{ fontFamily: "'Poppins', sans-serif" }}
-                          >
-                            {customer.customer_name || "N/A"}
-                          </h3>
-                          <p
-                            className="text-xs text-gray-600 truncate"
-                            style={{ fontFamily: "'Roboto', sans-serif" }}
-                          >
-                            {formatMaskedPhone(customer.phone_no) || "N/A"}
-                          </p>
-                        </div>
-                      </div>
-                      <div className="space-y-3 text-xs mt-4">
-                        {customer.lead_id && (
-                          <div className="flex items-center gap-2 text-gray-600">
-                            <i className="fi flex fi-rr-id-card text-[10px]"></i>
-                            <span
-                              className="truncate"
-                              style={{ fontFamily: "'Roboto', sans-serif" }}
-                            >
-                              {customer.lead_id}
-                            </span>
-                          </div>
-                        )}
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <i className="fi flex fi-rr-bullhorn text-[10px]"></i>
-                          <span
-                            className="truncate"
-                            style={{ fontFamily: "'Roboto', sans-serif" }}
-                          >
-                            {customer.campaign_name || "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <i className="fi flex fi-rr-building text-[10px]"></i>
-                          <span
-                            className="truncate"
-                            style={{ fontFamily: "'Roboto', sans-serif" }}
-                          >
-                            {customer.organization_name || "N/A"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <i className="fi flex fi-rr-headset text-[10px]"></i>
-                          <span
-                            className="truncate"
-                            style={{ fontFamily: "'Roboto', sans-serif" }}
-                          >
-                            {customer.assigned_user_name || "Unassigned"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2 text-gray-600">
-                          <i className="fi flex fi-rr-user text-[10px]"></i>
-                          <span
-                            className="truncate"
-                            style={{ fontFamily: "'Roboto', sans-serif" }}
-                          >
-                            {customer.managed_by_name || "Self"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between pt-2 border-t border-gray-50 mt-2">
-                          <div
-                            className={`px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${customer.status === "active"
-                                ? "bg-green-100"
-                                : customer.status === "inactive"
-                                  ? "bg-gray-100"
-                                  : "bg-orange-100"
-                              }`}
-                          >
-                            <div
-                              className={`w-1 h-1 rounded-full ${customer.status === "active"
-                                  ? "bg-green-500"
-                                  : customer.status === "inactive"
-                                    ? "bg-gray-400"
-                                    : "bg-orange-400"
-                                }`}
-                            ></div>
-                            <span
-                              className={`text-[10px] font-semibold ${customer.status === "active"
-                                  ? "text-green-700"
-                                  : customer.status === "inactive"
-                                    ? "text-gray-600"
-                                    : "text-orange-700"
-                                }`}
-                            >
-                              {customer.status === "active"
-                                ? "Active"
-                                : customer.status === "inactive"
-                                  ? "Inactive"
-                                  : "Pending"}
-                            </span>
-                          </div>
-
-                          {customer.expiry_date && (
-                            <div className="flex items-center gap-2 text-gray-400">
-                              <i className="fi flex fi-rr-calendar text-[10px]"></i>
-                              <span
-                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                      ) : (
+                        <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
+                          {dataSource !== 'rejected' && (
+                            <>
+                              <button
+                                onClick={() => setShowBulkActionModal(true)}
+                                className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
+                                title="Bulk Actions"
                               >
-                                {formatDate(customer.expiry_date)}
-                              </span>
-                            </div>
+                                <i className="fi flex fi-rr-menu-dots-vertical text-sm"></i>
+                                <span className="text-xs font-bold uppercase tracking-widest">Bulk Actions ({selectedCustomers.size})</span>
+                              </button>
+                            </>
+                          )}
+                          
+                          {/* Move to Live Button - Only for Rejected Data source */}
+                          {dataSource === 'rejected' && (
+                            <button
+                              onClick={handleMoveToLive}
+                              disabled={isMovingToLive}
+                              className="h-10 px-4 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-2 font-bold text-xs"
+                              title="Move to Live"
+                            >
+                              {isMovingToLive ? (
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-emerald-600 border-t-transparent"></div>
+                              ) : (
+                                <>
+                                  <i className="fi flex fi-rr-redo text-sm"></i>
+                                  MOVE TO LIVE
+                                </>
+                              )}
+                            </button>
                           )}
                         </div>
+                      )}
+                      {/* Refresh Button - Before Filter */}
+                      <button
+                        onClick={() => fetchCustomers(currentPage)}
+                        className={`h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center text-gray-600 ${loadingCustomers ? 'opacity-50' : ''}`}
+                        title="Refresh Data"
+                        disabled={loadingCustomers}
+                      >
+                        <i className={`fi flex fi-rr-refresh text-sm ${loadingCustomers ? 'animate-spin' : ''}`}></i>
+                      </button>
 
-                        {/* Display checked fields from customer_details */}
-                        {customer.customer_details &&
-                          (() => {
-                            try {
-                              const rawData = JSON.parse(customer.customer_details);
-                              let details = rawData;
-                              if (rawData.active_details && rawData.history) {
-                                details = rawData.history[rawData.active_details] || {};
-                              }
+                      {/* Filter Button */}
+                      <button
+                        onClick={() => setShowFilterModal(true)}
+                        className={`h-10 px-3 border rounded-lg transition-colors flex items-center justify-center gap-2 ${
+                          Object.values(filters).some(v => v) 
+                          ? "bg-indigo-50 border-indigo-200 text-indigo-600 font-bold" 
+                          : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50 font-medium"
+                        }`}
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                      >
+                        <i className="fi flex fi-rr-filter text-sm"></i>
+                        <span>Filter</span>
+                        {Object.values(filters).some(v => v) && (
+                          <span className="ml-1 px-1.5 py-0.5 rounded-full bg-indigo-600 text-white text-[10px]">
+                            {Object.values(filters).filter(v => v).length}
+                          </span>
+                        )}
+                      </button>
 
-                              const checkedFields = Object.entries(details)
-                                .filter(([key]) => key.endsWith("_checked"))
-                                .map(([key, value]) => ({
-                                  fieldName: key.replace("_checked", ""),
-                                  value: String(value),
-                                }));
+                      {/* Import Button */}
+                      {permissionFlags.isImportButtonVisible && (
+                      <button
+                        onClick={() => setShowImportModal(true)}
+                        className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                      >
+                        <i className="fi flex fi-rr-upload text-sm text-gray-600"></i>
+                      </button>
+                      )}
+                      {/* Export Button */}
+                      {permissionFlags.isExportButtonVisible && (
+                      <button
+                        onClick={handleExportCustomers}
+                        className="h-10 px-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-50 transition-colors flex items-center justify-center"
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                        title="Export Data"
+                      >
+                        <i className="fi flex fi-rr-download text-sm text-gray-600"></i>
+                      </button>
+                      )}
+                      {/* View Toggle */}
+                      <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 h-10">
+                        <button
+                          onClick={() => setViewType("list")}
+                          className={`px-3 h-full rounded text-xs font-medium transition-colors flex items-center justify-center ${viewType === "list"
+                            ? "bg-white text-purple-600 shadow-sm"
+                            : "text-gray-600 hover:text-gray-900"
+                            }`}
+                          style={{ fontFamily: "'Roboto', sans-serif" }}
+                        >
+                          <i className="fi flex fi-rr-list"></i>
+                        </button>
+                        <button
+                          onClick={() => setViewType("grid")}
+                          className={`px-3 h-full rounded text-xs font-medium transition-colors flex items-center justify-center ${viewType === "grid"
+                            ? "bg-white text-purple-600 shadow-sm"
+                            : "text-gray-600 hover:text-gray-900"
+                            }`}
+                          style={{ fontFamily: "'Roboto', sans-serif" }}
+                        >
+                          <i className="fi flex fi-rr-grid"></i>
+                        </button>
+                      </div>
+                      {/* Add Customer Button */}
+                      {permissionFlags.isAddCustomerButtonVisible && (
+                      <button
+                        onClick={() => setShowAddCustomerModal(true)}
+                        className="h-10 w-10 rounded-lg transition-colors flex items-center justify-center hover:opacity-90"
+                        style={{
+                          fontFamily: "'Roboto', sans-serif",
+                          backgroundColor: "#4b33e8",
+                        }}
+                      >
+                        <i className="fi flex fi-rr-user-add text-sm text-white"></i>
+                      </button>
+                      )}
+                    </div>
+                  </div>
 
-                              if (checkedFields.length === 0) return null;
+                  {/* Table Content */}
+                  {loadingCustomers ? (
+                    <div className="text-center py-12">
+                      <div
+                        className="animate-spin rounded-full h-8 w-8 border-4 border-t-transparent mx-auto mb-4"
+                        style={{ borderColor: "#4b33e8" }}
+                      ></div>
+                      <p
+                        className="text-gray-500 text-sm"
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                      >
+                        Loading customers...
+                      </p>
+                    </div>
+                  ) : filteredCustomers.length === 0 ? (
+                    <div className="text-center py-12">
+                      <p
+                        className="text-gray-500"
+                        style={{ fontFamily: "'Roboto', sans-serif" }}
+                      >
+                        {searchQuery
+                          ? "No customers found matching your search."
+                          : "No customers found."}
+                      </p>
+                    </div>
+                  ) : viewType === "list" ? (
+                    <div className="overflow-auto max-h-[1500px] border border-gray-200 rounded-xl bg-white ">
+                      <table className="w-full text-left relative border-collapse">
+                        <thead className="sticky top-0 bg-gray-50/95 backdrop-blur-xs z-20 border-b border-gray-200 shadow-xs">
+                          <tr className="border-b border-gray-100">
+                                 <th className="px-4 py-4 w-10">
+                                  {permissionFlags.isCheckBoxVisible && (
+                                  <div className="flex items-center justify-center">
+                                    <input
+                                      type="checkbox"
+                                      checked={
+                                        filteredCustomers.length > 0 &&
+                                        filteredCustomers.every((c) => c.id && selectedCustomers.has(c.id))
+                                      }
+                                      onChange={(e) => {
+                                        if (e.target.checked) {
+                                          const allIds = new Set(selectedCustomers);
+                                          filteredCustomers.forEach((c) => {
+                                            if (c.id) allIds.add(c.id);
+                                          });
+                                          setSelectedCustomers(allIds);
+                                        } else {
+                                          const next = new Set(selectedCustomers);
+                                          filteredCustomers.forEach((c) => {
+                                            if (c.id) next.delete(c.id);
+                                          });
+                                          setSelectedCustomers(next);
+                                        }
+                                      }}
+                                      className="w-4 h-4 rounded border-gray-300 text-[#4b33e8] focus:ring-[#4b33e8] cursor-pointer"
+                                    />
+                                  </div>
+                                  )}
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Customer Name
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">
+                                  Status
+                                </th>
+                                 <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Campaign
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Organization
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Assigned To
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Managed By
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  Disposition
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  {dataSource === "closed" ? "Final Status" : dataSource === "rejected" ? "Rejection Reason" : "Expiry Date"}
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest">
+                                  {dataSource === "closed" ? "Closed Date" : dataSource === "rejected" ? "Rejected Date" : "Created Date"}
+                                </th>
+                                <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-right">
+                                  Action
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-50">
+                              {filteredCustomers.map((customer, index) => (
+                                <CustomerTableRow
+                                  key={`${customer.id || "cust"}-${index}`}
+                                  customer={customer}
+                                  isSelected={selectedCustomers.has(customer.id)}
+                                  permissionFlags={permissionFlags}
+                                  dataSource={dataSource}
+                                  onToggleSelect={handleToggleSelect}
+                                  onViewDetails={handleViewCustomerDetails}
+                                  onDeleteCustomer={handleDeleteCustomerSingle}
+                                  formatDate={formatDate}
+                                />
+                              ))}
+                            </tbody>
+                          </table>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[500px] overflow-y-auto p-1">
+                      {filteredCustomers.map((customer, index) => (
+                        <div
+                          key={`${customer.id || 'cust'}-${index}`}
+                          className="relative bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow"
+                        >
+                          {/* Action Buttons - Top Right Corner */}
+                          <div className="absolute top-2 right-2 flex items-center gap-1 z-10">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedCustomer(customer);
+                                setShowCustomerDetailsModal(true);
+                              }}
+                              className="text-purple-600 hover:text-purple-700 transition-colors p-1.5 hover:bg-purple-50 rounded"
+                              title="View Details"
+                              style={{
+                                fontFamily: "'Roboto', sans-serif",
+                              }}
+                            >
+                              <i className="fi flex fi-rr-info text-sm"></i>
+                            </button>
+                            {permissionFlags.isDeleteFromLeadButtonVisible && (
+                            <button
+                              onClick={async (e) => {
+                                e.stopPropagation();
+                                if (
+                                  confirm(
+                                    "Are you sure you want to delete this customer?"
+                                  )
+                                ) {
+                                  try {
+                                    const { error } = await supabase
+                                      .from("customers")
+                                      .delete()
+                                      .eq("id", customer.id);
 
-                              return checkedFields.map((field) => (
-                                <div
-                                  key={field.fieldName}
-                                  className="flex items-center gap-2 text-gray-500 pt-1"
+                                    if (error) {
+                                      console.error(
+                                        "Error deleting customer:",
+                                        error
+                                      );
+                                      alert("Failed to delete customer");
+                                    } else {
+                                      await fetchCustomers(currentPage);
+                                      logSystemEvent({
+                                          event_type: 'WRITE',
+                                          description: `Delete Customer: ${customer.customer_name || 'N/A'} (ID: ${customer.id}) removed from Grid`,
+                                          metadata: { customer_id: customer.id, customer_name: customer.customer_name },
+                                          payload_size: 0,
+                                          user_name: user?.displayName || 'Admin',
+                                          organization_id: user?.organization_id || undefined
+                                      });
+                                    }
+                                  } catch (err) {
+                                    console.error(
+                                      "Error deleting customer:",
+                                      err
+                                    );
+                                    alert("Failed to delete customer");
+                                  }
+                                }
+                              }}
+                              className="text-red-600 hover:text-red-700 transition-colors p-1.5 hover:bg-red-50 rounded"
+                              title="Delete"
+                              style={{
+                                fontFamily: "'Roboto', sans-serif",
+                              }}
+                            >
+                              <i className="fi flex fi-rr-trash text-sm"></i>
+                            </button>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center text-white font-bold text-lg">
+                              {customer.customer_name
+                                ? customer.customer_name.charAt(0).toUpperCase()
+                                : "C"}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <h3
+                                className="text-sm font-semibold text-gray-900 truncate"
+                                style={{ fontFamily: "'Poppins', sans-serif" }}
+                              >
+                                {customer.customer_name || "N/A"}
+                              </h3>
+                              <p
+                                className="text-xs text-gray-600 truncate"
+                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                              >
+                                {formatMaskedPhone(customer.phone_no) || "N/A"}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="space-y-3 text-xs mt-4">
+                            {customer.lead_id && (
+                              <div className="flex items-center gap-2 text-gray-600">
+                                <i className="fi flex fi-rr-id-card text-[10px]"></i>
+                                <span
+                                  className="truncate"
+                                  style={{ fontFamily: "'Roboto', sans-serif" }}
                                 >
-                                  <i className="fi flex fi-rr-check text-[10px] text-green-500"></i>
+                                  {customer.lead_id}
+                                </span>
+                              </div>
+                            )}
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <i className="fi flex fi-rr-bullhorn text-[10px]"></i>
+                              <span
+                                className="truncate"
+                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                              >
+                                {customer.campaign_name || "N/A"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <i className="fi flex fi-rr-building text-[10px]"></i>
+                              <span
+                                className="truncate"
+                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                              >
+                                {customer.organization_name || "N/A"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <i className="fi flex fi-rr-headset text-[10px]"></i>
+                              <span
+                                className="truncate"
+                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                              >
+                                {customer.assigned_user_name || "Unassigned"}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-2 text-gray-600">
+                              <i className="fi flex fi-rr-user text-[10px]"></i>
+                              <span
+                                className="truncate"
+                                style={{ fontFamily: "'Roboto', sans-serif" }}
+                              >
+                                {customer.managed_by_name || "Self"}
+                              </span>
+                            </div>
+
+                            <div className="flex items-center justify-between pt-2 border-t border-gray-50 mt-2">
+                              <div
+                                className={`px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${
+                                  customer.status === "active"
+                                    ? "bg-green-100"
+                                    : customer.status === "inactive"
+                                    ? "bg-gray-100"
+                                    : "bg-orange-100"
+                                }`}
+                              >
+                                <div
+                                  className={`w-1 h-1 rounded-full ${
+                                    customer.status === "active"
+                                      ? "bg-green-500"
+                                      : customer.status === "inactive"
+                                      ? "bg-gray-400"
+                                      : "bg-orange-400"
+                                  }`}
+                                ></div>
+                                <span
+                                  className={`text-[10px] font-semibold ${
+                                    customer.status === "active"
+                                      ? "text-green-700"
+                                      : customer.status === "inactive"
+                                      ? "text-gray-600"
+                                      : "text-orange-700"
+                                  }`}
+                                >
+                                  {customer.status === "active"
+                                    ? "Active"
+                                    : customer.status === "inactive"
+                                    ? "Inactive"
+                                    : "Pending"}
+                                </span>
+                              </div>
+
+                              {customer.expiry_date && (
+                                <div className="flex items-center gap-2 text-gray-400">
+                                  <i className="fi flex fi-rr-calendar text-[10px]"></i>
                                   <span
-                                    className="truncate"
+                                    style={{ fontFamily: "'Roboto', sans-serif" }}
+                                  >
+                                    {formatDate(customer.expiry_date)}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+
+                            {/* Display checked fields from customer_details */}
+                            {customer.customer_details &&
+                              (() => {
+                                try {
+                                  const rawData = JSON.parse(customer.customer_details);
+                                  let details = rawData;
+                                  if (rawData.active_details && rawData.history) {
+                                      details = rawData.history[rawData.active_details] || {};
+                                  }
+
+                                  const checkedFields = Object.entries(details)
+                                    .filter(([key]) => key.endsWith("_checked"))
+                                    .map(([key, value]) => ({
+                                      fieldName: key.replace("_checked", ""),
+                                      value: String(value),
+                                    }));
+
+                                  if (checkedFields.length === 0) return null;
+
+                                  return checkedFields.map((field) => (
+                                    <div
+                                      key={field.fieldName}
+                                      className="flex items-center gap-2 text-gray-500 pt-1"
+                                    >
+                                      <i className="fi flex fi-rr-check text-[10px] text-green-500"></i>
+                                      <span
+                                        className="truncate"
+                                        style={{
+                                          fontFamily: "'Roboto', sans-serif",
+                                        }}
+                                        title={`${field.fieldName}: ${field.value}`}
+                                      >
+                                        <span className="font-medium text-gray-700">
+                                          {field.fieldName}:
+                                        </span>{" "}
+                                        {field.value}
+                                      </span>
+                                    </div>
+                                  ));
+                                } catch (e) {
+                                  return null;
+                                }
+                              })()}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Pagination Controls */}
+                  {!loadingCustomers && totalCustomers > 0 && (
+                    <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 bg-white border-t border-gray-200 rounded-b-lg">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="text-sm text-gray-600"
+                          style={{ fontFamily: "'Roboto', sans-serif" }}
+                        >
+                          Showing {startIndex} to {endIndex} of {totalCustomers}{" "}
+                          customers
+                        </div>
+                        {/* Page Size Selector */}
+                        <div className="flex items-center gap-2">
+                          <label
+                            className="text-xs text-gray-600"
+                            style={{ fontFamily: "'Roboto', sans-serif" }}
+                          >
+                            Per page:
+                          </label>
+                          <select
+                            value={pageSize}
+                            onChange={(e) => {
+                              const newPageSize =
+                                e.target.value === "all"
+                                  ? "all"
+                                  : parseInt(e.target.value);
+                              setPageSize(newPageSize);
+                            }}
+                            className="px-2 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            style={{ fontFamily: "'Roboto', sans-serif" }}
+                          >
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                            <option value="200">200</option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                            <option value="all">All</option>
+                          </select>
+                        </div>
+                      </div>
+                      {pageSize !== "all" && (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => {
+                              if (currentPage > 1) {
+                                setCurrentPage(currentPage - 1);
+                              }
+                            }}
+                            disabled={currentPage === 1 || loadingCustomers}
+                            className={`px-2 py-1.5 w-8 h-8 rounded-lg text-sm font-medium transition-colors ${currentPage === 1 || loadingCustomers
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              }`}
+                            style={{ fontFamily: "'Roboto', sans-serif" }}
+                          >
+                            <i className="fi flex fi-rr-angle-left"></i>
+                          </button>
+                          <div className="flex items-center gap-1">
+                            {Array.from(
+                              { length: Math.min(5, totalPages) },
+                              (_, i) => {
+                                let pageNum: number;
+                                if (totalPages <= 5) {
+                                  pageNum = i + 1;
+                                } else if (currentPage <= 3) {
+                                  pageNum = i + 1;
+                                } else if (currentPage >= totalPages - 2) {
+                                  pageNum = totalPages - 4 + i;
+                                } else {
+                                  pageNum = currentPage - 2 + i;
+                                }
+                                return (
+                                  <button
+                                    key={pageNum}
+                                    onClick={() => setCurrentPage(pageNum)}
+                                    disabled={loadingCustomers}
+                                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${currentPage === pageNum
+                                      ? "bg-[#4b33e8] text-white"
+                                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                                      }`}
                                     style={{
                                       fontFamily: "'Roboto', sans-serif",
                                     }}
-                                    title={`${field.fieldName}: ${field.value}`}
                                   >
-                                    <span className="font-medium text-gray-700">
-                                      {field.fieldName}:
-                                    </span>{" "}
-                                    {field.value}
-                                  </span>
-                                </div>
-                              ));
-                            } catch (e) {
-                              return null;
+                                    {pageNum}
+                                  </button>
+                                );
+                              }
+                            )}
+                          </div>
+                          <button
+                            onClick={() => {
+                              if (currentPage < totalPages) {
+                                setCurrentPage(currentPage + 1);
+                              }
+                            }}
+                            disabled={
+                              currentPage >= totalPages || loadingCustomers
                             }
-                          })()}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Pagination Controls */}
-              {!loadingCustomers && totalCustomers > 0 && (
-                <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 px-4 py-3 bg-white border-t border-gray-200 rounded-b-lg">
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="text-sm text-gray-600"
-                      style={{ fontFamily: "'Roboto', sans-serif" }}
-                    >
-                      Showing {startIndex} to {endIndex} of {totalCustomers}{" "}
-                      customers
-                    </div>
-                    {/* Page Size Selector */}
-                    <div className="flex items-center gap-2">
-                      <label
-                        className="text-xs text-gray-600"
-                        style={{ fontFamily: "'Roboto', sans-serif" }}
-                      >
-                        Per page:
-                      </label>
-                      <select
-                        value={pageSize}
-                        onChange={(e) => {
-                          const newPageSize =
-                            e.target.value === "all"
-                              ? "all"
-                              : parseInt(e.target.value);
-                          setPageSize(newPageSize);
-                        }}
-                        className="px-2 py-1.5 text-sm border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                        style={{ fontFamily: "'Roboto', sans-serif" }}
-                      >
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="200">200</option>
-                        <option value="500">500</option>
-                        <option value="1000">1000</option>
-                        <option value="all">All</option>
-                      </select>
-                    </div>
-                  </div>
-                  {pageSize !== "all" && (
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => {
-                          if (currentPage > 1) {
-                            setCurrentPage(currentPage - 1);
-                          }
-                        }}
-                        disabled={currentPage === 1 || loadingCustomers}
-                        className={`px-2 py-1.5 w-8 h-8 rounded-lg text-sm font-medium transition-colors ${currentPage === 1 || loadingCustomers
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
-                        style={{ fontFamily: "'Roboto', sans-serif" }}
-                      >
-                        <i className="fi flex fi-rr-angle-left"></i>
-                      </button>
-                      <div className="flex items-center gap-1">
-                        {Array.from(
-                          { length: Math.min(5, totalPages) },
-                          (_, i) => {
-                            let pageNum: number;
-                            if (totalPages <= 5) {
-                              pageNum = i + 1;
-                            } else if (currentPage <= 3) {
-                              pageNum = i + 1;
-                            } else if (currentPage >= totalPages - 2) {
-                              pageNum = totalPages - 4 + i;
-                            } else {
-                              pageNum = currentPage - 2 + i;
-                            }
-                            return (
-                              <button
-                                key={pageNum}
-                                onClick={() => setCurrentPage(pageNum)}
-                                disabled={loadingCustomers}
-                                className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${currentPage === pageNum
-                                  ? "bg-[#4b33e8] text-white"
-                                  : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                  }`}
-                                style={{
-                                  fontFamily: "'Roboto', sans-serif",
-                                }}
-                              >
-                                {pageNum}
-                              </button>
-                            );
-                          }
-                        )}
-                      </div>
-                      <button
-                        onClick={() => {
-                          if (currentPage < totalPages) {
-                            setCurrentPage(currentPage + 1);
-                          }
-                        }}
-                        disabled={
-                          currentPage >= totalPages || loadingCustomers
-                        }
-                        className={`px-3 w-8 h-8 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentPage >= totalPages || loadingCustomers
-                          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                          : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
-                        style={{ fontFamily: "'Roboto', sans-serif" }}
-                      >
-                        <i className="fi flex fi-rr-angle-right "></i>
-                      </button>
+                            className={`px-3 w-8 h-8 py-1.5 rounded-lg text-sm font-medium transition-colors ${currentPage >= totalPages || loadingCustomers
+                              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                              }`}
+                            style={{ fontFamily: "'Roboto', sans-serif" }}
+                          >
+                            <i className="fi flex fi-rr-angle-right "></i>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
-      </div>
 
 
       {/* Reusable Import Customers Modal */}
@@ -3121,58 +3132,58 @@ export default function Customer() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* History Navigation */}
                   {selectedCustomer.customer_details && (() => {
-                    try {
-                      const rawData = JSON.parse(selectedCustomer.customer_details);
-                      if (rawData.active_details && rawData.history) {
-                        const keys = Object.keys(rawData.history).sort((a, b) => {
-                          const numA = parseInt(a.split('-')[1]);
-                          const numB = parseInt(b.split('-')[1]);
-                          return numA - numB;
-                        });
-                        if (keys.length > 1) {
-                          const handleNext = () => {
-                            const currentKey = viewingDetailsKey || rawData.active_details;
-                            const currentIndex = keys.indexOf(currentKey);
-                            const nextIndex = (currentIndex + 1) % keys.length;
-                            setViewingDetailsKey(keys[nextIndex]);
-                          };
-                          const handlePrev = () => {
-                            const currentKey = viewingDetailsKey || rawData.active_details;
-                            const currentIndex = keys.indexOf(currentKey);
-                            const prevIndex = (currentIndex - 1 + keys.length) % keys.length;
-                            setViewingDetailsKey(keys[prevIndex]);
-                          };
+                      try {
+                          const rawData = JSON.parse(selectedCustomer.customer_details);
+                          if (rawData.active_details && rawData.history) {
+                              const keys = Object.keys(rawData.history).sort((a, b) => {
+                                  const numA = parseInt(a.split('-')[1]);
+                                  const numB = parseInt(b.split('-')[1]);
+                                  return numA - numB;
+                              });
+                              if (keys.length > 1) {
+                                  const handleNext = () => {
+                                      const currentKey = viewingDetailsKey || rawData.active_details;
+                                      const currentIndex = keys.indexOf(currentKey);
+                                      const nextIndex = (currentIndex + 1) % keys.length;
+                                      setViewingDetailsKey(keys[nextIndex]);
+                                  };
+                                  const handlePrev = () => {
+                                      const currentKey = viewingDetailsKey || rawData.active_details;
+                                      const currentIndex = keys.indexOf(currentKey);
+                                      const prevIndex = (currentIndex - 1 + keys.length) % keys.length;
+                                      setViewingDetailsKey(keys[prevIndex]);
+                                  };
 
-                          return (
-                            <div className="md:col-span-2 mt-4">
-                              <div className="flex items-center justify-between bg-indigo-50 p-1.5 rounded-2xl border border-indigo-100 shadow-sm mb-4">
-                                <button
-                                  onClick={handlePrev}
-                                  className="w-9 h-9 flex items-center justify-center bg-white border border-indigo-200 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 shadow-sm"
-                                >
-                                  <i className="fi flex fi-rr-angle-left mt-0.5"></i>
-                                </button>
+                                  return (
+                                      <div className="md:col-span-2 mt-4">
+                                          <div className="flex items-center justify-between bg-indigo-50 p-1.5 rounded-2xl border border-indigo-100 shadow-sm mb-4">
+                                              <button 
+                                                  onClick={handlePrev}
+                                                  className="w-9 h-9 flex items-center justify-center bg-white border border-indigo-200 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 shadow-sm"
+                                              >
+                                                  <i className="fi flex fi-rr-angle-left mt-0.5"></i>
+                                              </button>
+                                              
+                                              <div className="flex flex-col items-center">
+                                                  <span className="text-[8px] font-black text-indigo-300 uppercase tracking-tighter">DATA HISTORY</span>
+                                                  <span className="text-xs font-black text-indigo-900">
+                                                      {String(viewingDetailsKey || rawData.active_details).replace('details-', 'RECORD #')}
+                                                  </span>
+                                              </div>
 
-                                <div className="flex flex-col items-center">
-                                  <span className="text-[8px] font-black text-indigo-300 uppercase tracking-tighter">DATA HISTORY</span>
-                                  <span className="text-xs font-black text-indigo-900">
-                                    {String(viewingDetailsKey || rawData.active_details).replace('details-', 'RECORD #')}
-                                  </span>
-                                </div>
-
-                                <button
-                                  onClick={handleNext}
-                                  className="w-9 h-9 flex items-center justify-center bg-white border border-indigo-200 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 shadow-sm"
-                                >
-                                  <i className="fi flex fi-rr-angle-right mt-0.5"></i>
-                                </button>
-                              </div>
-                            </div>
-                          );
-                        }
-                      }
-                    } catch (e) { }
-                    return null;
+                                              <button 
+                                                  onClick={handleNext}
+                                                  className="w-9 h-9 flex items-center justify-center bg-white border border-indigo-200 rounded-xl text-indigo-600 hover:bg-indigo-600 hover:text-white transition-all active:scale-90 shadow-sm"
+                                              >
+                                                  <i className="fi flex fi-rr-angle-right mt-0.5"></i>
+                                              </button>
+                                          </div>
+                                      </div>
+                                  );
+                              }
+                          }
+                      } catch (e) {}
+                      return null;
                   })()}
                   <div>
                     <label
@@ -3352,7 +3363,7 @@ export default function Customer() {
                         const rawData = JSON.parse(selectedCustomer.customer_details);
                         let details = rawData;
                         if (rawData.active_details && rawData.history) {
-                          details = rawData.history[viewingDetailsKey || rawData.active_details] || {};
+                            details = rawData.history[viewingDetailsKey || rawData.active_details] || {};
                         }
                         const checkedFields = Object.entries(details)
                           .filter(([key]) => key.endsWith("_checked"))
@@ -3391,7 +3402,7 @@ export default function Customer() {
                     const rawData = JSON.parse(selectedCustomer.customer_details);
                     let details = rawData;
                     if (rawData.active_details && rawData.history) {
-                      details = rawData.history[viewingDetailsKey || rawData.active_details] || {};
+                        details = rawData.history[viewingDetailsKey || rawData.active_details] || {};
                     }
                     const uncheckedFields = Object.entries(details).filter(
                       ([key]) => key.endsWith("_unchecked")
@@ -3514,14 +3525,14 @@ export default function Customer() {
                   </span>
                 )}
               </div>
-              <button
+              <button 
                 onClick={() => setShowFilterModal(false)}
                 className="text-gray-400 hover:text-gray-600 p-1"
               >
                 <i className="fi fi-rr-cross-small text-xl leading-none"></i>
               </button>
             </div>
-
+ 
             <div className="p-5 space-y-4">
               {/* Organization */}
               <div>
@@ -3533,8 +3544,8 @@ export default function Customer() {
                   disabled={user?.isClient}
                   onChange={(e) => {
                     const newOrg = e.target.value;
-                    setFilters(prev => ({
-                      ...prev,
+                    setFilters(prev => ({ 
+                      ...prev, 
                       organization: newOrg,
                       campaign: "",
                       assignedTo: ""
@@ -3548,7 +3559,7 @@ export default function Customer() {
                   ))}
                 </select>
               </div>
-
+ 
               {/* Campaign */}
               <div>
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">
@@ -3558,8 +3569,8 @@ export default function Customer() {
                   value={filters.campaign}
                   onChange={(e) => {
                     const newCamp = e.target.value;
-                    setFilters(prev => ({
-                      ...prev,
+                    setFilters(prev => ({ 
+                      ...prev, 
                       campaign: newCamp,
                       assignedTo: ""
                     }));
@@ -3575,7 +3586,7 @@ export default function Customer() {
                     ))}
                 </select>
               </div>
-
+ 
               {/* Assigned To & Disposition */}
               <div className="grid grid-cols-2 gap-4">
                 <div>
@@ -3592,7 +3603,7 @@ export default function Customer() {
                     {(() => {
                       const selectedCampaign = filterStats.campaigns.find(c => c.id === filters.campaign);
                       const campaignUserIds = selectedCampaign?.users?.map((u: any) => u.user_id) || [];
-
+                      
                       return filterStats.agents
                         .filter(agent => {
                           const orgMatch = filters.organization && agent.organization_id === filters.organization;
@@ -3621,7 +3632,7 @@ export default function Customer() {
                   </select>
                 </div>
               </div>
-
+ 
               {/* Attempt Count */}
               <div>
                 <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">
@@ -3635,13 +3646,13 @@ export default function Customer() {
                   className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                 />
               </div>
-
+ 
               {/* Date Ranges */}
               <div className="pt-3 border-t border-gray-100 space-y-4">
                 {/* Lead Generation Date */}
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">Lead Generation Date</p>
-                  <div className="grid grid-cols-2 gap-4">
+                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">Lead Generation Date</p>
+                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="date"
                       value={filters.createdStartDate}
@@ -3654,13 +3665,13 @@ export default function Customer() {
                       onChange={(e) => setFilters(prev => ({ ...prev, createdEndDate: e.target.value }))}
                       className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                     />
-                  </div>
+                   </div>
                 </div>
 
                 {/* Expiry Date */}
                 <div>
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">Policy Expiry Window</p>
-                  <div className="grid grid-cols-2 gap-4">
+                   <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1.5 pl-0.5">Policy Expiry Window</p>
+                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="date"
                       value={filters.startDate}
@@ -3673,19 +3684,19 @@ export default function Customer() {
                       onChange={(e) => setFilters(prev => ({ ...prev, endDate: e.target.value }))}
                       className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                     />
-                  </div>
+                   </div>
                 </div>
               </div>
             </div>
-
+ 
             {/* Footer */}
             <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
               <button
                 onClick={() => {
-                  setFilters({
-                    organization: "",
-                    campaign: "",
-                    assignedTo: "",
+                  setFilters({ 
+                    organization: "", 
+                    campaign: "", 
+                    assignedTo: "", 
                     disposition: "",
                     startDate: "",
                     endDate: "",
@@ -3720,26 +3731,26 @@ export default function Customer() {
             <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-6">
                 <h3 className="font-bold text-gray-800">Duplicate Entries</h3>
+                
+                 <div className="flex items-center gap-3 ml-4 bg-gray-50 rounded-lg p-1 border border-gray-100">
+                   <div className="flex items-center gap-2 px-2 border-r border-gray-200 pr-3">
+                      <input 
+                        type="checkbox" 
+                        className="w-4 h-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                        checked={filteredDuplicateLeads.length > 0 && filteredDuplicateLeads.every(l => selectedDuplicateLeads.has(l.lead_id))}
+                        onChange={(e) => {
+                          const newSelected = new Set(selectedDuplicateLeads);
+                          filteredDuplicateLeads.forEach(l => {
+                            if (e.target.checked) newSelected.add(l.lead_id);
+                            else newSelected.delete(l.lead_id);
+                          });
+                          setSelectedDuplicateLeads(newSelected);
+                        }}
+                      />
+                      <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Select All</span>
+                   </div>
 
-                <div className="flex items-center gap-3 ml-4 bg-gray-50 rounded-lg p-1 border border-gray-100">
-                  <div className="flex items-center gap-2 px-2 border-r border-gray-200 pr-3">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
-                      checked={filteredDuplicateLeads.length > 0 && filteredDuplicateLeads.every(l => selectedDuplicateLeads.has(l.lead_id))}
-                      onChange={(e) => {
-                        const newSelected = new Set(selectedDuplicateLeads);
-                        filteredDuplicateLeads.forEach(l => {
-                          if (e.target.checked) newSelected.add(l.lead_id);
-                          else newSelected.delete(l.lead_id);
-                        });
-                        setSelectedDuplicateLeads(newSelected);
-                      }}
-                    />
-                    <span className="text-[10px] font-bold text-gray-500 uppercase tracking-tighter">Select All</span>
-                  </div>
-
-                  <select
+                  <select 
                     value={duplicateDispositionFilter}
                     onChange={(e) => setDuplicateDispositionFilter(e.target.value)}
                     className="px-2 py-1 bg-transparent text-[11px] text-gray-600 focus:outline-none min-w-[130px]"
@@ -3749,7 +3760,7 @@ export default function Customer() {
                       <option key={disp} value={disp}>{disp}</option>
                     ))}
                   </select>
-                  <select
+                  <select 
                     value={duplicateCampaignFilter}
                     onChange={(e) => setDuplicateCampaignFilter(e.target.value)}
                     className="px-2 py-1.5 bg-white border border-gray-200 rounded text-[11px] text-gray-600 focus:outline-none min-w-[140px]"
@@ -3762,7 +3773,7 @@ export default function Customer() {
                 </div>
               </div>
 
-              <button
+              <button 
                 onClick={() => {
                   setShowDuplicateModal(false);
                   setDuplicateDispositionFilter("");
@@ -3793,35 +3804,35 @@ export default function Customer() {
                     <div key={idx} className="bg-white">
                       <div className="px-5 py-2 bg-gray-50/50 flex items-center justify-between border-y border-gray-50">
                         <div className="flex items-center gap-3">
-                          <input
-                            type="checkbox"
-                            className="w-4 h-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
-                            checked={group.every((item: any) => selectedDuplicateLeads.has(item.lead_id))}
-                            onChange={(e) => {
-                              const newSelected = new Set(selectedDuplicateLeads);
-                              group.forEach((item: any) => {
-                                if (e.target.checked) newSelected.add(item.lead_id);
-                                else newSelected.delete(item.lead_id);
-                              });
-                              setSelectedDuplicateLeads(newSelected);
-                            }}
-                          />
-                          <span className="font-bold text-gray-500 uppercase text-[10px]">Group {idx + 1}</span>
+                           <input 
+                             type="checkbox" 
+                             className="w-4 h-4 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                             checked={group.every((item: any) => selectedDuplicateLeads.has(item.lead_id))}
+                             onChange={(e) => {
+                               const newSelected = new Set(selectedDuplicateLeads);
+                               group.forEach((item: any) => {
+                                 if (e.target.checked) newSelected.add(item.lead_id);
+                                 else newSelected.delete(item.lead_id);
+                               });
+                               setSelectedDuplicateLeads(newSelected);
+                             }}
+                           />
+                           <span className="font-bold text-gray-500 uppercase text-[10px]">Group {idx + 1}</span>
                         </div>
                         <div className="flex items-center gap-4">
-                          {group.some((item: any) => selectedDuplicateLeads.has(item.lead_id)) && (
-                            <button
-                              onClick={() => {
-                                const selectedItemsInGroup = group.filter((item: any) => selectedDuplicateLeads.has(item.lead_id));
-                                handleDeleteMultipleDuplicates(selectedItemsInGroup);
-                              }}
-                              className="text-[10px] font-bold text-rose-600 hover:text-rose-700 uppercase tracking-tight flex items-center gap-1.5 transition-colors"
-                            >
-                              <i className="fi fi-rr-trash"></i>
-                              Delete Selected
-                            </button>
-                          )}
-                          <span className="text-[10px] text-gray-400">{group.length} records</span>
+                           {group.some((item: any) => selectedDuplicateLeads.has(item.lead_id)) && (
+                             <button
+                               onClick={() => {
+                                 const selectedItemsInGroup = group.filter((item: any) => selectedDuplicateLeads.has(item.lead_id));
+                                 handleDeleteMultipleDuplicates(selectedItemsInGroup);
+                               }}
+                               className="text-[10px] font-bold text-rose-600 hover:text-rose-700 uppercase tracking-tight flex items-center gap-1.5 transition-colors"
+                             >
+                               <i className="fi fi-rr-trash"></i>
+                               Delete Selected
+                             </button>
+                           )}
+                           <span className="text-[10px] text-gray-400">{group.length} records</span>
                         </div>
                       </div>
                       <table className="w-full text-left">
@@ -3842,8 +3853,8 @@ export default function Customer() {
                           {group.map((item: any, i: number) => (
                             <tr key={i} className={`hover:bg-gray-50/30 transition-colors text-[11px] ${selectedDuplicateLeads.has(item.lead_id) ? 'bg-rose-50/20' : ''}`}>
                               <td className="px-5 py-3">
-                                <input
-                                  type="checkbox"
+                                <input 
+                                  type="checkbox" 
                                   className="w-3.5 h-3.5 rounded border-gray-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
                                   checked={selectedDuplicateLeads.has(item.lead_id)}
                                   onChange={() => {
@@ -3863,10 +3874,11 @@ export default function Customer() {
                                 {item.created_at ? new Date(item.created_at).toLocaleDateString('en-GB') : '-'}
                               </td>
                               <td className="px-3 py-3">
-                                <span className={`font-bold ${item.stage === 'Live' ? 'text-indigo-600' :
-                                    item.stage === 'Rejected' ? 'text-rose-500' :
-                                      'text-emerald-600'
-                                  }`}>
+                                <span className={`font-bold ${
+                                  item.stage === 'Live' ? 'text-indigo-600' :
+                                  item.stage === 'Rejected' ? 'text-rose-500' :
+                                  'text-emerald-600'
+                                }`}>
                                   {item.stage}
                                 </span>
                               </td>
@@ -3896,7 +3908,7 @@ export default function Customer() {
             <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
               <div className="flex items-center gap-6">
                 <span className="text-gray-400 font-medium">
-                  Groups: <span className="text-gray-700 font-bold">{Object.keys(filteredDuplicateLeads.reduce((acc: any, l: any) => ({ ...acc, [l.phone_search_hash]: 1 }), {})).length}</span>
+                  Groups: <span className="text-gray-700 font-bold">{Object.keys(filteredDuplicateLeads.reduce((acc: any, l: any) => ({...acc, [l.phone_search_hash]: 1}), {})).length}</span>
                 </span>
                 {selectedDuplicateLeads.size > 0 && (
                   <button
@@ -3937,14 +3949,14 @@ export default function Customer() {
                   {selectedCustomers.size} Items
                 </span>
               </div>
-              <button
+              <button 
                 onClick={() => setShowBulkActionModal(false)}
                 className="text-gray-400 hover:text-gray-600 p-1"
               >
                 <i className="fi fi-rr-cross-small text-xl leading-none"></i>
               </button>
             </div>
-
+            
             <div className="p-6 space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* Organization Field */}
@@ -3978,8 +3990,8 @@ export default function Customer() {
                       {filterStats.campaigns
                         .filter(camp => bulkUpdates.organization_id && camp.organization_id === bulkUpdates.organization_id)
                         .map(camp => (
-                          <option key={camp.id} value={camp.id}>{camp.name}</option>
-                        ))}
+                        <option key={camp.id} value={camp.id}>{camp.name}</option>
+                      ))}
                     </select>
                   </div>
                 )}
@@ -4000,8 +4012,8 @@ export default function Customer() {
                       {filterStats.agents
                         .filter(a => bulkUpdates.organization_id && a.organization_id === bulkUpdates.organization_id)
                         .map(agent => (
-                          <option key={agent.id} value={agent.user_id || agent.id}>{agent.user_name}</option>
-                        ))}
+                        <option key={agent.id} value={agent.user_id || agent.id}>{agent.user_name}</option>
+                      ))}
                     </select>
                   </div>
                 )}
@@ -4029,9 +4041,9 @@ export default function Customer() {
                 <div className="pt-2">
                   <button
                     onClick={() => {
-                      if (confirm(`Are you sure you want to reset ${selectedCustomers.size} leads to Fresh state? This will clear all history and assignments.`)) {
-                        handleBulkUpdate({ action: "Move Fresh" });
-                      }
+                        if(confirm(`Are you sure you want to reset ${selectedCustomers.size} leads to Fresh state? This will clear all history and assignments.`)) {
+                           handleBulkUpdate({ action: "Move Fresh" });
+                        }
                     }}
                     className="w-full h-9 flex items-center justify-center gap-2 border border-rose-200 bg-rose-50 text-rose-600 rounded text-[10px] font-bold uppercase tracking-widest hover:bg-rose-100 transition-all"
                   >
@@ -4050,14 +4062,14 @@ export default function Customer() {
                 Cancel
               </button>
               <button
-                disabled={isUpdatingBulk || !Object.entries(bulkUpdates).some(([k, v]) => v !== "")}
+                disabled={isUpdatingBulk || !Object.entries(bulkUpdates).some(([k,v]) => v !== "")}
                 onClick={() => {
-                  const cleanUpdates: any = {};
-                  if (bulkUpdates.organization_id) cleanUpdates.organization_id = bulkUpdates.organization_id;
-                  if (bulkUpdates.campaign_id) cleanUpdates.campaign_id = bulkUpdates.campaign_id;
-                  if (bulkUpdates.assigned_to) cleanUpdates.assigned_to = (bulkUpdates.assigned_to === "unassigned" ? null : bulkUpdates.assigned_to);
-                  if (bulkUpdates.disposition) cleanUpdates.disposition = bulkUpdates.disposition;
-                  handleBulkUpdate(cleanUpdates);
+                   const cleanUpdates: any = {};
+                   if (bulkUpdates.organization_id) cleanUpdates.organization_id = bulkUpdates.organization_id;
+                   if (bulkUpdates.campaign_id) cleanUpdates.campaign_id = bulkUpdates.campaign_id;
+                   if (bulkUpdates.assigned_to) cleanUpdates.assigned_to = (bulkUpdates.assigned_to === "unassigned" ? null : bulkUpdates.assigned_to);
+                   if (bulkUpdates.disposition) cleanUpdates.disposition = bulkUpdates.disposition;
+                   handleBulkUpdate(cleanUpdates);
                 }}
                 className="px-6 py-1.5 bg-indigo-600 text-white rounded font-bold uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-sm shadow-indigo-100 disabled:opacity-50"
               >
