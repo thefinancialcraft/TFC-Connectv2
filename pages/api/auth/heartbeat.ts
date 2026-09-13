@@ -67,19 +67,6 @@ export default async function handler(
           is_active: true // Ensure it stays active if heartbeat is received
         })
         .eq('token_id', token_id);
-
-      // Sync with agent_live_presence
-      if (session?.user_id) {
-        await supabaseAdmin
-          .from('agent_live_presence')
-          .update({
-            is_login: true,
-            last_seen: new Date().toISOString(),
-            login_source: 'web',
-            updated_at: new Date().toISOString()
-          })
-          .eq('user_id', session.user_id);
-      }
     }
 
     return res.status(200).json({

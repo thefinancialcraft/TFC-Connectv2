@@ -55,25 +55,6 @@ export default async function handler(
             console.error('[API-Session] Delete Error:', deleteError);
             return res.status(500).json({ error: deleteError.message });
         }
-
-        // Clear calling presence on terminate
-        try {
-            await client
-                .from('agent_live_presence')
-                .update({
-                    on_call: false,
-                    active_mode: null,
-                    dialed_no: null,
-                    customer_name: null,
-                    calling_status: null,
-                    call_started_at: null,
-                    updated_at: new Date().toISOString()
-                })
-                .eq('user_id', user.id);
-        } catch (presErr) {
-            console.error('[API-Session] Error clearing presence on terminate:', presErr);
-        }
-
         const responseData: Data = { success: true, message: 'Session terminated' };
         return res.status(200).json(responseData);
     }
@@ -156,46 +137,6 @@ export default async function handler(
     if (upsertError) {
         console.error('[API-Session] DB Error:', upsertError);
         return res.status(500).json({ error: upsertError.message });
-    }
-
-    // Sync call state with agent_live_presence
-    try {
-        if (status === 'active') {
-            let custPhone = null;
-            let custName = null;
-            if (customer_id) {
-                const { data: cust } = await client
-                    .from('customers')
-                    .select('phone, name')
-                    .eq('id', customer_id)
-                    .maybeSingle();
-                custPhone = cust?.phone || null;
-                custName = cust?.name || null;
-            }
-
-            await client
-                .from('agent_live_presence')
-                .update({
-                    on_call: true,
-                    dialed_no: custPhone,
-                    customer_name: custName,
-                    calling_status: 'connected',
-                    call_started_at: updatePayload.call_start_at || new Date().toISOString(),
-                    updated_at: new Date().toISOString()
-                })
-                .eq('user_id', user.id);
-        } else if (status === 'disposition_pending') {
-            await client
-                .from('agent_live_presence')
-                .update({
-                    on_call: false,
-                    calling_status: 'disposition_pending',
-                    updated_at: new Date().toISOString()
-                })
-                .eq('user_id', user.id);
-        }
-    } catch (presSyncErr) {
-        console.error('[API-Session] Error syncing agent_live_presence:', presSyncErr);
     }
 
     return res.status(200).json({ 

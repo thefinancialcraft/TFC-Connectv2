@@ -27,16 +27,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
   const [serverStatus, setServerStatus] = useState<'online' | 'offline' | 'checking'>('online');
   const [showFullStatus, setShowFullStatus] = useState<boolean>(true);
   const [mounted, setMounted] = useState(false);
-  const [deviceStatus, setDeviceStatus] = useState<{
-    on_call: boolean;
-    device_model: string;
-    android_id: string;
-    last_seen?: string | null;
-    calling_status?: string | null;
-    active_mode?: string | null;
-    is_login?: boolean;
-    login_source?: string | null;
-  } | null>(null);
+  const [deviceStatus, setDeviceStatus] = useState<{ on_call: boolean; device_model: string; android_id: string; last_seen?: string | null } | null>(null);
   const [isBridgeActive, setIsBridgeActive] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [localEntryId, setLocalEntryId] = useState<string | null>(null);
@@ -186,50 +177,31 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
     if (!mounted || !displayUser?.employeeId) return;
 
     const fetchPrimaryStatus = async () => {
-      // 1. Fetch Authoritative Agent Live Presence
-      let presence: any = null;
-      try {
-        let pQuery = supabase.from('agent_live_presence').select('*');
-        if (displayUser.uid) {
-          const { data } = await pQuery.eq('user_id', displayUser.uid).maybeSingle();
-          presence = data;
-        } else if (displayUser.employeeId) {
-          const { data } = await pQuery.eq('employee_id', displayUser.employeeId).maybeSingle();
-          presence = data;
-        }
-      } catch (pErr) {
-        console.error("Error fetching agent_live_presence:", pErr);
+      // Fetch specifically by localEntryId if we have it, else fallback to primary discover
+      const query = supabase.from('sync_meta').select('id, entry_id, on_call, device_model, android_id, status, is_primary, last_seen');
+      
+      let finalResult;
+      if (localEntryId) {
+        finalResult = await query.eq('entry_id', localEntryId).maybeSingle();
+      } else {
+        finalResult = await query.eq('employee_id', displayUser.employeeId).eq('is_primary', true).maybeSingle();
+      }
+      
+      const { data: device, error } = finalResult;
+
+      if (error) {
+        console.error("Error fetching primary device:", error);
+        return;
       }
 
-      // 2. Fetch Physical Device Info from sync_meta if available
-      let device: any = null;
-      try {
-        const query = supabase.from('sync_meta').select('id, entry_id, on_call, device_model, android_id, status, is_primary, last_seen');
-        let finalResult;
-        if (localEntryId) {
-          finalResult = await query.eq('entry_id', localEntryId).maybeSingle();
-        } else if (displayUser.employeeId) {
-          finalResult = await query.eq('employee_id', displayUser.employeeId).eq('is_primary', true).maybeSingle();
-        }
-        device = finalResult?.data;
-      } catch (dErr) {
-        console.error("Error fetching primary device from sync_meta:", dErr);
-      }
-
-      // 3. Unify presence state with agent_live_presence as primary
-      if (presence || device) {
-        const isOnCall = presence ? (presence.on_call ?? false) : (device?.on_call ?? false);
+      if (device) {
         setDeviceStatus({
-          on_call: isOnCall,
-          calling_status: presence?.calling_status || null,
-          active_mode: presence?.active_mode || null,
-          is_login: presence?.is_login ?? (device?.status === 'connected'),
-          login_source: presence?.login_source || (device ? 'mobile' : 'web'),
-          device_model: device?.device_model || (presence?.login_source === 'web' ? 'Web CRM' : 'Agent Presence'),
-          android_id: device?.android_id || 'N/A',
-          last_seen: presence?.last_seen || device?.last_seen
+          on_call: device.on_call || false,
+          device_model: device.device_model || 'Unknown Device',
+          android_id: device.android_id || 'N/A',
+          last_seen: device.last_seen
         });
-        isOnCallRef.current = isOnCall;
+        isOnCallRef.current = device.on_call || false;
       } else {
         setDeviceStatus(null);
         isOnCallRef.current = false;
@@ -239,13 +211,14 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
     // Initial fetch
     fetchPrimaryStatus();
 
-    // Polling loop for responsiveness
+    // --- REFACTORED: NO REALTIME SUBSCRIPTION (Saves 100% Messaging Quota) ---
+    // Instead, we use a 5s polling loop for absolute responsiveness (REST API - Free Quota)
     const interval = setInterval(fetchPrimaryStatus, 5000);
 
     return () => {
       clearInterval(interval);
     };
-  }, [mounted, displayUser?.employeeId, displayUser?.uid, isBridgeActive, localEntryId]);
+  }, [mounted, displayUser?.employeeId, isBridgeActive, localEntryId]);
 
   // SENDER: Heartbeat Loop (Only if bridge is active)
   useEffect(() => {
@@ -271,18 +244,17 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
     return () => clearInterval(interval);
   }, []);
 
-  // Logic: Check if agent/device is online based on presence or last_seen
+  // Logic: Check if device is actually online based on last_seen
   const deviceOnlineStatus = useMemo(() => {
-    if (!deviceStatus) return 'offline';
-    if (deviceStatus.is_login) return 'online';
-    if (!deviceStatus.last_seen) return 'offline';
+    if (!deviceStatus?.last_seen) return 'offline';
     
     const lastSeen = new Date(deviceStatus.last_seen).getTime();
     const now = Date.now();
     const diffSeconds = (now - lastSeen) / 1000;
     
-    return diffSeconds < 45 ? 'online' : 'offline';
-  }, [deviceStatus?.last_seen, deviceStatus?.is_login, tick]);
+    // Mark offline if no heartbeat for 20 seconds (Stable for 5s polling)
+    return diffSeconds < 20 ? 'online' : 'offline';
+  }, [deviceStatus?.last_seen, tick]);
 
   // Ghost update: Only update if props actually changed
   useEffect(() => {
@@ -613,7 +585,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
 
           {/* Right: Device Status & Server Status */}
           <div className="flex items-center gap-3 lg:gap-3 shrink-0 ml-auto">
-            {/* Real-time Agent & Calling Status (Powered by agent_live_presence) */}
+            {/* Real-time Device Status */}
             {deviceStatus && (
               <div className="flex items-center gap-3 px-3 py-1.5 bg-gray-50/50 rounded-xl border border-gray-200/50">
                 <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${
@@ -624,30 +596,28 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
                   <i className={`fi flex ${
                     deviceOnlineStatus === 'online' && deviceStatus.on_call 
                       ? 'fi-rr-phone-call animate-pulse' 
-                      : (deviceStatus.login_source === 'web' ? 'fi-rr-computer' : 'fi-rr-smartphone')
+                      : 'fi-rr-smartphone'
                   } text-sm`} />
                 </div>
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none mb-1">
-                    {deviceStatus.on_call && deviceStatus.active_mode
-                      ? (deviceStatus.active_mode === 'tata_webrtc' ? 'WebRTC Call' : deviceStatus.active_mode === 'tata_c2c' ? 'Cloud Call' : 'SIM Call')
-                      : deviceStatus.device_model}
+                    {deviceStatus.device_model}
                   </span>
                   <div className="flex items-center gap-1.5">
                     <span className={`w-1 h-1 rounded-full ${
                       deviceOnlineStatus === 'online' 
-                        ? (deviceStatus.on_call ? 'bg-amber-500 animate-ping' : 'bg-emerald-500') 
+                        ? (deviceStatus.on_call ? 'bg-amber-500' : 'bg-emerald-500') 
                         : 'bg-gray-400'
                     }`} />
                     <span className="text-[11px] font-bold text-gray-700 leading-none">
                       {deviceOnlineStatus === 'online' 
-                        ? (deviceStatus.on_call 
-                            ? (deviceStatus.calling_status ? `In Call (${deviceStatus.calling_status})` : 'In Call') 
-                            : 'Online') 
+                        ? (deviceStatus.on_call ? 'In Call' : 'Online') 
                         : 'Offline'}
                     </span>
                   </div>
                 </div>
+                
+               
               </div>
             )}
 
