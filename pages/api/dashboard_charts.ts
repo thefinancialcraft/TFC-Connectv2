@@ -790,6 +790,8 @@ async function fetchMostUsedCampaigns(
       .map(id => `users.cs.[{"user_id":"${id}"}]`)
       .join(',');
     campQuery = campQuery.or(orFilter);
+  } else if (options?.filterUserId && options.filterUserId !== 'all') {
+    campQuery = campQuery.contains('users', `[{"user_id":"${options.filterUserId}"}]`);
   }
 
   const { data: campaigns, error: campErr } = await campQuery.limit(35);
