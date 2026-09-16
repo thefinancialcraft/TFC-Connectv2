@@ -942,133 +942,156 @@ export default async function handler(
       if (filterUser?.employee_id) filterEmployeeId = filterUser.employee_id;
     }
 
-    // --- DIRECT AGGREGATION STRATEGY (Bypassing RPC timeout) ---
+    // --- HIGH PERFORMANCE OPTIMIZED CALL (RPC) ---
     try {
-      const logs = await fetchAllRows(dbClient, "call_history", "timestamp, duration, call_type, employee_id", {
-        orgId: targetOrgId,
-        startDate: start,
-        endDate: end,
-        dateColumn: "timestamp",
-        employeeId: filterEmployeeId || restrictedEmployeeIds,
-        maxLimit: 15000,
-      });
+      console.log('🚀 [Performance] Attempting optimized database RPC call for Charts...');
+      
+      const rpcParams = {
+        p_start_date: start,
+        p_end_date: end,
+        p_org_id: targetOrgId || null,
+        p_filter_user_id: (filterUserId && filterUserId !== 'all') ? filterUserId : null,
+        p_restricted_user_ids: (restrictedUserIds && restrictedUserIds.length > 0) ? restrictedUserIds : null,
+        p_filter_employee_id: filterEmployeeId || null,
+        p_restricted_employee_ids: (restrictedEmployeeIds && restrictedEmployeeIds.length > 0) ? restrictedEmployeeIds : null
+      };
 
-      console.log(`[Dashboard Charts] Directly aggregated ${logs.length} call records for range: ${start} to ${end}`);
+      const [chartsRes, campaignRes] = await Promise.all([
+        dbClient.rpc('get_dashboard_charts_optimized', rpcParams),
+        dbClient.rpc('get_campaign_breakdown_optimized', {
+          p_start_date: start,
+          p_end_date: end,
+          p_org_id: targetOrgId || null,
+          p_restricted_user_ids: (restrictedUserIds && restrictedUserIds.length > 0) ? restrictedUserIds : null,
+          p_filter_user_id: (filterUserId && filterUserId !== 'all') ? filterUserId : null
+        })
+      ]);
 
-        // 1. Process Chart Data (Trend) — from call_logs (CRM activity, same as Activity tab)
-        const crmLogsForTrend = await fetchAllRows(dbClient, "call_logs", "created_at, duration, agent_id", {
-          orgId: targetOrgId,
-          startDate: start,
-          endDate: end,
-          dateColumn: "created_at",
-          userId: filterUserId && filterUserId !== 'all' ? filterUserId as string : restrictedUserIds,
-          maxLimit: 15000,
-        });
+      if (chartsRes.error) throw chartsRes.error;
+      if (campaignRes.error) throw campaignRes.error;
 
-        const trendMap: Record<string, ChartPoint> = {};
-        crmLogsForTrend.forEach((log: any) => {
-          const date = new Date(log.created_at).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" });
-          if (!trendMap[date]) trendMap[date] = { name: date, dials: 0, connected: 0 };
-          trendMap[date].dials++;
-          if ((log.duration || 0) > 0) trendMap[date].connected++;
-        });
-        const chartData = Object.values(trendMap).sort((a, b) => a.name.localeCompare(b.name));
+      const chartsData = chartsRes.data || {};
+      const campaignData = campaignRes.data || [];
 
-        // 2. Process Hourly Stats
-        const hourMap: Record<string, HourlyStatPoint> = {};
-        for (let i = 6; i <= 23; i++) {
-          const label = `${i > 12 ? i - 12 : (i === 0 ? 12 : i)} ${i >= 12 ? "PM" : "AM"}`;
-          hourMap[label] = { hour: label, total: 0, connected: 0, outgoing: 0, incoming: 0, missed: 0, talktime: 0 };
-        }
-
-        logs.forEach(log => {
-          const istHourStr = new Date(log.timestamp).toLocaleString("en-US", { 
-            hour: 'numeric', 
-            hour12: true, 
-            timeZone: "Asia/Kolkata" 
-          });
-          const label = istHourStr.replace(/^0/, '');
-          if (hourMap[label]) {
-            hourMap[label].total++;
-            if (log.duration > 0) hourMap[label].connected++;
-            if (log.call_type === 'outgoing') hourMap[label].outgoing++;
-            else if (log.call_type === 'incoming') hourMap[label].incoming++;
-            hourMap[label].talktime += (log.duration || 0);
+      // Reconstruct hourlyStats to ensure all hours between 6 AM and 11 PM exist
+      const hourMap: Record<string, HourlyStatPoint> = {};
+      for (let i = 6; i <= 23; i++) {
+        const label = `${i > 12 ? i - 12 : (i === 0 ? 12 : i)} ${i >= 12 ? "PM" : "AM"}`;
+        hourMap[label] = { hour: label, total: 0, connected: 0, outgoing: 0, incoming: 0, missed: 0, talktime: 0 };
+      }
+      
+      if (Array.isArray(chartsData.hourlyStats)) {
+        chartsData.hourlyStats.forEach((stat: any) => {
+          // RPC returns hour_label like "9 AM" or "10 PM". Remove leading 0 if any.
+          const cleanLabel = stat.hour_label?.replace(/^0/, '');
+          if (cleanLabel && hourMap[cleanLabel]) {
+            hourMap[cleanLabel] = {
+              hour: cleanLabel,
+              total: stat.total || 0,
+              connected: stat.connected || 0,
+              outgoing: stat.outgoing || 0,
+              incoming: stat.incoming || 0,
+              missed: stat.missed || 0,
+              talktime: stat.talktime || 0
+            };
           }
-        });
-
-        // 3. Process Heatmap Data
-        const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        const heatmapData: HeatmapDataPoint[] = days.map(day => {
-          const point: HeatmapDataPoint = { day };
-          for (let i = 6; i <= 23; i++) {
-            const label = `${i > 12 ? i - 12 : (i === 0 ? 12 : i)} ${i >= 12 ? "PM" : "AM"}`;
-            point[label] = 0;
-          }
-          return point;
-        });
-
-        logs.forEach(log => {
-          const date = new Date(log.timestamp);
-          let dayIndex = date.getDay() - 1;
-          if (dayIndex < 0) dayIndex = 6;
-          const hour = date.getHours();
-          if (hour >= 6 && hour <= 23 && dayIndex >= 0 && dayIndex < 7) {
-            const label = `${hour > 12 ? hour - 12 : (hour === 0 ? 12 : hour)} ${hour >= 12 ? "PM" : "AM"}`;
-            (heatmapData[dayIndex] as any)[label]++;
-          }
-        });
-
-        // 4. Pie Data
-        const callLogs = await fetchAllRows(dbClient, "call_logs", "disposition", {
-          orgId: targetOrgId,
-          startDate: start,
-          endDate: end,
-          userId: filterUserId || restrictedUserIds,
-          maxLimit: 10000,
-        });
-
-        const dispMap: Record<string, number> = {};
-        callLogs.forEach(l => {
-          const d = l.disposition || "Unknown";
-          dispMap[d] = (dispMap[d] || 0) + 1;
-        });
-        const pieData = Object.entries(dispMap)
-          .map(([name, value]) => ({ name, value }))
-          .sort((a, b) => b.value - a.value)
-          .slice(0, 10);
-
-        const fallbackCampaignFilterOptions = {
-          startDate: start,
-          endDate: end,
-          filterUserId: (filterUserId && filterUserId !== 'all') ? (filterUserId as string) : undefined,
-          filterEmployeeId,
-          restrictedUserIds,
-          restrictedEmployeeIds,
-        };
-
-        const resolvedCampaigns = await fetchMostUsedCampaigns(dbClient, targetOrgId, fallbackCampaignFilterOptions);
-
-        return res.status(200).json({
-          success: true,
-          data: {
-            chartData,
-            pieData,
-            campaignData: resolvedCampaigns,
-            heatmapData,
-            hourlyStats: Object.values(hourMap),
-            isFallback: true,
-            processingTime: Date.now() - startTime
-          }
-        });
-
-      } catch (fallbackErr: any) {
-        console.error("Dashboard charts fallback error:", fallbackErr);
-        return res.status(500).json({ 
-          success: false, 
-          error: "Database statement timeout. Try a smaller date range or contact support to optimize your database indexes." 
         });
       }
+
+      // Reconstruct heatmapData to ensure Mon-Sun format is preserved for frontend
+      const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+      const heatmapMap: Record<string, HeatmapDataPoint> = {};
+      days.forEach(day => {
+        const point: HeatmapDataPoint = { day };
+        for (let i = 6; i <= 23; i++) {
+          const label = `${i > 12 ? i - 12 : (i === 0 ? 12 : i)} ${i >= 12 ? "PM" : "AM"}`;
+          point[label] = 0;
+        }
+        heatmapMap[day] = point;
+      });
+
+      // The new RPC heatmap returns day labels like "Mon 15", "Tue 16". We extract the Mon-Sun part.
+      if (Array.isArray(chartsData.heatmapData)) {
+        chartsData.heatmapData.forEach((stat: any) => {
+          const dayName = stat.day ? stat.day.substring(0, 3) : "";
+          if (heatmapMap[dayName]) {
+            // The RPC currently returns 2-hour slots, but the frontend expects 1-hour slots. 
+            // We map the 2-hour slots across the matching 1-hour slots to prevent blank heatmaps.
+            const mapSlot = (keys: string[], val: number) => {
+              const perHour = Math.floor(val / keys.length);
+              keys.forEach(k => { heatmapMap[dayName][k] = (heatmapMap[dayName][k] as number) + perHour; });
+            };
+            
+            if (stat["8 AM - 10 AM"]) mapSlot(["8 AM", "9 AM"], stat["8 AM - 10 AM"]);
+            if (stat["10 AM - 12 PM"]) mapSlot(["10 AM", "11 AM"], stat["10 AM - 12 PM"]);
+            if (stat["12 PM - 2 PM"]) mapSlot(["12 PM", "1 PM"], stat["12 PM - 2 PM"]);
+            if (stat["2 PM - 4 PM"]) mapSlot(["2 PM", "3 PM"], stat["2 PM - 4 PM"]);
+            if (stat["4 PM - 6 PM"]) mapSlot(["4 PM", "5 PM"], stat["4 PM - 6 PM"]);
+            if (stat["6 PM - 8 PM"]) mapSlot(["6 PM", "7 PM"], stat["6 PM - 8 PM"]);
+            if (stat["8 PM - 10 PM"]) mapSlot(["8 PM", "9 PM"], stat["8 PM - 10 PM"]);
+          }
+        });
+      }
+
+      // Ensure campaignData has top-level aggregated metrics for the UI table
+      let totalAllCampaignDials = 0;
+      if (Array.isArray(campaignData)) {
+        campaignData.forEach((camp: any) => {
+          let cDialed = 0;
+          let cConnected = 0;
+          let cDisposed = 0;
+          let cAssigned = 0;
+          let cFresh = 0;
+          
+          if (Array.isArray(camp.userBreakdown)) {
+            camp.userBreakdown.forEach((u: any) => {
+              cDialed += (u.dialedLeads || 0);
+              cConnected += (u.connectedLeads || 0);
+              cDisposed += (u.disposedLeads || 0);
+              cAssigned += (u.assignedLeads || 0);
+              cFresh += (u.freshLeads || 0);
+            });
+          }
+
+          camp.dialedLeads = cDialed;
+          camp.connectedLeads = cConnected;
+          camp.disposedLeads = cDisposed;
+          camp.totalLeads = cAssigned;
+          camp.freshLeads = cFresh;
+          camp.connectedConversion = cDialed > 0 ? `${((cConnected / cDialed) * 100).toFixed(1)}%` : "0.0%";
+          
+          totalAllCampaignDials += cDialed;
+        });
+
+        // Second pass for utilizationRate and sorting
+        campaignData.forEach((camp: any) => {
+          camp.utilizationRate = totalAllCampaignDials > 0 ? `${((camp.dialedLeads / totalAllCampaignDials) * 100).toFixed(1)}%` : "0.0%";
+        });
+        
+        campaignData.sort((a: any, b: any) => (b.dialedLeads || 0) - (a.dialedLeads || 0));
+      }
+
+      const endTime = Date.now();
+      console.log(`✅ [Performance] Dashboard Charts RPC Success - Duration: ${endTime - startTime}ms`);
+
+      return res.status(200).json({
+        success: true,
+        data: {
+          chartData: chartsData.chartData || [],
+          pieData: chartsData.pieData || [],
+          heatmapData: Object.values(heatmapMap),
+          hourlyStats: Object.values(hourMap),
+          campaignData: campaignData,
+          processingTime: endTime - startTime
+        }
+      });
+    } catch (err: any) {
+      console.error('Dashboard charts RPC error:', err);
+      return res.status(500).json({ 
+        success: false, 
+        error: err.message || 'Internal server error' 
+      });
+    }
   } catch (error: any) {
     console.error("Fatal Dashboard charts API error:", error);
     return res.status(500).json({ success: false, error: error.message || "Internal server error" });

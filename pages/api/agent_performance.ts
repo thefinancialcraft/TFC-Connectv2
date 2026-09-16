@@ -48,69 +48,6 @@ interface AgentPerformanceResponse {
  */
 // getDateRange moved to lib/dateUtils.ts
 
-/**
- * Helper function to fetch ALL rows (bypasses 1000 row limit)
- */
-async function fetchAllRows(
-  client: any,
-  table: string,
-  selectQuery: string,
-  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string; userId?: string | string[]; employeeId?: string | string[] }
-) {
-  const BATCH_SIZE = 1000;
-  let allData: any[] = [];
-  let from = 0;
-  let hasMore = true;
-  const dateCol = filters.dateColumn || "created_at";
-
-  while (hasMore) {
-    let query = client.from(table).select(selectQuery).range(from, from + BATCH_SIZE - 1);
-
-    if (filters.orgId && table !== 'call_history') {
-       query = query.eq("organization_id", filters.orgId);
-    }
-    // Apply user filters
-    if (filters.userId && (table === 'customers' || table === 'user_profiles')) {
-      if (Array.isArray(filters.userId)) {
-        query = query.in(table === 'customers' ? 'assigned_to' : 'user_id', filters.userId);
-      } else {
-        query = query.eq(table === 'customers' ? 'assigned_to' : 'user_id', filters.userId);
-      }
-    }
-    if (filters.employeeId && table === 'call_history') {
-      if (Array.isArray(filters.employeeId)) {
-        query = query.in('employee_id', filters.employeeId);
-      } else {
-        query = query.eq('employee_id', filters.employeeId);
-      }
-    }
-
-    if (filters.startDate) {
-      query = query.gte(dateCol, filters.startDate);
-    }
-    if (filters.endDate) {
-      query = query.lte(dateCol, filters.endDate);
-    }
-
-    const { data, error } = await query;
-
-    if (error) throw error;
-    if (!data || data.length === 0) {
-      hasMore = false;
-      break;
-    }
-
-    allData = [...allData, ...data];
-
-    if (data.length < BATCH_SIZE) {
-      hasMore = false;
-    } else {
-      from += BATCH_SIZE;
-    }
-  }
-
-  return allData;
-}
 
 export default async function handler(
   req: NextApiRequest,

@@ -67,7 +67,7 @@ export interface UseDashboardChartsReturn {
   hourlyStats: HourlyStatPoint[];
   loading: boolean;
   error: string | null;
-  fetchChartData: (orgId?: string | null, dateFilter?: string, customRange?: { start: string; end: string }, userId?: string | null, restrictedUserIds?: string[] | null) => Promise<void>;
+  fetchChartData: (orgId?: string | null, dateFilter?: string, customRange?: { start: string; end: string }, userId?: string | null, restrictedUserIds?: string[] | null, isGhostUpdate?: boolean) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -104,18 +104,20 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
   }, []);
 
   const fetchChartData = useCallback(
-    async (orgId?: string | null, dateFilter: string = "this_month", customRange?: { start: string; end: string }, userId?: string | null, restrictedUserIds?: string[] | null) => {
+    async (orgId?: string | null, dateFilter: string = "this_month", customRange?: { start: string; end: string }, userId?: string | null, restrictedUserIds?: string[] | null, isGhostUpdate: boolean = false) => {
       const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
 
-      const cached = cacheRef.current[cacheKey];
-      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-        setChartData(cached.data.chartData);
-        setPieData(cached.data.pieData);
-        setHeatmapData(cached.data.heatmapData);
-        setCampaignData(cached.data.campaignData);
-        setHourlyStats(cached.data.hourlyStats);
-        loading && setLoading(false);
-        return;
+      if (!isGhostUpdate) {
+        const cached = cacheRef.current[cacheKey];
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+          setChartData(cached.data.chartData);
+          setPieData(cached.data.pieData);
+          setHeatmapData(cached.data.heatmapData);
+          setCampaignData(cached.data.campaignData);
+          setHourlyStats(cached.data.hourlyStats);
+          setLoading(false); // Ensure loading is false if cache hit
+          return;
+        }
       }
 
       if (abortControllerRef.current) {
@@ -125,14 +127,14 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
       abortControllerRef.current = controller;
 
       try {
-        setLoading(true);
+        if (!isGhostUpdate) setLoading(true);
         setError(null);
 
         // Wait for session
         const session = await ensureValidSession();
 
         if (!session) {
-            setLoading(false);
+            if (!isGhostUpdate) setLoading(false);
             return;
         }
 
@@ -186,14 +188,13 @@ export function useDashboardCharts(): UseDashboardChartsReturn {
         setError(err.message || "Unknown error");
       } finally {
         if (controller.signal.aborted) {
-             // Do nothing
-         } else {
-             // Only turn off loading if THIS was the active request
-             if (abortControllerRef.current === controller) {
-                setLoading(false);
-                abortControllerRef.current = null;
-             }
-         }
+          // Do nothing
+        } else {
+          setLoading(false);
+          if (abortControllerRef.current === controller) {
+            abortControllerRef.current = null;
+          }
+        }
       }
     },
     []

@@ -627,8 +627,8 @@ export default function ProspectTab({
             </div>
 
             {/* Compact Progress Legend with Reduced Bar Width */}
-            <div className="w-full sm:max-w-[210px] space-y-2.5 min-w-0">
-              {validPieData.slice(0, 4).map((item, idx) => (
+            <div className="w-full sm:max-w-[210px] space-y-2.5 min-w-0 max-h-[165px] overflow-y-auto pr-1 custom-scrollbar">
+              {validPieData.map((item, idx) => (
                 <div key={idx} className="space-y-1">
                   <div className="flex items-center justify-between text-[11px]">
                     <span className="flex items-center gap-1.5 truncate text-gray-600 font-medium">

@@ -38,7 +38,7 @@ export interface UseDashboardStatsReturn {
   performanceMetrics: PerformanceMetrics;
   loading: boolean;
   error: string | null;
-  fetchStats: (orgId?: string | null, dateFilter?: string, userId?: string | null, restrictedUserIds?: string[] | null) => Promise<void>;
+  fetchStats: (orgId?: string | null, dateFilter?: string, userId?: string | null, restrictedUserIds?: string[] | null, isGhostUpdate?: boolean) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -99,17 +99,19 @@ export function useDashboardStats(): UseDashboardStatsReturn {
   }, []);
 
   const fetchStats = useCallback(
-    async (orgId?: string | null, dateFilter: string = "this_month", userId?: string | null, restrictedUserIds?: string[] | null) => {
+    async (orgId?: string | null, dateFilter: string = "this_month", userId?: string | null, restrictedUserIds?: string[] | null, isGhostUpdate: boolean = false) => {
       const cacheKey = `${orgId || 'all'}-${dateFilter}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
       
-      // Check cache
-      const cached = cacheRef.current[cacheKey];
-      if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
-        setStats(cached.data.stats);
-        setSecondaryStats(cached.data.secondaryStats);
-        setPerformanceMetrics(cached.data.performanceMetrics);
-        loading && setLoading(false); // Ensure loading is false if cache hit
-        return;
+      // Check cache (skip if ghost update to force fresh data)
+      if (!isGhostUpdate) {
+        const cached = cacheRef.current[cacheKey];
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+          setStats(cached.data.stats);
+          setSecondaryStats(cached.data.secondaryStats);
+          setPerformanceMetrics(cached.data.performanceMetrics);
+          setLoading(false); // Ensure loading is false if cache hit
+          return;
+        }
       }
 
       // Cancel previous request
@@ -120,14 +122,14 @@ export function useDashboardStats(): UseDashboardStatsReturn {
       abortControllerRef.current = controller;
 
       try {
-        setLoading(true);
+        if (!isGhostUpdate) setLoading(true);
         setError(null);
 
         // Wait for session using the robust helper (handles hydration race conditions)
         const session = await ensureValidSession();
 
         if (!session) {
-            setLoading(false);
+            if (!isGhostUpdate) setLoading(false);
             return; // Graceful exit on session expiry
         }
 

@@ -29,6 +29,8 @@ import NewDashboard from "./dashboard_v2";
 
 
 
+let globalIsInitialDashboardLoad = true;
+
 export default function Dashboard() {
   const router = useRouter();
   const { user, mounted } = useUser();
@@ -305,18 +307,63 @@ export default function Dashboard() {
           userFilter = currentId || undefined;
       }
       
-      setIsDataRetrieving(true);
+      const isGhost = !globalIsInitialDashboardLoad;
+      
+      if (globalIsInitialDashboardLoad) {
+        setIsDataRetrieving(true);
+      }
 
-      // Fetch all data in parallel
+      // Fetch all data in parallel (Initial Load / Filter Change)
       Promise.all([
-        fetchStats(orgFilter, dateFilter, userFilter, restrictedUserIds),
-        fetchChartData(orgFilter, dateFilter, undefined, userFilter, restrictedUserIds),
-        fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter, restrictedUserIds),
+        fetchStats(orgFilter, dateFilter, userFilter, restrictedUserIds, isGhost),
+        fetchChartData(orgFilter, dateFilter, undefined, userFilter, restrictedUserIds, isGhost),
+        fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter, restrictedUserIds, isGhost),
       ]).finally(() => {
         setIsDataRetrieving(false);
+        globalIsInitialDashboardLoad = false;
       });
     }
   }, [selectedOrgId, selectedUserId, dateFilter, user?.uid, user?.organization_id, mounted, dashboardLevel, fetchStats, fetchChartData, fetchAgentPerformance, restrictedUserIds]);
+
+  const [refreshCountdown, setRefreshCountdown] = useState(180);
+
+  // Polling mechanism for "ghost updates" every 3 minutes
+  useEffect(() => {
+    if (!mounted || !user || isDataRetrieving || dashboardLevel === DashboardLevel.UNKNOWN) return;
+
+    setRefreshCountdown(180);
+
+    const interval = setInterval(() => {
+      let orgFilter = selectedOrgId === "all" ? undefined : selectedOrgId;
+      let userFilter = selectedUserId === "all" ? undefined : selectedUserId;
+      const currentId = user.uid || (user as any).id || (user as any).user_id;
+
+      if (dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN) {
+          orgFilter = user.organization_id || undefined;
+      }
+      if (dashboardLevel === DashboardLevel.LEVEL_4_AGENT_SALES) {
+          userFilter = currentId || undefined;
+      }
+
+      console.log("👻 [Dashboard] Triggering ghost update...");
+      Promise.all([
+        fetchStats(orgFilter, dateFilter, userFilter, restrictedUserIds, true),
+        fetchChartData(orgFilter, dateFilter, undefined, userFilter, restrictedUserIds, true),
+        fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter, restrictedUserIds, true),
+      ]).catch(err => console.error("Ghost update failed:", err));
+      
+      setRefreshCountdown(180);
+    }, 180000); // 180 seconds
+
+    const countdownTimer = setInterval(() => {
+      setRefreshCountdown((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => {
+      clearInterval(interval);
+      clearInterval(countdownTimer);
+    };
+  }, [mounted, user, isDataRetrieving, selectedOrgId, selectedUserId, dateFilter, dashboardLevel, restrictedUserIds, fetchStats, fetchChartData, fetchAgentPerformance]);
 
   const loading = isDataRetrieving || statsLoading || chartsLoading || agentLoading;
 
@@ -652,18 +699,13 @@ export default function Dashboard() {
               </div>
 
               <div className="flex items-center gap-2">
-                <button
-                    onClick={() => {
-                        const oid = selectedOrgId === "all" ? "all" : selectedOrgId;
-                        const uid = selectedUserId === "all" ? "all" : selectedUserId;
-                        const dFilter = dateFilter;
-                        window.open(`/dashboard_report?orgId=${oid}&userId=${uid}&dateFilter=${dFilter}`, '_blank');
-                    }}
-                    className="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-[#4b33e8] hover:border-[#4b33e8] transition-all"
-                    title="Generate Report"
+                <div 
+                    className="h-10 px-4 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-xs font-semibold text-gray-500 transition-all "
+                    title="Time until next background data refresh"
                 >
-                    <i className="fi flex fi-rr-print"></i>
-                </button>
+                    <i className="fi flex fi-rr-time-fast text-[#4b33e8] mr-2 text-sm"></i>
+                    {refreshCountdown}s
+                </div>
               </div>
             </div>
           </div>

@@ -25,7 +25,7 @@ export interface UseAgentPerformanceReturn {
   totalDuration: number;
   loading: boolean;
   error: string | null;
-  fetchAgentPerformance: (orgId?: string | null, dateFilter?: string, customRange?: { start: string; end: string }, force?: boolean, userId?: string | null, restrictedUserIds?: string[] | null) => Promise<void>;
+  fetchAgentPerformance: (orgId?: string | null, dateFilter?: string, customRange?: { start: string; end: string }, force?: boolean, userId?: string | null, restrictedUserIds?: string[] | null, isGhostUpdate?: boolean) => Promise<void>;
 }
 
 interface CacheEntry {
@@ -60,16 +60,18 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
   }, []);
 
   const fetchAgentPerformance = useCallback(
-    async (orgId?: string | null, dateFilter: string = "this_month", customRange?: { start: string; end: string }, force: boolean = false, userId?: string | null, restrictedUserIds?: string[] | null) => {
+    async (orgId?: string | null, dateFilter: string = "this_month", customRange?: { start: string; end: string }, force: boolean = false, userId?: string | null, restrictedUserIds?: string[] | null, isGhostUpdate: boolean = false) => {
       const cacheKey = `${orgId || 'all'}-${dateFilter}-${customRange ? JSON.stringify(customRange) : ''}-${userId || 'all'}-${restrictedUserIds ? restrictedUserIds.join(',') : 'none'}`;
 
-      const cached = globalCache[cacheKey];
-      if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
-        setAgentData(cached.data.agentData);
-        setTotalDials(cached.data.totalDials);
-        setTotalDuration(cached.data.totalDuration);
-        if (loading) setLoading(false);
-        return;
+      if (!isGhostUpdate) {
+        const cached = globalCache[cacheKey];
+        if (!force && cached && Date.now() - cached.timestamp < CACHE_TTL) {
+          setAgentData(cached.data.agentData);
+          setTotalDials(cached.data.totalDials);
+          setTotalDuration(cached.data.totalDuration);
+          setLoading(false); // Fix loading closure bug
+          return;
+        }
       }
 
       if (abortControllerRef.current) {
@@ -79,7 +81,7 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
       abortControllerRef.current = controller;
 
       try {
-        setLoading(true);
+        if (!isGhostUpdate) setLoading(true);
         setError(null);
 
         // Wait for session
@@ -138,17 +140,17 @@ export function useAgentPerformance(): UseAgentPerformanceReturn {
 
       } catch (err: any) {
         if (err.name === 'AbortError') return;
-        console.error("Agent Performance Fetch Error:", err);
-        setError(err.message || "Unknown error");
+        setError(err.message);
+        console.error("Agent Performance Error:", err);
       } finally {
-         if (controller.signal.aborted) {
-             // Do nothing
-         } else {
-             setLoading(false);
-             if (abortControllerRef.current === controller) {
-                abortControllerRef.current = null;
-             }
-         }
+        if (controller.signal.aborted) {
+          // Do nothing
+        } else {
+          setLoading(false);
+          if (abortControllerRef.current === controller) {
+            abortControllerRef.current = null;
+          }
+        }
       }
     },
     []

@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import { AgentDataPoint } from "../../hooks/useAgentPerformance";
 import { CampaignDataPoint, HourlyStatPoint, PieDataPoint } from "../../hooks/useDashboardCharts";
 import { supabase } from "../../lib/supabase";
+import { getISTDateRange } from "../../lib/dateUtils";
 
 interface EmployeeOverviewPanelProps {
   userId: string;
@@ -13,6 +14,8 @@ interface EmployeeOverviewPanelProps {
   hourlyStats: HourlyStatPoint[];
   pieData: PieDataPoint[];
   loading?: boolean;
+  dateFilter?: string;
+  organizationId?: string;
 }
 
 interface RecentCallLog {
@@ -45,6 +48,8 @@ export default function EmployeeOverviewPanel({
   hourlyStats = [],
   pieData = [],
   loading = false,
+  dateFilter = "today",
+  organizationId,
 }: EmployeeOverviewPanelProps) {
   // Self-fetched profile (fallback when parent hasn't loaded users yet)
   const [selfProfile, setSelfProfile] = useState<{ user_name: string; employee_id?: string; designation?: string } | null>(null);
@@ -95,6 +100,7 @@ export default function EmployeeOverviewPanel({
     const fetchExtraEmployeeData = async () => {
       try {
         setLoadingRecentLogs(true);
+        const { start, end } = getISTDateRange(dateFilter);
 
         // 1. Fetch Follow Ups, Overdues, Upcoming for this specific user & group by campaign_id
         const { data: customerFollowups } = await supabase
@@ -148,6 +154,8 @@ export default function EmployeeOverviewPanel({
             .from("call_logs")
             .select("id, customer_name, duration, disposition, sub_disposition, created_at, campaign_id")
             .eq("agent_id", userId)
+            .gte("created_at", start)
+            .lte("created_at", end)
             .order("created_at", { ascending: false })
             .limit(10);
 
@@ -167,6 +175,8 @@ export default function EmployeeOverviewPanel({
             .from("rejected_leads")
             .select("id, customer_name, rejection_reason, rejected_at")
             .eq("agent_id", userId)
+            .gte("rejected_at", start)
+            .lte("rejected_at", end)
             .order("rejected_at", { ascending: false })
             .limit(10);
 
@@ -186,6 +196,8 @@ export default function EmployeeOverviewPanel({
             .from("closed_deals")
             .select("id, customer_name, final_disposition, closed_at")
             .eq("agent_id", userId)
+            .gte("closed_at", start)
+            .lte("closed_at", end)
             .order("closed_at", { ascending: false })
             .limit(10);
 
@@ -252,7 +264,7 @@ export default function EmployeeOverviewPanel({
     return () => {
       isMounted = false;
     };
-  }, [userId, employeeCode]);
+  }, [userId, employeeCode, dateFilter]);
 
   // Find specific agent metrics from agentData
   const agent = useMemo(() => {
@@ -696,7 +708,7 @@ export default function EmployeeOverviewPanel({
           
           <div className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-[0_2px_10px_rgba(0,0,0,0.02)] flex flex-col h-full justify-between">
             
-            <div>
+            <div className="flex flex-col h-full">
               {/* Header */}
               <div className="flex items-center justify-between pb-3.5 border-b border-gray-100 mb-4">
                 <div className="flex items-center gap-2">
@@ -732,7 +744,7 @@ export default function EmployeeOverviewPanel({
                 <div>
                   <span className="text-[10px] text-[#787E9D] block">Top Disposition</span>
                   <span className="text-xs font-semibold text-[#263238] truncate block">
-                    {sortedDispositions[0] ? sortedDispositions[0].name : "None logged today"}
+                    {sortedDispositions[0] ? sortedDispositions[0].name : "None logged"}
                   </span>
                 </div>
                 <span className="text-base font-bold text-[#4b33e8] font-mono ml-2">
@@ -741,23 +753,23 @@ export default function EmployeeOverviewPanel({
               </div>
 
               {/* Call Dispositions Breakdown List */}
-              <div>
-                <div className="flex items-center justify-between text-xs font-semibold text-[#263238] mb-2.5">
+              <div className="mb-4 flex flex-col flex-1 min-h-0">
+                <div className="flex items-center justify-between text-xs font-semibold text-[#263238] mb-2.5 shrink-0">
                   <span>Disposition Breakdown</span>
                   <span className="text-[11px] text-[#787E9D] font-mono font-normal">call_logs</span>
                 </div>
 
-                <div className="space-y-2 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
+                <div className="space-y-2 flex-1 overflow-y-auto pr-1 custom-scrollbar">
                   {sortedDispositions.slice(0, 6).map((disp, idx) => {
                     const totalDisp = sortedDispositions.reduce((a, b) => a + (Number(b.value) || 0), 0) || 1;
                     const pct = Math.round(((Number(disp.value) || 0) / totalDisp) * 100);
                     return (
-                      <div key={idx} className="p-2 rounded-xl bg-gray-50/60 border border-gray-100">
-                        <div className="flex items-center justify-between text-xs mb-1">
+                      <div key={idx} className="p-3 rounded-xl bg-gray-50/60 border border-gray-100">
+                        <div className="flex items-center justify-between text-xs mb-1.5">
                           <span className="font-medium text-[#263238] truncate">{disp.name}</span>
                           <span className="font-mono font-semibold text-[#4b33e8]">{disp.value}</span>
                         </div>
-                        <div className="w-full h-1 bg-gray-200/70 rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-gray-200/70 rounded-full overflow-hidden">
                           <div
                             className="bg-[#4b33e8] h-full rounded-full transition-all duration-300"
                             style={{ width: `${pct}%` }}
@@ -768,14 +780,14 @@ export default function EmployeeOverviewPanel({
                   })}
                   {sortedDispositions.length === 0 && (
                     <div className="py-6 text-center text-xs text-[#787E9D]">
-                      No call logs recorded today
+                      No call logs recorded in selected period
                     </div>
                   )}
                 </div>
               </div>
 
               {/* Quick Summary Strip */}
-              <div className="mt-4 pt-3 border-t border-gray-100 space-y-1.5 text-xs">
+              <div className="mt-auto pt-3 border-t border-gray-100 space-y-1.5 text-xs">
                 <div className="flex items-center justify-between py-0.5">
                   <span className="text-[#787E9D]">Total Talktime:</span>
                   <span className="font-semibold text-[#263238] font-mono">{talktimeDisplay}</span>
