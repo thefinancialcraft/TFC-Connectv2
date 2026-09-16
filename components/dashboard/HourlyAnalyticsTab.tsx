@@ -114,7 +114,7 @@ export default function HourlyAnalyticsTab({
             <h3 className="font-bold text-[#263238] text-sm">
               Visit by Time
             </h3>
-            <i className="fi fi-rr-info text-[10px] text-gray-300"></i>
+            <i className="fi flex fi-rr-info text-[10px] text-gray-300"></i>
           </div>
           <div className="flex items-center gap-4">
             <span className="text-[10px] font-bold text-gray-400">

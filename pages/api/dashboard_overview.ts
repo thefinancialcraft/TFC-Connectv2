@@ -286,22 +286,27 @@ export default async function handler(
     }
 
     const fetchPromises = [
-      // 1. Total Customers (Count Only)
+      // 1. Total Customers (Unique leads disposed in call_logs during range)
+      // 2. Total Converted (Unique leads converted to Call Back in call_logs during range)
       (async () => {
-        let q = dbClient.from("customers").select("*", { count: "exact", head: true }).gte("created_at", range.start).lte("created_at", range.end);
+        let q = dbClient.from("call_logs").select("customer_id, disposition").gte("created_at", range.start).lte("created_at", range.end);
         if (targetOrgId) q = q.eq("organization_id", targetOrgId);
-        if (filterUserId && filterUserId !== 'all') q = q.eq('assigned_to', filterUserId);
-        else if (restrictedUserIds && restrictedUserIds.length > 0) q = q.in('assigned_to', restrictedUserIds);
-        const { count } = await q; return count || 0;
-      })(),
-      // 2. Total Converted (Count Only)
-      (async () => {
-        let q = dbClient.from("customers").select("*", { count: "exact", head: true }).gte("created_at", range.start).lte("created_at", range.end)
-          .or('disposition.ilike.%Sold%,disposition.ilike.%Success%,disposition.ilike.%Converted%,disposition.ilike.%Closed%');
-        if (targetOrgId) q = q.eq("organization_id", targetOrgId);
-        if (filterUserId && filterUserId !== 'all') q = q.eq('assigned_to', filterUserId);
-        else if (restrictedUserIds && restrictedUserIds.length > 0) q = q.in('assigned_to', restrictedUserIds);
-        const { count } = await q; return count || 0;
+        if (filterUserId && filterUserId !== 'all') q = q.eq('agent_id', filterUserId);
+        else if (restrictedUserIds && restrictedUserIds.length > 0) q = q.in('agent_id', restrictedUserIds);
+        const { data } = await q;
+        if (!data || data.length === 0) return { totalCust: 0, totalConv: 0 };
+        const uniqueAll = new Set<string>();
+        const uniqueCallbacks = new Set<string>();
+        data.forEach((r: any) => {
+          if (r.customer_id) {
+            uniqueAll.add(r.customer_id);
+            const disp = (r.disposition || '').toLowerCase();
+            if (disp === 'call back' || disp === 'callback') {
+              uniqueCallbacks.add(r.customer_id);
+            }
+          }
+        });
+        return { totalCust: uniqueAll.size, totalConv: uniqueCallbacks.size };
       })(),
       // 4. Total Dials (Count Only)
       (async () => {
@@ -394,13 +399,24 @@ export default async function handler(
         ]);
         return { fresh, totalRecs, followups, overdue };
       })(),
-      // Misc
+      // Misc: Active Campaigns + Team Count
       (async () => {
           let campQuery = dbClient.from("campaigns").select("*", { count: "exact", head: true }).eq("status", "active");
           if (targetOrgId) campQuery = campQuery.eq("organization_id", targetOrgId);
+          // TL: only count campaigns where any team member is assigned (same filter as campaign page)
+          if (restrictedUserIds && restrictedUserIds.length > 0) {
+            const orFilter = restrictedUserIds
+              .map(id => `users.cs.[{"user_id":"${id}"}]`)
+              .join(',');
+            campQuery = campQuery.or(orFilter);
+          }
 
           let teamQuery = dbClient.from("user_profiles").select("*", { count: "exact", head: true }).eq("approval_status", "approved");
           if (targetOrgId) teamQuery = teamQuery.eq("organization_id", targetOrgId);
+          // TL: only count their own team members
+          if (restrictedUserIds && restrictedUserIds.length > 0) {
+            teamQuery = teamQuery.in("user_id", restrictedUserIds);
+          }
 
           const [campaigns, team] = await Promise.all([campQuery, teamQuery]);
           return { campaigns: campaigns.count || 0, team: team.count || 0 };
@@ -409,23 +425,23 @@ export default async function handler(
 
     const results = await Promise.all(fetchPromises) as any[];
 
-    const totalCustomers = results[0];
-    const totalConverted = results[1];
+    const totalCustomers = results[0]?.totalCust || 0;
+    const totalConverted = results[0]?.totalConv || 0;
     const totalPremium = 0; 
-    const totalDials = results[2];
-    const totalTalktime = results[3];
-    const totalConnections = results[4];
-    const todayCallsCount = results[5].total;
-    const incomingCount = results[5].incoming;
-    const outgoingCount = results[5].outgoing;
-    const missedCount = results[5].missed;
+    const totalDials = results[1];
+    const totalTalktime = results[2];
+    const totalConnections = results[3];
+    const todayCallsCount = results[4].total;
+    const incomingCount = results[4].incoming;
+    const outgoingCount = results[4].outgoing;
+    const missedCount = results[4].missed;
     
-    const freshGlobalCount = results[6].fresh;
-    const allTimeRecords = results[6].totalRecs;
-    const allTimeFollowups = results[6].followups;
-    const allTimeOverdue = results[6].overdue;
-    const campaignsCount = results[7].campaigns;
-    const teamCount = results[7].team;
+    const freshGlobalCount = results[5].fresh;
+    const allTimeRecords = results[5].totalRecs;
+    const allTimeFollowups = results[5].followups;
+    const allTimeOverdue = results[5].overdue;
+    const campaignsCount = results[6].campaigns;
+    const teamCount = results[6].team;
     const allTimeConnections = 0; // Simplified for fallback
 
     return sendDashboardResponse(res, {

@@ -19,10 +19,36 @@ export interface HeatmapDataPoint {
   day: string;
   [key: string]: string | number;
 }
+export interface CampaignUserBreakdown {
+  userId?: string;
+  employeeId?: string;
+  userName: string;
+  assignedLeads?: number;
+  disposedLeads: number;
+  dialedLeads: number;
+  connectedLeads: number;
+  connectedConversion?: string;
+}
+
 export interface CampaignDataPoint {
+  id?: string;
   name: string;
-  total: number;
+  total: number; // Available Leads (customers table where campaign_id)
+  freshLeads?: number; // Fresh Leads (attempt_count = 0)
+  disposedLeads?: number; // Disposed Leads (CRM activity table today)
+  dialedLeads?: number; // Dialed Leads (mobile activity table call_history mapped to campaign)
+  connectedLeads?: number; // Connected Leads (dialed with duration > 0)
+  connectedConversion?: string; // Connected Conversion (connected / dialed * 100)
+  utilizationRate?: string; // Campaign Utilization compared to others (campaign dialed / all campaigns dialed * 100)
   success: number;
+  todayConnected?: number;
+  todayCalls?: number;
+  todayConnectedCalls?: number;
+  todayCustomers?: number;
+  todayRejected?: number;
+  todayDeals?: number;
+  totalLeads?: number;
+  userBreakdown?: CampaignUserBreakdown[];
 }
 export interface HourlyStatPoint {
   hour: string;

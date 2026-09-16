@@ -1125,7 +1125,13 @@ export default function CallingPage() {
                             .select('*')
                             .eq('id', idToFetch)
                             .limit(1);
-                        if (rDataRows && rDataRows[0]) foundCustomer = rDataRows[0];
+                        if (rDataRows && rDataRows[0]) {
+                            foundCustomer = {
+                                ...rDataRows[0],
+                                assigned_to: rDataRows[0].assigned_to || rDataRows[0].agent_id || null,
+                                _isFromRejectedLeads: true
+                            };
+                        }
                     }
                 }
             }
@@ -2244,28 +2250,49 @@ useEffect(() => {
             if (logError) throw logError;
 
             // 2. Perform Movement Logic or Update Status
-            // 2. Perform Movement Logic or Update Status
-            if (isRejected) {
-                // Move to rejected table and delete from customers
-                const { error: rejectError } = await supabase.rpc('move_to_rejected', {
-                    p_customer_id: customerId,
-                    p_agent_id: user?.uid,
-                    p_notes: notes,
-                    p_disposition: disposition,
-                    p_sub_disposition: subDisposition,
-                    p_phone_search_hash: customer?.phone_search_hash || computePhoneHash(decryptPhone(customer?.phone_no)),
-                    p_outcome: outcome
-                });
-                if (rejectError) throw rejectError;
+            const isFromRejected = Boolean(customer?._isFromRejectedLeads || customer?.rejected_at);
+            const targetCustomerId = customer?.customer_id || customer?.id || customerId;
 
-                // Ensure is_connected column is updated on rejected_leads
-                await supabase
-                    .from('rejected_leads')
-                    .update({ 
-                        is_connected: isConnected || 'contactable',
-                        ...(customer?.source_id ? { source_id: customer.source_id } : {})
-                    })
-                    .or(`id.eq.${customerId},customer_id.eq.${customerId}`);
+            if (isRejected) {
+                if (isFromRejected) {
+                    // Already in rejected_leads: update rejected_leads record directly
+                    const { error: rejectUpdateError } = await supabase
+                        .from('rejected_leads')
+                        .update({
+                            disposition: disposition,
+                            sub_disposition: subDisposition,
+                            notes: notes,
+                            outcome: outcome,
+                            is_connected: isConnected || 'contactable',
+                            last_called_at: now,
+                            updated_at: now,
+                            last_updated_by: user?.uid,
+                            ...(customer?.source_id ? { source_id: customer.source_id } : {})
+                        })
+                        .or(`id.eq.${customerId},customer_id.eq.${customerId}`);
+                    if (rejectUpdateError) throw rejectUpdateError;
+                } else {
+                    // Move to rejected table and delete from customers
+                    const { error: rejectError } = await supabase.rpc('move_to_rejected', {
+                        p_customer_id: customerId,
+                        p_agent_id: user?.uid,
+                        p_notes: notes,
+                        p_disposition: disposition,
+                        p_sub_disposition: subDisposition,
+                        p_phone_search_hash: customer?.phone_search_hash || computePhoneHash(decryptPhone(customer?.phone_no)),
+                        p_outcome: outcome
+                    });
+                    if (rejectError) throw rejectError;
+
+                    // Ensure is_connected column is updated on rejected_leads
+                    await supabase
+                        .from('rejected_leads')
+                        .update({ 
+                            is_connected: isConnected || 'contactable',
+                            ...(customer?.source_id ? { source_id: customer.source_id } : {})
+                        })
+                        .or(`id.eq.${customerId},customer_id.eq.${customerId}`);
+                }
 
                 fetchSchedules();
             } else if (isClosed) {
@@ -2280,6 +2307,14 @@ useEffect(() => {
                     p_outcome: outcome
                 });
                 if (closeError) throw closeError;
+
+                // If it came from rejected_leads, ensure it's deleted from rejected_leads
+                if (isFromRejected) {
+                    await supabase
+                        .from('rejected_leads')
+                        .delete()
+                        .or(`id.eq.${customerId},customer_id.eq.${customerId}`);
+                }
 
                 // Ensure is_connected column is updated on closed_deals
                 await supabase
@@ -2315,12 +2350,45 @@ useEffect(() => {
 
                 logStatus = 'active';
 
-                const { error: customerUpdateError } = await supabase
-                    .from('customers')
-                    .update(updatePayload)
-                    .eq('id', customerId);
+                if (isFromRejected) {
+                    // Restore from rejected_leads to customers table
+                    const {
+                        id: _rId,
+                        customer_id: _rCustId,
+                        agent_id: _rAgentId,
+                        rejected_at: _rRejectedAt,
+                        status: _rStatus,
+                        idx: _rIdx,
+                        _isFromRejectedLeads: _rFlag,
+                        ...commonFields
+                    } = customer || {};
 
-                if (customerUpdateError) throw customerUpdateError;
+                    const restoredCustomer = {
+                        ...commonFields,
+                        id: targetCustomerId,
+                        ...updatePayload
+                    };
+
+                    const { error: upsertError } = await supabase
+                        .from('customers')
+                        .upsert(restoredCustomer);
+
+                    if (upsertError) throw upsertError;
+
+                    // Delete from rejected_leads
+                    await supabase
+                        .from('rejected_leads')
+                        .delete()
+                        .or(`id.eq.${customerId},customer_id.eq.${customerId}`);
+                } else {
+                    const { error: customerUpdateError } = await supabase
+                        .from('customers')
+                        .update(updatePayload)
+                        .eq('id', customerId);
+
+                    if (customerUpdateError) throw customerUpdateError;
+                }
+
                 fetchSchedules();
             } else {
                 // Regular Update (Call Back, etc.)
@@ -2453,12 +2521,44 @@ Campaign: ${campaign?.name || campaignId}
 
                 logStatus = updatePayload.status;
 
-                const { error: customerUpdateError } = await supabase
-                    .from('customers')
-                    .update(updatePayload)
-                    .eq('id', customerId);
+                if (isFromRejected) {
+                    // Restore from rejected_leads to customers table
+                    const {
+                        id: _rId,
+                        customer_id: _rCustId,
+                        agent_id: _rAgentId,
+                        rejected_at: _rRejectedAt,
+                        status: _rStatus,
+                        idx: _rIdx,
+                        _isFromRejectedLeads: _rFlag,
+                        ...commonFields
+                    } = customer || {};
 
-                if (customerUpdateError) throw customerUpdateError;
+                    const restoredCustomer = {
+                        ...commonFields,
+                        id: targetCustomerId,
+                        ...updatePayload
+                    };
+
+                    const { error: upsertError } = await supabase
+                        .from('customers')
+                        .upsert(restoredCustomer);
+
+                    if (upsertError) throw upsertError;
+
+                    // Delete from rejected_leads
+                    await supabase
+                        .from('rejected_leads')
+                        .delete()
+                        .or(`id.eq.${customerId},customer_id.eq.${customerId}`);
+                } else {
+                    const { error: customerUpdateError } = await supabase
+                        .from('customers')
+                        .update(updatePayload)
+                        .eq('id', customerId);
+
+                    if (customerUpdateError) throw customerUpdateError;
+                }
 
                 // Success: Refresh schedules to show the newly added/removed callback
                 fetchSchedules();

@@ -18,9 +18,11 @@ import dynamic from "next/dynamic";
 
 // Dynamically import dashboard tabs to prevent Recharts SSR sizing issues
 const TopStats = dynamic(() => import("@/components/dashboard/TopStats"), { ssr: false });
+const EmployeeOverviewPanel = dynamic(() => import("@/components/dashboard/EmployeeOverviewPanel"), { ssr: false });
 const ProspectTab = dynamic(() => import("@/components/dashboard/ProspectTab"), { ssr: false });
 const AgentPerformanceTab = dynamic(() => import("@/components/dashboard/AgentPerformanceTab"), { ssr: false });
 const HourlyAnalyticsTab = dynamic(() => import("@/components/dashboard/HourlyAnalyticsTab"), { ssr: false });
+const DashboardLoadingSteps = dynamic(() => import("@/components/dashboard/DashboardLoadingSteps"), { ssr: false });
 
 // Modern Dashboard V2
 import NewDashboard from "./dashboard_v2";
@@ -44,15 +46,23 @@ export default function Dashboard() {
   const filterRef = useRef<HTMLDivElement>(null);
   const [syncedTotals, setSyncedTotals] = useState<{ totalDials: number; totalDuration: number } | null>(null);
   const [activeTab, setActiveTab] = useSessionState<string>("dash_activeTab", "prospect");
+
+  // Employee Quick Search State
+  const [showUserSearch, setShowUserSearch] = useState(false);
+  const [userQuery, setUserQuery] = useState("");
+  const userSearchRef = useRef<HTMLDivElement>(null);
   
   // Security Restrictions
   const [restrictedUserIds, setRestrictedUserIds] = useState<string[] | null>(null);
 
-  // Close filters when clicking outside
+  // Close popups when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (filterRef.current && !filterRef.current.contains(event.target as Node)) {
         setShowFilters(false);
+      }
+      if (userSearchRef.current && !userSearchRef.current.contains(event.target as Node)) {
+        setShowUserSearch(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -165,7 +175,7 @@ export default function Dashboard() {
       if (dashboardLevel === DashboardLevel.LEVEL_2_CLIENT_CEO && user?.organization_id) {
           const { data, error } = await supabase
               .from("user_profiles")
-              .select("user_id, user_name, role, designation")
+              .select("user_id, user_name, role, designation, employee_id")
               .eq("organization_id", user.organization_id)
               .neq("approval_status", "rejected")
               .order("user_name");
@@ -209,7 +219,7 @@ export default function Dashboard() {
 
         const { data, error } = await supabase
           .from("user_profiles")
-          .select("user_id, user_name, role, designation")
+          .select("user_id, user_name, role, designation, employee_id")
           .in("user_id", finalIds)
           .neq("approval_status", "rejected")
           .order("user_name");
@@ -226,7 +236,7 @@ export default function Dashboard() {
       // FALLBACK FOR LEVEL 1 (ADMIN)
       let queryBase = supabase
         .from("user_profiles")
-        .select("user_id, user_name, role, designation")
+        .select("user_id, user_name, role, designation, employee_id")
         .neq("approval_status", "rejected");
 
       let finalQuery = queryBase;
@@ -258,8 +268,9 @@ export default function Dashboard() {
     }
   }, [selectedOrgId, isUserLocked, dashboardLevel, mounted, user?.uid]);
 
-  // Date filter state
-  const [dateFilter, setDateFilter] = useSessionState<string>("dash_dateFilter", "today");
+  // Date filter state (defaults to "today", fallback to "today" if legacy "all_time" is in storage)
+  const [rawDateFilter, setDateFilter] = useSessionState<string>("dash_dateFilter_v2", "today");
+  const dateFilter = rawDateFilter === "all_time" ? "today" : rawDateFilter;
 
   useEffect(() => {
     if (mounted && user && dashboardLevel !== DashboardLevel.UNKNOWN) {
@@ -271,6 +282,9 @@ export default function Dashboard() {
       }
     }
   }, [mounted, user?.uid, dashboardLevel]);
+
+  // Full-page / Workspace Data Retrieval State
+  const [isDataRetrieving, setIsDataRetrieving] = useState(true);
 
   // Fetch all dashboard data when filters change
   useEffect(() => {
@@ -291,16 +305,20 @@ export default function Dashboard() {
           userFilter = currentId || undefined;
       }
       
+      setIsDataRetrieving(true);
+
       // Fetch all data in parallel
       Promise.all([
         fetchStats(orgFilter, dateFilter, userFilter, restrictedUserIds),
         fetchChartData(orgFilter, dateFilter, undefined, userFilter, restrictedUserIds),
         fetchAgentPerformance(orgFilter, dateFilter, undefined, false, userFilter, restrictedUserIds),
-      ]);
+      ]).finally(() => {
+        setIsDataRetrieving(false);
+      });
     }
   }, [selectedOrgId, selectedUserId, dateFilter, user?.uid, user?.organization_id, mounted, dashboardLevel, fetchStats, fetchChartData, fetchAgentPerformance, restrictedUserIds]);
 
-  const loading = statsLoading || chartsLoading || agentLoading;
+  const loading = isDataRetrieving || statsLoading || chartsLoading || agentLoading;
 
   useEffect(() => {
     if (!loading) {
@@ -323,14 +341,11 @@ export default function Dashboard() {
   return (
     <>
       <DashboardErrorBoundary>
-        {isInitialLoad && (statsLoading && chartsLoading && agentLoading) ? (
-          <div className="flex flex-col min-h-[80vh] items-center justify-center animate-in fade-in duration-300">
-            <div className="w-12 h-12 border-4 border-[#4b33e8] border-t-transparent rounded-full animate-spin"></div>
-            <p className="mt-4 text-[#263238] font-bold text-lg animate-pulse" style={{ fontFamily: "'Poppins', sans-serif" }}>
-              Loading Dashboard...
-            </p>
-            <p className="text-[#787E9D] text-sm font-medium mt-1">Please wait while we gather your statistics</p>
-          </div>
+        {loading ? (
+          <DashboardLoadingSteps 
+            isEmployeeSelect={Boolean(selectedUserId && selectedUserId !== "all")}
+            employeeName={users.find((u) => u.user_id === selectedUserId)?.user_name}
+          />
         ) : (
           <div className="container mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6 sm:space-y-8 max-w-[1400px]">
           {/* Header / Welcome Row */}
@@ -392,8 +407,8 @@ export default function Dashboard() {
                               </option>
                             ))}
                           </select>
-                          <i className="fi fi-rr-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                          <i className={`fi ${dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`}></i>
+                          <i className="fi flex fi-rr-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                          <i className={`fi flex ${dashboardLevel !== DashboardLevel.LEVEL_1_ADMIN ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`}></i>
                         </div>
                       </div>
 
@@ -422,8 +437,8 @@ export default function Dashboard() {
                               ))
                             )}
                           </select>
-                          <i className="fi fi-rr-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                          <i className={`fi ${isUserLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`}></i>
+                          <i className="fi flex fi-rr-user absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                          <i className={`fi flex ${isUserLocked ? 'fi-rr-lock' : 'fi-rr-angle-small-down'} absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none`}></i>
                         </div>
                       </div>
 
@@ -444,10 +459,9 @@ export default function Dashboard() {
                             <option value="last_month">Last Month</option>
                             <option value="this_year">1 Year</option>
                             <option value="multi_year">Multi-Year</option>
-                            <option value="all_time">All Time</option>
                           </select>
-                          <i className="fi fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-                          <i className="fi fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                          <i className="fi flex fi-rr-calendar absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                          <i className="fi flex fi-rr-angle-small-down absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
                         </div>
                       </div>
 
@@ -465,7 +479,7 @@ export default function Dashboard() {
                                 setSelectedOrgId(user?.organization_id || "all");
                                 setSelectedUserId("all");
                             }
-                            setDateFilter("all_time");
+                            setDateFilter("today");
                             setShowFilters(false);
                           }}
                           className="w-full py-2 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-xl text-xs font-bold transition-all"
@@ -473,6 +487,165 @@ export default function Dashboard() {
                           Reset Filters
                         </button>
                       </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Employee Quick Search Selector */}
+              <div className="relative" ref={userSearchRef}>
+                <button
+                  type="button"
+                  disabled={isUserLocked}
+                  onClick={() => {
+                    if (!isUserLocked) {
+                      setShowUserSearch(!showUserSearch);
+                      setUserQuery("");
+                    }
+                  }}
+                  className={`h-10 px-3.5 rounded-xl border flex items-center gap-2 transition-all font-semibold text-xs sm:text-sm max-w-[200px] sm:max-w-[240px] ${
+                    isUserLocked
+                      ? "border-gray-200 bg-gray-50 text-gray-500 cursor-not-allowed"
+                      : showUserSearch
+                      ? "border-[#4b33e8] bg-white ring-2 ring-[#4b33e8]/20 text-[#4b33e8]"
+                      : selectedUserId !== "all"
+                      ? "border-[#4b33e8]/40 bg-indigo-50/60 text-[#4b33e8] hover:bg-indigo-50"
+                      : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+                  }`}
+                  title={isUserLocked ? "User selection locked" : "Filter by Employee"}
+                >
+                  <i className={`fi flex ${isUserLocked ? "fi-rr-lock text-gray-400" : "fi-rr-user text-[#4b33e8]"} text-xs sm:text-sm`}></i>
+                  <span className="truncate">
+                    {isUserLocked
+                      ? user?.displayName || "Me"
+                      : selectedUserId === "all"
+                      ? dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES
+                        ? "All Team Members"
+                        : "All Employees"
+                      : (() => {
+                          const matched = users.find((u) => u.user_id === selectedUserId);
+                          if (!matched) return "Selected Employee";
+                          return matched.employee_id
+                            ? `${matched.user_name} (${matched.employee_id})`
+                            : matched.user_name || "Selected Employee";
+                        })()}
+                  </span>
+                  {!isUserLocked && (
+                    <i className={`fi flex fi-rr-angle-small-down text-gray-400 text-xs transition-transform duration-200 ${showUserSearch ? "rotate-180 text-[#4b33e8]" : ""}`}></i>
+                  )}
+                </button>
+
+                {/* Dropdown Popover with Search Input */}
+                {showUserSearch && !isUserLocked && (
+                  <div className="absolute left-0 sm:left-auto sm:right-0 top-full mt-2 w-[280px] sm:w-[320px] bg-white rounded-2xl shadow-xl border border-gray-100 p-2.5 z-[100] animate-in fade-in zoom-in duration-150 origin-top-left sm:origin-top-right">
+                    {/* Search Input */}
+                    <div className="relative mb-2">
+                      <i className="fi flex fi-rr-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                      <input
+                        type="text"
+                        value={userQuery}
+                        onChange={(e) => setUserQuery(e.target.value)}
+                        placeholder="Search name, code, designation..."
+                        autoFocus
+                        className="w-full pl-8 pr-7 py-2 bg-gray-50 border border-gray-100 rounded-xl text-xs font-medium text-[#263238] focus:outline-none focus:border-[#4b33e8] focus:bg-white transition-all"
+                      />
+                      {userQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setUserQuery("")}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-[10px]"
+                        >
+                          <i className="fi flex fi-rr-cross-small"></i>
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Users list */}
+                    <div className="max-h-60 overflow-y-auto space-y-0.5 custom-scrollbar pr-0.5">
+                      {/* All Users option */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedUserId("all");
+                          setShowUserSearch(false);
+                          setUserQuery("");
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-xl text-xs font-semibold flex items-center justify-between transition-colors ${
+                          selectedUserId === "all"
+                            ? "bg-[#4b33e8]/10 text-[#4b33e8]"
+                            : "text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        <span className="flex items-center gap-2">
+                          <i className="fi flex fi-rr-users-alt text-xs text-gray-400"></i>
+                          <span>{dashboardLevel === DashboardLevel.LEVEL_3_TL_SALES ? "All Team Members" : "All Employees"}</span>
+                        </span>
+                        {selectedUserId === "all" && (
+                          <i className="fi flex fi-rr-check text-xs text-[#4b33e8]"></i>
+                        )}
+                      </button>
+
+                      {/* Filtered Employee List */}
+                      {users
+                        .filter((u) => {
+                          if (!userQuery.trim()) return true;
+                          const name = (u.user_name || "").toLowerCase();
+                          const role = (u.role || "").toLowerCase();
+                          const desig = (u.designation || "").toLowerCase();
+                          const code = (u.employee_id || "").toLowerCase();
+                          const q = userQuery.toLowerCase().trim();
+                          return name.includes(q) || role.includes(q) || desig.includes(q) || code.includes(q);
+                        })
+                        .map((u) => {
+                          const isSelected = selectedUserId === u.user_id;
+                          return (
+                            <button
+                              key={u.user_id}
+                              type="button"
+                              onClick={() => {
+                                setSelectedUserId(u.user_id);
+                                setShowUserSearch(false);
+                                setUserQuery("");
+                              }}
+                              className={`w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition-colors ${
+                                isSelected
+                                  ? "bg-[#4b33e8]/10 text-[#4b33e8] font-semibold"
+                                  : "text-gray-700 hover:bg-gray-50"
+                              }`}
+                            >
+                              <div className="min-w-0 pr-2">
+                                <div className="flex items-center gap-1.5 flex-wrap">
+                                  <span className="truncate text-xs font-semibold text-[#263238]">{u.user_name || "Unknown User"}</span>
+                                  {u.employee_id && (
+                                    <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded bg-gray-100 text-gray-600 border border-gray-200/60">
+                                      {u.employee_id}
+                                    </span>
+                                  )}
+                                </div>
+                                {u.designation && (
+                                  <p className="text-[10px] text-gray-400 truncate mt-0.5">{u.designation}</p>
+                                )}
+                              </div>
+                              {isSelected && (
+                                <i className="fi flex fi-rr-check text-xs text-[#4b33e8] shrink-0"></i>
+                              )}
+                            </button>
+                          );
+                        })}
+
+                      {users.filter((u) => {
+                        if (!userQuery.trim()) return true;
+                        const name = (u.user_name || "").toLowerCase();
+                        const role = (u.role || "").toLowerCase();
+                        const desig = (u.designation || "").toLowerCase();
+                        const code = (u.employee_id || "").toLowerCase();
+                        const q = userQuery.toLowerCase().trim();
+                        return name.includes(q) || role.includes(q) || desig.includes(q) || code.includes(q);
+                      }).length === 0 && (
+                        <div className="py-6 text-center text-xs text-gray-400">
+                          No employee found
+                        </div>
+                      )}
                     </div>
                   </div>
                 )}
@@ -495,133 +668,119 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Top Stats Row (Only depends on stats and charts) */}
-          <TopStats 
-            stats={{
-              ...stats,
-              totalDials: syncedTotals ? syncedTotals.totalDials : stats.totalDials,
-              totalTalktime: syncedTotals ? syncedTotals.totalDuration : stats.totalTalktime,
-            }} 
-            chartData={chartData} 
-            loading={statsLoading || chartsLoading} 
-          />
-
-          {/* Team Management CTA (Compact Modern Look - Mobile Only) */}
-          {dashboardLevel !== DashboardLevel.LEVEL_4_AGENT_SALES && (
-            <div className="md:hidden relative overflow-hidden bg-gradient-to-r from-[#4b33e8] via-[#6366f1] to-[#8b5cf6] rounded-2xl p-4 sm:p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-xl shadow-indigo-100/20 group">
-              {/* Enhanced Graphic Patterns Layer */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-                {/* Tilted SVG Dotted Pattern */}
-                <div className="absolute inset-[-100%] opacity-[0.7] rotate-[-12deg]" 
-                    style={{ 
-                      backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='2' cy='2' r='1'/%3E%3C/g%3E%3C/svg%3E")`,
-                      backgroundRepeat: 'repeat'
-                    }}>
-                </div>
-                {/* Modern Abstract Shapes */}
-                <div className="absolute top-0 right-0 -mt-10 -mr-10 w-64 h-64 bg-white/20 rounded-full blur-[60px] animate-pulse"></div>
-                <div className="absolute -bottom-12 -left-12 w-48 h-48 bg-black/10 rounded-full blur-[50px]"></div>
-              </div>
-              
-              <div className="relative z-10 flex items-center gap-4">
-                <div className="w-11 h-11 rounded-xl bg-white/15 backdrop-blur-md flex items-center justify-center border border-white/20 hidden md:flex shrink-0">
-                  <i className="fi fi-rr-users-alt text-white text-lg"></i>
-                </div>
-                <div className="text-center sm:text-left">
-                  <h3 className="text-base sm:text-lg font-bold text-white leading-tight" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                    Empower Your Team’s Performance
-                  </h3>
-                  <p className="text-white/70 text-[10px] font-medium hidden lg:block tracking-wide">
-                    Real-time monitoring and workforce optimization simplified.
-                  </p>
-                </div>
-              </div>
-              
-              <button 
-                onClick={() => router.push("/portal/team")}
-                className="relative z-10 flex items-center gap-2.5 px-6 py-2.5 bg-white text-[#4b33e8] rounded-xl font-bold text-[11px] uppercase tracking-wider transition-all hover:shadow-lg hover:shadow-white/20 active:scale-95 shrink-0"
-              >
-                <span>Manage Team</span>
-                 </button>
+          {/* Conditional Rendering:
+              - When an individual employee is selected (selectedUserId !== "all"):
+                Remove all dashboard widgets, tabs, and overview tiles, and show ONLY the comprehensive EmployeeTilesGrid.
+              - When "all" is selected:
+                Show the full Overview Dashboard with TopStats, Segmented Tabs, ProspectTab, HourlyAnalyticsTab, and AgentPerformanceTab.
+          */}
+          {selectedUserId && selectedUserId !== "all" ? (
+            <div className="pt-2">
+              <EmployeeOverviewPanel
+                userId={selectedUserId}
+                userName={users.find((u) => u.user_id === selectedUserId)?.user_name || "Selected Employee"}
+                employeeCode={users.find((u) => u.user_id === selectedUserId)?.employee_id}
+                designation={users.find((u) => u.user_id === selectedUserId)?.designation}
+                agentData={agentData}
+                campaignData={campaignData}
+                hourlyStats={hourlyStats}
+                pieData={pieData}
+                loading={statsLoading || chartsLoading || agentLoading}
+              />
             </div>
+          ) : (
+            <>
+              <TopStats 
+                stats={{
+                  ...stats,
+                  totalDials: syncedTotals ? syncedTotals.totalDials : stats.totalDials,
+                  totalTalktime: syncedTotals ? syncedTotals.totalDuration : stats.totalTalktime,
+                }} 
+                secondaryStats={secondaryStats}
+                chartData={chartData}
+                hourlyStats={hourlyStats}
+                dateFilter={dateFilter}
+                loading={statsLoading || chartsLoading} 
+              />
+
+              {/* Analytics Segmented Toggle Selector - Equal Width Tabs with Smooth Sliding Underline */}
+              <div className="border-b border-gray-200 grid grid-cols-3 max-w-2xl text-sm font-medium relative mt-4 pt-2">
+                {[
+                  { id: "prospect", label: "Prospect Wise Analytics", short: "Prospects" },
+                  { id: "callDetails", label: "Call Hourly Analytics", short: "Hours" },
+                  { id: "agentPerf", label: "Agent Performance", short: "Agents" },
+                ].map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`pb-3 text-center transition-colors relative font-semibold text-xs sm:text-sm ${
+                        isActive ? "text-[#4b33e8]" : "text-gray-500 hover:text-gray-800"
+                      }`}
+                    >
+                      <span className="hidden sm:inline">{tab.label}</span>
+                      <span className="sm:hidden">{tab.short}</span>
+                    </button>
+                  );
+                })}
+                {/* Sliding Underline Indicator Line (Centered Compact Width) */}
+                <div 
+                  className="absolute bottom-0 h-0.5 bg-[#4b33e8] rounded-full transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+                  style={{
+                    width: '16.666%',
+                    left: activeTab === "prospect" ? '8.333%' : activeTab === "callDetails" ? '41.666%' : '75%'
+                  }}
+                />
+              </div>
+
+              {/* Tab Content Container with Smooth Fade & Slide Transition */}
+              <div className="transition-all duration-300">
+                {activeTab === "prospect" && (
+                  <div key="prospect" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
+                    <ProspectTab
+                      stats={stats}
+                      performanceMetrics={performanceMetrics}
+                      campaignData={campaignData}
+                      pieData={pieData}
+                      selectedOrgId={selectedOrgId}
+                      selectedUserId={selectedUserId}
+                      dateFilter={dateFilter}
+                      loading={statsLoading || chartsLoading}
+                    />
+                  </div>
+                )}
+
+                {activeTab === "agentPerf" && (
+                  <div key="agentPerf" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
+                    <AgentPerformanceTab
+                      agentData={agentData}
+                      totalDials={stats.totalDials}
+                      selectedOrgId={selectedOrgId}
+                      selectedUserId={selectedUserId}
+                      dateFilter={dateFilter}
+                      restrictedUserIds={restrictedUserIds}
+                      loading={agentLoading}
+                      onTotalsChange={setSyncedTotals}
+                    />
+                  </div>
+                )}
+
+                {activeTab === "callDetails" && (
+                  <div key="callDetails" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
+                    <HourlyAnalyticsTab
+                      heatmapData={heatmapData}
+                      hourlyStats={hourlyStats}
+                      selectedOrgId={selectedOrgId}
+                      selectedUserId={selectedUserId}
+                      dateFilter={dateFilter}
+                      loading={chartsLoading}
+                    />
+                  </div>
+                )}
+              </div>
+            </>
           )}
-
-          {/* Secondary Stats Grid (Only depends on stats) */}
-          <SecondaryStats stats={stats} secondaryStats={secondaryStats} loading={statsLoading} />
-
-          {/* Analytics Segmented Toggle Selector - Equal Width Tabs with Smooth Sliding Underline */}
-          <div className="border-b border-gray-200 grid grid-cols-3 max-w-2xl text-sm font-medium relative mt-4 pt-2">
-            {[
-              { id: "prospect", label: "Prospect Wise Analytics", short: "Prospects" },
-              { id: "callDetails", label: "Call Hourly Analytics", short: "Hours" },
-              { id: "agentPerf", label: "Agent Performance", short: "Agents" },
-            ].map((tab) => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`pb-3 text-center transition-colors relative font-semibold text-xs sm:text-sm ${
-                    isActive ? "text-[#4b33e8]" : "text-gray-500 hover:text-gray-800"
-                  }`}
-                >
-                  <span className="hidden sm:inline">{tab.label}</span>
-                  <span className="sm:hidden">{tab.short}</span>
-                </button>
-              );
-            })}
-            {/* Sliding Underline Indicator Line (Centered Compact Width) */}
-            <div 
-              className="absolute bottom-0 h-0.5 bg-[#4b33e8] rounded-full transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
-              style={{
-                width: '16.666%',
-                left: activeTab === "prospect" ? '8.333%' : activeTab === "callDetails" ? '41.666%' : '75%'
-              }}
-            />
-          </div>
-
-          {/* Tab Content Container with Smooth Fade & Slide Transition */}
-          <div className="transition-all duration-300">
-            {activeTab === "prospect" && (
-              <div key="prospect" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
-                <ProspectTab
-                  stats={stats}
-                  performanceMetrics={performanceMetrics}
-                  campaignData={campaignData}
-                  pieData={pieData}
-                  loading={statsLoading || chartsLoading}
-                />
-              </div>
-            )}
-
-            {activeTab === "agentPerf" && (
-              <div key="agentPerf" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
-                <AgentPerformanceTab
-                  agentData={agentData}
-                  totalDials={stats.totalDials}
-                  selectedOrgId={selectedOrgId}
-                  selectedUserId={selectedUserId}
-                  dateFilter={dateFilter}
-                  restrictedUserIds={restrictedUserIds}
-                  loading={agentLoading}
-                  onTotalsChange={setSyncedTotals}
-                />
-              </div>
-            )}
-
-            {activeTab === "callDetails" && (
-              <div key="callDetails" className="animate-in fade-in slide-in-from-bottom-2 duration-300 ease-out">
-                <HourlyAnalyticsTab
-                  heatmapData={heatmapData}
-                  hourlyStats={hourlyStats}
-                  selectedOrgId={selectedOrgId}
-                  selectedUserId={selectedUserId}
-                  dateFilter={dateFilter}
-                  loading={chartsLoading}
-                />
-              </div>
-            )}
-          </div>
 
         </div>
         )}

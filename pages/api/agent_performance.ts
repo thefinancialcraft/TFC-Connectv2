@@ -249,11 +249,10 @@ export default async function handler(
       start = startDate as string;
       end = endDate as string;
     } else {
-      const range = getISTDateRange(dateFilter as string);
-      if (dateFilter !== "all_time") {
-        start = range.start;
-        end = range.end;
-      }
+      const effectiveFilter = (!dateFilter || dateFilter === "all_time") ? "today" : (dateFilter as string);
+      const range = getISTDateRange(effectiveFilter);
+      start = range.start;
+      end = range.end;
     }
 
     // --- HIGH PERFORMANCE OPTIMIZED CALL (RPC) ---

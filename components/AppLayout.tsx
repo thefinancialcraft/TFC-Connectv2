@@ -162,7 +162,7 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
 
         {/* Main Page Content */}
         <main
-          className={`flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ${(!hideHeader && !isModernDashboardActive) ? 'pt-[60px] lg:pt-[70px]' : ''}`}
+          className={`flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full ${(!hideHeader && !isModernDashboardActive) ? 'pt-[60px]' : ''}`}
           style={{ backgroundColor: "#f6f5f7" }}
         >
           {children}

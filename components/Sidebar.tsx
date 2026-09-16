@@ -30,11 +30,9 @@ const Sidebar = memo(function Sidebar({
   activeNav = "dashboard", 
   onNavChange, 
   userRole, 
-  isSuperAdmin,
-  onLogout
+  isSuperAdmin
 }: SidebarProps) {
   const router = useRouter();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [mounted, setMounted] = useState(false);
   
   // Initialize with cached user data for ghost loading immediately
@@ -46,7 +44,7 @@ const Sidebar = memo(function Sidebar({
         displayName: cached.user_name || cached.displayName || null,
         email: cached.email || '',
         employeeId: cached.employee_id || null,
-        lastSignInAt: null, 
+        lastSignInAt: (cached as any).last_sign_in_at || (cached as any).lastSignInAt || null, 
         profilePicUrl: cached.profile_pic_url || null,
         isClient: cached.is_client,
         designation: cached.designation,
@@ -70,17 +68,6 @@ const Sidebar = memo(function Sidebar({
     return userRole === 'admin' || userRole === 'super_admin' || isSuperAdmin === true;
   }, [userRole, isSuperAdmin]);
 
-  // Stable logout handler
-  const handleLogout = useCallback(async () => {
-    if (isLoggingOut || !onLogout) return;
-    setIsLoggingOut(true);
-    try {
-      onLogout();
-    } catch (err) {
-      console.error("Logout exception:", err);
-      setIsLoggingOut(false);
-    }
-  }, [isLoggingOut, onLogout]);
 
   // Memoize derived UI values
   const initials = useMemo(() => {
@@ -99,11 +86,12 @@ const Sidebar = memo(function Sidebar({
     if (user?.profilePicUrl) return user.profilePicUrl;
     return mounted ? cachedUser?.profilePicUrl : null;
   }, [mounted, user?.profilePicUrl, cachedUser?.profilePicUrl]);
-  
+
   const formattedLastLogin = useMemo(() => {
     const dateString = displayUser?.lastSignInAt;
     if (!dateString) return "Just now";
     const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "Just now";
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
@@ -215,12 +203,12 @@ const Sidebar = memo(function Sidebar({
       className="hidden lg:flex flex-col w-52 bg-white border-r fixed left-0 top-0 h-screen z-40"
       style={{ borderColor: "#E0E0E0" }}
     >
-      <div className="h-[70px] border-b flex items-center justify-center" style={{ borderColor: "#E0E0E0" }}>
+      <div className="h-[65px] flex items-center justify-center">
         <AppLogo />
       </div>
 
       {/* Navigation Items */}
-      <nav className="flex-1 p-3 space-y-1 overflow-y-auto" suppressHydrationWarning>
+      <nav className="flex-1 px-4 pt-6 pb-3 space-y-0.5 overflow-y-auto" suppressHydrationWarning>
         {navItems.length > 0 ? (
           navItems.map((item) => {
             const isOnPath = router.pathname.startsWith(item.path) || router.pathname.startsWith('/portal' + item.path);
@@ -232,18 +220,15 @@ const Sidebar = memo(function Sidebar({
                 key={item.path}
                 href={item.path}
                 onClick={() => handleNavClick(item.path)}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg transition-all duration-300 relative ${
+                className={`flex items-center gap-2.5 px-2 py-1.5 rounded-lg transition-all duration-300 ease-in-out relative group ${
                   isActive
-                    ? "text-white shadow-md"
-                    : "text-gray-600 hover:bg-gray-50"
+                    ? "text-[#4b33e8] bg-[#4b33e8]/[0.08]"
+                    : "text-gray-500 hover:text-gray-900 hover:bg-gray-50/70"
                 }`}
-                style={{
-                  backgroundColor: isActive ? "#4b33e8" : "transparent",
-                }}
               >
-                <i className={`fi ${item.icon} flex text-sm`}></i>
+                <i className={`fi ${item.icon} flex transition-all duration-300 ease-in-out ${isActive ? "text-[14px] text-[#4b33e8]" : "text-[12px] text-gray-500 group-hover:text-gray-900"}`}></i>
                 <span
-                  className="font-medium px-1.5 text-sm"
+                  className={`px-1 transition-all duration-300 ease-in-out ${isActive ? "text-[14px] font-semibold" : "text-[13px] font-medium"}`}
                   style={{ fontFamily: "'Poppins', sans-serif" }}
                 >
                   {item.name}
@@ -265,12 +250,12 @@ const Sidebar = memo(function Sidebar({
       {/* User Profile Card at Bottom */}
       <div className="p-3 border-t space-y-2" style={{ borderColor: "#E0E0E0", backgroundColor: "#FAFAFA" }}>
         <div
-          className="bg-white border rounded-lg p-3 shadow-sm hover:shadow-md transition-all duration-300"
+          className="bg-white border rounded-lg p-3"
           style={{ borderColor: "#E0E0E0" }}
         >
-          <div className="flex items-start gap-2.5 mb-3">
+          <div className="flex items-center gap-2.5">
             <div
-              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0  overflow-hidden"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm shrink-0 overflow-hidden"
               style={{
                 background: profilePicUrl ? "transparent" : "#4b33e8",
               }}
@@ -301,89 +286,17 @@ const Sidebar = memo(function Sidebar({
             </div>
           </div>
 
-          <div className="space-y-1.5 mb-3 pt-2 border-t" style={{ borderColor: "#E0E0E0" }}>
-            <div className="flex items-center justify-between text-xs">
-              <span style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
-                Employee ID:
-              </span>
-              <span
-                className="font-medium"
-                style={{ color: "#263238", fontFamily: "'Roboto', sans-serif" }}
-              >
-                {mounted ? (displayUser?.employeeId || "Not assigned") : "Not assigned"}
-              </span>
-            </div>
-            <div className="flex items-center justify-between text-xs">
-              <span style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
-                Last Login:
-              </span>
-              <span
-                className="font-medium"
-                style={{ color: "#263238", fontFamily: "'Roboto', sans-serif" }}
-              >
-                {formattedLastLogin}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => router.push('/settings')}
-              className="w-8 h-8 text-xs border rounded-lg transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                borderColor: "#DCDEE3",
-                backgroundColor: "#FFFFFF",
-                color: "#263238",
-                fontFamily: "'Poppins', sans-serif",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "#4b33e8";
-                e.currentTarget.style.backgroundColor = "#EEF2FF";
-                e.currentTarget.style.color = "#4b33e8";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "#DCDEE3";
-                e.currentTarget.style.backgroundColor = "#FFFFFF";
-                e.currentTarget.style.color = "#263238";
-              }}
-              title="Settings"
+          <div className="mt-2.5 pt-2 border-t flex items-center justify-between text-xs" style={{ borderColor: "#E0E0E0" }}>
+            <span style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>
+              Last Login:
+            </span>
+            <span
+              className="font-medium text-xs"
+              style={{ color: "#263238", fontFamily: "'Roboto', sans-serif" }}
+              title={displayUser?.lastSignInAt ? new Date(displayUser.lastSignInAt).toLocaleString() : undefined}
             >
-              <i className="fi flex fi-rr-settings text-sm"></i>
-            </button>
-            <button
-              onClick={handleLogout}
-              disabled={isLoggingOut}
-              className="flex-1 h-8 text-xs border rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{
-                borderColor: "#DCDEE3",
-                backgroundColor: "#FFFFFF",
-                color: "#263238",
-                fontFamily: "'Poppins', sans-serif",
-              }}
-              onMouseEnter={(e) => {
-                if (!isLoggingOut) {
-                  e.currentTarget.style.borderColor = "#EF4444";
-                  e.currentTarget.style.backgroundColor = "#FEE2E2";
-                  e.currentTarget.style.color = "#EF4444";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isLoggingOut) {
-                  e.currentTarget.style.borderColor = "#DCDEE3";
-                  e.currentTarget.style.backgroundColor = "#FFFFFF";
-                  e.currentTarget.style.color = "#263238";
-                }
-              }}
-            >
-              {isLoggingOut ? (
-                <div className="w-4 h-4 border-2 border-t-transparent border-current rounded-full animate-spin"></div>
-              ) : (
-                <>
-                  <i className="fi flex px-1 fi-rr-exit text-sm"></i>
-                  <span>Logout</span>
-                </>
-              )}
-            </button>
+              {formattedLastLogin}
+            </span>
           </div>
         </div>
       </div>
