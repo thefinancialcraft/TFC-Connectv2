@@ -28,6 +28,8 @@ export interface CampaignUserBreakdown {
   dialedLeads: number;
   connectedLeads: number;
   connectedConversion?: string;
+  followUps?: number;
+  overdueFollowups?: number;
 }
 
 export interface CampaignDataPoint {
@@ -48,6 +50,8 @@ export interface CampaignDataPoint {
   todayRejected?: number;
   todayDeals?: number;
   totalLeads?: number;
+  followUps?: number;
+  overdueFollowups?: number;
   userBreakdown?: CampaignUserBreakdown[];
 }
 export interface HourlyStatPoint {

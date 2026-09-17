@@ -48,6 +48,8 @@ interface CampaignUserBreakdown {
   dialedLeads: number;
   connectedLeads: number;
   connectedConversion?: string;
+  followUps?: number;
+  overdueFollowups?: number;
 }
 
 interface CampaignDataPoint {
@@ -60,6 +62,8 @@ interface CampaignDataPoint {
   todayRejected?: number;
   todayDeals?: number;
   totalLeads?: number;
+  followUps?: number;
+  overdueFollowups?: number;
   userBreakdown?: CampaignUserBreakdown[];
 }
 
@@ -101,7 +105,7 @@ async function fetchAllRows(
   client: any,
   table: string,
   selectQuery: string,
-  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string; userId?: string | string[]; employeeId?: string | string[]; maxLimit?: number }
+  filters: { orgId?: string; startDate?: string; endDate?: string; dateColumn?: string; userId?: string | string[]; employeeId?: string | string[]; maxLimit?: number; extraFilter?: (q: any) => any }
 ) {
   const BATCH_SIZE = 1000;
   let allData: any[] = [];
@@ -148,6 +152,10 @@ async function fetchAllRows(
     }
     if (filters.endDate) {
       query = query.lte(dateCol, filters.endDate);
+    }
+    
+    if (filters.extraFilter) {
+      query = filters.extraFilter(query);
     }
 
     const { data, error } = await query;
@@ -634,6 +642,45 @@ async function enrichCampaignsWithDetails(
       if (p.employee_id) userProfileByEmp[p.employee_id] = p;
     });
 
+    const followupCounts: Record<string, { total: number; overdue: number }> = {};
+    const userFollowupCounts: Record<string, { total: number; overdue: number }> = {};
+    try {
+      const followUpData = await fetchAllRows(
+        dbClient,
+        'customers',
+        'campaign_id, next_called_at, assigned_to',
+        {
+          userId: effectiveUserFilter,
+          extraFilter: (q: any) => q.in('disposition', ['Callback', 'Call Back', 'Follow Up', 'FollowUp'])
+        }
+      );
+      const nowTime = Date.now();
+      (followUpData || []).forEach((f: any) => {
+        if (f.campaign_id) {
+          if (!followupCounts[f.campaign_id]) {
+            followupCounts[f.campaign_id] = { total: 0, overdue: 0 };
+          }
+          followupCounts[f.campaign_id].total++;
+          const isOverdue = f.next_called_at && new Date(f.next_called_at).getTime() < nowTime;
+          if (isOverdue) {
+            followupCounts[f.campaign_id].overdue++;
+          }
+          if (f.assigned_to) {
+            const key = `${f.campaign_id}_${f.assigned_to}`;
+            if (!userFollowupCounts[key]) {
+              userFollowupCounts[key] = { total: 0, overdue: 0 };
+            }
+            userFollowupCounts[key].total++;
+            if (isOverdue) {
+              userFollowupCounts[key].overdue++;
+            }
+          }
+        }
+      });
+    } catch (e) {
+      console.error("Error fetching followups for campaign breakdown:", e);
+    }
+
     // Map into final enriched format
     return campaigns.map((c: any) => {
       const cid = c.id || nameToId[c.name];
@@ -692,9 +739,12 @@ async function enrichCampaignsWithDetails(
       const userBreakdown: CampaignUserBreakdown[] = Object.values(unifiedUserMap)
         .map(u => {
           const conv = u.dialedLeads > 0 ? `${((u.connectedLeads / u.dialedLeads) * 100).toFixed(1)}%` : "0.0%";
+          const key = `${cid}_${u.userId}`;
           return {
             ...u,
             connectedConversion: conv,
+            followUps: userFollowupCounts[key]?.total || 0,
+            overdueFollowups: userFollowupCounts[key]?.overdue || 0,
           };
         })
         .sort((a, b) => {
@@ -720,6 +770,8 @@ async function enrichCampaignsWithDetails(
         todayCustomers: s.todayConnectedCalls,
         todayRejected: s.todayRejected,
         todayDeals: s.todayDeals,
+        followUps: followupCounts[cid]?.total || 0,
+        overdueFollowups: followupCounts[cid]?.overdue || 0,
         userBreakdown,
       };
     }).sort((a: any, b: any) => {
@@ -972,6 +1024,79 @@ export default async function handler(
 
       const chartsData = chartsRes.data || {};
       const campaignData = campaignRes.data || [];
+
+      // Merge followUps into campaignData
+      try {
+        const cIds = campaignData.map((c: any) => c.id).filter(Boolean);
+        if (cIds.length > 0) {
+          let followUpQuery = dbClient
+            .from('customers')
+            .select('campaign_id, next_called_at, assigned_to')
+            .in('disposition', ['Callback', 'Call Back', 'Follow Up', 'FollowUp'])
+            .in('campaign_id', cIds);
+
+          // Apply user filter if applicable
+          if (filterUserId && filterUserId !== 'all') {
+            followUpQuery = followUpQuery.eq('assigned_to', filterUserId);
+          } else if (restrictedUserIds && restrictedUserIds.length > 0) {
+            followUpQuery = followUpQuery.in('assigned_to', restrictedUserIds);
+          }
+          
+          const { data: followUpsData, error: followUpsError } = await followUpQuery;
+
+          if (!followUpsError && followUpsData) {
+            const nowTime = Date.now();
+            const followupCounts: Record<string, { total: number; overdue: number }> = {};
+            const userFollowupCounts: Record<string, { total: number; overdue: number }> = {};
+            
+            followUpsData.forEach((f: any) => {
+              if (f.campaign_id) {
+                if (!followupCounts[f.campaign_id]) {
+                  followupCounts[f.campaign_id] = { total: 0, overdue: 0 };
+                }
+                followupCounts[f.campaign_id].total++;
+                const isOverdue = f.next_called_at && new Date(f.next_called_at).getTime() < nowTime;
+                
+                if (isOverdue) {
+                  followupCounts[f.campaign_id].overdue++;
+                }
+                
+                if (f.assigned_to) {
+                  const key = `${f.campaign_id}_${f.assigned_to}`;
+                  if (!userFollowupCounts[key]) {
+                    userFollowupCounts[key] = { total: 0, overdue: 0 };
+                  }
+                  userFollowupCounts[key].total++;
+                  if (isOverdue) {
+                    userFollowupCounts[key].overdue++;
+                  }
+                }
+              }
+            });
+
+            campaignData.forEach((camp: any) => {
+              camp.followUps = followupCounts[camp.id]?.total || 0;
+              camp.overdueFollowups = followupCounts[camp.id]?.overdue || 0;
+              
+              if (Array.isArray(camp.userBreakdown)) {
+                camp.userBreakdown.forEach((u: any) => {
+                  const userId = u.userId;
+                  if (userId) {
+                    const key = `${camp.id}_${userId}`;
+                    u.followUps = userFollowupCounts[key]?.total || 0;
+                    u.overdueFollowups = userFollowupCounts[key]?.overdue || 0;
+                  } else {
+                    u.followUps = 0;
+                    u.overdueFollowups = 0;
+                  }
+                });
+              }
+            });
+          }
+        }
+      } catch(e) {
+        console.error("Failed to merge followUps into RPC results:", e);
+      }
 
       // Reconstruct hourlyStats to ensure all hours between 6 AM and 11 PM exist
       const hourMap: Record<string, HourlyStatPoint> = {};

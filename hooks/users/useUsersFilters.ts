@@ -22,7 +22,7 @@ export function useUsersFilters(
     designation: "" as any,
     work_type: "",
     user_type: "",
-    status: "",
+    status: "active",
     organization_id: "",
     is_client: "",
     is_caller: "",

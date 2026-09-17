@@ -243,7 +243,7 @@ export function UsersFilters({
                         designation: "",
                         work_type: "",
                         user_type: "",
-                        status: "",
+                        status: "active",
                         organization_id: "",
                         is_client: "",
                         is_caller: "",

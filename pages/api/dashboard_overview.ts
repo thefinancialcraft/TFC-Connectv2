@@ -258,7 +258,13 @@ export default async function handler(
       const totalConnections = rpcStats.totalConnections || 0;
       const todayCallsCount = rpcStats.todayCalls || 0;
       const campaignsCount = rpcStats.activeCampaigns || 0;
-      const teamCount = rpcStats.teamCount || 0;
+      // Overriding RPC team count to strictly count 'active' users
+      let teamCountQuery = dbClient.from('user_profiles').select('*', { count: 'exact', head: true }).eq('status', 'active');
+      if (targetOrgId) teamCountQuery = teamCountQuery.eq('organization_id', targetOrgId);
+      if (restrictedUserIds && restrictedUserIds.length > 0) teamCountQuery = teamCountQuery.in('user_id', restrictedUserIds);
+      
+      const { count: activeTeamCount } = await teamCountQuery;
+      const teamCount = activeTeamCount !== null ? activeTeamCount : (rpcStats.teamCount || 0);
       const freshGlobalCount = rpcStats.freshGlobalCount || 0;
       const allTimeRecords = rpcStats.allTimeRecords || 0;
       const allTimeFollowups = rpcStats.allTimeFollowups || 0;

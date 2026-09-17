@@ -1005,6 +1005,12 @@ export default function ProspectTab({
                       <th className="px-3 py-2.5 text-center text-gray-600" title="Assigned leads for this user in this campaign">
                         Assigned Leads
                       </th>
+                      <th className="px-3 py-2.5 text-center text-amber-600" title="Total Follow Ups for this user">
+                        Follow Ups
+                      </th>
+                      <th className="px-3 py-2.5 text-center text-red-600" title="Overdue Follow Ups for this user">
+                        Overdue
+                      </th>
                       <th className="px-3 py-2.5 text-center text-purple-600" title="Disposed leads handled today in CRM Activity">
                         Disposed Leads
                       </th>
@@ -1041,7 +1047,7 @@ export default function ProspectTab({
                       if (filteredUsers.length === 0) {
                         return (
                           <tr>
-                            <td colSpan={8} className="px-4 py-12 text-center text-gray-400">
+                            <td colSpan={10} className="px-4 py-12 text-center text-gray-400">
                               <div className="flex flex-col items-center justify-center space-y-2">
                                 <i className="fi flex fi-rr-user text-2xl text-gray-300"></i>
                                 <p className="text-xs font-semibold text-gray-500">No user activity found</p>
@@ -1092,6 +1098,16 @@ export default function ProspectTab({
                             {/* 3. Assigned Leads */}
                             <td className="px-3 py-2.5 text-center font-mono font-medium text-gray-700">
                               {assignedCount.toLocaleString()}
+                            </td>
+
+                            {/* Follow Ups */}
+                            <td className="px-3 py-2.5 text-center font-mono font-medium text-gray-700">
+                              {Number(userItem.followUps || 0).toLocaleString()}
+                            </td>
+
+                            {/* Overdue */}
+                            <td className="px-3 py-2.5 text-center font-mono font-medium text-red-600">
+                              {Number(userItem.overdueFollowups || 0).toLocaleString()}
                             </td>
 
                             {/* 4. Disposed Leads */}
@@ -1204,6 +1220,12 @@ export default function ProspectTab({
                       <th className="px-3 py-2.5 text-center text-emerald-600" title="Leads with 0 call attempts">
                         Fresh Leads
                       </th>
+                      <th className="px-3 py-2.5 text-center text-amber-600" title="Total Follow Ups scheduled">
+                        Follow Ups
+                      </th>
+                      <th className="px-3 py-2.5 text-center text-red-600" title="Overdue Follow Ups">
+                        Overdue
+                      </th>
                       <th className="px-3 py-2.5 text-center text-purple-600" title="Handled leads today from CRM Activity table">
                         Disposed Leads
                       </th>
@@ -1224,7 +1246,7 @@ export default function ProspectTab({
                   <tbody className="divide-y divide-gray-50 text-gray-700">
                     {filteredCampaigns.length === 0 ? (
                       <tr>
-                        <td colSpan={9} className="px-4 py-12 text-center text-gray-400">
+                        <td colSpan={11} className="px-4 py-12 text-center text-gray-400">
                           <div className="flex flex-col items-center justify-center space-y-2">
                             <i className="fi flex fi-rr-search-alt text-2xl text-gray-300"></i>
                             <p className="text-xs font-semibold text-gray-500">No campaigns found</p>
@@ -1292,6 +1314,16 @@ export default function ProspectTab({
                             {/* 4. Fresh Leads */}
                             <td className="px-3 py-2.5 text-center font-mono font-medium text-gray-700">
                               {freshNum.toLocaleString()}
+                            </td>
+
+                            {/* Follow Ups */}
+                            <td className="px-3 py-2.5 text-center font-mono font-medium text-gray-700">
+                              {(camp.followUps || 0).toLocaleString()}
+                            </td>
+
+                            {/* Overdue */}
+                            <td className="px-3 py-2.5 text-center font-mono font-medium text-red-600">
+                              {(camp.overdueFollowups || 0).toLocaleString()}
                             </td>
 
                             {/* 5. Disposed Leads */}
