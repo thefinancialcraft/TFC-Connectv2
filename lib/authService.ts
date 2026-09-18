@@ -40,6 +40,7 @@ export interface UserProfile {
   designation?: string | null;
   department?: string | null;
   organization_id?: string | null;
+  super_admin?: boolean | null;
   user_level?: number | string | null;
 }
 
@@ -116,6 +117,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       holdStartDate: profileData?.hold_start_date || null,
       holdEndDate: profileData?.hold_end_date || null,
       organization_id: profileData?.organization_id || null,
+      super_admin: profileData?.super_admin ?? false,
     };
 
     return {

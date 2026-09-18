@@ -71,21 +71,49 @@ interface UserDetail {
   joined_at?: string | null;
   renewal_at?: string | null;
   expire_at?: string | null;
+  is_caller?: boolean | null;
+  designation?: string | null;
 }
 function UserProfilePage() {
     const router = useRouter();
     const { userId } = router.query;
     const { user: currentUser, mounted: userMounted, loading: authLoading } = useUser();
 
+    const isCeo = currentUser?.designation?.toLowerCase() === 'ceo';
+    // Internal team requires ALL 3 conditions to match simultaneously:
+    // 1. is_client === false (Non-Client)
+    // 2. organization_id === null / empty (No client organization assigned)
+    // 3. super_admin === true (or role === 'super admin')
+    const isInternalTeam = Boolean(
+      currentUser?.isClient === false &&
+      (!currentUser?.organization_id || currentUser?.organization_id === null) &&
+      (currentUser?.super_admin === true || currentUser?.role?.toLowerCase() === 'super admin')
+    );
+
+    const isInternalOrCeo = Boolean(isCeo || isInternalTeam);
+
     const [userDetail, setUserDetail] = useState<UserDetail | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [mounted, setMounted] = useState(false);
-    const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
+    const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents" | "security">("basic_info");
     const [uploadingAvatar, setUploadingAvatar] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const [isEditMode, setIsEditMode] = useState(false);
     const [editFormData, setEditFormData] = useState<any>({});
+    
+    // Security Tab States
+    const [securityStatus, setSecurityStatus] = useState<"active" | "inactive">("active");
+    const [securityIsCaller, setSecurityIsCaller] = useState<boolean>(false);
+    const [securityRole, setSecurityRole] = useState<"user" | "admin" | "super admin">("user");
+    const [securityDesignation, setSecurityDesignation] = useState<string>("agent");
+    const [securityUserName, setSecurityUserName] = useState<string>("");
+    const [securityEmail, setSecurityEmail] = useState<string>("");
+    const [securityPassword, setSecurityPassword] = useState<string>("");
+    const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [savingSecurity, setSavingSecurity] = useState<boolean>(false);
+    const [deletingUser, setDeletingUser] = useState<boolean>(false);
+
     const [accountModal, setAccountModal] = useState<{
       isOpen: boolean;
       type: 'session_expired' | 'account_expired' | 'account_issue';
@@ -207,12 +235,23 @@ function UserProfilePage() {
           email: profileData.email || currentUser?.email || '',
           profilePicUrl: profileData.profile_pic_url || null,
           is_client: profileData.is_client,
+          is_caller: profileData.is_caller,
+          designation: profileData.designation,
           joined_at: profileData.joined_at,
           renewal_at: profileData.renewal_at,
           expire_at: profileData.expire_at,
         };
 
         setUserDetail(detail);
+
+        // Populate Security Form States
+        setSecurityStatus(profileData.status === "inactive" ? "inactive" : "active");
+        setSecurityIsCaller(profileData.is_caller === true);
+        setSecurityRole(profileData.super_admin ? "super admin" : (profileData.role === "admin" ? "admin" : (profileData.role === "super admin" ? "super admin" : "user")));
+        setSecurityDesignation(profileData.designation || "agent");
+        setSecurityUserName(profileData.user_name || "");
+        setSecurityEmail(profileData.email || "");
+        setSecurityPassword("");
         // Initialize edit form data
         setEditFormData({
           email: profileData.email || "",
@@ -447,6 +486,117 @@ function UserProfilePage() {
     }
   };
 
+  // Security Save Handler
+  const handleSaveSecurity = async () => {
+    try {
+      setSavingSecurity(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        alert("Please log in to update security settings");
+        return;
+      }
+
+      if (securityPassword && securityPassword.trim().length < 6) {
+        alert("Password must be at least 6 characters long");
+        return;
+      }
+
+      const payload = {
+        targetUserId: userId, // user_profiles.id
+        status: securityStatus,
+        is_caller: securityIsCaller,
+        role: securityRole,
+        designation: securityDesignation,
+        user_name: securityUserName,
+        email: securityEmail,
+        ...(securityPassword && securityPassword.trim() ? { password: securityPassword.trim() } : {}),
+      };
+
+      const response = await fetch("/api/auth/admin-update-security", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+      if (!response.ok || data.error) {
+        alert(data.error || "Failed to update security settings");
+        return;
+      }
+
+      alert("Security settings updated successfully!");
+      setSecurityPassword(""); // Clear password field after save
+
+      // Refresh user profile
+      const { data: updatedProfile } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (updatedProfile) {
+        setUserDetail((prev: any) => prev ? {
+          ...prev,
+          ...updatedProfile,
+          status: updatedProfile.status,
+          is_caller: updatedProfile.is_caller,
+          role: updatedProfile.role,
+          super_admin: updatedProfile.super_admin,
+          designation: updatedProfile.designation,
+          user_name: updatedProfile.user_name,
+          displayName: updatedProfile.user_name,
+          email: updatedProfile.email,
+        } : null);
+      }
+    } catch (err: any) {
+      console.error("Error updating security settings:", err);
+      alert(err.message || "An error occurred while updating security settings");
+    } finally {
+      setSavingSecurity(false);
+    }
+  };
+
+  // User Deletion Handler
+  const handleDeleteUserAccount = async () => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to permanently delete user "${userDetail?.user_name || userDetail?.email || 'this user'}"?\n\nThis will remove their profile, delete login credentials from auth, and clear team & call assignments. This action CANNOT be undone!`
+    );
+    if (!confirmDelete) return;
+
+    try {
+      setDeletingUser(true);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        alert("Please log in to delete this user");
+        return;
+      }
+
+      const response = await fetch(`/api/auth/delete-user?userId=${userId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      const data = await response.json();
+      if (!response.ok || data.error) {
+        alert(data.error || "Failed to delete user");
+        return;
+      }
+
+      alert("User deleted successfully!");
+      router.push("/users");
+    } catch (err: any) {
+      console.error("Error deleting user:", err);
+      alert(err.message || "An error occurred while deleting user");
+    } finally {
+      setDeletingUser(false);
+    }
+  };
+
   // Don't render anything until mounted and on client side to prevent hydration errors
   if (typeof window === 'undefined' || !mounted) {
     return null;
@@ -529,6 +679,7 @@ function UserProfilePage() {
                                 { id: "kyc_info", label: "KYC", icon: "fi-rr-shield-check" },
                                 { id: "bank_info", label: "Bank Details", icon: "fi-rr-credit-card" },
                                 { id: "documents", label: "Documents", icon: "fi-rr-file" },
+                                ...(isInternalOrCeo ? [{ id: "security", label: "Security", icon: "fi-rr-lock" }] : []),
                             ].map((category) => (
                                 <button
                                     key={category.id}
@@ -624,53 +775,55 @@ function UserProfilePage() {
                             >
                                 <i className="fi flex fi-rr-copy text-sm"></i>
                             </button>
-                            <button
-                                onClick={() => {
-                                    setIsEditMode(true);
-                                    // Initialize edit form data with current user data
-                                    setEditFormData({
-                                        email: userDetail.email || "",
-                                        user_name: userDetail.user_name || "",
-                                        contact_no: userDetail.contact_no || "",
-                                        employee_id: userDetail.employee_id || "",
-                                        role: userDetail.role || "",
-                                        father_name: userDetail.father_name || "",
-                                        gender: userDetail.gender || "",
-                                        date_of_birth: userDetail.date_of_birth || "",
-                                        blood_group: userDetail.blood_group || "",
-                                        alternate_contact: userDetail.alternate_contact || "",
-                                        emergency_contact_no: userDetail.emergency_contact_no || "",
-                                        date_of_joining: userDetail.date_of_joining || "",
-                                        in_hand_salary: userDetail.in_hand_salary?.toString() || "",
-                                        primary_address: userDetail.primary_address || "",
-                                        area_pincode: userDetail.area_pincode || "",
-                                        pan_number: userDetail.pan_number || "",
-                                        aadhar_card_no: userDetail.aadhar_card_no || "",
-                                        bank_name: userDetail.bank_name || "",
-                                        account_holder_name: userDetail.account_holder_name || "",
-                                        account_number: userDetail.account_number || "",
-                                        ifsc_code: userDetail.ifsc_code || "",
-                                        branch_city: userDetail.branch_city || "",
-                                        branch_state: userDetail.branch_state || "",
-                                        branch_pincode: userDetail.branch_pincode || "",
-                                        profile_pic_url: userDetail.profile_pic_url || "",
-                                        pancard_url: userDetail.pancard_url || "",
-                                        aadhar_front_url: userDetail.aadhar_front_url || "",
-                                        aadhar_back_url: userDetail.aadhar_back_url || "",
-                                        qualification_marksheet_url: userDetail.qualification_marksheet_url || "",
-                                        bank_passbook_url: userDetail.bank_passbook_url || "",
-                                        // Client Lifecycle
-                                        is_client: userDetail.is_client !== undefined ? String(userDetail.is_client) : "false",
-                                        joined_at: userDetail.joined_at ? userDetail.joined_at.split('T')[0] : "",
-                                        renewal_at: userDetail.renewal_at ? userDetail.renewal_at.split('T')[0] : "",
-                                        expire_at: userDetail.expire_at ? userDetail.expire_at.split('T')[0] : "",
-                                    });
-                                }}
-                                className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#4b33e8] text-white hover:opacity-90 transition-colors"
-                                title="Edit profile"
-                            >
-                                <i className="fi flex fi-rr-edit text-sm"></i>
-                            </button>
+                            {activeCategory !== "security" && (
+                              <button
+                                  onClick={() => {
+                                      setIsEditMode(true);
+                                      // Initialize edit form data with current user data
+                                      setEditFormData({
+                                          email: userDetail.email || "",
+                                          user_name: userDetail.user_name || "",
+                                          contact_no: userDetail.contact_no || "",
+                                          employee_id: userDetail.employee_id || "",
+                                          role: userDetail.role || "",
+                                          father_name: userDetail.father_name || "",
+                                          gender: userDetail.gender || "",
+                                          date_of_birth: userDetail.date_of_birth || "",
+                                          blood_group: userDetail.blood_group || "",
+                                          alternate_contact: userDetail.alternate_contact || "",
+                                          emergency_contact_no: userDetail.emergency_contact_no || "",
+                                          date_of_joining: userDetail.date_of_joining || "",
+                                          in_hand_salary: userDetail.in_hand_salary?.toString() || "",
+                                          primary_address: userDetail.primary_address || "",
+                                          area_pincode: userDetail.area_pincode || "",
+                                          pan_number: userDetail.pan_number || "",
+                                          aadhar_card_no: userDetail.aadhar_card_no || "",
+                                          bank_name: userDetail.bank_name || "",
+                                          account_holder_name: userDetail.account_holder_name || "",
+                                          account_number: userDetail.account_number || "",
+                                          ifsc_code: userDetail.ifsc_code || "",
+                                          branch_city: userDetail.branch_city || "",
+                                          branch_state: userDetail.branch_state || "",
+                                          branch_pincode: userDetail.branch_pincode || "",
+                                          profile_pic_url: userDetail.profile_pic_url || "",
+                                          pancard_url: userDetail.pancard_url || "",
+                                          aadhar_front_url: userDetail.aadhar_front_url || "",
+                                          aadhar_back_url: userDetail.aadhar_back_url || "",
+                                          qualification_marksheet_url: userDetail.qualification_marksheet_url || "",
+                                          bank_passbook_url: userDetail.bank_passbook_url || "",
+                                          // Client Lifecycle
+                                          is_client: userDetail.is_client !== undefined ? String(userDetail.is_client) : "false",
+                                          joined_at: userDetail.joined_at ? userDetail.joined_at.split('T')[0] : "",
+                                          renewal_at: userDetail.renewal_at ? userDetail.renewal_at.split('T')[0] : "",
+                                          expire_at: userDetail.expire_at ? userDetail.expire_at.split('T')[0] : "",
+                                      });
+                                  }}
+                                  className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#4b33e8] text-white hover:opacity-90 transition-colors"
+                                  title="Edit profile"
+                              >
+                                  <i className="fi flex fi-rr-edit text-sm"></i>
+                              </button>
+                            )}
                         </div>
                     </div>
 
@@ -732,59 +885,324 @@ function UserProfilePage() {
                             {activeCategory === "kyc_info" && "KYC Information"}
                             {activeCategory === "bank_info" && "Bank Details"}
                             {activeCategory === "documents" && "Documents"}
+                            {activeCategory === "security" && "Security & Access Controls"}
                         </h3>
 
-                        {/* Form Fields - Compact */}
-                        <div className="[&>div]:space-y-1.5 [&_label]:text-xs [&_input]:h-8 [&_input]:text-xs [&_input]:px-2.5 [&_input]:py-1.5 [&_select]:h-8 [&_select]:text-xs [&_select]:px-2.5 [&_select]:py-1.5 [&_textarea]:text-xs [&_textarea]:px-2.5 [&_textarea]:py-1.5">
-                            <SettingsFormFields
-                                formData={isEditMode ? editFormData : {
-                                    email: userDetail.email || "",
-                                    user_name: userDetail.user_name || "",
-                                    contact_no: userDetail.contact_no || "",
-                                    employee_id: userDetail.employee_id || "",
-                                    role: userDetail.role || "",
-                                    father_name: userDetail.father_name || "",
-                                    gender: userDetail.gender || "",
-                                    date_of_birth: userDetail.date_of_birth || "",
-                                    blood_group: userDetail.blood_group || "",
-                                    alternate_contact: userDetail.alternate_contact || "",
-                                    emergency_contact_no: userDetail.emergency_contact_no || "",
-                                    date_of_joining: userDetail.date_of_joining || "",
-                                    in_hand_salary: userDetail.in_hand_salary?.toString() || "",
-                                    primary_address: userDetail.primary_address || "",
-                                    area_pincode: userDetail.area_pincode || "",
-                                    pan_number: userDetail.pan_number || "",
-                                    aadhar_card_no: userDetail.aadhar_card_no || "",
-                                    bank_name: userDetail.bank_name || "",
-                                    account_holder_name: userDetail.account_holder_name || "",
-                                    account_number: userDetail.account_number || "",
-                                    ifsc_code: userDetail.ifsc_code || "",
-                                    branch_city: userDetail.branch_city || "",
-                                    branch_state: userDetail.branch_state || "",
-                                    branch_pincode: userDetail.branch_pincode || "",
-                                    profile_pic_url: userDetail.profile_pic_url || "",
-                                    pancard_url: userDetail.pancard_url || "",
-                                    aadhar_front_url: userDetail.aadhar_front_url || "",
-                                    aadhar_back_url: userDetail.aadhar_back_url || "",
-                                    qualification_marksheet_url: userDetail.qualification_marksheet_url || "",
-                                    bank_passbook_url: userDetail.bank_passbook_url || "",
-                                    // Client Lifecycle
-                                    is_client: userDetail.is_client !== undefined ? String(userDetail.is_client) : "false",
-                                    joined_at: userDetail.joined_at ? userDetail.joined_at.split('T')[0] : "",
-                                    renewal_at: userDetail.renewal_at ? userDetail.renewal_at.split('T')[0] : "",
-                                    expire_at: userDetail.expire_at ? userDetail.expire_at.split('T')[0] : "",
-                                }}
-                                readOnly={!isEditMode}
-                                handleInputChange={(e: any) => {
-                                    const { id, value } = e.target;
-                                    setEditFormData((prev: any) => ({ ...prev, [id]: value }));
-                                }}
-                                category={activeCategory}
-                            />
-                        </div>
+                        {activeCategory === "security" ? (
+                          <div className="space-y-5 pt-2">
+                            {/* Row 1: Account Status & Calling Privileges */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {/* Active / Inactive Status */}
+                              <div className="bg-gray-50/80 p-4 rounded-xl border border-gray-200">
+                                <label className="text-xs font-bold text-gray-700 block mb-1">
+                                  Account Status (Active / Inactive)
+                                </label>
+                                <p className="text-[11px] text-gray-500 mb-3">
+                                  Setting inactive instantly terminates access and blocks future login attempts.
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setSecurityStatus("active")}
+                                    className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 border transition-all ${
+                                      securityStatus === "active"
+                                        ? "bg-emerald-50 border-emerald-500 text-emerald-700 shadow-sm"
+                                        : "bg-white border-gray-200 text-gray-600 hover:bg-gray-100"
+                                    }`}
+                                  >
+                                    <span className={`w-2 h-2 rounded-full ${securityStatus === "active" ? "bg-emerald-500" : "bg-gray-300"}`}></span>
+                                    Active
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setSecurityStatus("inactive")}
+                                    className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 border transition-all ${
+                                      securityStatus === "inactive"
+                                        ? "bg-red-50 border-red-500 text-red-700 shadow-sm"
+                                        : "bg-white border-gray-200 text-gray-600 hover:bg-gray-100"
+                                    }`}
+                                  >
+                                    <span className={`w-2 h-2 rounded-full ${securityStatus === "inactive" ? "bg-red-500" : "bg-gray-300"}`}></span>
+                                    Inactive
+                                  </button>
+                                </div>
+                              </div>
+
+                              {/* Is Caller Toggle */}
+                              <div className="bg-gray-50/80 p-4 rounded-xl border border-gray-200">
+                                <label className="text-xs font-bold text-gray-700 block mb-1">
+                                  Calling Privileges (Is Caller)
+                                </label>
+                                <p className="text-[11px] text-gray-500 mb-3">
+                                  Controls whether this user can make calls, receive lead assignments, and use the dialer.
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <button
+                                    type="button"
+                                    onClick={() => setSecurityIsCaller(true)}
+                                    className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 border transition-all ${
+                                      securityIsCaller
+                                        ? "bg-blue-50 border-blue-500 text-blue-700 shadow-sm"
+                                        : "bg-white border-gray-200 text-gray-600 hover:bg-gray-100"
+                                    }`}
+                                  >
+                                    <i className="fi flex fi-rr-phone-call text-xs"></i>
+                                    Yes (Caller)
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setSecurityIsCaller(false)}
+                                    className={`py-2 px-3 rounded-lg text-xs font-semibold flex items-center justify-center gap-2 border transition-all ${
+                                      !securityIsCaller
+                                        ? "bg-gray-200 border-gray-400 text-gray-800 shadow-sm"
+                                        : "bg-white border-gray-200 text-gray-600 hover:bg-gray-100"
+                                    }`}
+                                  >
+                                    <i className="fi flex fi-rr-cross-circle text-xs"></i>
+                                    No (Non-Caller)
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Row 2: Role & Designation */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              {/* System Role */}
+                              <div className="bg-gray-50/80 p-4 rounded-xl border border-gray-200">
+                                <label className="text-xs font-bold text-gray-700 block mb-1">
+                                  System Role (User / Admin / Super Admin)
+                                </label>
+                                <p className="text-[11px] text-gray-500 mb-3">
+                                  Determines overall permissions and administration dashboard access.
+                                </p>
+                                <div className="grid grid-cols-3 gap-2">
+                                  {(["user", "admin", "super admin"] as const).map((r) => (
+                                    <button
+                                      key={r}
+                                      type="button"
+                                      onClick={() => setSecurityRole(r)}
+                                      className={`py-2 px-2 rounded-lg text-xs font-semibold capitalize border transition-all ${
+                                        securityRole === r
+                                          ? "bg-[#4b33e8] border-[#4b33e8] text-white shadow-sm"
+                                          : "bg-white border-gray-200 text-gray-700 hover:bg-gray-100"
+                                      }`}
+                                    >
+                                      {r}
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+
+                              {/* Designation Hierarchy */}
+                              <div className="bg-gray-50/80 p-4 rounded-xl border border-gray-200">
+                                <label className="text-xs font-bold text-gray-700 block mb-1">
+                                  Designation (Agent / TL / CEO)
+                                </label>
+                                <p className="text-[11px] text-gray-500 mb-3">
+                                  Select common designation or specify custom title below.
+                                </p>
+                                <div className="grid grid-cols-3 gap-2 mb-2">
+                                  {["agent", "tl", "ceo"].map((d) => (
+                                    <button
+                                      key={d}
+                                      type="button"
+                                      onClick={() => setSecurityDesignation(d)}
+                                      className={`py-2 px-2 rounded-lg text-xs font-semibold uppercase border transition-all ${
+                                        securityDesignation?.toLowerCase() === d
+                                          ? "bg-[#4b33e8] border-[#4b33e8] text-white shadow-sm"
+                                          : "bg-white border-gray-200 text-gray-700 hover:bg-gray-100"
+                                      }`}
+                                    >
+                                      {d === "tl" ? "Team Leader (TL)" : d}
+                                    </button>
+                                  ))}
+                                </div>
+                                <input
+                                  type="text"
+                                  value={securityDesignation}
+                                  onChange={(e) => setSecurityDesignation(e.target.value)}
+                                  placeholder="Or type custom designation"
+                                  className="w-full h-8 px-2.5 py-1 text-xs text-black font-medium bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#4b33e8] placeholder:text-gray-400"
+                                  style={{ color: "#000000" }}
+                                />
+                              </div>
+                            </div>
+
+                            {/* Row 3: Credentials & Profile Synchronization */}
+                            <div className="bg-gray-50/80 p-4 rounded-xl border border-gray-200 space-y-4">
+                              <div className="border-b border-gray-200 pb-2">
+                                <h5 className="text-xs font-bold text-gray-800" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                  Credentials & Auth Synchronization
+                                </h5>
+                                <p className="text-[11px] text-gray-500">
+                                  Changes immediately synchronize with Supabase <code className="text-[#4b33e8] bg-purple-50 px-1 py-0.5 rounded">auth.users</code> and <code className="text-[#4b33e8] bg-purple-50 px-1 py-0.5 rounded">user_profiles</code>.
+                                </p>
+                              </div>
+
+                              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div>
+                                  <label className="text-xs font-medium text-gray-700 block mb-1">
+                                    Full Name (Updates Auth & Profile)
+                                  </label>
+                                  <input
+                                    type="text"
+                                    value={securityUserName}
+                                    onChange={(e) => setSecurityUserName(e.target.value)}
+                                    className="w-full h-8 px-2.5 py-1 text-xs text-black font-medium bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#4b33e8] placeholder:text-gray-400"
+                                    style={{ color: "#000000" }}
+                                    placeholder="Enter full name"
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="text-xs font-medium text-gray-700 block mb-1">
+                                    Email Address (Updates Auth & Profile)
+                                  </label>
+                                  <input
+                                    type="email"
+                                    value={securityEmail}
+                                    onChange={(e) => setSecurityEmail(e.target.value)}
+                                    className="w-full h-8 px-2.5 py-1 text-xs text-black font-medium bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#4b33e8] placeholder:text-gray-400"
+                                    style={{ color: "#000000" }}
+                                    placeholder="Enter user email"
+                                  />
+                                </div>
+                              </div>
+
+                              <div>
+                                <label className="text-xs font-medium text-gray-700 block mb-1">
+                                  Set New Password (Directly updates Auth Table)
+                                </label>
+                                <div className="relative max-w-md">
+                                  <input
+                                    type={showPassword ? "text" : "password"}
+                                    value={securityPassword}
+                                    onChange={(e) => setSecurityPassword(e.target.value)}
+                                    className="w-full h-8 pl-2.5 pr-8 py-1 text-xs text-black font-medium bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-[#4b33e8] placeholder:text-gray-400"
+                                    style={{ color: "#000000" }}
+                                    placeholder="Enter new password (min. 6 chars)"
+                                  />
+                                  <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+                                  >
+                                    <i className={`fi flex ${showPassword ? "fi-rr-eye-crossed" : "fi-rr-eye"}`}></i>
+                                  </button>
+                                </div>
+                                <p className="text-[10px] text-gray-400 mt-1">
+                                  Leave blank if you do not want to change the user's password.
+                                </p>
+                              </div>
+
+                              <div className="pt-2 flex justify-end">
+                                <button
+                                  type="button"
+                                  onClick={handleSaveSecurity}
+                                  disabled={savingSecurity}
+                                  className="px-5 py-2 rounded-lg bg-[#4b33e8] text-white text-xs font-semibold hover:opacity-90 transition-all flex items-center gap-2 disabled:opacity-50"
+                                  style={{ fontFamily: "'Poppins', sans-serif" }}
+                                >
+                                  {savingSecurity ? (
+                                    <>
+                                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                      <span>Saving Security Updates...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <i className="fi flex fi-rr-check"></i>
+                                      <span>Save Security Settings</span>
+                                    </>
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Row 4: Danger Zone (Delete User) */}
+                            <div className="bg-red-50/70 p-4 rounded-xl border border-red-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                              <div>
+                                <h5 className="text-xs font-bold text-red-700 flex items-center gap-1.5" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                                  <i className="fi flex fi-rr-trash text-sm"></i>
+                                  Danger Zone: Delete User Account
+                                </h5>
+                                <p className="text-[11px] text-red-600 mt-0.5">
+                                  Permanently deletes this user, removing auth login credentials, team assignments, and profile data.
+                                </p>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={handleDeleteUserAccount}
+                                disabled={deletingUser}
+                                className="px-4 py-2 rounded-lg bg-red-600 text-white text-xs font-semibold hover:bg-red-700 transition-all flex items-center gap-1.5 flex-shrink-0 disabled:opacity-50"
+                                style={{ fontFamily: "'Poppins', sans-serif" }}
+                              >
+                                {deletingUser ? (
+                                  <>
+                                    <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                    <span>Deleting User...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <i className="fi flex fi-rr-trash"></i>
+                                    <span>Delete User</span>
+                                  </>
+                                )}
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          /* Form Fields - Compact */
+                          <div className="[&>div]:space-y-1.5 [&_label]:text-xs [&_input]:h-8 [&_input]:text-xs [&_input]:text-black [&_input]:px-2.5 [&_input]:py-1.5 [&_select]:h-8 [&_select]:text-xs [&_select]:text-black [&_select]:px-2.5 [&_select]:py-1.5 [&_textarea]:text-xs [&_textarea]:text-black [&_textarea]:px-2.5 [&_textarea]:py-1.5">
+                              <SettingsFormFields
+                                  formData={isEditMode ? editFormData : {
+                                      email: userDetail.email || "",
+                                      user_name: userDetail.user_name || "",
+                                      contact_no: userDetail.contact_no || "",
+                                      employee_id: userDetail.employee_id || "",
+                                      role: userDetail.role || "",
+                                      father_name: userDetail.father_name || "",
+                                      gender: userDetail.gender || "",
+                                      date_of_birth: userDetail.date_of_birth || "",
+                                      blood_group: userDetail.blood_group || "",
+                                      alternate_contact: userDetail.alternate_contact || "",
+                                      emergency_contact_no: userDetail.emergency_contact_no || "",
+                                      date_of_joining: userDetail.date_of_joining || "",
+                                      in_hand_salary: userDetail.in_hand_salary?.toString() || "",
+                                      primary_address: userDetail.primary_address || "",
+                                      area_pincode: userDetail.area_pincode || "",
+                                      pan_number: userDetail.pan_number || "",
+                                      aadhar_card_no: userDetail.aadhar_card_no || "",
+                                      bank_name: userDetail.bank_name || "",
+                                      account_holder_name: userDetail.account_holder_name || "",
+                                      account_number: userDetail.account_number || "",
+                                      ifsc_code: userDetail.ifsc_code || "",
+                                      branch_city: userDetail.branch_city || "",
+                                      branch_state: userDetail.branch_state || "",
+                                      branch_pincode: userDetail.branch_pincode || "",
+                                      profile_pic_url: userDetail.profile_pic_url || "",
+                                      pancard_url: userDetail.pancard_url || "",
+                                      aadhar_front_url: userDetail.aadhar_front_url || "",
+                                      aadhar_back_url: userDetail.aadhar_back_url || "",
+                                      qualification_marksheet_url: userDetail.qualification_marksheet_url || "",
+                                      bank_passbook_url: userDetail.bank_passbook_url || "",
+                                      // Client Lifecycle
+                                      is_client: userDetail.is_client !== undefined ? String(userDetail.is_client) : "false",
+                                      joined_at: userDetail.joined_at ? userDetail.joined_at.split('T')[0] : "",
+                                      renewal_at: userDetail.renewal_at ? userDetail.renewal_at.split('T')[0] : "",
+                                      expire_at: userDetail.expire_at ? userDetail.expire_at.split('T')[0] : "",
+                                  }}
+                                  readOnly={!isEditMode}
+                                  handleInputChange={(e: any) => {
+                                      const { id, value } = e.target;
+                                      setEditFormData((prev: any) => ({ ...prev, [id]: value }));
+                                  }}
+                                  category={activeCategory}
+                              />
+                          </div>
+                        )}
 
                         {/* Edit Mode Actions */}
-                        {isEditMode && (
+                        {isEditMode && activeCategory !== "security" && (
                             <div className="flex justify-end gap-3 mt-4 pt-4 border-t">
                                 <button
                                     onClick={() => {
