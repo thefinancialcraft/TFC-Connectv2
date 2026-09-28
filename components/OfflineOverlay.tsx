@@ -5,9 +5,7 @@ import { useState, useEffect } from 'react';
  * Shows a blurred background with an illustration when internet is lost.
  */
 const OfflineOverlay = () => {
-  const [isOffline, setIsOffline] = useState(
-    () => typeof navigator !== 'undefined' && !navigator.onLine
-  );
+  const [isOffline, setIsOffline] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
