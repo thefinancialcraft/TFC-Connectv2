@@ -5,16 +5,12 @@ import { useState, useEffect } from 'react';
  * Shows a blurred background with an illustration when internet is lost.
  */
 const OfflineOverlay = () => {
-  const [isOffline, setIsOffline] = useState(false);
+  const [isOffline, setIsOffline] = useState(
+    () => typeof navigator !== 'undefined' && !navigator.onLine
+  );
 
   useEffect(() => {
-    let intervalId: NodeJS.Timeout;
-
-    // Check initial state
     if (typeof window !== 'undefined') {
-      // 1. Initial Browser Check
-      setIsOffline(!window.navigator.onLine);
-
       const handleOnline = () => {
         console.log("🌐 [Status] Online Event");
         setIsOffline(false);
@@ -28,42 +24,12 @@ const OfflineOverlay = () => {
       window.addEventListener('online', handleOnline);
       window.addEventListener('offline', handleOffline);
 
-      // 2. Robust Polling (Heartbeat) - Fix for Flutter WebView
-      // Poll every 20 seconds (Increased from 5s to save egregious data usage)
-      const checkConnection = async () => {
-        // Only ping if tab is active to save data egress
-        if (document.visibilityState !== 'visible') return;
-
-        try {
-          // Fetch a tiny resource to verify connection
-          await fetch('/favicon.ico?' + new Date().getTime(), { 
-              method: 'HEAD',
-              mode: 'no-cors',
-              cache: 'no-store' 
-          });
-          
-          if (isOffline) {
-              console.log("🌐 [Status] Connection Restored (Ping Success)");
-              setIsOffline(false);
-          }
-        } catch (err) {
-          if (!isOffline) {
-              console.log("❌ [Status] Connection Lost (Ping Failed)");
-              setIsOffline(true);
-          }
-        }
-      };
-
-      // Start polling
-      intervalId = setInterval(checkConnection, 20000);
-
       return () => {
         window.removeEventListener('online', handleOnline);
         window.removeEventListener('offline', handleOffline);
-        clearInterval(intervalId);
       };
     }
-  }, [isOffline]);
+  }, []);
 
   if (!isOffline) return null;
 

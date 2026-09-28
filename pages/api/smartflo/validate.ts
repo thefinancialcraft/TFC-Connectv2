@@ -15,6 +15,31 @@ export default function handler(
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('Vary', 'Authorization');
 
+  const authorization = req.headers.authorization;
+  const credentialNamePattern = /authorization|api[-_]?key|token/i;
+  const body = req.body;
+  const bodyFieldNames =
+    body && typeof body === 'object' && !Array.isArray(body)
+      ? Object.keys(body)
+      : [];
+
+  console.info('Smartflo validation request metadata', {
+    method: req.method,
+    requestId: req.headers['x-vercel-id'] || req.headers['x-request-id'] || null,
+    authorizationPresent: typeof authorization === 'string',
+    authorizationIsBearer:
+      typeof authorization === 'string' && /^Bearer\s+\S+$/i.test(authorization),
+    credentialHeaderNames: Object.keys(req.headers).filter((name) =>
+      credentialNamePattern.test(name)
+    ),
+    credentialQueryFieldNames: Object.keys(req.query).filter((name) =>
+      credentialNamePattern.test(name)
+    ),
+    credentialBodyFieldNames: bodyFieldNames.filter((name) =>
+      credentialNamePattern.test(name)
+    ),
+  });
+
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json({
@@ -32,7 +57,6 @@ export default function handler(
     });
   }
 
-  const authorization = req.headers.authorization;
   const bearerMatch = authorization?.match(/^Bearer\s+(\S+)$/i);
   const suppliedKey = bearerMatch?.[1];
 
