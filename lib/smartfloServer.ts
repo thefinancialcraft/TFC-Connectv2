@@ -1,4 +1,4 @@
-import { createHash, createHmac } from 'node:crypto';
+import { createHash } from 'node:crypto';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -67,11 +67,7 @@ export function createSmartfloApiKey(organizationId: string, integrationId: stri
   const masterKey = process.env.SMARTFLO_CONNECTOR_API_KEY;
   if (!masterKey) throw new Error('Smartflo connector key is not configured.');
 
-  const signature = createHmac('sha256', masterKey)
-    .update(`${organizationId}:${integrationId}`)
-    .digest('hex');
-
-  return `SMARTFLO_CONNECTOR_API_KEY-${organizationId}-${integrationId}-${signature}`;
+  return `${masterKey}-${organizationId}-${integrationId}`;
 }
 
 export function hashSmartfloApiKey(apiKey: string): string {

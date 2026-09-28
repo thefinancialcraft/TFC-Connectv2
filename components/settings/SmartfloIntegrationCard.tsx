@@ -325,7 +325,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
             </div>
 
             <div className="space-y-4 px-5 py-5">
-              {(phase === 'ready' || phase === 'connecting' || phase === 'waiting') && credentials && (
+              {phase === 'ready' && credentials && (
                 <div className="divide-y divide-gray-100 rounded-lg border border-gray-200">
                   {[
                     ['Integration ID', credentials.integrationId],
@@ -352,10 +352,12 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
                 </div>
               )}
 
-              {phase === 'loading' && (
+              {(phase === 'loading' || phase === 'connecting') && (
                 <div className="flex flex-col items-center py-8 text-center">
                   <span className="h-6 w-6 animate-spin rounded-full border-2 border-[#4b33e8] border-t-transparent" aria-hidden="true" />
-                  <p className="mt-3 text-sm font-medium text-gray-700">Preparing secure integration details…</p>
+                  <p className="mt-3 text-sm font-medium text-gray-700">
+                    {phase === 'connecting' ? 'Creating secure connection…' : 'Preparing secure integration details…'}
+                  </p>
                 </div>
               )}
 

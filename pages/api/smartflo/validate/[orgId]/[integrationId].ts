@@ -23,26 +23,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   const authorization = req.headers.authorization;
   const bearerMatch = authorization?.match(/^Bearer\s+(\S+)$/i);
-  const suppliedKey = bearerMatch?.[1] || authorization?.trim();
+  const suppliedKey = bearerMatch?.[1] || authorization;
   if (!suppliedKey) {
+    return res.status(401).json({ success: 'false', data: { value: 'Unauthorized' } });
+  }
+
+  const masterKey = process.env.SMARTFLO_CONNECTOR_API_KEY;
+  if (!masterKey) {
+    return res.status(401).json({ success: 'false', data: { value: 'Unauthorized' } });
+  }
+
+  const expectedKey = `${masterKey}-${orgId}-${integrationId}`;
+  const suppliedDigest = createHash('sha256').update(suppliedKey).digest();
+  const expectedDigest = createHash('sha256').update(expectedKey).digest();
+  if (!timingSafeEqual(suppliedDigest, expectedDigest)) {
     return res.status(401).json({ success: 'false', data: { value: 'Unauthorized' } });
   }
 
   const { data: integration, error } = await smartfloAdminClient
     .from('smartflo_integrations')
-    .select('id, api_key, enabled, status, created_at')
+    .select('id, enabled, status, created_at')
     .eq('organization_id', orgId)
     .eq('integration_id', integrationId)
     .maybeSingle();
 
-  if (error || !integration?.api_key) {
-    return res.status(401).json({ success: 'false', data: { value: 'Unauthorized' } });
-  }
-
-  const suppliedHash = createHash('sha256').update(suppliedKey).digest();
-  const storedHash = Buffer.from(integration.api_key, 'hex');
-  const validKey = storedHash.length === suppliedHash.length && timingSafeEqual(storedHash, suppliedHash);
-  if (!validKey) {
+  if (error || !integration) {
     return res.status(401).json({ success: 'false', data: { value: 'Unauthorized' } });
   }
 
@@ -59,7 +64,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .from('smartflo_integrations')
       .delete()
       .eq('id', integration.id)
-      .eq('status', 'pending');
+      .eq('organization_id', orgId)
+      .eq('integration_id', integrationId)
+      .eq('status', 'pending')
+      .eq('enabled', false);
     return res.status(410).json({ success: 'false', data: { value: 'Integration setup expired' } });
   }
 
@@ -81,6 +89,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .from('smartflo_integrations')
       .select('enabled, status')
       .eq('id', integration.id)
+      .eq('organization_id', orgId)
+      .eq('integration_id', integrationId)
       .maybeSingle();
     if (current?.enabled && current.status === 'active') {
       return res.status(200).json({ success: 'true', data: { value: 'Rynxly CRM' } });
