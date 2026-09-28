@@ -9,6 +9,7 @@ import { getStoredUserData } from "@/lib/localStorageUtils";
 import FlutterBridgeTab from "@/components/settings/FlutterBridgeTab";
 import DevicesTab from "@/components/settings/DevicesTab";
 import ConsoleLogsTab from "@/components/settings/ConsoleLogsTab";
+import SmartfloIntegrationCard from "@/components/settings/SmartfloIntegrationCard";
 import AccountIssueModal from "@/components/modals/AccountIssueModal";
 
 interface SettingsFormData {
@@ -55,7 +56,10 @@ export default function Settings() {
   const [error, setError] = useState("");
   const [activeNav] = useState("settings");
   const [activeTab, setActiveTab] = useState<"profile" | "security" | "flutter_bridge" | "devices" | "console_logs" | "integrations">("profile");
+  const [activeIntegrationCategory, setActiveIntegrationCategory] = useState<"user" | "admin">("user");
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
+  const canAccessAdminIntegrations =
+    user?.role === "admin" || user?.role === "super_admin" || user?.super_admin === true;
   
   // Form state
   const [formData, setFormData] = useState<SettingsFormData>({
@@ -783,147 +787,164 @@ export default function Settings() {
           )}
 
           {activeTab === "integrations" && (
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="bg-white rounded-[24px] border border-gray-100 shadow-sm p-6 sm:p-8" style={{ borderColor: "#E0E0E0" }}>
-                <h3 className="text-lg font-bold mb-8 text-[#263238] flex items-center gap-2">
-                  <i className="fi fi-rr-apps text-[#4b33e8] text-sm" />
-                  Connected Apps
-                </h3>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Google Calendar Redesigned Card */}
-                  <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm p-6 group transition-all hover:shadow-xl hover:shadow-indigo-500/5">
-                    <div className="space-y-4">
-                      {/* Connection Header Card */}
-                      <div className="p-4 bg-gray-50 rounded-2xl border border-gray-100 flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center border border-gray-100 shadow-sm transform group-hover:-rotate-6 transition-transform">
-                            <i className="fi fi-brands-google text-lg flex text-indigo-600"></i>
-                          </div>
-                          <div>
-                            <p className="text-sm font-bold text-gray-900">Google Calendar</p>
-                            <p className="text-[10px] text-gray-500 font-medium">
-                              {user?.googleCalendarConnected 
-                                ? `Connected as ${user.email || 'team@rynxly.in'}` 
-                                : 'Sync reminders & schedules'}
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* Dynamic Toggle Switch */}
-                        <div 
-                          onClick={async () => {
-                            if (user?.googleCalendarConnected) {
-                              if (!confirm("Are you sure you want to disconnect Google Calendar?")) return;
-                              
-                              try {
-                                setLoading(true); // Optional: show loading state if you have one available here
-                                
-                                // 1. Check if unlinking is possible/needed
-                                const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-                                if (userError) throw userError;
-
-                                let googleIdentity = currentUser?.identities?.find(id => id.provider === 'google');
-                                
-                                if (googleIdentity) {
-                                  // Check if this is the only identity (prevent lockout)
-                                  if ((currentUser?.identities?.length || 0) <= 1) {
-                                    throw new Error("You cannot disconnect Google as it is your only login method. Please set a password first in Security settings.");
-                                  }
-
-                                  // Attempt Unlink
-                                  const { error: unlinkError } = await supabase.auth.unlinkIdentity(googleIdentity);
-                                  if (unlinkError) throw unlinkError;
-                                  console.log("✅ [Settings] Google Identity unlinked.");
-                                  
-                                  // CRITICAL: Refresh session to remove the identity from the JWT/Session state
-                                  await supabase.auth.refreshSession();
-                                } else {
-                                  console.warn("⚠️ [Settings] No Google identity found to unlink. Proceeding to DB update.");
-                                }
-
-                                // 2. Update DB Profile
-                                await supabase.from('user_profiles').update({ 
-                                  google_calendar_connected: false,
-                                  google_calendar_skipped: false 
-                                }).eq('user_id', user.uid);
-                                
-                                // 3. Clear Local State
-                                localStorage.removeItem("google_provider_token");
-                                
-                                showSuccess("Google Calendar disconnected successfully.");
-                                setTimeout(() => window.location.reload(), 1000);
-                              } catch (err: any) { 
-                                console.error("Disconnect failed:", err);
-                                if (err.message?.includes("password") || err.message?.includes("only identity")) {
-                                    showError("You must set a password or link another account before disconnecting Google.", "Cannot Disconnect");
-                                } else {
-                                    showError(err.message || "Failed to disconnect.", "Disconnection Error"); 
-                                }
-                              } finally {
-                                setLoading(false);
-                              }
-                            } else {
-                              // Connect Logic
-                              const { data: { session: currentSession } } = await supabase.auth.getSession();
-                              if (currentSession) {
-                                sessionStorage.setItem('oauth_restore_user_id', currentSession.user.id);
-                                sessionStorage.setItem('oauth_restore_access_token', currentSession.access_token);
-                                sessionStorage.setItem('oauth_restore_refresh_token', currentSession.refresh_token);
-                              }
-                              const isMobile = typeof window !== 'undefined' && !!(window as any).flutter_inappwebview;
-                              
-                              // Use linkIdentity to attach Google to CURRENT user instead of logging in as new user
-                              const { data, error } = await supabase.auth.linkIdentity({
-                                provider: 'google',
-                                options: {
-                                  queryParams: { 
-                                    access_type: 'offline', 
-                                    prompt: 'consent' 
-                                  },
-                                  scopes: 'https://www.googleapis.com/auth/calendar.events',
-                                  redirectTo: `${window.location.origin}/settings`,
-                                  skipBrowserRedirect: isMobile
-                                }
-                              });
-                              if (error) { 
-                                if (error.message.includes("Manual linking is disabled")) {
-                                  showError("Please go to Supabase > Authentication > Providers > Google and enable 'Manual Linking' (or in Settings > Security).", "Configuration Required");
-                                } else {
-                                  showError(error.message, "Connection Error"); 
-                                }
-                                return; 
-                              }
-                              if (isMobile && data?.url) {
-                                const { notifyFlutter } = await import("@/lib/flutterBridge");
-                                notifyFlutter('open_external_url', data.url);
-                              }
-                            }
-                          }}
-                          className={`w-10 h-6 rounded-full relative cursor-pointer transition-all duration-300 ${user?.googleCalendarConnected ? 'bg-green-500' : 'bg-gray-200'}`}
-                        >
-                          <div className={`absolute top-1 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-300 ${user?.googleCalendarConnected ? 'right-1' : 'left-1'}`}></div>
-                        </div>
-                      </div>
-
-                      {/* Feature Lists */}
-                      <div className="space-y-3 pl-2">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded flex items-center justify-center text-white text-[10px] transition-all ${user?.googleCalendarConnected ? 'bg-[#4b33e8]' : 'bg-gray-200'}`}>
-                            <i className="fi fi-rr-check flex"></i>
-                          </div>
-                          <span className={`text-sm font-medium ${user?.googleCalendarConnected ? 'text-gray-600' : 'text-gray-400'}`}>Sync Call Schedules</span>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <div className={`w-5 h-5 rounded flex items-center justify-center text-white text-[10px] transition-all ${user?.googleCalendarConnected ? 'bg-[#4b33e8]' : 'bg-gray-200'}`}>
-                            <i className="fi fi-rr-check flex"></i>
-                          </div>
-                          <span className={`text-sm font-medium ${user?.googleCalendarConnected ? 'text-gray-600' : 'text-gray-400'}`}>Sync Reminders</span>
-                        </div>
-                      </div>
-                    </div>
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="min-h-[520px] rounded-2xl border border-gray-100 bg-white p-4 sm:p-5" style={{ borderColor: "#E0E0E0" }}>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                  <h3 className="text-lg font-bold text-[#263238] flex items-center gap-2">
+                    <i className="fi fi-rr-apps text-[#4b33e8] text-sm" />
+                    Connected Apps
+                  </h3>
+                  <div className="inline-flex w-fit items-center rounded-xl border border-gray-200 bg-gray-50 p-1" role="tablist" aria-label="Integration category">
+                    <button
+                      type="button"
+                      role="tab"
+                      aria-selected={activeIntegrationCategory === "user"}
+                      onClick={() => setActiveIntegrationCategory("user")}
+                      className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeIntegrationCategory === "user" ? "bg-[#4b33e8] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+                    >
+                      User Apps
+                    </button>
+                    {canAccessAdminIntegrations && (
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected={activeIntegrationCategory === "admin"}
+                        onClick={() => setActiveIntegrationCategory("admin")}
+                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeIntegrationCategory === "admin" ? "bg-[#4b33e8] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+                      >
+                        Admin Apps
+                      </button>
+                    )}
                   </div>
                 </div>
+
+                {activeIntegrationCategory === "admin" && canAccessAdminIntegrations ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <SmartfloIntegrationCard organizationId={user?.organization_id} />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {/* Google Calendar Compact Card */}
+                    <div className="relative w-full max-w-[320px] overflow-hidden rounded-xl border border-gray-200 bg-white transition-colors hover:border-gray-300">
+                      <div className="bg-[#888888] px-4 py-3">
+                        <div className="flex w-full flex-row-reverse items-center justify-between gap-3">
+                          <div className="static flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-[#4285F4] shadow-sm">
+                            <img
+                              src="https://www.gstatic.com/images/branding/product/1x/calendar_2020q4_32dp.png"
+                              alt="Google Calendar"
+                              className="h-8 w-8 object-contain"
+                            />
+
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                if (user?.googleCalendarConnected) {
+                                  if (!confirm("Are you sure you want to disconnect Google Calendar?")) return;
+
+                                  try {
+                                    setLoading(true);
+                                    const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
+                                    if (userError) throw userError;
+
+                                    const googleIdentity = currentUser?.identities?.find((id: any) => id.provider === 'google');
+
+                                    if (googleIdentity) {
+                                      if ((currentUser?.identities?.length || 0) <= 1) {
+                                        throw new Error("You cannot disconnect Google as it is your only login method. Please set a password first in Security settings.");
+                                      }
+
+                                      const { error: unlinkError } = await supabase.auth.unlinkIdentity(googleIdentity);
+                                      if (unlinkError) throw unlinkError;
+                                      await supabase.auth.refreshSession();
+                                    }
+
+                                    await supabase.from('user_profiles').update({
+                                      google_calendar_connected: false,
+                                      google_calendar_skipped: false,
+                                    }).eq('user_id', user.uid);
+
+                                    localStorage.removeItem('google_provider_token');
+                                    showSuccess('Google Calendar disconnected successfully.');
+                                    setTimeout(() => window.location.reload(), 1000);
+                                  } catch (err: any) {
+                                    console.error('Disconnect failed:', err);
+                                    if (err.message?.includes('password') || err.message?.includes('only identity')) {
+                                      showError('You must set a password or link another account before disconnecting Google.', 'Cannot Disconnect');
+                                    } else {
+                                      showError(err.message || 'Failed to disconnect.', 'Disconnection Error');
+                                    }
+                                  } finally {
+                                    setLoading(false);
+                                  }
+                                  return;
+                                }
+
+                                const { data: { session: currentSession } } = await supabase.auth.getSession();
+                                if (currentSession) {
+                                  sessionStorage.setItem('oauth_restore_user_id', currentSession.user.id);
+                                  sessionStorage.setItem('oauth_restore_access_token', currentSession.access_token);
+                                  sessionStorage.setItem('oauth_restore_refresh_token', currentSession.refresh_token);
+                                }
+
+                                const isMobile = typeof window !== 'undefined' && !!(window as any).flutter_inappwebview;
+                                const { data, error } = await supabase.auth.linkIdentity({
+                                  provider: 'google',
+                                  options: {
+                                    queryParams: {
+                                      access_type: 'offline',
+                                      prompt: 'consent',
+                                    },
+                                    scopes: 'https://www.googleapis.com/auth/calendar.events',
+                                    redirectTo: `${window.location.origin}/settings`,
+                                    skipBrowserRedirect: isMobile,
+                                  },
+                                });
+
+                                if (error) {
+                                  if (error.message.includes('Manual linking is disabled')) {
+                                    showError("Please go to Supabase > Authentication > Providers > Google and enable 'Manual Linking' (or in Settings > Security).", 'Configuration Required');
+                                  } else {
+                                    showError(error.message, 'Connection Error');
+                                  }
+                                  return;
+                                }
+
+                                if (isMobile && data?.url) {
+                                  const { notifyFlutter } = await import('@/lib/flutterBridge');
+                                  notifyFlutter('open_external_url', data.url);
+                                }
+                              }}
+                              role="switch"
+                              aria-checked={!!user?.googleCalendarConnected}
+                              className={`absolute bottom-1.5 right-3 z-10 h-6 w-11 rounded-full border p-0.5 transition-colors ${
+                                user?.googleCalendarConnected
+                                  ? 'border-[#1a8f5a] bg-[#1a8f5a]'
+                                  : 'border-gray-300 bg-gray-200'
+                              }`}
+                              aria-label={user?.googleCalendarConnected ? 'Disconnect Google Calendar' : 'Connect Google Calendar'}
+                              title={user?.googleCalendarConnected ? 'Connected' : 'Connect'}
+                            >
+                              <span className={`block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${user?.googleCalendarConnected ? 'translate-x-5' : 'translate-x-0'}`} />
+                            </button>
+                          </div>
+
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-white">Google Calendar</p>
+                          </div>
+                        </div>
+                      </div>
+                      <p className="px-4 py-3 text-xs leading-relaxed text-gray-600">
+                        Sync reminders &amp; schedules
+                      </p>
+                      <div className="flex items-center justify-start border-t border-gray-100 px-4 py-2.5">
+                        <span className={`text-xs font-semibold ${user?.googleCalendarConnected ? 'text-[#1a8f5a]' : 'text-red-500'}`}>
+                          {user?.googleCalendarConnected ? 'Connected' : 'Not connected'}
+                        </span>
+                      </div>
+
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           )}
