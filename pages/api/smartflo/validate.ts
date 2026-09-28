@@ -2,8 +2,8 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 type ValidationResponse =
-  | { success: true }
-  | { success: false; message: string };
+  | { success: 'true'; data: { value: string } }
+  | { success: 'false'; data: { value: string } };
 
 export default function handler(
   req: NextApiRequest,
@@ -28,15 +28,15 @@ export default function handler(
   if (req.method !== 'GET') {
     res.setHeader('Allow', 'GET');
     return res.status(405).json({
-      success: false,
-      message: 'Method not allowed',
+      success: 'false',
+      data: { value: 'Method not allowed' },
     });
   }
 
   if (!configuredKey || configuredKey.trim().length === 0) {
     return res.status(500).json({
-      success: false,
-      message: 'Service unavailable',
+      success: 'false',
+      data: { value: 'Service unavailable' },
     });
   }
 
@@ -45,8 +45,8 @@ export default function handler(
 
   if (!suppliedKey) {
     return res.status(401).json({
-      success: false,
-      message: 'Unauthorized',
+      success: 'false',
+      data: { value: 'Unauthorized' },
     });
   }
 
@@ -55,10 +55,13 @@ export default function handler(
 
   if (!timingSafeEqual(configuredDigest, suppliedDigest)) {
     return res.status(401).json({
-      success: false,
-      message: 'Unauthorized',
+      success: 'false',
+      data: { value: 'Unauthorized' },
     });
   }
 
-  return res.status(200).json({ success: true });
+  return res.status(200).json({
+    success: 'true',
+    data: { value: 'Rynxly CRM' },
+  });
 }
