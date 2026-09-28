@@ -22,13 +22,15 @@ export default function handler(
     body && typeof body === 'object' && !Array.isArray(body)
       ? Object.keys(body)
       : [];
+  const authorizationScheme =
+    typeof authorization === 'string'
+      ? authorization.trim().match(/^([A-Za-z][A-Za-z0-9+.-]*)\s+\S+$/)?.[1] || 'NO_SCHEME'
+      : 'NO_SCHEME';
 
-  console.info('Smartflo validation request metadata', {
+  console.info({
     method: req.method,
-    requestId: req.headers['x-vercel-id'] || req.headers['x-request-id'] || null,
     authorizationPresent: typeof authorization === 'string',
-    authorizationIsBearer:
-      typeof authorization === 'string' && /^Bearer\s+\S+$/i.test(authorization),
+    authorizationScheme,
     credentialHeaderNames: Object.keys(req.headers).filter((name) =>
       credentialNamePattern.test(name)
     ),
