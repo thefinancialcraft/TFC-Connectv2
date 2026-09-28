@@ -1,15 +1,15 @@
 import { createHash, timingSafeEqual } from 'node:crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
-type ValidationResponse = {
-  success: boolean;
-  message: string;
-};
+type ValidationResponse =
+  | { success: true }
+  | { success: false; message: string };
 
 export default function handler(
   req: NextApiRequest,
   res: NextApiResponse<ValidationResponse>
 ) {
+  res.setHeader('Content-Type', 'application/json; charset=utf-8');
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
   res.setHeader('Pragma', 'no-cache');
   res.setHeader('X-Content-Type-Options', 'nosniff');
@@ -17,24 +17,12 @@ export default function handler(
 
   const authorization = req.headers.authorization;
   const configuredKey = process.env.SMARTFLO_CONNECTOR_API_KEY;
-  const authorizationPresent = typeof authorization === 'string';
-  const authorizationScheme =
-    authorizationPresent
-      ? authorization.trim().match(/^([A-Za-z][A-Za-z0-9+.-]*)\s+\S+$/)?.[1] || 'NO_SCHEME'
-      : 'NO_SCHEME';
 
-  console.info({
-    authorizationPresent,
-    authorizationScheme,
-    authorizationLength: authorizationPresent ? authorization.length : null,
-    authorizationFirst4: authorizationPresent ? authorization.slice(0, 4) : null,
-    authorizationLast4: authorizationPresent ? authorization.slice(-4) : null,
-    authorizationSha256: authorizationPresent
-      ? createHash('sha256').update(authorization).digest('hex')
-      : null,
-    configuredKeySha256: configuredKey
-      ? createHash('sha256').update(configuredKey).digest('hex')
-      : null,
+  res.once('finish', () => {
+    console.info({
+      status: res.statusCode,
+      contentType: res.getHeader('Content-Type'),
+    });
   });
 
   if (req.method !== 'GET') {
@@ -46,7 +34,6 @@ export default function handler(
   }
 
   if (!configuredKey || configuredKey.trim().length === 0) {
-    console.error('Smartflo connector API key is not configured');
     return res.status(500).json({
       success: false,
       message: 'Service unavailable',
@@ -73,8 +60,5 @@ export default function handler(
     });
   }
 
-  return res.status(200).json({
-    success: true,
-    message: 'Rynxly CRM authorization successful',
-  });
+  return res.status(200).json({ success: true });
 }
