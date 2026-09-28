@@ -8,7 +8,7 @@ import {
   smartfloAdminClient,
 } from '@/lib/smartfloServer';
 
-const pendingTimeoutMs = 2 * 60 * 1000;
+const pendingTimeoutMs = 75 * 1000;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');

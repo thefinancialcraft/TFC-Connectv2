@@ -2,7 +2,7 @@ import { createHash, timingSafeEqual } from 'node:crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { isUuid, smartfloAdminClient } from '@/lib/smartfloServer';
 
-const pendingTimeoutMs = 2 * 60 * 1000;
+const pendingTimeoutMs = 75 * 1000;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8');

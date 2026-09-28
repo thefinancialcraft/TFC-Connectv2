@@ -45,7 +45,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
   const [integrationId, setIntegrationId] = useState('');
   const [credentials, setCredentials] = useState<SmartfloCredentials | null>(null);
   const [createdAt, setCreatedAt] = useState<string | null>(null);
-  const [remainingSeconds, setRemainingSeconds] = useState(120);
+  const [remainingSeconds, setRemainingSeconds] = useState(75);
   const [errorMessage, setErrorMessage] = useState('');
   const [busy, setBusy] = useState(false);
   const [copiedField, setCopiedField] = useState('');
@@ -66,7 +66,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
     try {
       await fetchCredentials(id);
       if (pendingCreatedAt) {
-        const deadline = new Date(pendingCreatedAt).getTime() + 120_000;
+        const deadline = new Date(pendingCreatedAt).getTime() + 75_000;
         setRemainingSeconds(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)));
         setPending(true);
         setPhase('waiting');
@@ -103,7 +103,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
           setPhase('loading');
           try {
             setCredentials(await requestSmartfloCredentials(result.integrationId));
-            const deadline = new Date(result.createdAt).getTime() + 120_000;
+            const deadline = new Date(result.createdAt).getTime() + 75_000;
             setRemainingSeconds(Math.max(0, Math.ceil((deadline - Date.now()) / 1000)));
             setPhase('waiting');
           } catch (error) {
@@ -131,7 +131,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
 
     let stopped = false;
     let expiryCheckStarted = false;
-    const deadline = new Date(createdAt).getTime() + 120_000;
+    const deadline = new Date(createdAt).getTime() + 75_000;
 
     const pollStatus = async () => {
       try {
@@ -167,7 +167,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
         void pollStatus();
       }
     }, 1000);
-    const pollingInterval = window.setInterval(() => { void pollStatus(); }, 10_000);
+    const pollingInterval = window.setInterval(() => { void pollStatus(); }, 3_000);
 
     return () => {
       stopped = true;
@@ -215,7 +215,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || 'Unable to start Smartflo connection.');
       setCreatedAt(result.createdAt || new Date().toISOString());
-      setRemainingSeconds(120);
+      setRemainingSeconds(75);
       setPending(true);
       setPhase('waiting');
     } catch (error) {
@@ -377,12 +377,12 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
                     role="progressbar"
                     aria-label="Smartflo setup timeout"
                     aria-valuemin={0}
-                    aria-valuemax={120}
-                    aria-valuenow={120 - remainingSeconds}
+                    aria-valuemax={75}
+                    aria-valuenow={75 - remainingSeconds}
                   >
                     <div
                       className="h-full rounded-full bg-[#4b33e8] transition-[width] duration-1000"
-                      style={{ width: `${((120 - remainingSeconds) / 120) * 100}%` }}
+                      style={{ width: `${((75 - remainingSeconds) / 75) * 100}%` }}
                     />
                   </div>
                 </div>
