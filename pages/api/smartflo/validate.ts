@@ -58,7 +58,7 @@ export default function handler(
   }
 
   const bearerMatch = authorization?.match(/^Bearer\s+(\S+)$/i);
-  const suppliedKey = bearerMatch?.[1];
+  const suppliedKey = bearerMatch?.[1] || authorization?.trim();
 
   if (!suppliedKey) {
     return res.status(401).json({
