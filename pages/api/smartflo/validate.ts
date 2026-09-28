@@ -16,30 +16,25 @@ export default function handler(
   res.setHeader('Vary', 'Authorization');
 
   const authorization = req.headers.authorization;
-  const credentialNamePattern = /authorization|api[-_]?key|token/i;
-  const body = req.body;
-  const bodyFieldNames =
-    body && typeof body === 'object' && !Array.isArray(body)
-      ? Object.keys(body)
-      : [];
+  const configuredKey = process.env.SMARTFLO_CONNECTOR_API_KEY;
+  const authorizationPresent = typeof authorization === 'string';
   const authorizationScheme =
-    typeof authorization === 'string'
+    authorizationPresent
       ? authorization.trim().match(/^([A-Za-z][A-Za-z0-9+.-]*)\s+\S+$/)?.[1] || 'NO_SCHEME'
       : 'NO_SCHEME';
 
   console.info({
-    method: req.method,
-    authorizationPresent: typeof authorization === 'string',
+    authorizationPresent,
     authorizationScheme,
-    credentialHeaderNames: Object.keys(req.headers).filter((name) =>
-      credentialNamePattern.test(name)
-    ),
-    credentialQueryFieldNames: Object.keys(req.query).filter((name) =>
-      credentialNamePattern.test(name)
-    ),
-    credentialBodyFieldNames: bodyFieldNames.filter((name) =>
-      credentialNamePattern.test(name)
-    ),
+    authorizationLength: authorizationPresent ? authorization.length : null,
+    authorizationFirst4: authorizationPresent ? authorization.slice(0, 4) : null,
+    authorizationLast4: authorizationPresent ? authorization.slice(-4) : null,
+    authorizationSha256: authorizationPresent
+      ? createHash('sha256').update(authorization).digest('hex')
+      : null,
+    configuredKeySha256: configuredKey
+      ? createHash('sha256').update(configuredKey).digest('hex')
+      : null,
   });
 
   if (req.method !== 'GET') {
@@ -50,7 +45,6 @@ export default function handler(
     });
   }
 
-  const configuredKey = process.env.SMARTFLO_CONNECTOR_API_KEY;
   if (!configuredKey || configuredKey.trim().length === 0) {
     console.error('Smartflo connector API key is not configured');
     return res.status(500).json({
