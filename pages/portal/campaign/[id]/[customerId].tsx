@@ -6,10 +6,13 @@ import Header from "@/components/Header";
 import { checkAuthAndFetchProfile, handleLogout, UserProfile } from "@/lib/authService";
 import { supabase } from "@/lib/supabase";
 import BottomNav from "@/components/BottomNav";
-import { notifyFlutter, requestDeviceInfoFromFlutter } from "@/lib/flutterBridge";
+import { requestDeviceInfoFromFlutter } from "@/lib/flutterBridge";
 import { decryptPhone, formatMaskedPhone, computePhoneHash } from "@/lib/phoneUtils";
 import { updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "@/lib/flutterBridge";
 import { logSystemEvent, estimateSize } from "@/lib/monitoring";
+import { showWarning } from "@/lib/dialogUtils";
+import { routeCallingCommand } from "@/lib/callingCommandRouter";
+import { resolveActiveCallingProvider, type CallingProviderName } from "@/lib/callingProviderClient";
 
 
 export default function CallingPage() {
@@ -43,6 +46,7 @@ export default function CallingPage() {
     const [isCalling, setIsCalling] = useState(false);
     const [postCall, setPostCall] = useState(false);
     const [callDuration, setCallDuration] = useState(0);
+    const activeCallProviderRef = useRef<CallingProviderName | null>(null);
     const [callStartTime, setCallStartTime] = useState<number | null>(null);
     const [serverTimeOffset, setServerTimeOffset] = useState(0);
     const [disposition, setDisposition] = useState("");
@@ -288,9 +292,11 @@ export default function CallingPage() {
     }, [customer?.phone_no]);
 
 
-    const handleEndCall = useCallback(async (isFromBridge = false) => {
+    const handleEndCall = useCallback(async (isFromBridge = false, providerOverride?: CallingProviderName | null) => {
         isApiUpdatingRef.current = true; // LOCK ON IMMEDIATELY
         console.log(`🤙 [EndCall] Initiated. Source: ${isFromBridge ? 'Native Bridge' : 'User UI'}`);
+        const providerForCall = providerOverride ?? activeCallProviderRef.current;
+        activeCallProviderRef.current = null;
         
         // If the call never reached 'connected' status, force duration to 0
         if (localCallingStatus !== 'connected') {
@@ -321,7 +327,11 @@ export default function CallingPage() {
             // Only send command to flutter if we initiated it from UI
             if (!isFromBridge) {
                 console.log('🤙 [EndCall] Notifying Flutter to disconnect...');
-                notifyFlutter('call_disconnect', decryptedPhone);
+                try {
+                    await routeCallingCommand('call_disconnect', decryptedPhone, providerForCall ?? undefined);
+                } catch (providerError) {
+                    console.warn('🤙 [EndCall] Provider routing failed; skipping native disconnect.', providerError);
+                }
             } else {
                 console.log('🤙 [EndCall] Skipping Flutter notification (already disconnected on native side)');
             }
@@ -331,10 +341,10 @@ export default function CallingPage() {
                 if (isFromBridge) {
                     console.log(`🤙 [EndCall] Clearing SyncMeta busy status for employee: ${user.employeeId}`);
                     // If bridge already disconnected, just clear the busy state in DB
-                    updateSyncMetaCallStatus(user.employeeId, '', "");
+                    updateSyncMetaCallStatus(user.employeeId, '', "", providerForCall);
                 } else {
                     console.log(`🤙 [EndCall] Updating SyncMeta with call_disconnect for: ${user.employeeId}`);
-                    updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', decryptedPhone || "");
+                    updateSyncMetaCallStatus(user.employeeId, 'call_disconnect', decryptedPhone || "", providerForCall);
                 }
             } else {
                 console.warn('🤙 [EndCall] Employee ID missing, skipping SyncMeta update');
@@ -432,7 +442,7 @@ export default function CallingPage() {
     useEffect(() => {
         if (typeof window === 'undefined') return;
 
-        const handleMessage = (e: any) => {
+        const handleMessage = async (e: any) => {
             const data = e.detail;
             console.log('📬 [Bridge] Received Message:', data);
             
@@ -445,13 +455,31 @@ export default function CallingPage() {
                                     eventType === 'call_disconnected' ||
                                     eventType === 'disconnected' ||
                                     eventVal === 'disconnected';
+
+            const isCallStatusMsg = isDisconnectMsg || eventType === 'connecting' || eventType === 'connected';
+            if (!isCallStatusMsg) return;
+
+            let eventProvider = activeCallProviderRef.current;
+            if (!eventProvider) {
+                try {
+                    eventProvider = await resolveActiveCallingProvider();
+                } catch (providerError) {
+                    console.warn('📬 [Bridge] Unable to verify provider; ignoring native call event.', providerError);
+                    return;
+                }
+            }
+            if (eventProvider !== 'sim') {
+                console.log('📬 [Bridge] Ignoring native call event because SIM is not the active provider.');
+                return;
+            }
+            activeCallProviderRef.current = eventProvider;
             
             if (isDisconnectMsg) {
                 console.log('📬 [Bridge] Disconnect event detected:', eventType || eventVal);
                 
                 // Clear calling_status on disconnect
                 if (user?.employeeId) {
-                    updateSyncMetaCallingStatus(user.employeeId, null);
+                    updateSyncMetaCallingStatus(user.employeeId, null, eventProvider);
                 }
                 setLocalCallingStatus(null);
 
@@ -466,7 +494,7 @@ export default function CallingPage() {
 
                 if (!disconnectedPhone || disconnectedPhone === currentPhone) {
                     console.log('📬 [Bridge] ✅ MATCH (or generic disconnect). Triggering handleEndCall(true)...');
-                    handleEndCall(true);
+                    handleEndCall(true, eventProvider);
                 } else {
                     console.log('📬 [Bridge] ❌ NUMBER MISMATCH. Ignoring.');
                 }
@@ -516,7 +544,7 @@ export default function CallingPage() {
 
                 // Sync to DB so Header and other components see it
                 if (user?.employeeId) {
-                    updateSyncMetaCallingStatus(user.employeeId, eventType);
+                    updateSyncMetaCallingStatus(user.employeeId, eventType, eventProvider);
                 }
             }
         };
@@ -1757,6 +1785,32 @@ useEffect(() => {
             return;
         }
 
+        if (customer?.phone_no) {
+            try {
+                const activeProvider = await resolveActiveCallingProvider();
+                if (activeProvider !== "sim") {
+                    isApiUpdatingRef.current = false;
+                    showWarning(
+                        activeProvider === "smartflo"
+                            ? "Tata Smartflo is selected, but Smartflo calling is not available yet. Switch to SIM to place this call."
+                            : "No enabled calling provider is selected. Select SIM before placing this call.",
+                        "Calling Provider"
+                    );
+                    return;
+                }
+                activeCallProviderRef.current = activeProvider;
+            } catch (providerError) {
+                isApiUpdatingRef.current = false;
+                showWarning(
+                    providerError instanceof Error
+                        ? providerError.message
+                        : "Unable to verify the active calling provider.",
+                    "Calling Provider"
+                );
+                return;
+            }
+        }
+
         // Flag is now handled automatically by the centralized useEffect watcher above
 
 
@@ -1784,7 +1838,8 @@ useEffect(() => {
             }
             
             const decryptedPhone = decryptPhone(customer.phone_no);
-            const bridgeConnected = notifyFlutter('call_to', decryptedPhone);
+            const routedCommand = await routeCallingCommand('call_to', decryptedPhone, activeCallProviderRef.current);
+            const bridgeConnected = routedCommand.bridgeConnected;
             
             if (bridgeConnected) {
                 setCallAlive(true);
@@ -1794,8 +1849,8 @@ useEffect(() => {
 
             // Sync to SyncMeta table for real-time header reflection
             if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_to', decryptedPhone || "");
-                updateSyncMetaCallingStatus(user.employeeId, 'preparing');
+                updateSyncMetaCallStatus(user.employeeId, 'call_to', decryptedPhone || "", activeCallProviderRef.current);
+                updateSyncMetaCallingStatus(user.employeeId, 'preparing', activeCallProviderRef.current);
             }
             setLocalCallingStatus('preparing');
         }

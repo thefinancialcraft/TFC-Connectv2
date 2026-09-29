@@ -3,6 +3,7 @@
  */
 import { supabase } from "./supabase";
 import { globalBridgeLogger } from "./bridgeLogger";
+import { resolveActiveCallingProvider, type CallingProviderName } from "./callingProviderClient";
 
 // Global receiver for Flutter messages to ensure they are logged and dispatched via events
 if (typeof window !== 'undefined') {
@@ -23,7 +24,7 @@ if (typeof window !== 'undefined') {
   }
 }
 
-export const notifyFlutter = (type: string, value: any) => {
+const sendBridgeMessage = (type: string, value: any) => {
   if (typeof window !== 'undefined') {
     const win = window as any;
     
@@ -42,6 +43,17 @@ export const notifyFlutter = (type: string, value: any) => {
   }
   return false;
 };
+
+export const notifyFlutter = (type: string, value: any) => {
+  if (type === 'call_to' || type === 'call_disconnect') {
+    console.warn(`[Bridge] ${type} must be sent through the calling provider router.`);
+    return false;
+  }
+  return sendBridgeMessage(type, value);
+};
+
+export const dispatchCallingMessage = (type: 'call_to' | 'call_disconnect', value: string) =>
+  sendBridgeMessage(type, value);
 
 export const notifyLoginToFlutter = (user?: any) => {
   console.log("🚀 [Bridge] Triggering Login Event with Metadata");
@@ -114,13 +126,32 @@ export const notifyActivationToFlutter = () => {
  */
 console.log("🛠️ [Bridge] Flutter Bridge Library Loaded v2.1 (with enhanced logging)");
 
-export const updateSyncMetaCallStatus = async (employeeId: string, type: string, value: string) => {
+export const updateSyncMetaCallStatus = async (
+  employeeId: string,
+  type: string,
+  value: string,
+  providerOverride?: CallingProviderName | null
+) => {
   if (!employeeId) {
     console.error("❌ [Bridge] updateSyncMetaCallStatus failed: employeeId is missing");
     return;
   }
 
   console.log("%c📡 [Bridge] Starting sync update", "color: blue; font-weight: bold", { employeeId, type, value });
+
+  let activeProvider = providerOverride;
+  if (activeProvider === undefined) {
+    try {
+      activeProvider = await resolveActiveCallingProvider();
+    } catch (error) {
+      console.warn("📵 [Bridge] Unable to verify provider; skipping call command sync.", error);
+      return;
+    }
+  }
+  if (activeProvider !== 'sim') {
+    console.log("📵 [Bridge] SIM is not active. Skipping native call command sync.");
+    return;
+  }
 
   // 0. Master Move: If we are on mobile (bridge active), DO NOT update type/value columns.
   if (typeof window !== 'undefined' && (window as any).flutter_inappwebview) {
@@ -193,8 +224,23 @@ export const updateSyncMetaCallStatus = async (employeeId: string, type: string,
 /**
  * Update specifically the calling_status column in sync_meta
  */
-export const updateSyncMetaCallingStatus = async (employeeId: string, callingStatus: string | null) => {
+export const updateSyncMetaCallingStatus = async (
+  employeeId: string,
+  callingStatus: string | null,
+  providerOverride?: CallingProviderName | null
+) => {
   if (!employeeId) return;
+
+  let activeProvider = providerOverride;
+  if (activeProvider === undefined) {
+    try {
+      activeProvider = await resolveActiveCallingProvider();
+    } catch (error) {
+      console.warn("📵 [Bridge] Unable to verify provider; skipping calling status sync.", error);
+      return;
+    }
+  }
+  if (activeProvider !== 'sim') return;
   
   try {
     console.log(`📡 [Bridge] Syncing calling_status: ${callingStatus} to DB...`);

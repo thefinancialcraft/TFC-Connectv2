@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useUser } from '../../context/UserContext';
 import { notifyFlutter, requestDeviceInfoFromFlutter } from '../../lib/flutterBridge';
 import { globalBridgeLogger, BridgeLogEntry } from '../../lib/bridgeLogger';
+import { routeCallingCommand, type CallingBridgeCommand } from '../../lib/callingCommandRouter';
+import { showWarning } from '@/lib/dialogUtils';
 
 declare global {
   interface Window {
@@ -57,8 +59,29 @@ export default function FlutterBridgeTab() {
     }
   }, []);
 
-  const sendToFlutter = () => {
-    notifyFlutter(testType, testValue);
+  const sendToFlutter = async (type = testType, value = testValue) => {
+    if (type === 'call_to' || type === 'call_disconnect') {
+      try {
+        const result = await routeCallingCommand(type as CallingBridgeCommand, value);
+        if (result.provider !== 'sim') {
+          showWarning(
+            result.provider === 'smartflo'
+              ? 'Tata Smartflo is selected; native SIM bridge calls are blocked.'
+              : 'Select an enabled calling provider before sending a call command.',
+            'Calling Provider'
+          );
+          return;
+        }
+        if (type === 'call_to' && !result.bridgeConnected) {
+          window.location.href = `tel:${value}`;
+        }
+      } catch (error) {
+        showWarning(error instanceof Error ? error.message : 'Unable to verify the calling provider.', 'Calling Provider');
+      }
+      return;
+    }
+
+    notifyFlutter(type, value);
   };
 
   const clearLogs = () => {
@@ -105,16 +128,12 @@ export default function FlutterBridgeTab() {
   const sendDummyEvent = () => {
     const testNumber = "198";
     console.log("📤 [Web] Triggering Test Call to:", testNumber);
-    const bridgeConnected = notifyFlutter('call_to', testNumber);
-    
-    if (!bridgeConnected) {
-      window.location.href = `tel:${testNumber}`;
-    }
+    void sendToFlutter('call_to', testNumber);
   };
 
   const sendDisconnectEvent = () => {
     const testNumber = "198";
-    notifyFlutter('call_disconnect', testNumber);
+    void sendToFlutter('call_disconnect', testNumber);
   };
 
   const handleRequestDeviceInfo = () => {
@@ -174,7 +193,7 @@ export default function FlutterBridgeTab() {
                  />
                </div>
                <button 
-                  onClick={sendToFlutter}
+                  onClick={() => void sendToFlutter()}
                   className="h-11 px-6 bg-[#4b33e8] text-white rounded-xl text-sm font-bold shadow-lg shadow-[#4b33e8]/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2"
                >
                   <i className="fi fi-rr-paper-plane-top flex" />
