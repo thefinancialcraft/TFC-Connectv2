@@ -1,6 +1,6 @@
 import { useState, useEffect, memo, useMemo, useCallback, useRef } from "react";
 import { useRouter } from "next/router";
-import { Bell, BellRing, Check, Trash2, X, Info, AlertTriangle, Wifi, WifiOff } from "lucide-react";
+import { Bell, BellRing, Check, Trash2, X, Info, AlertTriangle, Wifi, WifiOff, Headphones, Smartphone } from "lucide-react";
 import AppLogo from "./AppLogo";
 import { getStoredUserData } from "../lib/localStorageUtils";
 import { supabase } from "../lib/supabase";
@@ -21,6 +21,14 @@ interface HeaderProps {
   hideSidebar?: boolean;
   isStatic?: boolean;
   hideBorder?: boolean;
+}
+
+type CallingProviderName = "sim" | "smartflo";
+
+interface HeaderCallingProviderState {
+  organization: Record<CallingProviderName, { enable: boolean }>;
+  user: Record<CallingProviderName, { enable: boolean; in_use: boolean }>;
+  active_provider: CallingProviderName | null;
 }
 
 // Ultra-smooth, letter-by-letter staggered bottom-to-top bounce animation
@@ -157,6 +165,41 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
   const [notifications, setNotifications] = useState<any[]>([]);
   const [showNotifications, setShowNotifications] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [callingProviderState, setCallingProviderState] = useState<HeaderCallingProviderState | null>(null);
+  const [switchingProvider, setSwitchingProvider] = useState<CallingProviderName | null>(null);
+  const [refreshingProviderState, setRefreshingProviderState] = useState(false);
+  const [showProviderMenu, setShowProviderMenu] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCallingProvider = async () => {
+      if (!user?.uid) {
+        setCallingProviderState(null);
+        return;
+      }
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+
+        const response = await fetch("/api/calling/provider", {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.message || "Unable to load calling providers");
+        if (!cancelled) setCallingProviderState(result.data as HeaderCallingProviderState);
+      } catch (error) {
+        if (!cancelled) {
+          setCallingProviderState(null);
+          console.error("Unable to load calling provider state:", error);
+        }
+      }
+    };
+
+    void loadCallingProvider();
+    return () => { cancelled = true; };
+  }, [user?.uid]);
 
   // Search Bar States
   const [headerSearchQuery, setHeaderSearchQuery] = useState("");
@@ -579,9 +622,156 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
     }
   }, [isLoggingOut, onLogout]);
 
+  const handleProviderSelect = async (provider: CallingProviderName) => {
+    if (switchingProvider || refreshingProviderState || !callingProviderState) return;
+    setSwitchingProvider(provider);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Please sign in again to change calling provider.");
+
+      const response = await fetch("/api/calling/provider", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ provider }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Unable to change calling provider.");
+      setCallingProviderState(result.data as HeaderCallingProviderState);
+      if (user?.uid) {
+        window.dispatchEvent(new CustomEvent("calling-provider-updated", {
+          detail: { userId: user.uid, state: result.data },
+        }));
+      }
+      setShowProviderMenu(false);
+    } catch (error) {
+      showWarning(error instanceof Error ? error.message : "Unable to change calling provider.", "Calling Provider");
+    } finally {
+      setSwitchingProvider(null);
+    }
+  };
+
+  const handleProviderMenuOpen = async () => {
+    if (switchingProvider || refreshingProviderState) return;
+    setRefreshingProviderState(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Please sign in again to view calling providers.");
+
+      const response = await fetch("/api/calling/provider", {
+        headers: { Authorization: `Bearer ${session.access_token}` },
+        cache: "no-store",
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Unable to refresh calling provider status.");
+
+      setCallingProviderState(result.data as HeaderCallingProviderState);
+      setShowProviderMenu(true);
+    } catch (error) {
+      showWarning(error instanceof Error ? error.message : "Unable to refresh calling provider status.", "Calling Provider");
+    } finally {
+      setRefreshingProviderState(false);
+    }
+  };
+
+  const renderCallingProviderControls = () => {
+    if (!callingProviderState) return null;
+
+    const activeProvider = callingProviderState.active_provider ||
+      (callingProviderState.user.smartflo.in_use ? "smartflo" : "sim");
+    const ActiveIcon = activeProvider === "sim" ? Smartphone : Headphones;
+    const activeLabel = activeProvider === "sim" ? "SIM Based" : "Tata Smartflo";
+    const activeProviderEnabled = callingProviderState.organization[activeProvider].enable &&
+      callingProviderState.user[activeProvider].enable;
+
+    return (
+      <div className="relative" data-calling-provider-menu>
+        <button
+          type="button"
+          onClick={() => void handleProviderMenuOpen()}
+          disabled={switchingProvider !== null || refreshingProviderState}
+          aria-label={`Calling provider: ${activeLabel}`}
+          aria-expanded={showProviderMenu}
+          aria-haspopup="menu"
+          title={`Calling provider: ${activeLabel}`}
+          className={`flex h-8 items-center gap-1 rounded-lg border px-2 transition-colors disabled:cursor-wait ${
+            activeProviderEnabled
+              ? activeProvider === "sim"
+                ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                : "border-sky-200 bg-sky-50 text-sky-700"
+              : "border-gray-200 bg-gray-50 text-gray-400"
+          }`}
+        >
+          {switchingProvider || refreshingProviderState ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
+          ) : (
+            <ActiveIcon className="h-4 w-4" aria-hidden="true" />
+          )}
+        </button>
+
+        {showProviderMenu && (
+          <div role="menu" aria-label="Calling provider" className="absolute right-0 top-full z-[60] mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
+            {(["sim", "smartflo"] as const).map((provider) => {
+              const providerEnabled = callingProviderState.organization[provider].enable && callingProviderState.user[provider].enable;
+              const isActive = callingProviderState.active_provider === provider;
+              const label = provider === "sim" ? "SIM Based" : "Tata Smartflo";
+              const Icon = provider === "sim" ? Smartphone : Headphones;
+              const unavailableReason = !callingProviderState.organization[provider].enable
+                ? "Disabled for organization"
+                : !callingProviderState.user[provider].enable
+                  ? "Disabled for user"
+                  : isActive
+                    ? "Currently selected"
+                    : "Switch provider";
+
+              return (
+            <button
+              key={provider}
+              type="button"
+              role="menuitemradio"
+              aria-checked={isActive}
+              onClick={() => {
+                if (isActive) {
+                  setShowProviderMenu(false);
+                  return;
+                }
+                void handleProviderSelect(provider);
+              }}
+              disabled={!providerEnabled || isActive || switchingProvider !== null || refreshingProviderState}
+              title={unavailableReason}
+              className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                isActive
+                  ? "bg-gray-100 text-gray-900"
+                  : providerEnabled
+                    ? "text-gray-700 hover:bg-gray-50"
+                    : "text-gray-400"
+              }`}
+            >
+              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-xs font-semibold">{label}</span>
+                <span className="block text-[10px] text-gray-500">{unavailableReason}</span>
+              </span>
+              {isActive ? <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" /> : null}
+            </button>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Click outside and Escape key handler for search dropdown
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      if (!(event.target instanceof Element) || !event.target.closest('[data-calling-provider-menu]')) {
+        setShowProviderMenu(false);
+      }
       if (searchContainerRef.current && !searchContainerRef.current.contains(event.target as Node)) {
         setSearchDropdownOpen(false);
         setShowHeaderSearchDropdown(false);
@@ -592,6 +782,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
       if (event.key === "Escape") {
         setSearchDropdownOpen(false);
         setShowHeaderSearchDropdown(false);
+        setShowProviderMenu(false);
       }
     };
 
@@ -1168,8 +1359,10 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
 
           {/* Right: Server Status & Logout */}
           <div className="flex items-center gap-2 shrink-0">
+            {renderCallingProviderControls()}
+
             {/* Notification Bell */}
-            <div className="relative">
+            <div className="relative" data-calling-provider-menu>
               <button
                 onClick={() => setShowNotifications(!showNotifications)}
                 className="p-2 rounded-xl bg-gray-50/80 hover:bg-gray-100 transition-all active:scale-95 text-gray-600 relative overflow-visible"
@@ -1643,6 +1836,8 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
                 </div>
               </div>
             )}
+
+            {renderCallingProviderControls()}
 
             {/* Notification Bell (Desktop) */}
             <div className="relative">

@@ -74,6 +74,20 @@ interface UserDetail {
   is_caller?: boolean | null;
   designation?: string | null;
 }
+
+type CallingProviderName = "sim" | "smartflo";
+
+interface AgentCallingProviderState {
+  organization: {
+    sim: { enable: boolean };
+    smartflo: { enable: boolean };
+  };
+  user: {
+    sim: { enable: boolean; in_use: boolean };
+    smartflo: { enable: boolean; in_use: boolean };
+  };
+}
+
 function UserProfilePage() {
     const router = useRouter();
     const { userId } = router.query;
@@ -113,6 +127,10 @@ function UserProfilePage() {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [savingSecurity, setSavingSecurity] = useState<boolean>(false);
     const [deletingUser, setDeletingUser] = useState<boolean>(false);
+    const [agentProviderState, setAgentProviderState] = useState<AgentCallingProviderState | null>(null);
+    const [loadingAgentProviders, setLoadingAgentProviders] = useState(false);
+    const [savingAgentProvider, setSavingAgentProvider] = useState(false);
+    const [agentProviderError, setAgentProviderError] = useState("");
 
     const [accountModal, setAccountModal] = useState<{
       isOpen: boolean;
@@ -252,6 +270,27 @@ function UserProfilePage() {
         setSecurityUserName(profileData.user_name || "");
         setSecurityEmail(profileData.email || "");
         setSecurityPassword("");
+
+        if (isInternalOrCeo && profileData.user_id) {
+          setLoadingAgentProviders(true);
+          try {
+            const providerResponse = await fetch(
+              `/api/calling/provider/agent?targetUserId=${encodeURIComponent(profileData.user_id)}`,
+              { headers: { Authorization: `Bearer ${session.access_token}` } }
+            );
+            const providerResult = await providerResponse.json();
+            if (!providerResponse.ok) {
+              throw new Error(providerResult.message || "Unable to load calling provider settings");
+            }
+            setAgentProviderState(providerResult.data);
+            setAgentProviderError("");
+          } catch (providerError) {
+            setAgentProviderError(providerError instanceof Error ? providerError.message : "Unable to load calling provider settings");
+          } finally {
+            setLoadingAgentProviders(false);
+          }
+        }
+
         // Initialize edit form data
         setEditFormData({
           email: profileData.email || "",
@@ -298,7 +337,23 @@ function UserProfilePage() {
         if (mounted && userId && !authLoading) {
             fetchData();
         }
-    }, [userId, router.isReady, mounted, currentUser, authLoading]);
+    }, [userId, router, router.isReady, mounted, userMounted, currentUser, isInternalOrCeo, authLoading]);
+
+  useEffect(() => {
+    const handleCallingProviderUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<{
+        userId?: string;
+        state?: AgentCallingProviderState;
+      }>).detail;
+
+      if (!detail?.state || detail.userId !== userDetail?.user_id) return;
+      setAgentProviderState(detail.state);
+      setAgentProviderError("");
+    };
+
+    window.addEventListener("calling-provider-updated", handleCallingProviderUpdated);
+    return () => window.removeEventListener("calling-provider-updated", handleCallingProviderUpdated);
+  }, [userDetail?.user_id]);
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'N/A';
@@ -556,6 +611,42 @@ function UserProfilePage() {
       alert(err.message || "An error occurred while updating security settings");
     } finally {
       setSavingSecurity(false);
+    }
+  };
+
+  const handleAgentProviderChange = async (
+    provider: CallingProviderName,
+    field: "enable" | "in_use",
+    value: boolean
+  ) => {
+    if (!userDetail?.user_id || savingAgentProvider) return;
+
+    try {
+      setSavingAgentProvider(true);
+      setAgentProviderError("");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Please sign in again to update provider settings");
+
+      const response = await fetch("/api/calling/provider/agent", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          targetUserId: userDetail.user_id,
+          provider,
+          [field]: value,
+        }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Unable to update provider settings");
+
+      setAgentProviderState(result.data);
+    } catch (providerError) {
+      setAgentProviderError(providerError instanceof Error ? providerError.message : "Unable to update provider settings");
+    } finally {
+      setSavingAgentProvider(false);
     }
   };
 
@@ -963,6 +1054,89 @@ function UserProfilePage() {
                                   </button>
                                 </div>
                               </div>
+                            </div>
+
+                            {/* Calling Provider Configuration */}
+                            <div className="rounded-xl border border-gray-200 bg-white p-4">
+                              <div className="mb-4 border-b border-gray-100 pb-3">
+                                <h4 className="flex items-center gap-2 text-xs font-bold text-gray-800">
+                                  <i className="fi fi-rr-headset text-[#4b33e8]" aria-hidden="true" />
+                                  Calling Providers
+                                </h4>
+                                <p className="mt-1 text-[11px] text-gray-500">
+                                  Set this agent’s provider access and selection. Smartflo call initiation is not enabled by this setting.
+                                </p>
+                              </div>
+
+                              {agentProviderError && (
+                                <p className="mb-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700" role="alert">
+                                  {agentProviderError}
+                                </p>
+                              )}
+
+                              {loadingAgentProviders || !agentProviderState ? (
+                                <div className="flex items-center gap-2 py-3 text-xs text-gray-500" aria-live="polite">
+                                  {loadingAgentProviders ? (
+                                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#4b33e8] border-t-transparent" aria-hidden="true" />
+                                  ) : null}
+                                  {loadingAgentProviders ? "Loading provider settings..." : "Provider settings unavailable"}
+                                </div>
+                              ) : (
+                                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                                  {(["sim", "smartflo"] as const).map((provider) => {
+                                    const providerConfig = agentProviderState.user[provider];
+                                    const organizationEnabled = agentProviderState.organization[provider].enable;
+                                    const providerLabel = provider === "sim" ? "SIM" : "Smartflo";
+
+                                    return (
+                                      <div key={provider} className="rounded-lg border border-gray-200 bg-gray-50/70 p-3">
+                                        <div className="mb-3 flex items-center justify-between gap-2">
+                                          <h5 className="text-xs font-bold text-gray-800">{providerLabel}</h5>
+                                          <span className={`text-[10px] font-semibold ${organizationEnabled ? "text-emerald-700" : "text-gray-500"}`}>
+                                            {organizationEnabled ? "Organization enabled" : "Organization disabled"}
+                                          </span>
+                                        </div>
+
+                                        <div className="space-y-3">
+                                          <div className="flex items-center justify-between gap-3">
+                                            <span className="text-xs text-gray-700">Enabled for agent</span>
+                                            <button
+                                              type="button"
+                                              role="switch"
+                                              aria-checked={providerConfig.enable}
+                                              aria-label={`${providerConfig.enable ? "Disable" : "Enable"} ${providerLabel} for this agent`}
+                                              disabled={savingAgentProvider}
+                                              onClick={() => void handleAgentProviderChange(provider, "enable", !providerConfig.enable)}
+                                              className={`flex h-6 w-11 shrink-0 items-center rounded-full border p-0.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                                                providerConfig.enable ? "justify-end border-emerald-600 bg-emerald-600" : "justify-start border-gray-300 bg-gray-200"
+                                              }`}
+                                            >
+                                              <span className="h-4 w-4 rounded-full bg-white shadow-sm" />
+                                            </button>
+                                          </div>
+
+                                          <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3">
+                                            <span className="text-xs text-gray-700">In use</span>
+                                            <button
+                                              type="button"
+                                              role="switch"
+                                              aria-checked={providerConfig.in_use}
+                                              aria-label={`${providerConfig.in_use ? "Stop using" : "Use"} ${providerLabel} for calls`}
+                                              disabled={savingAgentProvider || (!providerConfig.in_use && (!organizationEnabled || !providerConfig.enable))}
+                                              onClick={() => void handleAgentProviderChange(provider, "in_use", !providerConfig.in_use)}
+                                              className={`flex h-6 w-11 shrink-0 items-center rounded-full border p-0.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
+                                                providerConfig.in_use ? "justify-end border-[#4b33e8] bg-[#4b33e8]" : "justify-start border-gray-300 bg-gray-200"
+                                              }`}
+                                            >
+                                              <span className="h-4 w-4 rounded-full bg-white shadow-sm" />
+                                            </button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                </div>
+                              )}
                             </div>
 
                             {/* Row 2: Role & Designation */}
