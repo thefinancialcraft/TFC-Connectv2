@@ -631,9 +631,8 @@ function ClickToCallCard() {
       }
 
       setIsActivated(true);
-      setTestCallMessage(`${result.message || 'Originate successfully queued'}${result.ref_id ? ` · Ref: ${result.ref_id}` : ''}`);
+      setTestCallMessage(result.message || 'Originate successfully queued');
       setTestCallStatus('idle');
-      setIsConfigExpanded(false);
     } catch (error) {
       setTestCallStatus('error');
       setTestCallMessage(error instanceof Error ? error.message : 'Unable to test Click to Call.');
