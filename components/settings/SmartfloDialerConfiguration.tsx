@@ -1476,7 +1476,7 @@ function SetupWebhookCard() {
                     return (
                       <div
                         key={event.id}
-                        className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md"
+                        className="rounded-lg border border-gray-200 bg-white p-4"
                       >
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex flex-wrap items-center gap-2">
