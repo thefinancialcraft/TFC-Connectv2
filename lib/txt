@@ -1,0 +1,12 @@
+hume prefilght hit krne se user data to mila lekin user ka caller id ni callerid ke lie
+https://api-smartflo.tatateleservices.com//v1/users/{user_id}
+
+ye endpoint hit krna hoga
+
+to ui me update kro or caller_id filed ko null rkho or supabase me smartflo user_tabel me caller id add  kro 
+
+agr user caller_id update krta hai to smartflow intrgatration me params me savi user ke liye same caller_id use kro agr null hota hai to 
+
+https://api-smartflo.tatateleservices.com//v1/users/{user_id}
+
+ko hit krega 

@@ -10,6 +10,8 @@ import FlutterBridgeTab from "@/components/settings/FlutterBridgeTab";
 import DevicesTab from "@/components/settings/DevicesTab";
 import ConsoleLogsTab from "@/components/settings/ConsoleLogsTab";
 import SmartfloIntegrationCard from "@/components/settings/SmartfloIntegrationCard";
+import SmartfloDialerCardPreview from "@/components/settings/SmartfloDialerCardPreview";
+import SmartfloDialerConfiguration from "@/components/settings/SmartfloDialerConfiguration";
 import AccountIssueModal from "@/components/modals/AccountIssueModal";
 
 interface SettingsFormData {
@@ -57,6 +59,7 @@ export default function Settings() {
   const [activeNav] = useState("settings");
   const [activeTab, setActiveTab] = useState<"profile" | "security" | "flutter_bridge" | "devices" | "console_logs" | "integrations">("profile");
   const [activeIntegrationCategory, setActiveIntegrationCategory] = useState<"user" | "admin">("user");
+  const [showSmartfloDialerConfiguration, setShowSmartfloDialerConfiguration] = useState(false);
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   const canAccessAdminIntegrations =
     user?.role === "admin" || user?.role === "super_admin" || user?.super_admin === true;
@@ -818,9 +821,12 @@ export default function Settings() {
                   </div>
                 </div>
 
-                {activeIntegrationCategory === "admin" && canAccessAdminIntegrations ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {activeIntegrationCategory === "admin" && canAccessAdminIntegrations && showSmartfloDialerConfiguration ? (
+                  <SmartfloDialerConfiguration onBack={() => setShowSmartfloDialerConfiguration(false)} />
+                ) : activeIntegrationCategory === "admin" && canAccessAdminIntegrations ? (
+                  <div className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 xl:grid-cols-3">
                     <SmartfloIntegrationCard organizationId={user?.organization_id} />
+                    <SmartfloDialerCardPreview onOpenConfiguration={() => setShowSmartfloDialerConfiguration(true)} />
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">

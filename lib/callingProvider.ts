@@ -9,10 +9,11 @@ export interface OrganizationCallingProvider {
 
 export interface UserCallingProvider {
   sim: { enable: boolean; in_use: boolean };
-  smartflo: { enable: boolean; in_use: boolean };
+  smartflo: { enable: boolean; in_use: boolean; is_mapped: boolean; agent_id: string | null };
 }
 
 export interface CallingProviderState {
+  organizationId: string;
   organization: OrganizationCallingProvider;
   user: UserCallingProvider;
 }
@@ -58,7 +59,12 @@ function normalizeCallingProvider(
   if (includeInUse) {
     return {
       sim: { enable: sim.enable === true, in_use: sim.in_use === true },
-      smartflo: { enable: smartflo.enable === true, in_use: smartflo.in_use === true },
+      smartflo: {
+        enable: smartflo.enable === true,
+        in_use: smartflo.in_use === true,
+        is_mapped: smartflo.is_mapped === true,
+        agent_id: typeof smartflo.agent_id === 'string' ? smartflo.agent_id : null,
+      },
     };
   }
 
@@ -90,6 +96,7 @@ export async function getCallingProviderState(userId: string): Promise<CallingPr
   if (!organization) return null;
 
   return {
+    organizationId: profile.organization_id,
     organization: normalizeCallingProvider(organization.calling_provider, false),
     user: normalizeCallingProvider(profile.calling_provider, true),
   };

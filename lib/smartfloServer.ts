@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto';
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
@@ -11,6 +11,42 @@ export const smartfloAdminClient: SupabaseClient | null =
         auth: { autoRefreshToken: false, persistSession: false },
       })
     : null;
+
+function getSmartfloTokenEncryptionKey() {
+  const secret = process.env.SMARTFLO_TOKEN_ENCRYPTION_KEY || serviceRoleKey;
+  if (!secret) throw new Error('Smartflo token encryption is not configured.');
+  return createHash('sha256').update(secret).digest();
+}
+
+export function hashSmartfloToken(token: string): string {
+  return createHash('sha256').update(token).digest('hex');
+}
+
+export function encryptSmartfloToken(token: string): string {
+  const iv = randomBytes(12);
+  const cipher = createCipheriv('aes-256-gcm', getSmartfloTokenEncryptionKey(), iv);
+  const ciphertext = Buffer.concat([cipher.update(token, 'utf8'), cipher.final()]);
+  const authTag = cipher.getAuthTag();
+  return `v1:${iv.toString('base64')}:${authTag.toString('base64')}:${ciphertext.toString('base64')}`;
+}
+
+export function decryptSmartfloToken(encryptedToken: string): string {
+  const [version, encodedIv, encodedAuthTag, encodedCiphertext] = encryptedToken.split(':');
+  if (version !== 'v1' || !encodedIv || !encodedAuthTag || !encodedCiphertext) {
+    throw new Error('Stored Smartflo token has an unsupported format.');
+  }
+
+  const decipher = createDecipheriv(
+    'aes-256-gcm',
+    getSmartfloTokenEncryptionKey(),
+    Buffer.from(encodedIv, 'base64')
+  );
+  decipher.setAuthTag(Buffer.from(encodedAuthTag, 'base64'));
+  return Buffer.concat([
+    decipher.update(Buffer.from(encodedCiphertext, 'base64')),
+    decipher.final(),
+  ]).toString('utf8');
+}
 
 export interface SmartfloAdminContext {
   organizationId: string;

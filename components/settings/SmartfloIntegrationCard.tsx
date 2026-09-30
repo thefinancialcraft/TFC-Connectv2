@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 
 interface SmartfloCredentials {
@@ -275,17 +276,17 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
 
   return (
     <>
-      <div className="w-full max-w-[320px] overflow-hidden rounded-xl border border-gray-200 bg-white">
-        <div className="flex items-center justify-between gap-3 bg-[#888888] px-4 py-3">
-          <p className="text-sm font-bold text-white">Smartflo</p>
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-[#4b33e8]">
-            <i className="fi fi-rr-phone-call text-lg" aria-hidden="true" />
+      <div className="flex h-full min-h-[173px] min-w-0 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white">
+        <div className="flex h-[72px] shrink-0 items-center justify-between gap-3 bg-[#888888] px-4 py-3">
+          <p className="text-sm font-bold text-white">Smartflo Custom Connector</p>
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-white">
+            <Image src="/Smartflowp.png" alt="Smartflo" width={48} height={48} className="h-full w-full rounded-full object-contain" />
           </div>
         </div>
-        <p className="px-4 py-3 text-xs leading-relaxed text-gray-600">
+        <p className="flex min-h-[56px] flex-1 items-center px-4 py-3 text-xs leading-relaxed text-gray-600">
           Smartflo call management integration
         </p>
-        <div className="flex items-center justify-between border-t border-gray-100 px-4 py-2.5">
+        <div className="flex h-[45px] shrink-0 items-center justify-between border-t border-gray-100 px-4 py-2.5">
           <span className={`text-xs font-semibold ${enabled ? 'text-[#1a8f5a]' : pending ? 'text-amber-600' : 'text-gray-500'}`}>
             {statusLabel}
           </span>
@@ -316,7 +317,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
           >
             <div className="flex items-center gap-3 border-b border-gray-100 px-5 py-4">
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-[#4b33e8]">
-                <i className="fi fi-rr-phone-call text-lg" aria-hidden="true" />
+                <i className="fi flex fi-rr-phone-call text-lg" aria-hidden="true" />
               </div>
               <div>
                 <h2 id="smartflo-dialog-title" className="text-base font-bold text-gray-900">Connect Smartflo</h2>
@@ -345,7 +346,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
                         aria-label={`Copy ${label}`}
                         title={copiedField === label ? 'Copied' : `Copy ${label}`}
                       >
-                        <i className={`fi ${copiedField === label ? 'fi-rr-check' : 'fi-rr-copy'} text-sm`} aria-hidden="true" />
+                        <i className={`fi flex ${copiedField === label ? 'fi-rr-check' : 'fi-rr-copy'} text-sm`} aria-hidden="true" />
                       </button>
                     </div>
                   ))}

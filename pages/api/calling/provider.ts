@@ -49,11 +49,31 @@ export default async function handler(
       }
 
       const resolution = resolveCallingProviderFromState(state);
+      let smartfloAgent: { agentId: string; agentName: string | null } | null = null;
+      if (state.user.smartflo.is_mapped && state.user.smartflo.agent_id) {
+        const { data: mappedAgent, error: mappedAgentError } = await supabaseAdmin
+          .from('user_smartflo_details')
+          .select('smartflo_agent_id, agent_name')
+          .eq('organization_id', state.organizationId)
+          .eq('smartflo_agent_id', state.user.smartflo.agent_id)
+          .maybeSingle();
+        if (mappedAgentError) {
+          return res.status(500).json({ success: false, message: 'Unable to load mapped Smartflo agent details' });
+        }
+        if (mappedAgent) {
+          smartfloAgent = {
+            agentId: mappedAgent.smartflo_agent_id,
+            agentName: mappedAgent.agent_name,
+          };
+        }
+      }
+
       return res.status(200).json({
         success: true,
         data: {
           organization: state.organization,
           user: state.user,
+          smartflo_agent: smartfloAgent,
           active_provider: resolution.allowed ? resolution.provider : null,
         },
       });

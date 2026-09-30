@@ -27,7 +27,11 @@ type CallingProviderName = "sim" | "smartflo";
 
 interface HeaderCallingProviderState {
   organization: Record<CallingProviderName, { enable: boolean }>;
-  user: Record<CallingProviderName, { enable: boolean; in_use: boolean }>;
+  user: {
+    sim: { enable: boolean; in_use: boolean };
+    smartflo: { enable: boolean; in_use: boolean; is_mapped: boolean; agent_id: string | null };
+  };
+  smartflo_agent: { agentId: string; agentName: string | null } | null;
   active_provider: CallingProviderName | null;
 }
 
@@ -197,8 +201,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
       }
     };
 
+    const handleCallingProviderUpdated = (event: Event) => {
+      const detail = (event as CustomEvent<{ userId?: string }>).detail;
+      if (detail?.userId && detail.userId !== user?.uid) return;
+      void loadCallingProvider();
+    };
+
     void loadCallingProvider();
-    return () => { cancelled = true; };
+    window.addEventListener('calling-provider-updated', handleCallingProviderUpdated);
+    return () => {
+      cancelled = true;
+      window.removeEventListener('calling-provider-updated', handleCallingProviderUpdated);
+    };
   }, [user?.uid]);
 
   // Search Bar States
@@ -640,7 +654,10 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
       });
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || "Unable to change calling provider.");
-      setCallingProviderState(result.data as HeaderCallingProviderState);
+      setCallingProviderState({
+        ...result.data,
+        smartflo_agent: callingProviderState?.smartflo_agent ?? null,
+      } as HeaderCallingProviderState);
       if (user?.uid) {
         window.dispatchEvent(new CustomEvent("calling-provider-updated", {
           detail: { userId: user.uid, state: result.data },
@@ -687,6 +704,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
     const activeLabel = activeProvider === "sim" ? "SIM Based" : "Tata Smartflo";
     const activeProviderEnabled = callingProviderState.organization[activeProvider].enable &&
       callingProviderState.user[activeProvider].enable;
+    const mappedSmartfloAgent = callingProviderState.user.smartflo.is_mapped
+      ? callingProviderState.smartflo_agent
+      : null;
+    const mappedAgentName = mappedSmartfloAgent?.agentName || 'Mapped agent';
+    const mappedAgentWidth = mappedSmartfloAgent
+      ? Math.min(288, Math.max(132, 52 + Math.max(mappedAgentName.length * 6, mappedSmartfloAgent.agentId.length * 5.2)))
+      : 32;
 
     return (
       <div className="relative" data-calling-provider-menu>
@@ -698,7 +722,8 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
           aria-expanded={showProviderMenu}
           aria-haspopup="menu"
           title={`Calling provider: ${activeLabel}`}
-          className={`flex h-8 items-center gap-1 rounded-lg border px-2 transition-colors disabled:cursor-wait ${
+          style={{ width: `${mappedAgentWidth}px` }}
+          className={`flex shrink-0 items-center overflow-hidden whitespace-nowrap rounded-lg border transition-[width] duration-300 ease-in-out disabled:cursor-wait ${mappedSmartfloAgent ? 'h-8.5 gap-2 px-2.5' : 'h-8 gap-1 px-2'} ${
             activeProviderEnabled
               ? activeProvider === "sim"
                 ? "border-emerald-200 bg-emerald-50 text-emerald-700"
@@ -710,6 +735,12 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
           ) : (
             <ActiveIcon className="h-4 w-4" aria-hidden="true" />
+          )}
+          {mappedSmartfloAgent && (
+            <span className="min-w-0 border-l border-current/20 pl-2 text-left leading-tight">
+                <span className="block truncate text-[11px] font-semibold">{mappedAgentName}</span>
+                <span className="block truncate mb-[-2px] text-[8px] opacity-75">{mappedSmartfloAgent.agentId}</span>
+            </span>
           )}
         </button>
 
