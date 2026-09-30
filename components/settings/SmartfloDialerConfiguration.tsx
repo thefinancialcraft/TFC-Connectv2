@@ -1104,18 +1104,6 @@ function SetupWebhookCard() {
     }
   };
 
-  const copyWebhookUrl = async (fullUrl = false) => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : '';
-    const url = fullUrl ? `${origin}/webhook/org/${webhookId}` : `/webhook/org/${webhookId}`;
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // fallback
-    }
-  };
-
   const handleSimulateWebhook = async () => {
     if (isSimulating) return;
     setIsSimulating(true);
