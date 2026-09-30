@@ -218,10 +218,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       ? String(payload.recording_url || payload.record_url || payload.recording)
       : null;
 
+    const refId = String(
+      payload.ref_id ||
+      payload.uuid ||
+      payload.custom_identifier ||
+      callId
+    );
+
     const eventRecord: SmartfloWebhookEvent = {
       id: randomUUID(),
       receivedAt: new Date().toISOString(),
       callId,
+      refId,
       direction: rawDirection,
       callType: rawCallType,
       agentNumber,

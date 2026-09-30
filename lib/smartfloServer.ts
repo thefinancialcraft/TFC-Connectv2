@@ -123,6 +123,7 @@ export interface FormattedSmartfloWebhookEvent {
   id: string;
   receivedAt: string;
   callId: string;
+  refId: string;
   direction: string;
   callType: string;
   agentNumber: string;
@@ -215,10 +216,21 @@ export function formatSmartfloWebhookEvent(
 
   const recUrl = innerPayload.recording_url || innerPayload.record_url || p.recordingUrl || null;
 
+  const refId = String(
+    innerPayload.ref_id ||
+      innerPayload.uuid ||
+      innerPayload.custom_identifier ||
+      p.refId ||
+      innerPayload.call_id ||
+      p.callId ||
+      rowId
+  );
+
   return {
     id: rowId,
     receivedAt: createdAt || String(p.receivedAt || new Date().toISOString()),
     callId: String(innerPayload.call_id || innerPayload.ref_id || innerPayload.uuid || innerPayload.id || p.callId || rowId),
+    refId,
     direction,
     callType,
     agentNumber: agent,

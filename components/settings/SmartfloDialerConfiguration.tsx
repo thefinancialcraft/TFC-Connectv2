@@ -1051,6 +1051,7 @@ interface WebhookResponseItem {
   id: string;
   receivedAt: string;
   callId: string;
+  refId?: string;
   direction: string;
   callType: string;
   agentNumber: string;
@@ -1073,6 +1074,10 @@ function SetupWebhookCard() {
   const [isClearing, setIsClearing] = useState(false);
   const [expandedPayloadId, setExpandedPayloadId] = useState<string | null>(null);
 
+  const isClearingRef = useRef(false);
+  const activePollAbortRef = useRef<AbortController | null>(null);
+  const latestRequestTimeRef = useRef<number>(0);
+
   useEffect(() => {
     void loadWebhookData(false);
   }, []);
@@ -1085,62 +1090,94 @@ function SetupWebhookCard() {
       void loadWebhookData(true);
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      if (activePollAbortRef.current) {
+        activePollAbortRef.current.abort();
+      }
+    };
   }, [isConfigExpanded, organizationId, webhookId]);
 
   const loadWebhookData = async (silent = false) => {
+    // If clearing is currently in progress or guarded, skip loading to prevent reviving deleted items
+    if (isClearingRef.current) return;
+
+    const requestTime = Date.now();
+    latestRequestTimeRef.current = requestTime;
+
+    // Abort previous in-flight polling request to avoid overlapping race conditions
+    if (activePollAbortRef.current) {
+      activePollAbortRef.current.abort();
+    }
+    const abortController = new AbortController();
+    activePollAbortRef.current = abortController;
+
     try {
       if (!silent) setIsLoading(true);
 
       const targetOrg = organizationId || '5fda76df-9265-46e0-a602-0c5301c8084c';
       const targetWebhook = webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2';
 
-      // 1. Direct fetch via webhook endpoint for real-time responsiveness
-      try {
-        const directRes = await fetch(`/api/webhook/${targetOrg}/${targetWebhook}`, { cache: 'no-store' });
-        if (directRes.ok) {
-          const directData = await directRes.json();
-          if (Array.isArray(directData.events)) {
-            setEvents(directData.events);
-            if (directData.orgId && !organizationId) setOrganizationId(directData.orgId);
-            if (directData.webhookId && !webhookId) setWebhookId(directData.webhookId);
-          }
-        }
-      } catch (err) {
-        // Continue to configuration endpoint
-      }
-
-      // 2. Fetch full config with auth session
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
-
-      const response = await fetch('/api/smartflo/configuration', {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${session.access_token}` },
+      // 1. Direct fetch via lightweight webhook endpoint for real-time responsiveness
+      const directRes = await fetch(`/api/webhook/${targetOrg}/${targetWebhook}`, {
         cache: 'no-store',
+        signal: abortController.signal,
       });
-      if (!response.ok) return;
-      const result = await response.json();
-      if (result?.configuration?.organizationId) {
-        setOrganizationId(result.configuration.organizationId);
+
+      if (isClearingRef.current || latestRequestTimeRef.current !== requestTime) return;
+
+      if (directRes.ok) {
+        const directData = await directRes.json();
+        if (isClearingRef.current || latestRequestTimeRef.current !== requestTime) return;
+
+        if (Array.isArray(directData.events)) {
+          setEvents(directData.events);
+          if (directData.orgId && !organizationId) setOrganizationId(directData.orgId);
+          if (directData.webhookId && !webhookId) setWebhookId(directData.webhookId);
+          return;
+        }
       }
-      if (result?.configuration?.webhookId) {
-        setWebhookId(result.configuration.webhookId);
-      } else if (result?.configuration?.integrationId) {
-        setWebhookId(result.configuration.integrationId);
+
+      // 2. Fetch full config only on manual load or initial mount (not on 1s silent tick)
+      if (!silent) {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session || isClearingRef.current || latestRequestTimeRef.current !== requestTime) return;
+
+        const response = await fetch('/api/smartflo/configuration', {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          cache: 'no-store',
+          signal: abortController.signal,
+        });
+
+        if (!response.ok || isClearingRef.current || latestRequestTimeRef.current !== requestTime) return;
+        const result = await response.json();
+
+        if (result?.configuration?.organizationId) {
+          setOrganizationId(result.configuration.organizationId);
+        }
+        if (result?.configuration?.webhookId) {
+          setWebhookId(result.configuration.webhookId);
+        } else if (result?.configuration?.integrationId) {
+          setWebhookId(result.configuration.integrationId);
+        }
+        if (Array.isArray(result?.configuration?.webhookEvents)) {
+          setEvents(result.configuration.webhookEvents);
+        }
       }
-      if (Array.isArray(result?.configuration?.webhookEvents)) {
-        setEvents(result.configuration.webhookEvents);
-      }
-    } catch (error) {
+    } catch (error: any) {
+      if (error?.name === 'AbortError') return;
       if (!silent) console.error('Failed to load webhook configuration', error);
     } finally {
+      if (activePollAbortRef.current === abortController) {
+        activePollAbortRef.current = null;
+      }
       if (!silent) setIsLoading(false);
     }
   };
 
   const handleSimulateWebhook = async () => {
-    if (isSimulating) return;
+    if (isSimulating || isClearingRef.current) return;
     setIsSimulating(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -1166,28 +1203,53 @@ function SetupWebhookCard() {
   };
 
   const handleClearLogs = async () => {
-    if (isClearing) return;
+    if (isClearing || isClearingRef.current) return;
+
+    // 1. Immediately abort any in-flight polling request so its old result can't be rendered
+    if (activePollAbortRef.current) {
+      activePollAbortRef.current.abort();
+      activePollAbortRef.current = null;
+    }
+
+    // 2. Lock clearing state and clear UI immediately (optimistic UI update)
+    isClearingRef.current = true;
     setIsClearing(true);
+    setEvents([]);
+    setExpandedPayloadId(null);
+
+    const targetOrg = organizationId || '5fda76df-9265-46e0-a602-0c5301c8084c';
+    const targetWebhook = webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2';
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
 
-      const response = await fetch('/api/smartflo/configuration', {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ action: 'clear_webhook_events' }),
-      });
-      const result = await response.json();
-      if (result?.success) {
-        setEvents([]);
-      }
+      // Clear both endpoints in parallel to ensure database is clean
+      await Promise.allSettled([
+        fetch(`/api/webhook/${targetOrg}/${targetWebhook}`, {
+          method: 'DELETE',
+        }),
+        session
+          ? fetch('/api/smartflo/configuration', {
+              method: 'PATCH',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${session.access_token}`,
+              },
+              body: JSON.stringify({ action: 'clear_webhook_events' }),
+            })
+          : Promise.resolve(),
+      ]);
+
+      // Ensure state remains empty
+      setEvents([]);
     } catch (error) {
       console.error('Failed to clear webhook events', error);
     } finally {
-      setIsClearing(false);
+      // Keep guard active for 1500ms to discard any delayed responses
+      setTimeout(() => {
+        isClearingRef.current = false;
+        setIsClearing(false);
+      }, 1500);
     }
   };
 
@@ -1462,9 +1524,23 @@ function SetupWebhookCard() {
                         </div>
 
                         <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5 text-[11px]">
-                          <span className="font-mono text-gray-400 truncate max-w-[14rem]" title={`Call ID: ${event.callId}`}>
-                            ID: {event.callId}
-                          </span>
+                          {(() => {
+                            const displayRefId = String(
+                              event.refId ||
+                              event.rawPayload?.ref_id ||
+                              event.rawPayload?.uuid ||
+                              event.rawPayload?.custom_identifier ||
+                              event.callId
+                            );
+                            return (
+                              <span
+                                className="font-mono text-gray-500 truncate max-w-[14rem]"
+                                title={`Ref: ${displayRefId}${event.callId && event.callId !== displayRefId ? ` · Call ID: ${event.callId}` : ''}`}
+                              >
+                                Ref: {displayRefId}
+                              </span>
+                            );
+                          })()}
                           <button
                             type="button"
                             onClick={() => setExpandedPayloadId(isExpandedPayload ? null : event.id)}

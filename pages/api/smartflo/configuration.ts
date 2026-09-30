@@ -334,6 +334,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: randomUUID(),
         receivedAt: new Date().toISOString(),
         callId: 'HYD1-D4-1790798403.486134',
+        refId: '01a0f3e7-1767-70b3-afc8-901a4f999f82',
         direction: 'clicktocall',
         callType: 'Click to Call',
         agentNumber: 'Nidhi (+916392700613)',
