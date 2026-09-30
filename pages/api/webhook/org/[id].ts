@@ -1,21 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { smartfloAdminClient } from '@/lib/smartfloServer';
+import {
+  formatSmartfloWebhookEvent,
+  smartfloAdminClient,
+  type FormattedSmartfloWebhookEvent,
+} from '@/lib/smartfloServer';
 
-export interface SmartfloWebhookEvent {
-  id: string;
-  receivedAt: string;
-  callId: string;
-  direction: string;
-  callType: string;
-  agentNumber: string;
-  destinationNumber: string;
-  status: string;
-  hangupCause: string;
-  duration: number;
-  recordingUrl: string | null;
-  rawPayload: Record<string, unknown>;
-}
+export type SmartfloWebhookEvent = FormattedSmartfloWebhookEvent;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   res.setHeader('Cache-Control', 'private, no-store, max-age=0');
@@ -47,28 +38,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(404).json({ error: 'No Smartflo configuration found for this webhook ID.' });
   }
 
-  const existingEvents: SmartfloWebhookEvent[] = Array.isArray(config.webhook_events)
-    ? config.webhook_events
-    : [];
-
   if (req.method === 'GET') {
+    const { data: responses } = await smartfloAdminClient
+      .from('webhook_responses')
+      .select('id, webhook_id, organization_id, response, created_at')
+      .eq('organization_id', config.organization_id)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    let events: SmartfloWebhookEvent[] = (responses || []).map((row) =>
+      formatSmartfloWebhookEvent(row.id, row.created_at, row.response)
+    );
+
+    if (events.length === 0 && Array.isArray(config.webhook_events) && config.webhook_events.length > 0) {
+      events = config.webhook_events.map((item: any, idx: number) =>
+        formatSmartfloWebhookEvent(item.id || `legacy-${idx}`, item.receivedAt, item)
+      );
+    }
+
     return res.status(200).json({
       success: true,
       webhookId: config.webhook_id || config.integration_id,
-      events: existingEvents,
+      events,
     });
   }
 
   if (req.method === 'DELETE') {
-    // Clear webhook events
-    const { error: clearError } = await smartfloAdminClient
+    await smartfloAdminClient
+      .from('webhook_responses')
+      .delete()
+      .eq('organization_id', config.organization_id);
+
+    await smartfloAdminClient
       .from('smartflo_dialer_config')
       .update({ webhook_events: [], updated_at: new Date().toISOString() })
       .eq('id', config.id);
-
-    if (clearError) {
-      return res.status(500).json({ error: 'Failed to clear webhook events.' });
-    }
 
     return res.status(200).json({ success: true, message: 'Webhook events cleared.' });
   }
@@ -86,89 +90,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    // Extract common Tata Smartflo webhook fields with smart fallbacks
-    const callId = String(
-      payload.call_id ||
-      payload.uuid ||
-      payload.id ||
-      payload.ref_id ||
-      payload.custom_identifier ||
-      `call-${Date.now()}`
+    const eventRecord = formatSmartfloWebhookEvent(
+      randomUUID(),
+      new Date().toISOString(),
+      payload
     );
 
-    const rawStatus = String(
-      payload.call_status ||
-      payload.status ||
-      payload.disposition ||
-      payload.event ||
-      'completed'
-    );
+    // Ensure webhook exists in public.webhooks table
+    const targetWebhookId = config.webhook_id || config.integration_id || webhookId;
+    await smartfloAdminClient
+      .from('webhooks')
+      .upsert(
+        {
+          webhook_id: targetWebhookId,
+          organization_id: config.organization_id,
+          webhook_for: 'smartflo',
+          webhook_type: 'click_to_call',
+        },
+        { onConflict: 'webhook_id' }
+      );
 
-    const rawDirection = String(
-      payload.call_direction ||
-      payload.direction ||
-      'outbound'
-    );
+    // Insert into public.webhook_responses
+    await smartfloAdminClient
+      .from('webhook_responses')
+      .insert({
+        id: eventRecord.id,
+        webhook_id: targetWebhookId,
+        organization_id: config.organization_id,
+        response: eventRecord,
+        created_at: eventRecord.receivedAt,
+      });
 
-    const rawCallType = String(
-      payload.call_type ||
-      'click_to_call'
-    );
+    // Also update smartflo_dialer_config.webhook_events
+    const existingEvents = Array.isArray(config.webhook_events) ? config.webhook_events : [];
+    const updatedEvents = [eventRecord, ...existingEvents].slice(0, 50);
 
-    const agentNumber = String(
-      payload.agent_number ||
-      payload.caller_id ||
-      payload.agent ||
-      payload.from ||
-      ''
-    );
-
-    const destinationNumber = String(
-      payload.destination_number ||
-      payload.customer_number ||
-      payload.to ||
-      payload.customer_phone ||
-      ''
-    );
-
-    const hangupCause = String(
-      payload.hangup_cause ||
-      payload.cause ||
-      payload.reason ||
-      payload.hangup_reason ||
-      'NORMAL_CLEARING'
-    );
-
-    const duration = Number(
-      payload.call_duration ??
-      payload.duration ??
-      payload.talk_duration ??
-      payload.billsec ??
-      0
-    );
-
-    const recordingUrl = payload.recording_url || payload.record_url || payload.recording
-      ? String(payload.recording_url || payload.record_url || payload.recording)
-      : null;
-
-    const newEvent: SmartfloWebhookEvent = {
-      id: randomUUID(),
-      receivedAt: new Date().toISOString(),
-      callId,
-      direction: rawDirection,
-      callType: rawCallType,
-      agentNumber,
-      destinationNumber,
-      status: rawStatus,
-      hangupCause,
-      duration: Number.isFinite(duration) ? duration : 0,
-      recordingUrl,
-      rawPayload: payload,
-    };
-
-    const updatedEvents = [newEvent, ...existingEvents].slice(0, 50);
-
-    const { error: updateError } = await smartfloAdminClient
+    await smartfloAdminClient
       .from('smartflo_dialer_config')
       .update({
         webhook_events: updatedEvents,
@@ -176,15 +133,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       })
       .eq('id', config.id);
 
-    if (updateError) {
-      console.error('[Smartflo Webhook] Error updating webhook_events:', updateError);
-      return res.status(500).json({ error: 'Failed to record webhook event.' });
-    }
-
     return res.status(200).json({
       success: true,
       message: 'Smartflo webhook event recorded successfully.',
-      eventId: newEvent.id,
+      eventId: eventRecord.id,
     });
   }
 

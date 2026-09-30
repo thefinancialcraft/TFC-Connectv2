@@ -1064,6 +1064,7 @@ interface WebhookResponseItem {
 
 function SetupWebhookCard() {
   const [isConfigExpanded, setIsConfigExpanded] = useState(false);
+  const [organizationId, setOrganizationId] = useState<string>('');
   const [webhookId, setWebhookId] = useState<string>('');
   const [events, setEvents] = useState<WebhookResponseItem[]>([]);
   const [copied, setCopied] = useState(false);
@@ -1073,12 +1074,43 @@ function SetupWebhookCard() {
   const [expandedPayloadId, setExpandedPayloadId] = useState<string | null>(null);
 
   useEffect(() => {
-    void loadWebhookData();
+    void loadWebhookData(false);
   }, []);
 
-  const loadWebhookData = async () => {
+  // Real-time polling: automatically refreshes every 1000ms (1 second) when expanded
+  useEffect(() => {
+    if (!isConfigExpanded) return;
+
+    const interval = setInterval(() => {
+      void loadWebhookData(true);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isConfigExpanded, organizationId, webhookId]);
+
+  const loadWebhookData = async (silent = false) => {
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
+
+      const targetOrg = organizationId || '5fda76df-9265-46e0-a602-0c5301c8084c';
+      const targetWebhook = webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2';
+
+      // 1. Direct fetch via webhook endpoint for real-time responsiveness
+      try {
+        const directRes = await fetch(`/api/webhook/${targetOrg}/${targetWebhook}`, { cache: 'no-store' });
+        if (directRes.ok) {
+          const directData = await directRes.json();
+          if (Array.isArray(directData.events)) {
+            setEvents(directData.events);
+            if (directData.orgId && !organizationId) setOrganizationId(directData.orgId);
+            if (directData.webhookId && !webhookId) setWebhookId(directData.webhookId);
+          }
+        }
+      } catch (err) {
+        // Continue to configuration endpoint
+      }
+
+      // 2. Fetch full config with auth session
       const { data: { session } } = await supabase.auth.getSession();
       if (!session) return;
 
@@ -1089,6 +1121,9 @@ function SetupWebhookCard() {
       });
       if (!response.ok) return;
       const result = await response.json();
+      if (result?.configuration?.organizationId) {
+        setOrganizationId(result.configuration.organizationId);
+      }
       if (result?.configuration?.webhookId) {
         setWebhookId(result.configuration.webhookId);
       } else if (result?.configuration?.integrationId) {
@@ -1098,9 +1133,9 @@ function SetupWebhookCard() {
         setEvents(result.configuration.webhookEvents);
       }
     } catch (error) {
-      console.error('Failed to load webhook configuration', error);
+      if (!silent) console.error('Failed to load webhook configuration', error);
     } finally {
-      setIsLoading(false);
+      if (!silent) setIsLoading(false);
     }
   };
 
@@ -1157,7 +1192,9 @@ function SetupWebhookCard() {
   };
 
   const domain = 'https://www.rynxly.in';
-  const effectiveWebhookPath = `/webhook/org/${webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2'}`;
+  const effectiveOrgId = organizationId || '5fda76df-9265-46e0-a602-0c5301c8084c';
+  const effectiveWebhookId = webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2';
+  const effectiveWebhookPath = `/webhook/${effectiveOrgId}/${effectiveWebhookId}`;
   const fullWebhookUrl = `${domain}${effectiveWebhookPath}`;
 
   const copyWebhookUrl = async () => {
@@ -1204,7 +1241,7 @@ function SetupWebhookCard() {
           <div className="border-b border-gray-200 px-4 py-4 sm:px-5">
             <h2 className="text-base font-bold text-gray-900">Outbound Webhook Configuration</h2>
             <p className="mt-1 break-all text-xs text-gray-500">
-              Webhook ID: {webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2'}
+              Webhook ID: {effectiveWebhookId} · Organization ID: {effectiveOrgId}
             </p>
           </div>
 
@@ -1313,7 +1350,7 @@ function SetupWebhookCard() {
                     title="Simulate a test hangup webhook from Smartflo"
                     onClick={() => void handleSimulateWebhook()}
                     disabled={isSimulating}
-                    className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm hover:bg-gray-50 disabled:opacity-50"
+                    className="inline-flex items-center gap-1.5 rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-50"
                   >
                     {isSimulating ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Radio className="h-3.5 w-3.5 text-[#4b33e8]" />}
                     <span>Test Event</span>
@@ -1396,33 +1433,37 @@ function SetupWebhookCard() {
                         <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
                           <div className="rounded bg-gray-50 p-2">
                             <span className="block text-[10px] uppercase font-semibold text-gray-400">Agent</span>
-                            <span className="font-mono text-[11px] font-semibold text-gray-800 truncate block">
+                            <span className="font-mono text-[11px] font-semibold text-gray-800 truncate block" title={event.agentNumber}>
                               {event.agentNumber || 'Unknown'}
                             </span>
                           </div>
                           <div className="rounded bg-gray-50 p-2">
                             <span className="block text-[10px] uppercase font-semibold text-gray-400">Destination</span>
-                            <span className="font-mono text-[11px] font-semibold text-gray-800 truncate block">
+                            <span className="font-mono text-[11px] font-semibold text-gray-800 truncate block" title={event.destinationNumber}>
                               {event.destinationNumber || 'Unknown'}
                             </span>
                           </div>
                           <div className="rounded bg-gray-50 p-2">
                             <span className="block text-[10px] uppercase font-semibold text-gray-400">Duration</span>
                             <span className="font-semibold text-gray-800">
-                              {event.duration}s {event.duration > 0 ? `(${Math.floor(event.duration / 60)}m ${event.duration % 60}s)` : ''}
+                              {event.duration > 0
+                                ? `${event.duration}s (${Math.floor(event.duration / 60)}m ${event.duration % 60}s)`
+                                : event.rawPayload?.agent_ring_time
+                                  ? `0s (Ring: ${event.rawPayload.agent_ring_time}s)`
+                                  : '0s'}
                             </span>
                           </div>
                           <div className="rounded bg-gray-50 p-2">
                             <span className="block text-[10px] uppercase font-semibold text-gray-400">Hangup Cause</span>
-                            <span className="font-mono text-[10px] font-medium text-gray-700 truncate block">
+                            <span className="font-mono text-[10px] font-medium text-gray-700 truncate block" title={event.hangupCause}>
                               {event.hangupCause || 'NORMAL_CLEARING'}
                             </span>
                           </div>
                         </div>
 
                         <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5 text-[11px]">
-                          <span className="font-mono text-gray-400 truncate max-w-[12rem]">
-                            Ref: {event.callId}
+                          <span className="font-mono text-gray-400 truncate max-w-[14rem]" title={`Call ID: ${event.callId}`}>
+                            ID: {event.callId}
                           </span>
                           <button
                             type="button"

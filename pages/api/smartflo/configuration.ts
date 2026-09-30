@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import {
   decryptSmartfloToken,
   encryptSmartfloToken,
+  formatSmartfloWebhookEvent,
   hashSmartfloToken,
   requireSmartfloAdmin,
   smartfloAdminClient,
@@ -199,11 +200,59 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .limit(1000);
     if (crmUsersError) return res.status(500).json({ error: 'Unable to load CRM users for mapping.' });
 
+    // Query public.webhooks table for this organization
+    let { data: webhookRow } = await smartfloAdminClient
+      .from('webhooks')
+      .select('webhook_id, webhook_for, webhook_type')
+      .eq('organization_id', admin.organizationId)
+      .eq('webhook_for', 'smartflo')
+      .maybeSingle();
+
+    if (!webhookRow) {
+      const initialWebhookId = randomUUID();
+      const { data: insertedWebhook } = await smartfloAdminClient
+        .from('webhooks')
+        .upsert(
+          {
+            webhook_id: initialWebhookId,
+            organization_id: admin.organizationId,
+            webhook_for: 'smartflo',
+            webhook_type: 'click_to_call',
+          },
+          { onConflict: 'webhook_id' }
+        )
+        .select()
+        .single();
+      webhookRow = insertedWebhook;
+    }
+
+    const currentWebhookId = webhookRow?.webhook_id || randomUUID();
+
+    // Fetch responses from public.webhook_responses table for this organization
+    const { data: dbResponses } = await smartfloAdminClient
+      .from('webhook_responses')
+      .select('id, webhook_id, organization_id, response, created_at')
+      .eq('organization_id', admin.organizationId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+
+    let formattedEvents = (dbResponses || []).map((row) =>
+      formatSmartfloWebhookEvent(row.id, row.created_at, row.response)
+    );
+
+    // Fallback to legacy config.webhook_events if webhook_responses has no rows
+    if (formattedEvents.length === 0 && Array.isArray(config?.webhook_events) && config.webhook_events.length > 0) {
+      formattedEvents = config.webhook_events.map((item: any, idx: number) =>
+        formatSmartfloWebhookEvent(item.id || `legacy-${idx}`, item.receivedAt, item)
+      );
+    }
+
     return res.status(200).json({
       configuration: config ? {
+        organizationId: admin.organizationId,
         integrationId: config.integration_id,
-        webhookId: config.webhook_id || config.integration_id,
-        webhookEvents: Array.isArray(config.webhook_events) ? config.webhook_events : [],
+        webhookId: currentWebhookId,
+        webhookEvents: formattedEvents,
         hasToken: Boolean(config.smartflo_api_token),
         isActivated: Boolean(config.enabled),
         isTokenValid: isTokenValid && !isExpired,
@@ -234,63 +283,143 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   if (req.method === 'PATCH') {
     if (req.body?.action === 'clear_webhook_events') {
-      const { error } = await smartfloAdminClient
-        .from('smartflo_dialer_config')
-        .update({ webhook_events: [] })
+      await smartfloAdminClient
+        .from('webhook_responses')
+        .delete()
         .eq('organization_id', admin.organizationId);
-      if (error) return res.status(500).json({ error: 'Unable to clear webhook events.' });
+
+      await smartfloAdminClient
+        .from('smartflo_dialer_config')
+        .update({ webhook_events: [], updated_at: new Date().toISOString() })
+        .eq('organization_id', admin.organizationId);
+
       return res.status(200).json({ success: true, webhookEvents: [] });
     }
 
     if (req.body?.action === 'regenerate_webhook_id') {
       const newWebhookId = randomUUID();
       const { error } = await smartfloAdminClient
-        .from('smartflo_dialer_config')
-        .update({ webhook_id: newWebhookId })
-        .eq('organization_id', admin.organizationId);
+        .from('webhooks')
+        .update({ webhook_id: newWebhookId, updated_at: new Date().toISOString() })
+        .eq('organization_id', admin.organizationId)
+        .eq('webhook_for', 'smartflo');
       if (error) return res.status(500).json({ error: 'Unable to update webhook ID.' });
       return res.status(200).json({ success: true, webhookId: newWebhookId });
     }
 
     if (req.body?.action === 'simulate_webhook') {
-      const { data: currentConfig } = await smartfloAdminClient
-        .from('smartflo_dialer_config')
-        .select('webhook_events')
+      const { data: wRow } = await smartfloAdminClient
+        .from('webhooks')
+        .select('webhook_id')
         .eq('organization_id', admin.organizationId)
+        .eq('webhook_for', 'smartflo')
         .maybeSingle();
 
-      const existing = Array.isArray(currentConfig?.webhook_events) ? currentConfig.webhook_events : [];
+      const activeWebhookId = wRow?.webhook_id || config?.integration_id || randomUUID();
+
+      // Ensure activeWebhookId exists in webhooks table
+      await smartfloAdminClient
+        .from('webhooks')
+        .upsert(
+          {
+            webhook_id: activeWebhookId,
+            organization_id: admin.organizationId,
+            webhook_for: 'smartflo',
+            webhook_type: 'click_to_call',
+          },
+          { onConflict: 'webhook_id' }
+        );
+
       const testEvent = {
         id: randomUUID(),
         receivedAt: new Date().toISOString(),
-        callId: `smartflo-${Date.now().toString().slice(-6)}`,
-        direction: 'outbound',
-        callType: 'click_to_call',
-        agentNumber: req.body?.agentNumber || '0507733050004',
-        destinationNumber: req.body?.destinationNumber || '9217175080',
-        status: req.body?.status || 'answered',
-        hangupCause: 'NORMAL_CLEARING',
-        duration: 45,
-        recordingUrl: 'https://api-smartflo.tatateleservices.com/recordings/sample.mp3',
+        callId: 'HYD1-D4-1790798403.486134',
+        direction: 'clicktocall',
+        callType: 'Click to Call',
+        agentNumber: 'Nidhi (+916392700613)',
+        destinationNumber: '9217175080',
+        status: 'missed',
+        hangupCause: 'No answer from user (user alerted)',
+        duration: 0,
+        recordingUrl: null,
         rawPayload: {
-          event: 'call_hangup',
-          direction: 'outbound',
-          call_type: 'click_to_call',
-          hangup_cause: 'NORMAL_CLEARING',
-          customer_number: req.body?.destinationNumber || '9217175080',
-          agent_number: req.body?.agentNumber || '0507733050004',
-          call_duration: 45,
-          recording_url: 'https://api-smartflo.tatateleservices.com/recordings/sample.mp3',
-          simulated: true,
+          uuid: '6abd6a43699d4',
+          ref_id: '01a0f3e7-1767-70b3-afc8-901a4f999f82',
+          billsec: '0',
+          call_id: 'HYD1-D4-1790798403.486134',
+          duration: '0',
+          call_flow: [],
+          direction: 'clicktocall',
+          end_stamp: new Date().toISOString().replace('T', ' ').slice(0, 19),
+          queue_name: '',
+          reason_key: '',
+          call_status: 'missed',
+          campaign_id: '',
+          start_stamp: new Date(Date.now() - 16000).toISOString().replace('T', ' ').slice(0, 19),
+          answer_stamp: '',
+          missed_agent: [
+            {
+              id: '0507733050004',
+              name: 'Nidhi',
+              number: '+916392700613',
+              agent_number: '+916392700613',
+            },
+          ],
+          outbound_sec: '0',
+          campaign_name: '',
+          digits_dialed: '',
+          recording_url: '',
+          answered_agent: '',
+          billing_circle: {
+            circle: 'Punjab',
+            operator: 'TTL',
+          },
+          call_connected: '0',
+          call_to_number: '9217175080',
+          agent_ring_time: '13',
+          caller_id_number: '8065605914',
+          hangup_cause_key: 'NO_ANSWER',
+          custom_identifier: 'test-002',
+          hangup_cause_code: '19',
+          customer_ring_time: '',
+          answered_agent_name: '',
+          answered_agent_number: '',
+          broadcast_lead_fields: '',
+          agent_transfer_ring_time: '',
+          'customer_no_with_prefix ': '9217175080',
+          hangup_cause_description: 'No answer from user (user alerted)',
+          aws_call_recording_identifier: '',
         },
       };
-      const updated = [testEvent, ...existing].slice(0, 50);
+
+      await smartfloAdminClient
+        .from('webhook_responses')
+        .insert({
+          id: testEvent.id,
+          webhook_id: activeWebhookId,
+          organization_id: admin.organizationId,
+          response: testEvent,
+          created_at: testEvent.receivedAt,
+        });
+
+      const { data: updatedRows } = await smartfloAdminClient
+        .from('webhook_responses')
+        .select('id, response, created_at')
+        .eq('organization_id', admin.organizationId)
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      const updatedEvents = (updatedRows || []).map((row) =>
+        formatSmartfloWebhookEvent(row.id, row.created_at, row.response)
+      );
+
+      // Also dual-write to config.webhook_events
       await smartfloAdminClient
         .from('smartflo_dialer_config')
-        .update({ webhook_events: updated })
+        .update({ webhook_events: updatedEvents, updated_at: new Date().toISOString() })
         .eq('organization_id', admin.organizationId);
 
-      return res.status(200).json({ success: true, event: testEvent, webhookEvents: updated });
+      return res.status(200).json({ success: true, event: testEvent, webhookEvents: updatedEvents });
     }
 
     if (!isTokenValid || isExpired) {

@@ -86,17 +86,149 @@ export async function requireSmartfloAdmin(
     return null;
   }
 
-  const canManageIntegrations =
-    profile?.role === 'admin' ||
-    profile?.role === 'super_admin' ||
-    profile?.super_admin === true;
+  const isSuperAdmin = profile?.role === 'super_admin' || profile?.super_admin === true;
+  const canManageIntegrations = profile?.role === 'admin' || isSuperAdmin;
 
-  if (!canManageIntegrations || !profile?.organization_id) {
+  if (!canManageIntegrations) {
     res.status(403).json({ error: 'Organization admin access is required.' });
     return null;
   }
 
-  return { organizationId: profile.organization_id, userId: user.id };
+  let targetOrgId = profile?.organization_id;
+  if (!targetOrgId && isSuperAdmin) {
+    const requestedOrgId = (req.headers['x-organization-id'] as string) || (req.query.organizationId as string) || (req.body?.organizationId as string);
+    if (requestedOrgId && isUuid(requestedOrgId)) {
+      targetOrgId = requestedOrgId;
+    } else {
+      const { data: activeConfig } = await smartfloAdminClient
+        .from('smartflo_dialer_config')
+        .select('organization_id')
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      targetOrgId = activeConfig?.organization_id || '5fda76df-9265-46e0-a602-0c5301c8084c';
+    }
+  }
+
+  if (!targetOrgId) {
+    res.status(403).json({ error: 'Organization admin access is required.' });
+    return null;
+  }
+
+  return { organizationId: targetOrgId, userId: user.id };
+}
+
+export interface FormattedSmartfloWebhookEvent {
+  id: string;
+  receivedAt: string;
+  callId: string;
+  direction: string;
+  callType: string;
+  agentNumber: string;
+  destinationNumber: string;
+  status: string;
+  hangupCause: string;
+  duration: number;
+  recordingUrl: string | null;
+  rawPayload: Record<string, unknown>;
+}
+
+export function formatSmartfloWebhookEvent(
+  rowId: string,
+  createdAt: string | null | undefined,
+  raw: unknown
+): FormattedSmartfloWebhookEvent {
+  const p = raw && typeof raw === 'object' ? (raw as Record<string, unknown>) : {};
+  const innerPayload =
+    p.rawPayload && typeof p.rawPayload === 'object'
+      ? (p.rawPayload as Record<string, unknown>)
+      : p;
+
+  let agent = '';
+  if (p.agentNumber && typeof p.agentNumber === 'string' && p.agentNumber.trim() && p.agentNumber !== 'Unknown') {
+    agent = p.agentNumber.trim();
+  } else if (typeof innerPayload.answered_agent_name === 'string' && innerPayload.answered_agent_name) {
+    agent = `${innerPayload.answered_agent_name}${innerPayload.answered_agent_number ? ` (${innerPayload.answered_agent_number})` : ''}`.trim();
+  } else if (Array.isArray(innerPayload.missed_agent) && innerPayload.missed_agent.length > 0) {
+    const m = (innerPayload.missed_agent[0] || {}) as Record<string, unknown>;
+    const name = m.name ? String(m.name) : '';
+    const num = m.number || m.agent_number || m.id || '';
+    agent = name ? `${name}${num ? ` (${num})` : ''}` : String(num);
+  } else {
+    agent = String(
+      innerPayload.agent_name ||
+        innerPayload.agent_number ||
+        innerPayload.caller_id_number ||
+        innerPayload.caller_id ||
+        p.agentNumber ||
+        ''
+    ).trim();
+  }
+
+  let destination = '';
+  if (p.destinationNumber && typeof p.destinationNumber === 'string' && p.destinationNumber.trim() && p.destinationNumber !== 'Unknown') {
+    destination = p.destinationNumber.trim();
+  } else {
+    destination = String(
+      innerPayload.call_to_number ||
+        innerPayload['customer_no_with_prefix '] ||
+        innerPayload.customer_no_with_prefix ||
+        innerPayload.destination_number ||
+        innerPayload.customer_number ||
+        innerPayload.digits_dialed ||
+        innerPayload.to ||
+        ''
+    ).trim();
+  }
+
+  let cause = '';
+  if (p.hangupCause && typeof p.hangupCause === 'string' && p.hangupCause !== 'NORMAL_CLEARING') {
+    cause = p.hangupCause;
+  } else {
+    cause = String(
+      innerPayload.hangup_cause_description ||
+        innerPayload.hangup_cause_key ||
+        innerPayload.hangup_cause ||
+        innerPayload.cause ||
+        p.hangupCause ||
+        'NORMAL_CLEARING'
+    );
+  }
+
+  const status = String(
+    innerPayload.call_status ||
+      innerPayload.status ||
+      innerPayload.disposition ||
+      p.status ||
+      'missed'
+  );
+
+  const direction = String(innerPayload.direction || p.direction || 'clicktocall');
+  const callType =
+    direction === 'clicktocall'
+      ? 'Click to Call'
+      : String(p.callType || 'Click to Call');
+
+  const durCandidate = p.duration ?? innerPayload.duration ?? innerPayload.billsec ?? innerPayload.call_duration ?? 0;
+  const durNum = Number(durCandidate);
+
+  const recUrl = innerPayload.recording_url || innerPayload.record_url || p.recordingUrl || null;
+
+  return {
+    id: rowId,
+    receivedAt: createdAt || String(p.receivedAt || new Date().toISOString()),
+    callId: String(innerPayload.call_id || innerPayload.ref_id || innerPayload.uuid || innerPayload.id || p.callId || rowId),
+    direction,
+    callType,
+    agentNumber: agent,
+    destinationNumber: destination,
+    status,
+    hangupCause: cause,
+    duration: Number.isFinite(durNum) ? durNum : 0,
+    recordingUrl: typeof recUrl === 'string' && recUrl.trim() ? recUrl.trim() : null,
+    rawPayload: innerPayload,
+  };
 }
 
 export function createSmartfloApiKey(organizationId: string, integrationId: string): string {

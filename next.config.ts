@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
       { source: '/profile-completion', destination: '/portal/profile-completion' },
       { source: '/call-sessions', destination: '/portal/call-sessions' },
       { source: '/system-logs', destination: '/portal/system-logs' },
+      { source: '/webhook/:orgId/:webhookId*', destination: '/api/webhook/:orgId/:webhookId*' },
       { source: '/webhook/org/:id*', destination: '/api/webhook/org/:id*' },
     ];
   },
