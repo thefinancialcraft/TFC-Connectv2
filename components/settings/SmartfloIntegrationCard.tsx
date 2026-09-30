@@ -276,7 +276,7 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
 
   return (
     <>
-      <div className="flex h-full min-h-[173px] min-w-0 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white">
+      <div id="card-smartflo-connector" className="flex h-full min-h-[173px] min-w-0 flex-col overflow-hidden rounded-xl border border-gray-200 bg-white">
         <div className="flex h-[72px] shrink-0 items-center justify-between gap-3 bg-[#888888] px-4 py-3">
           <p className="text-sm font-bold text-white">Smartflo Custom Connector</p>
           <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-white">
@@ -287,11 +287,12 @@ export default function SmartfloIntegrationCard({ organizationId }: SmartfloInte
           Smartflo call management integration
         </p>
         <div className="flex h-[45px] shrink-0 items-center justify-between border-t border-gray-100 px-4 py-2.5">
-          <span className={`text-xs font-semibold ${enabled ? 'text-[#1a8f5a]' : pending ? 'text-amber-600' : 'text-gray-500'}`}>
+          <span id="status-smartflo-connector" className={`text-xs font-semibold ${enabled ? 'text-[#1a8f5a]' : pending ? 'text-amber-600' : 'text-gray-500'}`}>
             {statusLabel}
           </span>
           <button
             type="button"
+            id="switch-smartflo-connector"
             role="switch"
             aria-checked={enabled}
             aria-label={`${enabled ? 'Disable' : 'Enable'} Smartflo`}

@@ -51,18 +51,117 @@ interface SettingsFormData {
   bank_passbook_url: string;
 }
 
+type SettingsTab = "profile" | "security" | "flutter_bridge" | "devices" | "console_logs" | "integrations";
+
+function normalizeSettingsTab(rawTab?: string | string[]): SettingsTab | null {
+  if (!rawTab) return null;
+  const val = (Array.isArray(rawTab) ? rawTab[0] : rawTab).toLowerCase().trim();
+  if (val === "profile") return "profile";
+  if (val === "security") return "security";
+  if (val === "devices" || val === "device") return "devices";
+  if (val === "integrations" || val === "integration" || val === "apps") return "integrations";
+  if (val === "bridge" || val === "flutter_bridge" || val === "flutter-bridge") return "flutter_bridge";
+  if (val === "logs" || val === "console_logs" || val === "console-logs") return "console_logs";
+  return null;
+}
+
+function settingsTabToParam(tab: SettingsTab): string {
+  if (tab === "flutter_bridge") return "bridge";
+  if (tab === "console_logs") return "logs";
+  return tab;
+}
+
 export default function Settings() {
   const router = useRouter();
   const { user, mounted } = useUser();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [activeNav] = useState("settings");
-  const [activeTab, setActiveTab] = useState<"profile" | "security" | "flutter_bridge" | "devices" | "console_logs" | "integrations">("profile");
+  const [activeTab, setActiveTab] = useState<SettingsTab>("profile");
   const [activeIntegrationCategory, setActiveIntegrationCategory] = useState<"user" | "admin">("user");
   const [showSmartfloDialerConfiguration, setShowSmartfloDialerConfiguration] = useState(false);
   const [activeCategory, setActiveCategory] = useState<"basic_info" | "personal_info" | "employment_info" | "client_lifecycle" | "address_info" | "kyc_info" | "bank_info" | "documents">("basic_info");
   const canAccessAdminIntegrations =
     user?.role === "admin" || user?.role === "super_admin" || user?.super_admin === true;
+
+  const updateSettingsUrl = (
+    nextTab: SettingsTab,
+    nextCategory?: "user" | "admin",
+    nextApp?: string | null
+  ) => {
+    const query: Record<string, string> = {
+      tab: settingsTabToParam(nextTab),
+    };
+
+    if (nextTab === "integrations") {
+      const cat = nextCategory !== undefined ? nextCategory : activeIntegrationCategory;
+      query.category = cat;
+
+      if (cat === "admin" && nextApp) {
+        query.app = nextApp;
+      }
+    }
+
+    void router.replace(
+      {
+        pathname: "/settings",
+        query,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  // Sync state from URL parameters on page load and back/forward navigation
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    const { tab, category, app, view } = router.query;
+
+    const parsedTab = normalizeSettingsTab(tab);
+    if (parsedTab && parsedTab !== activeTab) {
+      setActiveTab(parsedTab);
+    }
+
+    const currentTab = parsedTab || activeTab;
+
+    if (currentTab === "integrations") {
+      const rawCat = (Array.isArray(category) ? category[0] : category)?.toLowerCase().trim();
+      if (rawCat === "admin" || rawCat === "admin-apps") {
+        setActiveIntegrationCategory("admin");
+      } else if (rawCat === "user" || rawCat === "user-apps") {
+        setActiveIntegrationCategory("user");
+      }
+
+      const rawApp = ((Array.isArray(app) ? app[0] : app) || (Array.isArray(view) ? view[0] : view))?.toLowerCase().trim();
+      if (rawApp === "smartflo-dialer" || rawApp === "dialer" || rawApp === "dialer-config") {
+        setShowSmartfloDialerConfiguration(true);
+      } else if (!rawApp && showSmartfloDialerConfiguration) {
+        setShowSmartfloDialerConfiguration(false);
+      }
+    }
+  }, [router.isReady, router.query.tab, router.query.category, router.query.app, router.query.view]);
+
+  const handleTabChange = (newTab: SettingsTab) => {
+    setActiveTab(newTab);
+    updateSettingsUrl(newTab);
+  };
+
+  const handleIntegrationCategoryChange = (category: "user" | "admin") => {
+    setActiveIntegrationCategory(category);
+    setShowSmartfloDialerConfiguration(false);
+    updateSettingsUrl("integrations", category, null);
+  };
+
+  const handleOpenSmartfloDialer = () => {
+    setShowSmartfloDialerConfiguration(true);
+    updateSettingsUrl("integrations", "admin", "smartflo-dialer");
+  };
+
+  const handleCloseSmartfloDialer = () => {
+    setShowSmartfloDialerConfiguration(false);
+    updateSettingsUrl("integrations", "admin", null);
+  };
   
   // Form state
   const [formData, setFormData] = useState<SettingsFormData>({
@@ -441,18 +540,20 @@ export default function Settings() {
 
         {/* Tabs navigation */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          <div className="inline-flex h-12 items-center rounded-xl p-1 bg-white border overflow-x-auto no-scrollbar" style={{ borderColor: "#E0E0E0" }}>
+          <div id="settings-main-tabs" className="inline-flex h-12 items-center rounded-xl p-1 bg-white border overflow-x-auto no-scrollbar" style={{ borderColor: "#E0E0E0" }}>
             {[
-              { id: "profile", label: "Profile", icon: "fi-rr-user" },
-              { id: "security", label: "Security", icon: "fi-rr-lock" },
-              { id: "devices", label: "Devices", icon: "fi-rr-devices" },
-              { id: "integrations", label: "Integrations", icon: "fi-rr-apps" },
-              { id: "flutter_bridge", label: "Bridge", icon: "fi-rr-smartphone" },
-              { id: "console_logs", label: "Logs", icon: "fi-rr-journal" },
+              { id: "profile", label: "Profile", icon: "fi-rr-user", tabNavId: "tab-nav-profile" },
+              { id: "security", label: "Security", icon: "fi-rr-lock", tabNavId: "tab-nav-security" },
+              { id: "devices", label: "Devices", icon: "fi-rr-devices", tabNavId: "tab-nav-devices" },
+              { id: "integrations", label: "Integrations", icon: "fi-rr-apps", tabNavId: "tab-nav-integrations" },
+              { id: "flutter_bridge", label: "Bridge", icon: "fi-rr-smartphone", tabNavId: "tab-nav-bridge" },
+              { id: "console_logs", label: "Logs", icon: "fi-rr-journal", tabNavId: "tab-nav-logs" },
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
+                id={tab.tabNavId}
+                type="button"
+                onClick={() => handleTabChange(tab.id as SettingsTab)}
                 className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-bold transition-all whitespace-nowrap ${
                   activeTab === tab.id ? "bg-[#4b33e8] text-white shadow-md" : "text-gray-500 hover:bg-gray-50"
                 }`}
@@ -790,19 +891,31 @@ export default function Settings() {
           )}
 
           {activeTab === "integrations" && (
-            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="min-h-[520px] rounded-2xl border border-gray-100 bg-white p-4 sm:p-5" style={{ borderColor: "#E0E0E0" }}>
+            <div id="connected-apps-container" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div id="connected-apps-section" className="min-h-[520px] rounded-2xl border border-gray-100 bg-white p-4 sm:p-5" style={{ borderColor: "#E0E0E0" }}>
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                  <h3 className="text-lg font-bold text-[#263238] flex items-center gap-2">
-                    <i className="fi fi-rr-apps text-[#4b33e8] text-sm" />
-                    Connected Apps
-                  </h3>
-                  <div className="inline-flex w-fit items-center rounded-xl border border-gray-200 bg-gray-50 p-1" role="tablist" aria-label="Integration category">
+                  <div>
+                    <h3 id="connected-apps-heading" className="text-lg font-bold text-[#263238] flex items-center gap-2">
+                      <i className="fi fi-rr-apps text-[#4b33e8] text-sm" />
+                      Connected Apps
+                    </h3>
+                    <p id="active-tab-indicator" className="text-xs text-gray-500 mt-0.5">
+                      {showSmartfloDialerConfiguration ? (
+                        <span>Connected Apps &gt; Admin Apps &gt; <strong className="text-[#4b33e8]">Smartflo Dialer Configuration</strong></span>
+                      ) : activeIntegrationCategory === "admin" ? (
+                        <span>Connected Apps &gt; <strong className="text-[#4b33e8]">Admin Apps</strong></span>
+                      ) : (
+                        <span>Connected Apps &gt; <strong className="text-[#4b33e8]">User Apps</strong></span>
+                      )}
+                    </p>
+                  </div>
+                  <div id="connected-apps-category-tabs" className="inline-flex w-fit items-center rounded-xl border border-gray-200 bg-gray-50 p-1" role="tablist" aria-label="Integration category">
                     <button
                       type="button"
+                      id="tab-user-apps"
                       role="tab"
                       aria-selected={activeIntegrationCategory === "user"}
-                      onClick={() => setActiveIntegrationCategory("user")}
+                      onClick={() => handleIntegrationCategoryChange("user")}
                       className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeIntegrationCategory === "user" ? "bg-[#4b33e8] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
                     >
                       User Apps
@@ -810,9 +923,10 @@ export default function Settings() {
                     {canAccessAdminIntegrations && (
                       <button
                         type="button"
+                        id="tab-admin-apps"
                         role="tab"
                         aria-selected={activeIntegrationCategory === "admin"}
-                        onClick={() => setActiveIntegrationCategory("admin")}
+                        onClick={() => handleIntegrationCategoryChange("admin")}
                         className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeIntegrationCategory === "admin" ? "bg-[#4b33e8] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
                       >
                         Admin Apps
@@ -822,16 +936,22 @@ export default function Settings() {
                 </div>
 
                 {activeIntegrationCategory === "admin" && canAccessAdminIntegrations && showSmartfloDialerConfiguration ? (
-                  <SmartfloDialerConfiguration onBack={() => setShowSmartfloDialerConfiguration(false)} />
+                  <div id="smartflo-dialer-configuration-view" data-app-id="smartflo-dialer-config">
+                    <SmartfloDialerConfiguration onBack={handleCloseSmartfloDialer} />
+                  </div>
                 ) : activeIntegrationCategory === "admin" && canAccessAdminIntegrations ? (
-                  <div className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 xl:grid-cols-3">
-                    <SmartfloIntegrationCard organizationId={user?.organization_id} />
-                    <SmartfloDialerCardPreview onOpenConfiguration={() => setShowSmartfloDialerConfiguration(true)} />
+                  <div id="admin-apps-grid" className="grid grid-cols-1 items-stretch gap-2 sm:grid-cols-2 xl:grid-cols-3">
+                    <div id="connected-app-smartflo-connector" data-app-id="smartflo-connector" className="h-full">
+                      <SmartfloIntegrationCard organizationId={user?.organization_id} />
+                    </div>
+                    <div id="connected-app-smartflo-dialer" data-app-id="smartflo-dialer" className="h-full">
+                      <SmartfloDialerCardPreview onOpenConfiguration={handleOpenSmartfloDialer} />
+                    </div>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div id="user-apps-grid" className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {/* Google Calendar Compact Card */}
-                    <div className="relative w-full max-w-[320px] overflow-hidden rounded-xl border border-gray-200 bg-white transition-colors hover:border-gray-300">
+                    <div id="connected-app-google-calendar" data-app-id="google-calendar" className="relative w-full max-w-[320px] overflow-hidden rounded-xl border border-gray-200 bg-white transition-colors hover:border-gray-300">
                       <div className="bg-[#888888] px-4 py-3">
                         <div className="flex w-full flex-row-reverse items-center justify-between gap-3">
                           <div className="static flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-gray-200 bg-white text-[#4285F4] shadow-sm">

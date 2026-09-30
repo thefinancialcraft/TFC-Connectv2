@@ -689,7 +689,7 @@ function ClickToCallCard() {
   };
 
   return (
-    <div className="mb-4 rounded-lg border border-gray-200">
+    <div id="card-click-to-call" className="mb-4 rounded-lg border border-gray-200">
       <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-50 px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className={`flex h-9 shrink-0 items-center rounded-md bg-white text-[#4b33e8] ring-1 ring-gray-200 ${headerAgent ? 'max-w-[18rem] gap-2 px-2.5' : 'w-9 justify-center rounded-full'}`}>
@@ -1208,7 +1208,7 @@ function SetupWebhookCard() {
   };
 
   return (
-    <div className="mb-4 rounded-lg border border-gray-200">
+    <div id="card-setup-webhook" className="mb-4 rounded-lg border border-gray-200">
       <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-50 px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#4b33e8] ring-1 ring-gray-200">
@@ -1499,21 +1499,24 @@ interface SmartfloDialerConfigurationProps {
 
 export default function SmartfloDialerConfiguration({ onBack }: SmartfloDialerConfigurationProps) {
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
+    <div id="smartflo-dialer-config-container" className="space-y-4">
+      <div id="smartflo-dialer-config-header" className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="mt-1 text-xl font-bold text-[#263238]">Smartflo Dialer Configuration</h1>
+          <h1 id="smartflo-dialer-config-title" className="mt-1 text-xl font-bold text-[#263238]">Smartflo Dialer Configuration</h1>
         </div>
         <button
           type="button"
+          id="btn-back-smartflo-dialer"
           onClick={onBack}
+          aria-label="Back to Admin Apps"
+          title="Back to Admin Apps"
           className="inline-flex items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50"
         >
           <i className="fi flex fi-rr-arrow-left" aria-hidden="true" />
         </button>
       </div>
 
-      <div className="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-6">
+      <div id="smartflo-dialer-config-sections" className="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-6">
         <ConfigurationSection title="Outbound Configuration" description="Outgoing call routing details">
           <ClickToCallCard />
           <SetupWebhookCard />

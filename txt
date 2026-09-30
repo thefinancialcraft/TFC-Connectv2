@@ -1,0 +1,13 @@
+No Webhook Responses Yet
+Responses sent by Tata Smartflo upon call hangup will automatically show up here as individual cards.
+
+Simulate Sample Response
+
+agr me simulate pr click krta hu to system response instand de rha hai lekin agr me 
+
+Click to Call
+Outbound API calling
+
+Originate successfully queued · Ref: 01a0f408-1347-7126-b67a-d92b39d079d8
+
+ke call place kr rha hu to uska response nahii aa rha hai 
