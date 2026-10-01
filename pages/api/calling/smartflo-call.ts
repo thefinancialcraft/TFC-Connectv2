@@ -234,7 +234,6 @@ export default async function handler(
     caller_id: callerId,
     async: '1',
     custom_identifier: customIdentifier,
-    call_timeout: 10,
   };
 
   const smartfloHeaders: Record<string, string> = {

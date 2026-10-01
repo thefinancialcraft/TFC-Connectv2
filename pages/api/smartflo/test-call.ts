@@ -124,7 +124,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     async: '1',
     caller_id: callerId,
     custom_identifier: 'test-002',
-    call_timeout: 10,
   };
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
