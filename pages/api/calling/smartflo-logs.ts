@@ -66,7 +66,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const targetPhone = cleanPhone(rawPhone);
   const targetCustomerId = String(req.query.customer_id || req.body?.customer_id || '').trim();
   const targetRefId = String(req.query.ref_id || req.body?.ref_id || '').trim();
-  const targetCallId = String(req.query.call_id || req.body?.call_id || '').trim();
+  let targetCallId = String(req.query.call_id || req.body?.call_id || '').trim();
 
   // 2. Fetch recent webhook responses from public.webhook_responses
   const { data: dbResponses } = await smartfloAdminClient
@@ -159,76 +159,79 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (config?.smartflo_api_token && (config.is_token_valid ?? config.is_validate)) {
       const token = decryptSmartfloToken(config.smartflo_api_token);
 
-      // --- A. Query Realtime Active Call: GET /v1/live_calls/{call_id} ---
-      const activeCallIdToQuery = targetCallId || targetRefId;
-      let liveRawResponseText: string | null = null;
-      if (activeCallIdToQuery) {
+      // --- A. Query Realtime Active Calls: GET /v1/live_calls (Live Calls Switch Dashboard) ---
+      try {
+        const liveListUrl = 'https://api-smartflo.tatateleservices.com/v1/live_calls';
+        console.log(`\n================== [SMARTFLO LIVE CALLS LIST] ==================`);
+        console.log(`📡 GET ${liveListUrl}`);
+        console.log(`🔑 Authorization: Bearer ${token.slice(0, 10)}...${token.slice(-6)}`);
+
+        const listRes = await fetch(liveListUrl, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
+        const listText = await listRes.text();
+        console.log(`📥 HTTP Status: ${listRes.status} ${listRes.statusText}`);
+        console.log(`📋 Response Result:`, listText.slice(0, 500));
+        console.log(`================================================================\n`);
+
+        let listJson: any = null;
         try {
-          const liveUrl = `https://api-smartflo.tatateleservices.com/v1/live_calls/${encodeURIComponent(activeCallIdToQuery)}`;
-          console.log(`\n================== [SMARTFLO LIVE CALLS API RESULT] ==================`);
-          console.log(`📡 GET ${liveUrl}`);
-          console.log(`🔑 Authorization: Bearer ${token.slice(0, 10)}...${token.slice(-6)}`);
+          listJson = listText ? JSON.parse(listText) : null;
+        } catch {
+          listJson = null;
+        }
 
-          const liveRes = await fetch(liveUrl, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              Accept: 'application/json',
-            },
-          });
-
-          liveRawResponseText = await liveRes.text();
-          console.log(`📥 HTTP Status: ${liveRes.status} ${liveRes.statusText}`);
-          console.log(`📋 Response Result:`, liveRawResponseText);
-          console.log(`=======================================================================\n`);
-
-          let liveJson: any = null;
-          try {
-            liveJson = liveRawResponseText ? JSON.parse(liveRawResponseText) : null;
-          } catch {
-            liveJson = null;
-          }
+        if (listRes.ok && listJson) {
+          const callsArray: any[] = Array.isArray(listJson)
+            ? listJson
+            : Array.isArray(listJson?.calls)
+              ? listJson.calls
+              : Array.isArray(listJson?.data)
+                ? listJson.data
+                : Array.isArray(listJson?.records)
+                  ? listJson.records
+                  : Array.isArray(listJson?.data?.calls)
+                    ? listJson.data.calls
+                    : Array.isArray(listJson?.result?.calls)
+                      ? listJson.result.calls
+                      : Array.isArray(listJson?.result)
+                        ? listJson.result
+                        : [];
 
           liveCallsApiResult = {
-            url: liveUrl,
-            status: liveRes.status,
-            statusText: liveRes.statusText,
-            result: liveJson || liveRawResponseText,
+            url: liveListUrl,
+            status: listRes.status,
+            count: callsArray.length,
           };
 
-          if (liveRes.ok && liveJson) {
-            const dataObj = liveJson?.data || liveJson;
-            if (dataObj && typeof dataObj === 'object') {
-              liveCallStatusData = dataObj;
+          const matchedCall = callsArray.find((c: any) => {
+            const rawCustId = c.custom_identifier ? JSON.stringify(c.custom_identifier) : '';
+            const cRef = String(c.ref_id || c.refId || c.uuid || '');
+            const cCallId = String(c.call_id || c.callId || c.id || '');
+            const cDest = cleanPhone(String(c.destination || c.customer_number || c.destination_number || ''));
+
+            if (targetRefId && (cRef === targetRefId || cCallId === targetRefId || rawCustId.includes(targetRefId))) return true;
+            if (targetCallId && (cCallId === targetCallId || cRef === targetCallId || rawCustId.includes(targetCallId))) return true;
+            if (targetPhone && cDest && (cDest.includes(targetPhone) || targetPhone.includes(cDest))) return true;
+            return false;
+          });
+
+          if (matchedCall) {
+            console.log(`🎯 [Smartflo Live Calls List] Matched active live call:`, matchedCall);
+            liveCallStatusData = matchedCall;
+            liveCallsApiResult.matched_live_call = matchedCall;
+            if (matchedCall.call_id) {
+              targetCallId = String(matchedCall.call_id);
             }
-          } else if (liveRes.status === 404 && targetRefId && targetRefId !== targetCallId) {
-            // Fallback to targetRefId if targetCallId was not found
-            const fallbackLiveUrl = `https://api-smartflo.tatateleservices.com/v1/live_calls/${encodeURIComponent(targetRefId)}`;
-            console.log(`\n📡 [Smartflo Live Calls Fallback] GET ${fallbackLiveUrl}`);
-            const fallbackRes = await fetch(fallbackLiveUrl, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                Accept: 'application/json',
-              },
-            });
-            const fallbackText = await fallbackRes.text();
-            console.log(`📥 Fallback Status: ${fallbackRes.status} | Response:`, fallbackText);
-            try {
-              const fallbackJson = fallbackText ? JSON.parse(fallbackText) : null;
-              liveCallsApiResult.fallback = {
-                url: fallbackLiveUrl,
-                status: fallbackRes.status,
-                result: fallbackJson || fallbackText,
-              };
-              const dataObj = fallbackJson?.data || fallbackJson;
-              if (fallbackRes.ok && dataObj && typeof dataObj === 'object') {
-                liveCallStatusData = dataObj;
-              }
-            } catch {}
+          } else {
+            console.log(`ℹ️ [Smartflo Live Calls List] No active call in list matching ref_id: ${targetRefId || targetCallId}. Call may have ended or not yet bridged.`);
           }
-        } catch (liveErr) {
-          console.error('[Smartflo Live Call] Error querying live_calls/{call_id}:', liveErr);
-          liveCallsApiResult = { error: String(liveErr) };
         }
+      } catch (listErr) {
+        console.warn('[Smartflo Live Calls List] Exception querying live calls list:', listErr);
       }
 
       // --- B. Query Tata Smartflo CDR API (v1/call/records) for completed calls ---
@@ -310,7 +313,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       callType: 'Click to Call',
       agentNumber: String(liveCallStatusData.agent_number || liveCallStatusData.caller_id || ''),
       destinationNumber: String(liveCallStatusData.destination || liveCallStatusData.customer_number || targetPhone || ''),
-      status: String(liveCallStatusData.status || liveCallStatusData.call_status || 'ringing'),
+      status: String(liveCallStatusData.state || liveCallStatusData.status || liveCallStatusData.call_status || 'ringing'),
       hangupCause: 'ACTIVE_CALL',
       duration: Number(liveCallStatusData.duration || liveCallStatusData.billsec || 0),
       recordingUrl: null,
@@ -329,48 +332,81 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // 1. If actively returned by GET /v1/live_calls/{call_id}:
   if (liveCallStatusData) {
+    // Switch state directly from Tata Smartflo switch (e.g. "Ringing", "Answered", "In-Call")
+    const switchState = String(
+      liveCallStatusData.state ||
+      liveCallStatusData.call_state ||
+      ''
+    ).toLowerCase().trim();
+
     const statusStr = String(
       liveCallStatusData.status ||
       liveCallStatusData.call_status ||
       liveCallStatusData.state ||
       ''
-    ).toLowerCase();
+    ).toLowerCase().trim();
 
     const agentStatusStr = String(
       liveCallStatusData.agent_status ||
       liveCallStatusData.agent_state ||
       liveCallStatusData.answered_agent ||
       ''
-    ).toLowerCase();
+    ).toLowerCase().trim();
 
     const customerStatusStr = String(
       liveCallStatusData.customer_status ||
       liveCallStatusData.client_status ||
       liveCallStatusData.destination_status ||
       ''
-    ).toLowerCase();
+    ).toLowerCase().trim();
 
     const causeStr = String(
       liveCallStatusData.hangup_cause ||
       liveCallStatusData.hangup_cause_description ||
       liveCallStatusData.hangup_cause_key ||
       ''
-    ).toLowerCase();
+    ).toLowerCase().trim();
 
-    // Agent Leg
-    let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'orange';
-    let agentSublabel = 'Ringing Agent...';
+    const isClickToCall =
+      String(liveCallStatusData.type || liveCallStatusData.multiple_destination_type || '').toLowerCase().includes('c2c') ||
+      String(liveCallStatusData.type || '').toLowerCase().includes('click');
 
-    const isAgentAnswered =
-      agentStatusStr.includes('answer') ||
-      agentStatusStr.includes('connect') ||
-      statusStr.includes('answered') ||
-      statusStr.includes('in-call') ||
-      statusStr.includes('connected') ||
-      statusStr.includes('bridge') ||
-      Boolean(liveCallStatusData.answered_agent_number || liveCallStatusData.answered_agent);
+    // Parse call duration / call_time (e.g. "00:00:08" -> 8 seconds)
+    const callTimeRaw = String(liveCallStatusData.call_time || liveCallStatusData.duration || liveCallStatusData.billsec || '0');
+    const callTimeParts = callTimeRaw.split(':').map(Number);
+    const callTimeSec = callTimeParts.length === 3
+      ? callTimeParts[0] * 3600 + callTimeParts[1] * 60 + callTimeParts[2]
+      : callTimeParts.length === 2
+        ? callTimeParts[0] * 60 + callTimeParts[1]
+        : Number(callTimeRaw) || 0;
 
-    const isAgentBusy = agentStatusStr.includes('busy') || statusStr.includes('busy') || causeStr.includes('busy');
+    // In Smartflo Click-to-Call:
+    // 1. When agent first picks up (call_time usually <= 15s), the switch reports state 'Answered'.
+    //    This is ONLY the agent answering Leg 1! The customer has not answered yet.
+    // 2. The switch then dials the customer and reports state 'Ringing'.
+    // 3. Customer answers only after ringing.
+    const isLiveCallRingingCustomer =
+      switchState === 'ringing' ||
+      switchState === 'dialing' ||
+      customerStatusStr.includes('ring') ||
+      customerStatusStr.includes('dial') ||
+      (isClickToCall && (switchState.includes('ring') || (switchState === 'answered' && callTimeSec <= 15)));
+
+    const isLiveCallBothAnswered =
+      !isLiveCallRingingCustomer &&
+      (switchState === 'answered' ||
+       switchState === 'in-call' ||
+       switchState === 'connected' ||
+       switchState === 'bridge' ||
+       customerStatusStr.includes('answer') ||
+       customerStatusStr.includes('connect') ||
+       customerStatusStr.includes('speak'));
+
+    // Agent Leg: In live_calls, agent is already connected
+    let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'green';
+    let agentSublabel = 'Answered';
+
+    const isAgentBusy = agentStatusStr.includes('busy') || causeStr.includes('busy');
     const isAgentCut = agentStatusStr.includes('reject') || agentStatusStr.includes('cut') || agentStatusStr.includes('miss');
 
     if (isAgentBusy) {
@@ -379,48 +415,33 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } else if (isAgentCut) {
       agentColor = 'red';
       agentSublabel = 'Cut / Rejected';
-    } else if (isAgentAnswered) {
+    } else {
       agentColor = 'green';
       agentSublabel = 'Answered';
-    } else {
-      agentColor = 'orange';
-      agentSublabel = 'Ringing Agent...';
     }
 
     // Customer Leg
     let customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
     let customerSublabel = 'Waiting';
 
-    const isCustAnswered =
-      customerStatusStr.includes('answer') ||
-      customerStatusStr.includes('connect') ||
-      customerStatusStr.includes('speaking') ||
-      statusStr.includes('bridge') ||
-      (isAgentAnswered && statusStr.includes('in-call'));
-
-    const isCustRinging =
-      customerStatusStr.includes('ring') ||
-      customerStatusStr.includes('dial') ||
-      (isAgentAnswered && (statusStr.includes('dialing') || statusStr.includes('ringing')));
-
     const isCustBusy = customerStatusStr.includes('busy') || causeStr.includes('busy');
     const isCustCut = customerStatusStr.includes('cancel') || customerStatusStr.includes('reject') || customerStatusStr.includes('drop');
 
-    if (agentColor === 'orange' || agentColor === 'violet' || agentColor === 'red') {
+    if (agentColor === 'violet' || agentColor === 'red') {
       customerColor = 'gray';
-      customerSublabel = agentColor === 'orange' ? 'Waiting' : 'Not Reached';
+      customerSublabel = 'Not Reached';
     } else if (isCustBusy) {
       customerColor = 'violet';
       customerSublabel = 'Busy';
     } else if (isCustCut) {
       customerColor = 'red';
       customerSublabel = 'Cancel / Dropped';
-    } else if (isCustAnswered) {
-      customerColor = 'green';
-      customerSublabel = 'Speaking';
-    } else if (isCustRinging) {
+    } else if (isLiveCallRingingCustomer) {
       customerColor = 'orange';
       customerSublabel = 'Ringing Customer...';
+    } else if (isLiveCallBothAnswered) {
+      customerColor = 'green';
+      customerSublabel = 'Speaking';
     } else {
       customerColor = 'orange';
       customerSublabel = 'Ringing Customer...';
@@ -481,8 +502,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const reasonStr = String(raw.reason_key || '').toLowerCase();
 
       const isBusy = causeStr.includes('busy') || reasonStr.includes('busy') || statusStr.includes('busy');
-      const isAnswered = statusStr.includes('answer') || matched.callType === 'Answered' || raw.call_connected === '1';
-      const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
+      const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || reasonStr.includes('noanswer') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
+      const isAnswered = !isMissedOrDropped && (statusStr.includes('answer') || matched.callType === 'Answered');
 
       // 1. Agent Status: Orange=Ringing, Green=Answered, Violet=Busy, Red=Cut/Rejected
       let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'green';
@@ -503,25 +524,25 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         agentSublabel = 'Answered';
       }
 
-      // 2. Customer Status: Orange=Ringing, Green=Speaking, Violet=Busy, Red=Cut/Dropped, Gray=Waiting
+      // 2. Customer Status: Orange=Ringing, Green=Connected, Violet=Busy, Red=Cut/Dropped, Gray=Waiting
       let customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
       let customerSublabel = 'Waiting';
 
       if (agentColor === 'violet' || agentColor === 'red') {
         customerColor = 'gray';
         customerSublabel = 'Not Reached';
-      } else if (isAnswered && !isMissedOrDropped) {
+      } else if (isAnswered) {
         customerColor = 'green';
-        customerSublabel = 'Speaking';
+        customerSublabel = 'Connected';
       } else if (isBusy) {
         customerColor = 'violet';
         customerSublabel = 'Busy';
       } else if (isMissedOrDropped) {
         customerColor = 'red';
-        customerSublabel = raw.reason_key || raw.hangup_cause_description || 'Cut / Dropped';
+        customerSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : raw.reason_key === 'cancel' ? 'Cancelled' : raw.reason_key || raw.hangup_cause_description || 'Missed';
       } else {
-        customerColor = 'green';
-        customerSublabel = 'Connected';
+        customerColor = 'gray';
+        customerSublabel = 'Not Reached';
       }
 
       // 3. Hangup Status: Indigo=Completed, Violet=Busy, Red=Cut/Dropped
@@ -551,6 +572,43 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         duration: matched.duration,
         recordingUrl: matched.recordingUrl,
       };
+    } else {
+      // 3. Not live on switch yet and no completed CDR/webhook:
+      // If targetCallId is a real switch ID (contains '.' or differs from targetRefId),
+      // the call was ALREADY active on the switch and has just hung up! It is NOT ringing the agent!
+      const isSwitchCallId = Boolean(
+        targetCallId &&
+        (targetCallId.includes('.') || (targetRefId && targetCallId !== targetRefId))
+      );
+
+      if (isSwitchCallId) {
+        refStatus = {
+          refId: targetRefId || targetCallId,
+          callId: targetCallId || targetRefId,
+          hasRecord: false,
+          isLive: false,
+          isEnded: true,
+          agent: { color: 'green', sublabel: 'Answered' },
+          customer: { color: 'gray', sublabel: 'Ended' },
+          hangup: { color: 'indigo', sublabel: 'Call Ended' },
+          duration: 0,
+          recordingUrl: null,
+        };
+      } else {
+        // Truly a new call where agent phone is ringing
+        refStatus = {
+          refId: targetRefId || targetCallId,
+          callId: targetCallId || targetRefId,
+          hasRecord: false,
+          isLive: false,
+          isEnded: false,
+          agent: { color: 'orange', sublabel: 'Ringing Agent...' },
+          customer: { color: 'gray', sublabel: 'Waiting' },
+          hangup: { color: 'gray', sublabel: 'Connecting...' },
+          duration: 0,
+          recordingUrl: null,
+        };
+      }
     }
   }
 

@@ -105,3 +105,16 @@ body::-webkit-scrollbar {
   width: 0 !important;
   height: 0 !important;
 }
+/* Snake spin ring animation for call flow icons */
+@keyframes snakeRingSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.snake-ring-spinner {
+  animation: snakeRingSpin 1.1s linear infinite;
+}

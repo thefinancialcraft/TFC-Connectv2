@@ -5,7 +5,7 @@
  */
 
 const LOG_STORAGE_KEY = 'tfc_console_logs';
-const MAX_LOGS = 500; // Keep last 500 logs to prevent storage bloat
+const MAX_LOGS = 50; // Keep last 50 logs to prevent storage bloat
 
 export interface LogEntry {
   id: string;
@@ -21,6 +21,18 @@ class Logger {
 
   init() {
     if (this.initialized || typeof window === 'undefined') return;
+
+    // Proactively clean up localStorage if previous logs exceeded storage
+    try {
+      const raw = localStorage.getItem(LOG_STORAGE_KEY);
+      if (raw && (raw.length > 100000 || (JSON.parse(raw) || []).length > MAX_LOGS)) {
+        const parsed = JSON.parse(raw);
+        const trimmed = Array.isArray(parsed) ? parsed.slice(0, 25) : [];
+        localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(trimmed));
+      }
+    } catch {
+      try { localStorage.removeItem(LOG_STORAGE_KEY); } catch {}
+    }
 
     this.originalConsole = {
       log: console.log,
@@ -48,21 +60,25 @@ class Logger {
       };
     });
 
-
     this.initialized = true;
     console.log("🚀 [Logger] Persistant logging initialized.");
   }
 
   private saveLog(level: LogEntry['level'], args: any[]) {
     try {
-      const message = args
+      let message = args
         .map(arg => {
           if (typeof arg === 'object') {
-            try { return JSON.stringify(arg, null, 2); } catch (e) { return String(arg); }
+            try { return JSON.stringify(arg); } catch (e) { return String(arg); }
           }
           return String(arg);
         })
         .join(' ');
+
+      // Cap single log message length to prevent quota bloat
+      if (message.length > 1000) {
+        message = message.substring(0, 1000) + '... [truncated]';
+      }
 
       const newEntry: LogEntry = {
         id: Math.random().toString(36).substr(2, 9),
@@ -75,13 +91,22 @@ class Logger {
       const existingLogs = this.getLogs();
       const updatedLogs = [newEntry, ...existingLogs].slice(0, MAX_LOGS);
       
-      localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(updatedLogs));
+      try {
+        localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(updatedLogs));
+      } catch (quotaError) {
+        // Self-heal: If quota is exceeded, aggressively trim to latest 20 logs or clear
+        try {
+          const trimmedLogs = [newEntry, ...existingLogs].slice(0, 20);
+          localStorage.setItem(LOG_STORAGE_KEY, JSON.stringify(trimmedLogs));
+        } catch {
+          localStorage.removeItem(LOG_STORAGE_KEY);
+        }
+      }
       
       // Trigger a custom event so the UI can update in real-time if open
       window.dispatchEvent(new CustomEvent('tfc-new-log', { detail: newEntry }));
-    } catch (e) {
+    } catch {
       // Avoid infinite loop if saving fails
-      this.originalConsole.error("Failed to save log to localStorage", e);
     }
   }
 

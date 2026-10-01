@@ -39,11 +39,11 @@ export default async function handler(
     return res.status(401).json({ success: false, message: 'Unauthorized. Please sign in.' });
   }
 
-  const { ref_id, call_id } = req.body || {};
-  if (!ref_id && !call_id) {
+  const { ref_id, call_id, phone } = req.body || {};
+  if (!ref_id && !call_id && !phone) {
     return res.status(400).json({
       success: false,
-      message: 'Either ref_id or call_id is required to disconnect the call.',
+      message: 'Either ref_id, call_id, or phone is required to disconnect the call.',
     });
   }
 
@@ -85,10 +85,43 @@ export default async function handler(
     return res.status(500).json({ success: false, message: 'Could not decrypt Smartflo token.' });
   }
 
-  // 3. Send Hangup request to Smartflo
+  // 3. If call_id is missing or equals ref_id, check live_calls
+  let resolvedCallId = call_id ? String(call_id).trim() : '';
+  const targetRefId = ref_id ? String(ref_id).trim() : '';
+  const cleanPhone = phone ? String(phone).replace(/\D/g, '').slice(-10) : '';
+
+  if (!resolvedCallId || resolvedCallId === targetRefId) {
+    try {
+      const liveRes = await fetch('https://api-smartflo.tatateleservices.com/v1/live_calls', {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+      });
+      if (liveRes.ok) {
+        const liveJson = await liveRes.json().catch(() => null);
+        const callsArray: any[] = Array.isArray(liveJson) ? liveJson : (liveJson?.calls || liveJson?.data || []);
+        const matched = callsArray.find((c: any) => {
+          const cRef = String(c.ref_id || '');
+          const cCallId = String(c.call_id || '');
+          const cCust = String(c.customer_number || c.destination || '').replace(/\D/g, '');
+          const custMatches = cleanPhone && (cCust.endsWith(cleanPhone) || cleanPhone.endsWith(cCust));
+          const refMatches = (targetRefId && (cRef === targetRefId || cCallId === targetRefId || JSON.stringify(c.custom_identifier || '').includes(targetRefId))) ||
+                             (resolvedCallId && (cCallId === resolvedCallId || cRef === resolvedCallId));
+          return refMatches || custMatches;
+        });
+
+        if (matched?.call_id) {
+          resolvedCallId = String(matched.call_id);
+          console.info('[Smartflo Hangup] Resolved switch call_id from live_calls:', resolvedCallId);
+        }
+      }
+    } catch (e) {
+      console.warn('[Smartflo Hangup] Warning checking live_calls:', e);
+    }
+  }
+
+  // Send Hangup request to Smartflo
   const hangupPayload: Record<string, string> = {};
-  if (ref_id) hangupPayload.ref_id = String(ref_id).trim();
-  if (call_id) hangupPayload.call_id = String(call_id).trim();
+  if (resolvedCallId) hangupPayload.call_id = resolvedCallId;
+  if (targetRefId && !resolvedCallId) hangupPayload.ref_id = targetRefId;
 
   try {
     console.info('[Smartflo Hangup] Calling hangup API with payload:', hangupPayload);

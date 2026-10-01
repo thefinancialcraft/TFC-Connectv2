@@ -75,6 +75,7 @@ export default function CallingPage() {
     const activeCallProviderRef = useRef<CallingProviderName | null>(null);
     const activeSmartfloRefIdRef = useRef<string | null>(null);
     const activeSmartfloCallIdRef = useRef<string | null>(null);
+    const hasSeenCustomerRingingRef = useRef(false);
     const [callStartTime, setCallStartTime] = useState<number | null>(null);
     const [serverTimeOffset, setServerTimeOffset] = useState(0);
     const [disposition, setDisposition] = useState("");
@@ -324,13 +325,16 @@ export default function CallingPage() {
         isApiUpdatingRef.current = true; // LOCK ON IMMEDIATELY
         console.log(`🤙 [EndCall] Initiated. Source: ${isFromBridge ? 'Native Bridge' : 'User UI'}`);
         const providerForCall = providerOverride ?? activeCallProviderRef.current;
-        const hangupRefId = activeSmartfloRefIdRef.current;
+        const hangupRefId = activeSmartfloRefIdRef.current || lastCheckedRefId;
+        const hangupCallId = activeSmartfloCallIdRef.current || lastCheckedCallId;
 
         // If initiated from UI and Smartflo call is active, show dancing dots in disconnect button until hangup response arrives
-        if (!isFromBridge && (providerForCall === 'smartflo' || hangupRefId)) {
-            setIsEndingCall(true);
-            if (hangupRefId) {
-                console.log('🤙 [EndCall] Disconnecting Smartflo call via Hangup API with ref_id:', hangupRefId);
+        if (!isFromBridge && (providerForCall === 'smartflo' || hangupRefId || hangupCallId)) {
+            setIsEndingCall(true);  
+            if (hangupRefId || hangupCallId) {
+                if (hangupRefId) cancelledRefIdsRef.current.add(hangupRefId);
+                if (hangupCallId) cancelledRefIdsRef.current.add(hangupCallId);
+                console.log('🤙 [EndCall] Disconnecting Smartflo call via /api/calling/smartflo-hangup with:', { hangupRefId, hangupCallId });
                 try {
                     const { data: { session: authSession } } = await supabase.auth.getSession();
                     if (authSession) {
@@ -340,15 +344,19 @@ export default function CallingPage() {
                                 'Content-Type': 'application/json',
                                 Authorization: `Bearer ${authSession.access_token}`,
                             },
-                            body: JSON.stringify({ ref_id: hangupRefId }),
+                            body: JSON.stringify({
+                                ref_id: hangupRefId,
+                                call_id: hangupCallId,
+                                phone: customer?.phone_no ? decryptPhone(customer.phone_no) : undefined,
+                            }),
                         }).then(async (res) => {
                             const data = await res.json().catch(() => null);
                             console.log('🤙 [EndCall] Smartflo hangup response:', data);
                             return data;
                         });
 
-                        // Max 4s wait so UI never gets stuck
-                        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 4000));
+                        // Max 3.5s wait so UI never gets stuck
+                        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 3500));
                         await Promise.race([hangupPromise, timeoutPromise]);
                     }
                 } catch (e) {
@@ -356,14 +364,22 @@ export default function CallingPage() {
                 }
             }
 
-            const hangupCallId = activeSmartfloCallIdRef.current || lastCheckedCallId;
             if (hangupRefId || hangupCallId) {
                 setSmartfloLifecycle(prev => prev ? ({
                     ...prev,
                     hangupColor: 'red',
                     hangupSublabel: 'Agent Ended',
                     isEnded: true,
-                }) : null);
+                }) : {
+                    refId: hangupRefId || hangupCallId || '',
+                    agentColor: 'orange',
+                    agentSublabel: 'Cancelled',
+                    customerColor: 'gray',
+                    customerSublabel: 'Cancelled',
+                    hangupColor: 'red',
+                    hangupSublabel: 'Agent Ended',
+                    isEnded: true,
+                });
                 setTimeout(() => fetchSmartfloLogs(hangupRefId || undefined, hangupCallId || undefined), 500);
             }
         }
@@ -477,10 +493,17 @@ export default function CallingPage() {
         isCallingRef.current = isCalling;
     }, [isCalling]);
 
+    const isEndingCallRef = useRef(isEndingCall);
+    useEffect(() => {
+        isEndingCallRef.current = isEndingCall;
+    }, [isEndingCall]);
+
     const handleEndCallRef = useRef(handleEndCall);
     useEffect(() => {
         handleEndCallRef.current = handleEndCall;
     }, [handleEndCall]);
+
+    const cancelledRefIdsRef = useRef<Set<string>>(new Set());
 
     const fetchSchedules = useCallback(async () => {
         if (!user?.uid) return;
@@ -542,15 +565,33 @@ export default function CallingPage() {
             });
             const data = await res.json();
 
-            // Print the live_calls API result directly into the browser console
+            // Print the live_calls API result concisely into the browser console without blowing localStorage
             console.log('📡 [SMARTFLO LIVE CALLS API RESULT]:', {
-                target_call_id: currentCallId,
-                target_ref_id: currentRef,
+                call_id: data.active_call_id || currentCallId,
+                ref_id: currentRef,
                 is_live: data.is_live,
-                live_calls_api_result: data.live_calls_api_result,
+                matched_call: data.live_calls_api_result?.matched_live_call,
                 ref_status: data.ref_status,
-                full_response: data,
             });
+
+            if (data.active_call_id && data.active_call_id !== currentCallId) {
+                setLastCheckedCallId(data.active_call_id);
+                activeSmartfloCallIdRef.current = data.active_call_id;
+            }
+
+            // If this call was cancelled by user and active_call_id appears (agent picked up), auto-hangup immediately!
+            const isThisCancelled = (currentRef && cancelledRefIdsRef.current.has(currentRef)) || (currentCallId && cancelledRefIdsRef.current.has(currentCallId));
+            if (isThisCancelled && (data.active_call_id || data.is_live)) {
+                const termCallId = data.active_call_id || data.live_calls_api_result?.matched_live_call?.call_id;
+                if (termCallId) {
+                    console.log('🛑 [SafetyGuard] Active call detected on switch for a cancelled originate! Instantly hanging up to protect customer:', termCallId);
+                    fetch('/api/calling/smartflo-hangup', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+                        body: JSON.stringify({ call_id: termCallId }),
+                    });
+                }
+            }
 
             if (data.success && Array.isArray(data.logs)) {
                 setSmartfloLogs(data.logs);
@@ -573,15 +614,57 @@ export default function CallingPage() {
                 }
             }
             if (data.success && data.ref_status) {
-                setSmartfloLifecycle({
-                    refId: data.ref_status.refId || data.ref_status.callId,
-                    agentColor: data.ref_status.agent.color,
-                    agentSublabel: data.ref_status.agent.sublabel,
-                    customerColor: data.ref_status.customer.color,
-                    customerSublabel: data.ref_status.customer.sublabel,
-                    hangupColor: data.ref_status.hangup.color,
-                    hangupSublabel: data.ref_status.hangup.sublabel,
-                    isEnded: Boolean(data.ref_status.isEnded),
+                setSmartfloLifecycle(prev => {
+                    const newStatus = data.ref_status;
+                    const currentActiveRef = activeSmartfloRefIdRef.current || lastCheckedRefId;
+
+                    // Stale response guard: Ignore responses from older calls if current active ref exists
+                    if (currentActiveRef && newStatus.refId && newStatus.refId !== currentActiveRef && newStatus.callId !== currentActiveRef) {
+                        return prev;
+                    }
+
+                    // Track if we have witnessed the customer's phone ringing
+                    if (newStatus.customer.color === 'orange' || (newStatus.customer.sublabel && newStatus.customer.sublabel.toLowerCase().includes('ring'))) {
+                        hasSeenCustomerRingingRef.current = true;
+                    }
+
+                    // In Smartflo Click-to-Call, when the agent answers Leg 1, the switch initially reports state 'Answered'.
+                    // If the customer has not yet been in the ringing state, hold customer in Ringing Customer...
+                    if (newStatus.customer.sublabel === 'Speaking' && !hasSeenCustomerRingingRef.current) {
+                        newStatus.customer.color = 'orange';
+                        newStatus.customer.sublabel = 'Ringing Customer...';
+                    }
+
+                    // Monotonic Call State Protection:
+                    // If the call was ALREADY live or answered (or ending), it can NEVER regress backwards to "Ringing Agent..."!
+                    if (prev && (prev.agentColor === 'green' || prev.isEnded || isEndingCallRef.current)) {
+                        // If backend reports not live and no webhook record yet, the call has just left switch and is completing:
+                        if (!newStatus.isLive && !newStatus.hasRecord) {
+                            return {
+                                ...prev,
+                                hangupColor: prev.hangupColor === 'red' ? 'red' : 'indigo',
+                                hangupSublabel: prev.hangupSublabel === 'Agent Ended' ? 'Agent Ended' : 'Call Ended',
+                                isEnded: true,
+                            };
+                        }
+
+                        // Protect Agent Leg from regressing from Answered to Ringing
+                        if (newStatus.agent.color === 'orange' && prev.agentColor === 'green') {
+                            newStatus.agent.color = 'green';
+                            newStatus.agent.sublabel = 'Answered';
+                        }
+                    }
+
+                    return {
+                        refId: newStatus.refId || newStatus.callId,
+                        agentColor: newStatus.agent.color,
+                        agentSublabel: newStatus.agent.sublabel,
+                        customerColor: newStatus.customer.color,
+                        customerSublabel: newStatus.customer.sublabel,
+                        hangupColor: newStatus.hangup.color,
+                        hangupSublabel: newStatus.hangup.sublabel,
+                        isEnded: Boolean(newStatus.isEnded),
+                    };
                 });
             }
         } catch (err) {
@@ -920,11 +1003,38 @@ export default function CallingPage() {
         ? ["Call Back", "Deal Done"] 
         : Object.keys(dispositionHierarchy);
 
+    const isSmartfloCall = activeCallProviderRef.current === 'smartflo' || Boolean(activeSmartfloRefIdRef.current) || Boolean(smartfloLifecycle);
+
+    const isAgentAnswered = Boolean(
+        isCalling && (
+            isSmartfloCall
+                ? (smartfloLifecycle?.agentColor === 'green')
+                : (localCallingStatus === 'connected' || !isPlacingCall)
+        )
+    );
+
+    const isWaitingForAgent = isPlacingCall || (isCalling && !isAgentAnswered);
+
+    const agentAnsweredAtRef = useRef<number | null>(null);
+
+    useEffect(() => {
+        if (!isCalling) {
+            agentAnsweredAtRef.current = null;
+            return;
+        }
+
+        if (isAgentAnswered && agentAnsweredAtRef.current === null) {
+            agentAnsweredAtRef.current = Date.now();
+            setCallStartTime(prev => (!prev || Math.abs(Date.now() - prev) < 120000 ? Date.now() : prev));
+            setCallDuration(0);
+        }
+    }, [isCalling, isAgentAnswered]);
+
     useEffect(() => {
         let interval: any;
         
         const updateDuration = () => {
-            if (isCalling && callStartTime) {
+            if (isCalling && isAgentAnswered && callStartTime) {
                 // Calibrate duration using server offset
                 const now = Date.now() + serverTimeOffset;
                 const diff = Math.floor((now - callStartTime) / 1000);
@@ -932,14 +1042,17 @@ export default function CallingPage() {
             }
         };
 
-        if (isCalling && callStartTime && !isAssigning) {
+        if (isCalling && isAgentAnswered && callStartTime && !isAssigning) {
             updateDuration(); // Sync immediately
             interval = setInterval(updateDuration, 1000);
         } else {
             clearInterval(interval);
+            if (!isAgentAnswered) {
+                setCallDuration(0);
+            }
         }
         return () => clearInterval(interval);
-    }, [isCalling, callStartTime, serverTimeOffset, isAssigning]);
+    }, [isCalling, isAgentAnswered, callStartTime, serverTimeOffset, isAssigning]);
 
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
@@ -2097,6 +2210,7 @@ useEffect(() => {
                         activeSmartfloCallIdRef.current = cIdVal;
                         setLastCheckedRefId(rId);
                         setLastCheckedCallId(cIdVal);
+                        hasSeenCustomerRingingRef.current = false;
                         setSmartfloLifecycle(null);
                         setTimeout(() => fetchSmartfloLogs(rId, cIdVal), 500);
                     }
@@ -3795,14 +3909,14 @@ Campaign: ${campaign?.name || campaignId}
                             <div className="md:col-span-7 flex flex-col">
                                 {/* The Call Engine */}
                                 <div className={`flex-1 relative overflow-hidden rounded-[1rem] transition-all duration-1000 flex flex-col ${
-                                    isCalling 
+                                    isCalling && isAgentAnswered 
                                     ? 'bg-gradient-to-br from-indigo-700 via-indigo-600 to-violet-800' 
                                     : 'bg-white border border-slate-200   '
                                 }`}>
                                     {/* Abstract Background Visuals */}
                                     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                                        <div className={`absolute -top-24 -left-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling ? 'bg-white/15' : 'bg-indigo-50/50'}`} />
-                                        <div className={`absolute -bottom-24 -right-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling ? 'bg-purple-500/20' : 'bg-violet-50/50'}`} />
+                                        <div className={`absolute -top-24 -left-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling && isAgentAnswered ? 'bg-white/15' : 'bg-indigo-50/50'}`} />
+                                        <div className={`absolute -bottom-24 -right-24 w-80 h-80 rounded-full blur-[100px] transition-all duration-1000 ${isCalling && isAgentAnswered ? 'bg-purple-500/20' : 'bg-violet-50/50'}`} />
                                         
                                     </div>
                                     
@@ -3816,12 +3930,7 @@ Campaign: ${campaign?.name || campaignId}
                                      {/* This is risky. The Call Engine is huge. */}
                                      
                                      {/* BETTER STRATEGY: 
-                                        I already replaced the START of Call Engine.
-                                        Now I just need to find where the "old" layout structure (Grid Col 8) continues and modify it.
-                                     */
-                                     }
-
-                                    {/* Content Container */}
+                                        I already replaced the START of Call Engine                                     {/* Content Container */}
                                     <div className="relative z-10 p-3 h-full flex flex-col">
                                     <div className="flex flex-col h-full justify-between gap-1 relative z-20">
                                             
@@ -3830,20 +3939,24 @@ Campaign: ${campaign?.name || campaignId}
                                             <div className="w-full text-center space-y-1 pt-1">
                                                 {/* Dynamic Status Badge */}
                                                 <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border    backdrop-blur-md transition-all duration-500 mx-auto ${
-                                                    isCalling 
+                                                    isCalling && isAgentAnswered 
                                                     ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-100' 
+                                                    : isWaitingForAgent
+                                                    ? 'bg-amber-50 border-amber-200 text-amber-700'
                                                     : 'bg-white/60 border-indigo-100 text-indigo-600'
                                                 }`}>
                                                     
                                                     <div className="relative flex h-1.5 w-1.5">
-                                                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isCalling ? 'bg-emerald-400' : 'bg-indigo-400'}`}></span>
-                                                        <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isCalling ? 'bg-emerald-500' : 'bg-indigo-500'}`}></span>
+                                                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                                                            isCalling && isAgentAnswered ? 'bg-emerald-400' : isWaitingForAgent ? 'bg-amber-400' : 'bg-indigo-400'
+                                                        }`}></span>
+                                                        <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
+                                                            isCalling && isAgentAnswered ? 'bg-emerald-500' : isWaitingForAgent ? 'bg-amber-500' : 'bg-indigo-500'
+                                                        }`}></span>
                                                     </div>
                                                     <span className="text-[8px] font-black uppercase tracking-widest leading-none pt-px">
-                                                        {isPlacingCall ? 'Dialing...' :
-                                                         localCallingStatus === 'preparing' ? 'Establishing' :
-                                                         localCallingStatus === 'connecting' ? 'Connecting' :
-                                                         isCalling ? 'Live' :
+                                                        {isWaitingForAgent ? 'Connecting' :
+                                                         isCalling && isAgentAnswered ? 'Live' :
                                                          postCall ? 'Done' : 
                                                          'Ready'}
                                                     </span>
@@ -3851,7 +3964,7 @@ Campaign: ${campaign?.name || campaignId}
 
                                                 {/* Compact Timer / Title */}
                                                 <div>
-                                                    {isCalling ? (
+                                                    {isCalling && isAgentAnswered ? (
                                                         <div className="animate-in zoom-in duration-300 flex flex-col items-center">
                                                             <h1 className="text-2xl sm:text-3xl mt-2 font-bold text-white tracking-tighter tabular-nums " style={{ textShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                                                                 {formatTime(callDuration)}
@@ -3860,11 +3973,11 @@ Campaign: ${campaign?.name || campaignId}
                                                     ) : (
                                                         <div className="flex flex-col items-center">
                                                             <h2 className={`text-xl mt-4 sm:text-2xl font-extrabold tracking-tight ${postCall ? 'text-slate-400' : 'text-slate-800'}`}>
-                                                                {isPlacingCall ? 'Connecting Call...' : postCall ? 'Ended' : 'Ready To Call'}
+                                                                {isWaitingForAgent ? 'Connecting Call...' : postCall ? 'Ended' : 'Ready To Call'}
                                                             </h2>
-                                                            <p className="text-[9px] font-medium text-slate-400 max-w-[160px] leading-tight mt-0.5">
-                                                                {isPlacingCall
-                                                                 ? 'Originating call...'
+                                                            <p className="text-[9px] font-medium text-slate-400 max-w-[200px] leading-tight mt-0.5">
+                                                                {isWaitingForAgent
+                                                                 ? 'Waiting for agent response...'
                                                                  : postCall 
                                                                  ? 'Mark outcome.' 
                                                                  : 'Line ready.'}
@@ -3894,7 +4007,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 
                                                 {/* Visualizer Spacer (Middle) */}
                                                 <div className="flex mt-4 items-center justify-center min-h-[15px] py-1">
-                                                    {isCalling && (
+                                                    {isCalling && isAgentAnswered && (
                                                         <div className="flex items-center gap-1 h-4">
                                                             {[...Array(5)].map((_, i) => (
                                                                 <div key={i} className="w-1 bg-white/60 rounded-full animate-[bounce_1s_infinite]" style={{ animationDelay: `${i * 0.12}s`, height: `${30 + Math.random() * 70}%` }} />
@@ -3907,7 +4020,7 @@ Campaign: ${campaign?.name || campaignId}
                                             {/* RIGHT: Dynamic Action & Stats Area */}
                                             {/* 3. ULTRA COMPACT ACTIONS */}
                                             <div className="w-full pb-0">
-                                                {isCalling ? (
+                                                {isCalling && isAgentAnswered ? (
                                                     <div className="grid grid-cols-[1fr_auto] gap-2">
                                                         <button 
                                                             onClick={() => handleEndCall(false)}
@@ -3924,10 +4037,12 @@ Campaign: ${campaign?.name || campaignId}
                                                                 </div>
                                                             ) : (
                                                                 <>
-                                                                    <div className="w-6 h-6 mr-3 rounded-full bg-white/20 flex items-center justify-center relative z-10 group-hover:rotate-12 transition-transform">
+                                                                    <div className="w-6 h-6 mr-2 rounded-full bg-white/20 flex items-center justify-center relative z-10 group-hover:rotate-12 transition-transform">
                                                                         <i className="fi flex  fi-rr-phone-slash text-sm"></i>
                                                                     </div>
-                                                                    <span className="font-extrabold text-[10px] uppercase tracking-widest relative z-10">End</span>
+                                                                    <span className="font-extrabold text-[10px] uppercase tracking-widest relative z-10">
+                                                                        Disconnect
+                                                                    </span>
                                                                 </>
                                                             )}
                                                         </button>
@@ -4059,15 +4174,15 @@ Campaign: ${campaign?.name || campaignId}
                                                                         <div 
                                                                             ref={sliderHandleRef}
                                                                             className={`absolute inset-0 w-full rounded-2xl flex items-center justify-center gap-3 will-change-transform z-10 transition-all bg-gradient-to-r from-orange-500 to-amber-600 ${
-                                                                                isPlacingCall 
+                                                                                isWaitingForAgent || isPlacingCall 
                                                                                     ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none' 
                                                                                     : `shadow-lg shadow-orange-500/30 ${isDragging ? 'shadow-2xl brightness-110' : ''}`
                                                                             }`}
                                                                             style={{ 
-                                                                                cursor: isPlacingCall ? 'not-allowed' : (isDragging ? 'grabbing' : 'grab')
+                                                                                cursor: isWaitingForAgent || isPlacingCall ? 'not-allowed' : (isDragging ? 'grabbing' : 'grab')
                                                                             }}
                                                                         >
-                                                                            {isPlacingCall ? (
+                                                                            {isWaitingForAgent || isPlacingCall ? (
                                                                                 <div className="flex items-center justify-center">
                                                                                     <DancingDots dotColor="bg-white" />
                                                                                 </div>
@@ -4102,14 +4217,14 @@ Campaign: ${campaign?.name || campaignId}
                                                         <div className="grid grid-cols-[1fr_auto] gap-2">
                                                             <button 
                                                                 onClick={handleStartCall}
-                                                                disabled={isPlacingCall}
+                                                                disabled={isWaitingForAgent || isPlacingCall}
                                                                 className={`h-12 rounded-xl text-white font-black text-[11px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 group relative overflow-hidden bg-indigo-600 ${
-                                                                    isPlacingCall 
+                                                                    isWaitingForAgent || isPlacingCall 
                                                                         ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none' 
                                                                         : 'hover:bg-indigo-700 shadow-lg shadow-indigo-500/25 hover:-translate-y-0.5 active:scale-95'
                                                                 }`}
                                                             >
-                                                                {isPlacingCall ? (
+                                                                {isWaitingForAgent || isPlacingCall ? (
                                                                     <div className="flex items-center justify-center relative z-10">
                                                                         <DancingDots dotColor="bg-white" />
                                                                     </div>
@@ -4125,9 +4240,9 @@ Campaign: ${campaign?.name || campaignId}
                                                             
                                                             <button 
                                                                 onClick={handleWhatsAppClick}
-                                                                disabled={isPlacingCall}
+                                                                disabled={isWaitingForAgent || isPlacingCall}
                                                                 className={`h-12 w-12 rounded-xl transition-all flex items-center justify-center group bg-emerald-500 ${
-                                                                    isPlacingCall 
+                                                                    isWaitingForAgent || isPlacingCall 
                                                                         ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none' 
                                                                         : 'hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'
                                                                 }`}
@@ -5322,7 +5437,7 @@ Campaign: ${campaign?.name || campaignId}
                                                                     (activeCallId && (l.callId === activeCallId || l.refId === activeCallId || raw.call_id === activeCallId || raw.ref_id === activeCallId || raw.uuid === activeCallId || customIdStr.includes(activeCallId)))
                                                                 );
                                                             })
-                                                            : (smartfloLogs.length > 0 ? smartfloLogs[0] : null);
+                                                            : null;
 
                                                         let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
                                                         let agentSublabel = 'Standby';
@@ -5331,16 +5446,27 @@ Campaign: ${campaign?.name || campaignId}
                                                         let hangupColor: 'gray' | 'indigo' | 'violet' | 'red' = 'gray';
                                                         let hangupSublabel = 'Standby';
 
-                                                        // 1. Real-time Status from Tata Smartflo Live API: GET /v1/live_calls/{call_id}
-                                                        if (smartfloLifecycle) {
-                                                            agentColor = smartfloLifecycle.agentColor;
-                                                            agentSublabel = smartfloLifecycle.agentSublabel;
-                                                            customerColor = smartfloLifecycle.customerColor;
-                                                            customerSublabel = smartfloLifecycle.customerSublabel;
-                                                            hangupColor = smartfloLifecycle.hangupColor;
-                                                            hangupSublabel = smartfloLifecycle.hangupSublabel;
+                                                        // Priority 1: Call is actively placing or in progress in the CRM
+                                                        if (isPlacingCall || isCalling) {
+                                                            // If live call returned active data from Smartflo live_calls API
+                                                            if (smartfloLifecycle && (!smartfloLifecycle.isEnded || smartfloLifecycle.refId === activeRef || smartfloLifecycle.refId === activeCallId)) {
+                                                                agentColor = smartfloLifecycle.agentColor;
+                                                                agentSublabel = smartfloLifecycle.agentSublabel;
+                                                                customerColor = smartfloLifecycle.customerColor;
+                                                                customerSublabel = smartfloLifecycle.customerSublabel;
+                                                                hangupColor = smartfloLifecycle.hangupColor;
+                                                                hangupSublabel = smartfloLifecycle.hangupSublabel;
+                                                            } else {
+                                                                // Agent phone is ringing (before agent answers)
+                                                                agentColor = isEndingCall ? 'green' : 'orange';
+                                                                agentSublabel = isEndingCall ? 'Answered' : (isPlacingCall ? 'Dialing Agent...' : 'Ringing Agent...');
+                                                                customerColor = isEndingCall ? 'gray' : 'gray';
+                                                                customerSublabel = isEndingCall ? 'Ended' : 'Waiting';
+                                                                hangupColor = isEndingCall ? 'red' : 'gray';
+                                                                hangupSublabel = isEndingCall ? 'Ending...' : 'Connecting...';
+                                                            }
                                                         }
-                                                        // 2. Real-time Status from Webhook / CDR Record
+                                                        // Priority 2: Call has ended -> Show matched Webhook / CDR Record for this exact call
                                                         else if (matchedLog) {
                                                             const raw = (matchedLog.rawPayload || {}) as any;
                                                             const statusStr = String(matchedLog.status || raw.call_status || '').toLowerCase();
@@ -5348,8 +5474,8 @@ Campaign: ${campaign?.name || campaignId}
                                                             const reasonStr = String(raw.reason_key || '').toLowerCase();
 
                                                             const isBusy = causeStr.includes('busy') || reasonStr.includes('busy') || statusStr.includes('busy');
-                                                            const isAnswered = statusStr.includes('answer') || matchedLog.callType === 'Answered' || raw.call_connected === '1';
-                                                            const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
+                                                            const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || reasonStr.includes('noanswer') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
+                                                            const isAnswered = !isMissedOrDropped && (statusStr.includes('answer') || matchedLog.callType === 'Answered');
 
                                                             const hasMissedAgent = Boolean(raw.missed_agent && (Array.isArray(raw.missed_agent) ? raw.missed_agent.length > 0 : String(raw.missed_agent).trim() !== ''));
                                                             const agentRingSecs = Number(raw.agent_ring_time || 0);
@@ -5363,22 +5489,22 @@ Campaign: ${campaign?.name || campaignId}
                                                                 agentSublabel = 'Answered';
                                                             }
 
-                                                            // Customer: Orange=Ringing, Green=Speaking, Violet=Busy, Red=Cut/Dropped
+                                                            // Customer: Orange=Ringing, Green=Connected, Violet=Busy, Red=Cut/Dropped
                                                             if (agentColor === 'violet' || agentColor === 'red') {
                                                                 customerColor = 'gray';
                                                                 customerSublabel = 'Not Reached';
-                                                            } else if (isAnswered && !isMissedOrDropped) {
+                                                            } else if (isAnswered) {
                                                                 customerColor = 'green';
-                                                                customerSublabel = 'Speaking';
+                                                                customerSublabel = 'Connected';
                                                             } else if (isBusy) {
                                                                 customerColor = 'violet';
                                                                 customerSublabel = 'Busy';
                                                             } else if (isMissedOrDropped) {
                                                                 customerColor = 'red';
-                                                                customerSublabel = raw.reason_key || raw.hangup_cause_description || raw.hangup_cause || 'Cancel / Dropped';
+                                                                customerSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : raw.reason_key === 'cancel' ? 'Cancelled' : raw.reason_key || raw.hangup_cause_description || 'Missed';
                                                             } else {
-                                                                customerColor = 'green';
-                                                                customerSublabel = 'Connected';
+                                                                customerColor = 'gray';
+                                                                customerSublabel = 'Not Reached';
                                                             }
 
                                                             // Hangup: Indigo=Completed, Violet=Busy, Red=Cut/Dropped
@@ -5393,20 +5519,20 @@ Campaign: ${campaign?.name || campaignId}
                                                                 hangupSublabel = raw.hangup_cause_description || 'Completed';
                                                             }
                                                         }
-                                                        // 3. Call in progress, awaiting first real API / webhook response
-                                                        else if (isPlacingCall || isCalling) {
-                                                            agentColor = 'orange';
-                                                            agentSublabel = isPlacingCall ? 'Dialing Agent...' : 'Ringing Agent...';
-                                                            customerColor = 'gray';
-                                                            customerSublabel = 'Waiting';
-                                                            hangupColor = isEndingCall ? 'red' : 'gray';
-                                                            hangupSublabel = isEndingCall ? 'Ending...' : 'Connecting...';
+                                                        // Priority 3: Fallback to smartfloLifecycle if available
+                                                        else if (smartfloLifecycle) {
+                                                            agentColor = smartfloLifecycle.agentColor;
+                                                            agentSublabel = smartfloLifecycle.agentSublabel;
+                                                            customerColor = smartfloLifecycle.customerColor;
+                                                            customerSublabel = smartfloLifecycle.customerSublabel;
+                                                            hangupColor = smartfloLifecycle.hangupColor;
+                                                            hangupSublabel = smartfloLifecycle.hangupSublabel;
                                                         }
 
                                                         const getCircleClass = (color: 'orange' | 'green' | 'violet' | 'red' | 'gray') => {
                                                             switch (color) {
                                                                 case 'orange':
-                                                                    return 'bg-amber-500 text-white animate-pulse ring-2 ring-amber-300 ring-offset-1';
+                                                                    return 'bg-amber-500 text-white shadow-sm';
                                                                 case 'green':
                                                                     return 'bg-emerald-500 text-white ring-2 ring-emerald-300 ring-offset-1';
                                                                 case 'violet':
@@ -5459,6 +5585,37 @@ Campaign: ${campaign?.name || campaignId}
                                                             }
                                                         };
 
+                                                        const renderSnakeRing = (color: 'orange' | 'green' | 'indigo') => {
+                                                            const stroke = color === 'green' ? '#10b981' : color === 'indigo' ? '#6366f1' : '#f59e0b';
+                                                            const track = color === 'green' ? 'rgba(16, 185, 129, 0.2)' : color === 'indigo' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(245, 158, 11, 0.25)';
+                                                            return (
+                                                                <svg
+                                                                    className="snake-ring-spinner absolute -inset-1 w-9 h-9 pointer-events-none z-0"
+                                                                    viewBox="0 0 36 36"
+                                                                    style={{ animation: 'snakeRingSpin 1.1s linear infinite' }}
+                                                                >
+                                                                    <circle
+                                                                        cx="18"
+                                                                        cy="18"
+                                                                        r="16"
+                                                                        fill="none"
+                                                                        stroke={track}
+                                                                        strokeWidth="1.5"
+                                                                    />
+                                                                    <circle
+                                                                        cx="18"
+                                                                        cy="18"
+                                                                        r="16"
+                                                                        fill="none"
+                                                                        stroke={stroke}
+                                                                        strokeWidth="2.5"
+                                                                        strokeDasharray="28 72"
+                                                                        strokeLinecap="round"
+                                                                    />
+                                                                </svg>
+                                                            );
+                                                        };
+
                                                         return (
                                                             <div className="relative pt-1 pb-0.5">
                                                                 {/* Connecting track line between circles */}
@@ -5476,8 +5633,11 @@ Campaign: ${campaign?.name || campaignId}
 
                                                                     {/* Step 2: Agent Leg */}
                                                                     <div className="flex flex-col items-center">
-                                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold mb-1 shadow-none ${getCircleClass(agentColor)}`}>
-                                                                            <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                            {agentColor === 'orange' && renderSnakeRing('orange')}
+                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(agentColor)}`}>
+                                                                                <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                                            </div>
                                                                         </div>
                                                                         <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
                                                                         <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
@@ -5487,8 +5647,12 @@ Campaign: ${campaign?.name || campaignId}
 
                                                                     {/* Step 3: Customer Leg */}
                                                                     <div className="flex flex-col items-center">
-                                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold mb-1 shadow-none ${getCircleClass(customerColor)}`}>
-                                                                            <i className="fi flex fi-rr-user text-[10px]"></i>
+                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                            {customerColor === 'orange' && renderSnakeRing('orange')}
+                                                                            {customerColor === 'green' && customerSublabel === 'Speaking' && renderSnakeRing('green')}
+                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(customerColor)}`}>
+                                                                                <i className="fi flex fi-rr-user text-[10px]"></i>
+                                                                            </div>
                                                                         </div>
                                                                         <span className="text-[9px] font-bold text-slate-800">Customer</span>
                                                                         <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
@@ -5498,8 +5662,11 @@ Campaign: ${campaign?.name || campaignId}
 
                                                                     {/* Step 4: Hangup & Wrapup */}
                                                                     <div className="flex flex-col items-center">
-                                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold mb-1 shadow-none ${getHangupCircleClass(hangupColor)}`}>
-                                                                            <i className="fi flex fi-rr-phone-slash text-[10px]"></i>
+                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                            {(hangupSublabel === 'In Call' || hangupSublabel === 'Connecting...') && renderSnakeRing('indigo')}
+                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getHangupCircleClass(hangupColor)}`}>
+                                                                                <i className="fi flex fi-rr-phone-slash text-[10px]"></i>
+                                                                            </div>
                                                                         </div>
                                                                         <span className="text-[9px] font-bold text-slate-800">Hangup</span>
                                                                         <span className={`text-[8px] truncate max-w-[70px] ${getHangupSublabelClass(hangupColor)}`} title={hangupSublabel}>
