@@ -134,6 +134,10 @@ export function resolveCallingProviderFromState(
     return { provider, allowed: false, reason: 'provider_not_selected' };
   }
 
+  if (provider === 'smartflo' && !state.user.smartflo.is_mapped) {
+    return { provider, allowed: false, reason: 'smartflo_not_mapped' };
+  }
+
   return { provider, allowed: true };
 }
 

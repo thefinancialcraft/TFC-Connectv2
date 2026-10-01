@@ -891,49 +891,53 @@ export default function Settings() {
           )}
 
           {activeTab === "integrations" && (
-            <div id="connected-apps-container" className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div id="connected-apps-section" className="min-h-[520px] rounded-2xl border border-gray-100 bg-white p-4 sm:p-5" style={{ borderColor: "#E0E0E0" }}>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-                  <div>
-                    <h3 id="connected-apps-heading" className="text-lg font-bold text-[#263238] flex items-center gap-2">
-                      <i className="fi fi-rr-apps text-[#4b33e8] text-sm" />
-                      Connected Apps
-                    </h3>
-                    <p id="active-tab-indicator" className="text-xs text-gray-500 mt-0.5">
-                      {showSmartfloDialerConfiguration ? (
-                        <span>Connected Apps &gt; Admin Apps &gt; <strong className="text-[#4b33e8]">Smartflo Dialer Configuration</strong></span>
-                      ) : activeIntegrationCategory === "admin" ? (
-                        <span>Connected Apps &gt; <strong className="text-[#4b33e8]">Admin Apps</strong></span>
-                      ) : (
-                        <span>Connected Apps &gt; <strong className="text-[#4b33e8]">User Apps</strong></span>
-                      )}
-                    </p>
-                  </div>
-                  <div id="connected-apps-category-tabs" className="inline-flex w-fit items-center rounded-xl border border-gray-200 bg-gray-50 p-1" role="tablist" aria-label="Integration category">
-                    <button
-                      type="button"
-                      id="tab-user-apps"
-                      role="tab"
-                      aria-selected={activeIntegrationCategory === "user"}
-                      onClick={() => handleIntegrationCategoryChange("user")}
-                      className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeIntegrationCategory === "user" ? "bg-[#4b33e8] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
-                    >
-                      User Apps
-                    </button>
-                    {canAccessAdminIntegrations && (
+            <div id="connected-apps-container" className={showSmartfloDialerConfiguration ? "p-0 m-0 animate-in fade-in slide-in-from-bottom-2 duration-300" : "space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300"}>
+              <div
+                id="connected-apps-section"
+                className={showSmartfloDialerConfiguration ? "p-0 m-0 border-0 bg-transparent shadow-none" : "min-h-[520px] rounded-2xl border border-gray-100 bg-white p-4 sm:p-5"}
+                style={showSmartfloDialerConfiguration ? undefined : { borderColor: "#E0E0E0" }}
+              >
+                {!showSmartfloDialerConfiguration && (
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                    <div>
+                      <h3 id="connected-apps-heading" className="text-lg font-bold text-[#263238] flex items-center gap-2">
+                        <i className="fi fi-rr-apps text-[#4b33e8] text-sm" />
+                        Connected Apps
+                      </h3>
+                      <p id="active-tab-indicator" className="text-xs text-gray-500 mt-0.5">
+                        {activeIntegrationCategory === "admin" ? (
+                          <span>Connected Apps &gt; <strong className="text-[#4b33e8]">Admin Apps</strong></span>
+                        ) : (
+                          <span>Connected Apps &gt; <strong className="text-[#4b33e8]">User Apps</strong></span>
+                        )}
+                      </p>
+                    </div>
+                    <div id="connected-apps-category-tabs" className="inline-flex w-fit items-center rounded-xl border border-gray-200 bg-gray-50 p-1" role="tablist" aria-label="Integration category">
                       <button
                         type="button"
-                        id="tab-admin-apps"
+                        id="tab-user-apps"
                         role="tab"
-                        aria-selected={activeIntegrationCategory === "admin"}
-                        onClick={() => handleIntegrationCategoryChange("admin")}
-                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeIntegrationCategory === "admin" ? "bg-[#4b33e8] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+                        aria-selected={activeIntegrationCategory === "user"}
+                        onClick={() => handleIntegrationCategoryChange("user")}
+                        className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeIntegrationCategory === "user" ? "bg-[#4b33e8] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
                       >
-                        Admin Apps
+                        User Apps
                       </button>
-                    )}
+                      {canAccessAdminIntegrations && (
+                        <button
+                          type="button"
+                          id="tab-admin-apps"
+                          role="tab"
+                          aria-selected={activeIntegrationCategory === "admin"}
+                          onClick={() => handleIntegrationCategoryChange("admin")}
+                          className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${activeIntegrationCategory === "admin" ? "bg-[#4b33e8] text-white shadow-sm" : "text-gray-500 hover:text-gray-800"}`}
+                        >
+                          Admin Apps
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {activeIntegrationCategory === "admin" && canAccessAdminIntegrations && showSmartfloDialerConfiguration ? (
                   <div id="smartflo-dialer-configuration-view" data-app-id="smartflo-dialer-config">

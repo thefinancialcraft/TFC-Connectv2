@@ -18,11 +18,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const admin = await requireSmartfloAdmin(req, res);
   if (!admin || !smartfloAdminClient) return;
 
-  const { data: config, error: configError } = await smartfloAdminClient
+  let { data: config, error: configError } = await smartfloAdminClient
     .from('smartflo_dialer_config')
     .select('smartflo_api_token, is_token_valid, is_validate, token_expires_at, click_to_call_params')
     .eq('organization_id', admin.organizationId)
     .maybeSingle();
+
+
 
   if (configError) return res.status(500).json({ error: 'Unable to load Smartflo configuration.' });
   if (!config?.smartflo_api_token || !(config.is_token_valid ?? config.is_validate)) {
@@ -48,10 +50,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Select at least one agent in Request Configuration first.' });
   }
 
-  const { data: agentRows, error: agentsError } = await smartfloAdminClient
+  let { data: agentRows, error: agentsError } = await smartfloAdminClient
     .from('user_smartflo_details')
-    .select('smartflo_agent_id, caller_id')
+    .select('smartflo_agent_id, extension, intercom, caller_id')
     .eq('organization_id', admin.organizationId);
+
+  if (!agentRows || agentRows.length === 0) {
+    const fallbackAgents = await smartfloAdminClient
+      .from('user_smartflo_details')
+      .select('smartflo_agent_id, extension, intercom, caller_id');
+    if (fallbackAgents.data && fallbackAgents.data.length > 0) {
+      agentRows = fallbackAgents.data;
+    }
+  }
 
   if (agentsError) return res.status(500).json({ error: 'Unable to load selected Smartflo agents.' });
 
@@ -94,8 +105,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(400).json({ error: 'Please enter a destination phone number.' });
   }
 
+  // In Tata Smartflo Click-to-Call:
+  // - Extension (060XXXXXX): Routes the first leg directly to the agent's Softphone (WebRTC / App).
+  // - Agent ID (050XXXXXX): Routes to the agent's Call Forward Number (PSTN / personal mobile phone).
+  const targetAgentNumber = selectedAgent.extension?.trim() || selectedAgent.smartflo_agent_id;
+
+  console.info('[Smartflo Click-to-Call] Routing target:', {
+    agent_number: targetAgentNumber,
+    agent_id: selectedAgent.smartflo_agent_id,
+    extension: selectedAgent.extension,
+    destination_number: destinationNumber,
+    caller_id: callerId,
+  });
+
   const requestBody = {
-    agent_number: selectedAgent.smartflo_agent_id,
+    agent_number: targetAgentNumber,
     destination_number: destinationNumber,
     async: '1',
     caller_id: callerId,
@@ -145,10 +169,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       console.error('[Smartflo test-call] call queued but activation state could not be saved', activationError);
     }
 
+    const callId = typeof responseData.call_id === 'string'
+      ? responseData.call_id
+      : typeof responseData.callId === 'string'
+        ? responseData.callId
+        : typeof (responseData.data as any)?.call_id === 'string'
+          ? (responseData.data as any).call_id
+          : null;
+
     return res.status(200).json({
       success: true,
       message: typeof responseData.message === 'string' ? responseData.message : 'Originate successfully queued',
       ref_id: typeof responseData.ref_id === 'string' ? responseData.ref_id : null,
+      call_id: callId,
       activated: !activationError,
     });
   } catch (error) {

@@ -638,6 +638,14 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
 
   const handleProviderSelect = async (provider: CallingProviderName) => {
     if (switchingProvider || refreshingProviderState || !callingProviderState) return;
+
+    if (provider === "smartflo" && !callingProviderState.user?.smartflo?.is_mapped) {
+      showWarning("DID number not avilable config softllow setting. Please contact your admin.", "Smartflo Configuration");
+      setShowProviderMenu(false);
+      return;
+    }
+    
+
     setSwitchingProvider(provider);
 
     try {
@@ -747,17 +755,22 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
         {showProviderMenu && (
           <div role="menu" aria-label="Calling provider" className="absolute right-0 top-full z-[60] mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
             {(["sim", "smartflo"] as const).map((provider) => {
-              const providerEnabled = callingProviderState.organization[provider].enable && callingProviderState.user[provider].enable;
+              const isSmartfloUnmapped = provider === "smartflo" && !callingProviderState.user.smartflo?.is_mapped;
+              const providerEnabled = (callingProviderState.organization[provider].enable && callingProviderState.user[provider].enable) || isSmartfloUnmapped;
               const isActive = callingProviderState.active_provider === provider;
               const label = provider === "sim" ? "SIM Based" : "Tata Smartflo";
               const Icon = provider === "sim" ? Smartphone : Headphones;
               const unavailableReason = !callingProviderState.organization[provider].enable
                 ? "Disabled for organization"
-                : !callingProviderState.user[provider].enable
-                  ? "Disabled for user"
-                  : isActive
-                    ? "Currently selected"
-                    : "Switch provider";
+                : isSmartfloUnmapped
+                  ? "Config required"
+                  : !callingProviderState.user[provider].enable
+                    ? "Disabled for user"
+                    : isActive
+                      ? "Currently selected"
+                      : "Switch provider";
+
+              const isButtonDisabled = isActive || switchingProvider !== null || refreshingProviderState || (!providerEnabled && !isSmartfloUnmapped);
 
               return (
             <button
@@ -772,13 +785,13 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
                 }
                 void handleProviderSelect(provider);
               }}
-              disabled={!providerEnabled || isActive || switchingProvider !== null || refreshingProviderState}
+              disabled={isButtonDisabled}
               title={unavailableReason}
               className={`flex w-full items-center gap-3 rounded-md px-3 py-2 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                 isActive
                   ? "bg-gray-100 text-gray-900"
-                  : providerEnabled
-                    ? "text-gray-700 hover:bg-gray-50"
+                  : (providerEnabled || isSmartfloUnmapped)
+                    ? "text-gray-700 hover:bg-gray-50 cursor-pointer"
                     : "text-gray-400"
               }`}
             >

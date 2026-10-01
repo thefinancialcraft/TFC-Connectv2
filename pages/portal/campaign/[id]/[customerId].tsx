@@ -12,8 +12,16 @@ import { updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "@/lib/flu
 import { logSystemEvent, estimateSize } from "@/lib/monitoring";
 import { showWarning } from "@/lib/dialogUtils";
 import { routeCallingCommand } from "@/lib/callingCommandRouter";
-import { resolveActiveCallingProvider, type CallingProviderName } from "@/lib/callingProviderClient";
+import { resolveActiveCallingProvider, getCallingProviderDetails, type CallingProviderName } from "@/lib/callingProviderClient";
 
+
+const DancingDots = ({ dotColor = "bg-white" }: { dotColor?: string }) => (
+    <span className="inline-flex items-center gap-1.5 py-0.5">
+        <span className={`w-1.5 h-1.5 rounded-full ${dotColor} animate-bounce [animation-delay:-0.3s]`}></span>
+        <span className={`w-1.5 h-1.5 rounded-full ${dotColor} animate-bounce [animation-delay:-0.15s]`}></span>
+        <span className={`w-1.5 h-1.5 rounded-full ${dotColor} animate-bounce`}></span>
+    </span>
+);
 
 export default function CallingPage() {
     const router = useRouter();
@@ -30,7 +38,23 @@ export default function CallingPage() {
     const [campaign, setCampaign] = useState<any>(null);
     const [history, setHistory] = useState<any[]>([]);
     const [mobileLogs, setMobileLogs] = useState<any[]>([]);
-    const [timelineView, setTimelineView] = useState<'timeline' | 'call_logs' | 'schedules'>('timeline');
+    const [timelineView, setTimelineView] = useState<'timeline' | 'call_logs' | 'schedules' | 'smartflo_logs'>('timeline');
+    const [smartfloLogs, setSmartfloLogs] = useState<any[]>([]);
+    const [isLoadingSmartfloLogs, setIsLoadingSmartfloLogs] = useState(false);
+    const [activeCallingProvider, setActiveCallingProvider] = useState<CallingProviderName | null>(null);
+    const [lastCheckedRefId, setLastCheckedRefId] = useState<string | null>(null);
+    const [lastCheckedCallId, setLastCheckedCallId] = useState<string | null>(null);
+    const [smartfloLifecycle, setSmartfloLifecycle] = useState<{
+        refId: string;
+        agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray';
+        agentSublabel: string;
+        customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray';
+        customerSublabel: string;
+        hangupColor: 'gray' | 'indigo' | 'violet' | 'red';
+        hangupSublabel: string;
+        isEnded: boolean;
+    } | null>(null);
+    const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
     const [scheduledCalls, setScheduledCalls] = useState<any[]>([]);
     const [selectedScheduleDate, setSelectedScheduleDate] = useState<Date | null>(new Date());
     const [managedByInfo, setManagedByInfo] = useState<{name: string, empId: string} | null>(null);
@@ -44,9 +68,13 @@ export default function CallingPage() {
     
     // Call States
     const [isCalling, setIsCalling] = useState(false);
+    const [isPlacingCall, setIsPlacingCall] = useState(false);
+    const [isEndingCall, setIsEndingCall] = useState(false);
     const [postCall, setPostCall] = useState(false);
     const [callDuration, setCallDuration] = useState(0);
     const activeCallProviderRef = useRef<CallingProviderName | null>(null);
+    const activeSmartfloRefIdRef = useRef<string | null>(null);
+    const activeSmartfloCallIdRef = useRef<string | null>(null);
     const [callStartTime, setCallStartTime] = useState<number | null>(null);
     const [serverTimeOffset, setServerTimeOffset] = useState(0);
     const [disposition, setDisposition] = useState("");
@@ -296,15 +324,62 @@ export default function CallingPage() {
         isApiUpdatingRef.current = true; // LOCK ON IMMEDIATELY
         console.log(`🤙 [EndCall] Initiated. Source: ${isFromBridge ? 'Native Bridge' : 'User UI'}`);
         const providerForCall = providerOverride ?? activeCallProviderRef.current;
+        const hangupRefId = activeSmartfloRefIdRef.current;
+
+        // If initiated from UI and Smartflo call is active, show dancing dots in disconnect button until hangup response arrives
+        if (!isFromBridge && (providerForCall === 'smartflo' || hangupRefId)) {
+            setIsEndingCall(true);
+            if (hangupRefId) {
+                console.log('🤙 [EndCall] Disconnecting Smartflo call via Hangup API with ref_id:', hangupRefId);
+                try {
+                    const { data: { session: authSession } } = await supabase.auth.getSession();
+                    if (authSession) {
+                        const hangupPromise = fetch('/api/calling/smartflo-hangup', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${authSession.access_token}`,
+                            },
+                            body: JSON.stringify({ ref_id: hangupRefId }),
+                        }).then(async (res) => {
+                            const data = await res.json().catch(() => null);
+                            console.log('🤙 [EndCall] Smartflo hangup response:', data);
+                            return data;
+                        });
+
+                        // Max 4s wait so UI never gets stuck
+                        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 4000));
+                        await Promise.race([hangupPromise, timeoutPromise]);
+                    }
+                } catch (e) {
+                    console.warn('🤙 [EndCall] Smartflo hangup error:', e);
+                }
+            }
+
+            const hangupCallId = activeSmartfloCallIdRef.current || lastCheckedCallId;
+            if (hangupRefId || hangupCallId) {
+                setSmartfloLifecycle(prev => prev ? ({
+                    ...prev,
+                    hangupColor: 'red',
+                    hangupSublabel: 'Agent Ended',
+                    isEnded: true,
+                }) : null);
+                setTimeout(() => fetchSmartfloLogs(hangupRefId || undefined, hangupCallId || undefined), 500);
+            }
+        }
+
         activeCallProviderRef.current = null;
+        activeSmartfloRefIdRef.current = null;
         
-        // If the call never reached 'connected' status, force duration to 0
-        if (localCallingStatus !== 'connected') {
-            console.log('🤙 [EndCall] Call never connected. Forcing Talk Time to 0.');
+        // If a SIM call never reached 'connected' status, force duration to 0
+        if (providerForCall === 'sim' && localCallingStatus !== 'connected') {
+            console.log('🤙 [EndCall] SIM call never connected. Forcing Talk Time to 0.');
             setCallDuration(0);
         }
 
+        setIsEndingCall(false);
         setIsCalling(false);    
+        setIsPlacingCall(false);
         setPostCall(true);
         setCallAlive(false);
         setLocalCallingStatus(null);
@@ -397,6 +472,16 @@ export default function CallingPage() {
         console.log('🤙 [EndCall] Process complete.');
     }, [campaignId, customerId, customer?.phone_no, user?.uid, user?.employeeId, user?.employeeId]);
 
+    const isCallingRef = useRef(isCalling);
+    useEffect(() => {
+        isCallingRef.current = isCalling;
+    }, [isCalling]);
+
+    const handleEndCallRef = useRef(handleEndCall);
+    useEffect(() => {
+        handleEndCallRef.current = handleEndCall;
+    }, [handleEndCall]);
+
     const fetchSchedules = useCallback(async () => {
         if (!user?.uid) return;
         try {
@@ -437,6 +522,137 @@ export default function CallingPage() {
         }, 100);
         return () => clearTimeout(timer);
     }, [timelineView]);
+
+    const fetchSmartfloLogs = useCallback(async (refIdOverride?: string | null, callIdOverride?: string | null) => {
+        if (!customer?.phone_no) return;
+        setIsLoadingSmartfloLogs(true);
+        try {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (!session) return;
+
+            const decrypted = decryptPhone(customer.phone_no);
+            const currentRef = refIdOverride || activeSmartfloRefIdRef.current || lastCheckedRefId || '';
+            const currentCallId = callIdOverride || activeSmartfloCallIdRef.current || lastCheckedCallId || '';
+            if (currentRef) setLastCheckedRefId(currentRef);
+            if (currentCallId) setLastCheckedCallId(currentCallId);
+
+            const url = `/api/calling/smartflo-logs?phone=${encodeURIComponent(decrypted)}&customer_id=${encodeURIComponent(String(customerId || ''))}&ref_id=${encodeURIComponent(currentRef)}&call_id=${encodeURIComponent(currentCallId)}`;
+            const res = await fetch(url, {
+                headers: { Authorization: `Bearer ${session.access_token}` },
+            });
+            const data = await res.json();
+
+            // Print the live_calls API result directly into the browser console
+            console.log('📡 [SMARTFLO LIVE CALLS API RESULT]:', {
+                target_call_id: currentCallId,
+                target_ref_id: currentRef,
+                is_live: data.is_live,
+                live_calls_api_result: data.live_calls_api_result,
+                ref_status: data.ref_status,
+                full_response: data,
+            });
+
+            if (data.success && Array.isArray(data.logs)) {
+                setSmartfloLogs(data.logs);
+
+                // If currentRef or currentCallId call has completed in Smartflo logs and CRM UI is still marked active, auto-end CRM active state!
+                if (currentRef || currentCallId) {
+                    const match = data.logs.find((l: any) => {
+                        const raw = (l.rawPayload || {}) as any;
+                        const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
+                        return (
+                            (currentRef && (l.refId === currentRef || l.callId === currentRef || raw.ref_id === currentRef || raw.call_id === currentRef || raw.uuid === currentRef || customIdStr.includes(currentRef))) ||
+                            (currentCallId && (l.callId === currentCallId || l.refId === currentCallId || raw.call_id === currentCallId || raw.ref_id === currentCallId || raw.uuid === currentCallId || customIdStr.includes(currentCallId)))
+                        );
+                    });
+
+                    if (match && isCallingRef.current && (data.ref_status?.isEnded || (match.hangupCause && match.hangupCause !== 'ACTIVE_CALL'))) {
+                        console.log('🤙 [Smartflo-Logs] Webhook event received for completed call, auto-ending CRM active state:', currentRef || currentCallId);
+                        handleEndCallRef.current(true, 'smartflo');
+                    }
+                }
+            }
+            if (data.success && data.ref_status) {
+                setSmartfloLifecycle({
+                    refId: data.ref_status.refId || data.ref_status.callId,
+                    agentColor: data.ref_status.agent.color,
+                    agentSublabel: data.ref_status.agent.sublabel,
+                    customerColor: data.ref_status.customer.color,
+                    customerSublabel: data.ref_status.customer.sublabel,
+                    hangupColor: data.ref_status.hangup.color,
+                    hangupSublabel: data.ref_status.hangup.sublabel,
+                    isEnded: Boolean(data.ref_status.isEnded),
+                });
+            }
+        } catch (err) {
+            console.warn('Failed to fetch Smartflo logs:', err);
+        } finally {
+            setIsLoadingSmartfloLogs(false);
+        }
+    }, [customer?.phone_no, customerId, lastCheckedRefId, lastCheckedCallId]);
+
+    // 1. Instant Realtime updates when Smartflo posts to webhook_responses
+    useEffect(() => {
+        const channel = supabase
+            .channel('smartflo-realtime-webhook')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'webhook_responses',
+                },
+                (payload) => {
+                    console.log('⚡ [Realtime] New Smartflo webhook received:', payload.new);
+                    const currentRef = activeSmartfloRefIdRef.current || lastCheckedRefId;
+                    const currentCallId = activeSmartfloCallIdRef.current || lastCheckedCallId;
+                    fetchSmartfloLogs(currentRef || undefined, currentCallId || undefined);
+                }
+            )
+            .subscribe();
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [fetchSmartfloLogs, lastCheckedRefId, lastCheckedCallId]);
+
+    // 2. Real-time polling for active Smartflo call status every 1.5s via /v1/live_calls/{call_id}
+    useEffect(() => {
+        const targetRef = lastCheckedRefId || activeSmartfloRefIdRef.current;
+        const targetCallId = lastCheckedCallId || activeSmartfloCallIdRef.current;
+        if (!targetRef && !targetCallId) return;
+
+        // Stop polling ONLY when we have a completed log record for targetRef / targetCallId
+        const hasCompletedLog = smartfloLogs.some((l: any) => {
+            const raw = (l.rawPayload || {}) as any;
+            const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
+            const isMatch = (
+                (targetRef && (l.refId === targetRef || l.callId === targetRef || raw.ref_id === targetRef || raw.call_id === targetRef || raw.uuid === targetRef || customIdStr.includes(targetRef))) ||
+                (targetCallId && (l.callId === targetCallId || l.refId === targetCallId || raw.call_id === targetCallId || raw.ref_id === targetCallId || raw.uuid === targetCallId || customIdStr.includes(targetCallId)))
+            );
+            return isMatch && l.hangupCause !== 'ACTIVE_CALL' && (l.hangupCause || raw.hangup_cause_description || raw.hangup_cause_key || raw.reason_key || l.status);
+        });
+
+        if (hasCompletedLog) return;
+
+        const pollTimer = setInterval(() => {
+            fetchSmartfloLogs(targetRef || undefined, targetCallId || undefined);
+        }, 1500);
+
+        return () => clearInterval(pollTimer);
+    }, [lastCheckedRefId, lastCheckedCallId, smartfloLogs, fetchSmartfloLogs]);
+
+    useEffect(() => {
+        resolveActiveCallingProvider().then(p => {
+            setActiveCallingProvider(p);
+        }).catch(() => {});
+    }, [user?.uid]);
+
+    useEffect(() => {
+        if (timelineView === 'smartflo_logs') {
+            fetchSmartfloLogs();
+        }
+    }, [timelineView, fetchSmartfloLogs]);
 
     // Bridge Message Listener
     useEffect(() => {
@@ -1564,9 +1780,11 @@ useEffect(() => {
         setCallStartTime(null);
     } else if (sessionStatus === 'disposition_pending') {
         setIsCalling(false);
+        setIsEndingCall(false);
         setPostCall(true);
     } else if (sessionStatus === 'closed') {
         setIsCalling(false);
+        setIsEndingCall(false);
         setPostCall(false);
         setIsAssigning(false);
         setCallDuration(0);
@@ -1776,31 +1994,53 @@ useEffect(() => {
     };
 
     const handleStartCall = async () => {
+        if (isPlacingCall) return;
+        setIsPlacingCall(true);
         isApiUpdatingRef.current = true; // LOCK ON IMMEDIATELY
         const cId = campaignId as string;
         const custId = customerId as string;
 
         if (!cId || !custId) {
             console.error('[Session] Missing campaignId or customerId in router query');
+            isApiUpdatingRef.current = false;
+            setIsPlacingCall(false);
             return;
         }
 
+        let providerToUse: CallingProviderName = "sim";
+        let decryptedPhone = "";
+
         if (customer?.phone_no) {
             try {
-                const activeProvider = await resolveActiveCallingProvider();
-                if (activeProvider !== "sim") {
+                const providerDetails = await getCallingProviderDetails();
+
+                // If user selected smartflo in-use but it is not mapped
+                if (providerDetails.user?.smartflo?.in_use && !providerDetails.user?.smartflo?.is_mapped) {
                     isApiUpdatingRef.current = false;
+                    setIsPlacingCall(false);
                     showWarning(
-                        activeProvider === "smartflo"
-                            ? "Tata Smartflo is selected, but Smartflo calling is not available yet. Switch to SIM to place this call."
-                            : "No enabled calling provider is selected. Select SIM before placing this call.",
+                        "DID number not avilable config softllow setting. Please contact your admin.",
+                        "Smartflo Configuration"
+                    );
+                    return;
+                }
+
+                const activeProvider = providerDetails.activeProvider;
+                if (!activeProvider) {
+                    isApiUpdatingRef.current = false;
+                    setIsPlacingCall(false);
+                    showWarning(
+                        "No enabled calling provider is selected. Please check your SIM / Smartflo settings.",
                         "Calling Provider"
                     );
                     return;
                 }
+
+                providerToUse = activeProvider;
                 activeCallProviderRef.current = activeProvider;
             } catch (providerError) {
                 isApiUpdatingRef.current = false;
+                setIsPlacingCall(false);
                 showWarning(
                     providerError instanceof Error
                         ? providerError.message
@@ -1809,50 +2049,112 @@ useEffect(() => {
                 );
                 return;
             }
+
+            decryptedPhone = decryptPhone(customer.phone_no);
+            if (!decryptedPhone) {
+                isApiUpdatingRef.current = false;
+                setIsPlacingCall(false);
+                showWarning("Customer phone number is invalid or could not be decrypted.", "Calling Error");
+                return;
+            }
+
+            // --- Smartflo Click-to-Call Originate ---
+            if (providerToUse === "smartflo") {
+                try {
+                    const { data: { session: authSession } } = await supabase.auth.getSession();
+                    if (!authSession) {
+                        throw new Error("Please sign in again to place the call.");
+                    }
+
+                    const response = await fetch("/api/calling/smartflo-call", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            Authorization: `Bearer ${authSession.access_token}`,
+                            "customer-id": String(custId || ""),
+                            "rynxly_user_id": String(user?.uid || ""),
+                            "campaign_id": String(cId || ""),
+                            "org_id": String(user?.organization_id || ""),
+                        },
+                        body: JSON.stringify({
+                            destination_number: decryptedPhone,
+                            campaign_id: cId,
+                            customer_id: custId,
+                            rynxly_user_id: user?.uid,
+                            org_id: user?.organization_id,
+                        }),
+                    });
+
+                    const result = await response.json();
+                    if (!response.ok || !result.success) {
+                        throw new Error(result.message || result.error || "Smartflo call initiation failed.");
+                    }
+
+                    if (result.ref_id || result.call_id) {
+                        const rId = result.ref_id || result.call_id;
+                        const cIdVal = result.call_id || result.ref_id;
+                        activeSmartfloRefIdRef.current = rId;
+                        activeSmartfloCallIdRef.current = cIdVal;
+                        setLastCheckedRefId(rId);
+                        setLastCheckedCallId(cIdVal);
+                        setSmartfloLifecycle(null);
+                        setTimeout(() => fetchSmartfloLogs(rId, cIdVal), 500);
+                    }
+                    console.info("📞 [Smartflo] Originate queued successfully, ref_id:", result.ref_id, "call_id:", result.call_id);
+                } catch (callErr: any) {
+                    isApiUpdatingRef.current = false;
+                    setIsPlacingCall(false);
+                    showWarning(
+                        callErr?.message || "Failed to initiate call via Smartflo.",
+                        "Smartflo Calling"
+                    );
+                    return;
+                }
+            }
         }
 
         // Flag is now handled automatically by the centralized useEffect watcher above
-
 
         // --- Optimistic UI Update ---
         // Set state immediately using local time so the timer starts without waiting for API
         const localNow = new Date();
         setCallStartTime(localNow.getTime());
         setIsCalling(true);
+        setIsPlacingCall(false);
         setPostCall(false);
         setCallDuration(0);
+        setCallAlive(true);
         // ----------------------------
 
-        if (customer?.phone_no) {
-            // Trigger Flutter bridge call event
-            // SET FLAG: Inform GlobalCallHandler that this is NOT a manual dial
-            if (typeof window !== 'undefined') {
-                (window as any).isCrmCallActive = true;
-                // Safety timeout to reset flag in case start fails or disconnect event is missed
-                setTimeout(() => { 
-                    if ((window as any).isCrmCallActive) {
-                        console.log('[CRM-Call] 🛡️ Safety timeout triggered. Re-enabling GlobalCallHandler.');
-                        (window as any).isCrmCallActive = false; 
-                    }
-                }, 20000);
-            }
-            
-            const decryptedPhone = decryptPhone(customer.phone_no);
-            const routedCommand = await routeCallingCommand('call_to', decryptedPhone, activeCallProviderRef.current);
-            const bridgeConnected = routedCommand.bridgeConnected;
-            
-            if (bridgeConnected) {
-                setCallAlive(true);
-            } else {
-                window.location.href = `tel:${decryptedPhone}`;
+        if (customer?.phone_no && decryptedPhone) {
+            if (providerToUse === "sim") {
+                // Trigger Flutter bridge call event
+                // SET FLAG: Inform GlobalCallHandler that this is NOT a manual dial
+                if (typeof window !== 'undefined') {
+                    (window as any).isCrmCallActive = true;
+                    // Safety timeout to reset flag in case start fails or disconnect event is missed
+                    setTimeout(() => { 
+                        if ((window as any).isCrmCallActive) {
+                            console.log('[CRM-Call] 🛡️ Safety timeout triggered. Re-enabling GlobalCallHandler.');
+                            (window as any).isCrmCallActive = false; 
+                        }
+                    }, 20000);
+                }
+                
+                const routedCommand = await routeCallingCommand('call_to', decryptedPhone, 'sim');
+                const bridgeConnected = routedCommand.bridgeConnected;
+                
+                if (!bridgeConnected) {
+                    window.location.href = `tel:${decryptedPhone}`;
+                }
             }
 
             // Sync to SyncMeta table for real-time header reflection
             if (user?.employeeId) {
-                updateSyncMetaCallStatus(user.employeeId, 'call_to', decryptedPhone || "", activeCallProviderRef.current);
-                updateSyncMetaCallingStatus(user.employeeId, 'preparing', activeCallProviderRef.current);
+                updateSyncMetaCallStatus(user.employeeId, 'call_to', decryptedPhone || "", providerToUse);
+                updateSyncMetaCallingStatus(user.employeeId, providerToUse === 'smartflo' ? 'connected' : 'preparing', providerToUse);
             }
-            setLocalCallingStatus('preparing');
+            setLocalCallingStatus(providerToUse === 'smartflo' ? 'connected' : 'preparing');
         }
 
         setDisposition("");
@@ -3538,7 +3840,8 @@ Campaign: ${campaign?.name || campaignId}
                                                         <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${isCalling ? 'bg-emerald-500' : 'bg-indigo-500'}`}></span>
                                                     </div>
                                                     <span className="text-[8px] font-black uppercase tracking-widest leading-none pt-px">
-                                                        {localCallingStatus === 'preparing' ? 'Establishing' :
+                                                        {isPlacingCall ? 'Dialing...' :
+                                                         localCallingStatus === 'preparing' ? 'Establishing' :
                                                          localCallingStatus === 'connecting' ? 'Connecting' :
                                                          isCalling ? 'Live' :
                                                          postCall ? 'Done' : 
@@ -3557,10 +3860,12 @@ Campaign: ${campaign?.name || campaignId}
                                                     ) : (
                                                         <div className="flex flex-col items-center">
                                                             <h2 className={`text-xl mt-4 sm:text-2xl font-extrabold tracking-tight ${postCall ? 'text-slate-400' : 'text-slate-800'}`}>
-                                                                {postCall ? 'Ended' : 'Ready To Call'}
+                                                                {isPlacingCall ? 'Connecting Call...' : postCall ? 'Ended' : 'Ready To Call'}
                                                             </h2>
                                                             <p className="text-[9px] font-medium text-slate-400 max-w-[160px] leading-tight mt-0.5">
-                                                                {postCall 
+                                                                {isPlacingCall
+                                                                 ? 'Originating call...'
+                                                                 : postCall 
                                                                  ? 'Mark outcome.' 
                                                                  : 'Line ready.'}
                                                             </p>
@@ -3606,16 +3911,30 @@ Campaign: ${campaign?.name || campaignId}
                                                     <div className="grid grid-cols-[1fr_auto] gap-2">
                                                         <button 
                                                             onClick={() => handleEndCall(false)}
-                                                            className="w-full h-12 rounded-xl bg-red-500 hover:bg-red-600 active:bg-red-700 text-white shadow-lg shadow-red-500/20 transition-all hover:scale-[1.01] active:scale-95 flex items-center justify-center gap-2 group overflow-hidden relative"
+                                                            disabled={isEndingCall}
+                                                            className={`w-full h-12 rounded-xl text-white transition-all flex items-center justify-center gap-2 group overflow-hidden relative bg-red-500 ${
+                                                                isEndingCall
+                                                                    ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none'
+                                                                    : 'hover:bg-red-600 active:bg-red-700 shadow-lg shadow-red-500/20 hover:scale-[1.01] active:scale-95'
+                                                            }`}
                                                         >
-                                                            <div className="w-6 h-6 mr-3 rounded-full bg-white/20 flex items-center justify-center relative z-10 group-hover:rotate-12 transition-transform">
-                                                                <i className="fi flex  fi-rr-phone-slash text-sm"></i>
-                                                            </div>
-                                                            <span className="font-extrabold text-[10px] uppercase tracking-widest relative z-10">End</span>
+                                                            {isEndingCall ? (
+                                                                <div className="flex items-center justify-center">
+                                                                    <DancingDots dotColor="bg-white" />
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <div className="w-6 h-6 mr-3 rounded-full bg-white/20 flex items-center justify-center relative z-10 group-hover:rotate-12 transition-transform">
+                                                                        <i className="fi flex  fi-rr-phone-slash text-sm"></i>
+                                                                    </div>
+                                                                    <span className="font-extrabold text-[10px] uppercase tracking-widest relative z-10">End</span>
+                                                                </>
+                                                            )}
                                                         </button>
                                                           <button 
                                                             onClick={handleWhatsAppClick}
-                                                            className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"
+                                                            disabled={isEndingCall}
+                                                            className={`h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group ${isEndingCall ? 'opacity-50 pointer-events-none' : ''}`}
                                                         >
                                                             <i className="fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
                                                         </button>
@@ -3643,8 +3962,9 @@ Campaign: ${campaign?.name || campaignId}
                                                                     {/* Slider Button (Grow) */}
                                                                     <div 
                                                                         ref={containerRef}
-                                                                        className="relative h-[54px] flex-1 rounded-2xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200 group/slider"
+                                                                        className={`relative h-[54px] flex-1 rounded-2xl bg-orange-100/50 overflow-hidden select-none touch-none shadow-inner border border-orange-200 group/slider ${isPlacingCall ? 'pointer-events-none' : ''}`}
                                                                         onPointerDown={(e) => {
+                                                                            if (isPlacingCall) return;
                                                                             setIsDragging(true);
                                                                             startXRef.current = e.clientX;
                                                                             hasMovedRef.current = false;
@@ -3738,23 +4058,40 @@ Campaign: ${campaign?.name || campaignId}
                                                                         {/* Draggable Button (Foreground) */}
                                                                         <div 
                                                                             ref={sliderHandleRef}
-                                                                            className={`absolute inset-0 w-full bg-gradient-to-r from-orange-500 to-amber-600 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-orange-500/30 will-change-transform z-10 ${isDragging ? 'shadow-2xl brightness-110' : ''}`}
+                                                                            className={`absolute inset-0 w-full rounded-2xl flex items-center justify-center gap-3 will-change-transform z-10 transition-all bg-gradient-to-r from-orange-500 to-amber-600 ${
+                                                                                isPlacingCall 
+                                                                                    ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none' 
+                                                                                    : `shadow-lg shadow-orange-500/30 ${isDragging ? 'shadow-2xl brightness-110' : ''}`
+                                                                            }`}
                                                                             style={{ 
-                                                                                cursor: isDragging ? 'grabbing' : 'grab'
+                                                                                cursor: isPlacingCall ? 'not-allowed' : (isDragging ? 'grabbing' : 'grab')
                                                                             }}
                                                                         >
-                                                                            <i className="fi flex  fi-rr-phone-call text-white text-lg"></i>
-                                                                            <div className="flex flex-col items-start leading-none">
-                                                                                <span className="text-white font-black text-xs uppercase tracking-widest">Connect Now</span>
-                                                                                <span className="text-white/70 font-bold text-[8px] uppercase tracking-tighter">Follow Up Call</span>
-                                                                            </div>
+                                                                            {isPlacingCall ? (
+                                                                                <div className="flex items-center justify-center">
+                                                                                    <DancingDots dotColor="bg-white" />
+                                                                                </div>
+                                                                            ) : (
+                                                                                <>
+                                                                                    <i className="fi flex  fi-rr-phone-call text-white text-lg"></i>
+                                                                                    <div className="flex flex-col items-start leading-none">
+                                                                                        <span className="text-white font-black text-xs uppercase tracking-widest">Connect Now</span>
+                                                                                        <span className="text-white/70 font-bold text-[8px] uppercase tracking-tighter">Follow Up Call</span>
+                                                                                    </div>
+                                                                                </>
+                                                                            )}
                                                                         </div>
                                                                     </div>
 
                                                                 {/* WhatsApp Button (Inside Row) */}
                                                                 <button 
                                                                     onClick={handleWhatsAppClick}
-                                                                    className="h-[54px] w-[54px] rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-white transition-all hover:scale-105 active:scale-95 flex items-center justify-center group shrink-0"
+                                                                    disabled={isPlacingCall}
+                                                                    className={`h-[54px] w-[54px] rounded-2xl bg-emerald-500 text-white transition-all flex items-center justify-center group shrink-0 ${
+                                                                        isPlacingCall 
+                                                                            ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none' 
+                                                                            : 'hover:bg-emerald-600 hover:scale-105 active:scale-95'
+                                                                    }`}
                                                                 >
                                                                     <i className="fi flex  fi-brands-whatsapp text-2xl group-hover:rotate-12 transition-transform"></i>
                                                                 </button>
@@ -3765,17 +4102,35 @@ Campaign: ${campaign?.name || campaignId}
                                                         <div className="grid grid-cols-[1fr_auto] gap-2">
                                                             <button 
                                                                 onClick={handleStartCall}
-                                                                className="h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-500/25 transition-all hover:-translate-y-0.5 active:scale-95 flex items-center justify-center gap-2 group relative overflow-hidden"
+                                                                disabled={isPlacingCall}
+                                                                className={`h-12 rounded-xl text-white font-black text-[11px] uppercase tracking-widest transition-all flex items-center justify-center gap-2 group relative overflow-hidden bg-indigo-600 ${
+                                                                    isPlacingCall 
+                                                                        ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none' 
+                                                                        : 'hover:bg-indigo-700 shadow-lg shadow-indigo-500/25 hover:-translate-y-0.5 active:scale-95'
+                                                                }`}
                                                             >
-                                                                <div className="w-6 h-6 rounded-lg flex items-center justify-center relative z-10 group-hover:shake">
-                                                                    <i className="fi flex  fi-rr-phone-call text-sm"></i>
-                                                                </div>
-                                                                <span className="relative z-10">Call Now</span>
+                                                                {isPlacingCall ? (
+                                                                    <div className="flex items-center justify-center relative z-10">
+                                                                        <DancingDots dotColor="bg-white" />
+                                                                    </div>
+                                                                ) : (
+                                                                    <>
+                                                                        <div className="w-6 h-6 rounded-lg flex items-center justify-center relative z-10 group-hover:shake">
+                                                                            <i className="fi flex  fi-rr-phone-call text-sm"></i>
+                                                                        </div>
+                                                                        <span className="relative z-10">Call Now</span>
+                                                                    </>
+                                                                )}
                                                             </button>
                                                             
                                                             <button 
                                                                 onClick={handleWhatsAppClick}
-                                                                className="h-12 w-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 active:scale-95 flex items-center justify-center group"
+                                                                disabled={isPlacingCall}
+                                                                className={`h-12 w-12 rounded-xl transition-all flex items-center justify-center group bg-emerald-500 ${
+                                                                    isPlacingCall 
+                                                                        ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none' 
+                                                                        : 'hover:bg-emerald-600 text-white shadow-lg shadow-emerald-500/20 hover:scale-105 active:scale-95'
+                                                                }`}
                                                             >
                                                                 <i className="fi flex  fi-brands-whatsapp text-xl group-hover:rotate-12 transition-transform"></i>
                                                             </button>
@@ -3785,9 +4140,22 @@ Campaign: ${campaign?.name || campaignId}
                                                     <div className="grid grid-cols-2 gap-2 animate-in fade-in slide-in-from-bottom-2 duration-300">
                                                         <button 
                                                             onClick={handleStartCall}
-                                                            className="h-10 rounded-lg bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-600 font-bold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 hover:  "
+                                                            disabled={isPlacingCall}
+                                                            className={`h-10 rounded-lg font-bold text-[9px] uppercase tracking-wider transition-all flex items-center justify-center gap-1.5 bg-indigo-50 border border-indigo-200 text-indigo-600 ${
+                                                                isPlacingCall 
+                                                                    ? 'opacity-60 cursor-not-allowed shadow-none pointer-events-none' 
+                                                                    : 'hover:bg-indigo-100'
+                                                            }`}
                                                         >
-                                                            <i className="fi flex  fi-rr-refresh text-xs"></i> Redial
+                                                            {isPlacingCall ? (
+                                                                <div className="flex items-center justify-center">
+                                                                    <DancingDots dotColor="bg-indigo-600" />
+                                                                </div>
+                                                            ) : (
+                                                                <>
+                                                                    <i className="fi flex  fi-rr-refresh text-xs"></i> Redial
+                                                                </>
+                                                            )}
                                                         </button>
                                                         <button 
                                                             onClick={handleWhatsAppClick}
@@ -4514,9 +4882,20 @@ Campaign: ${campaign?.name || campaignId}
                                                 <i className="fi flex fi-rr-calendar-clock"></i>
                                                 Schedules
                                             </button>
+                                            {/* Smartflo Logs Tab */}
+                                            {activeCallingProvider === 'smartflo' && (
+                                                <button 
+                                                    onClick={() => setTimelineView('smartflo_logs')}
+                                                    data-active={timelineView === 'smartflo_logs'}
+                                                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${timelineView === 'smartflo_logs' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                                                >
+                                                    <i className="fi flex fi-rr-phone-call text-indigo-500"></i>
+                                                    Smartflo logs
+                                                </button>
+                                            )}
                                         </div>
                                         <div className="w-9 h-9 shrink-0 rounded-full bg-slate-50 flex items-center justify-center text-[11px] font-bold text-slate-600 border border-slate-200 shadow-sm">
-                                            {timelineView === 'timeline' ? history.length : timelineView === 'call_logs' ? mobileLogs.length : scheduledCalls.length}
+                                            {timelineView === 'timeline' ? history.length : timelineView === 'call_logs' ? mobileLogs.length : timelineView === 'schedules' ? scheduledCalls.length : smartfloLogs.length}
                                         </div>
                                     </div>
 
@@ -4732,7 +5111,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 ))
                                             )}
                                         </div>
-                                    ) : (
+                                    ) : timelineView === 'schedules' ? (
                                         // SCHEDULES VIEW
                                         <div className="h-[650px] overflow-y-auto pr-2 custom-scrollbar">
                                             <div className="mb-8">
@@ -4886,6 +5265,403 @@ Campaign: ${campaign?.name || campaignId}
                                                     );
                                                 })()}
                                             </div>
+                                        </div>
+                                    ) : (
+                                        // SMARTFLO LOGS VIEW
+                                        <div className="h-[650px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
+                                            {/* Point-by-point Call Lifecycle Tracker */}
+                                            {(lastCheckedRefId || smartfloLogs.length > 0) && (
+                                                <div className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 shadow-none">
+                                                    {/* Header: Title + Monospace Ref ID + Refresh */}
+                                                    <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-200/70">
+                                                        <div className="flex items-center gap-2.5 min-w-0">
+                                                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700">
+                                                                Flow
+                                                            </span>
+                                                            {(() => {
+                                                                const dispRef = lastCheckedRefId || activeSmartfloRefIdRef.current || (smartfloLogs.length > 0 ? (smartfloLogs[0]?.refId || smartfloLogs[0]?.callId) : null);
+                                                                return dispRef ? (
+                                                                    <div className="h-7 flex items-center gap-1.5 bg-white px-2.5 rounded-lg border border-slate-200 shadow-none">
+                                                                        <span className="text-[9px] font-mono font-semibold text-indigo-700 truncate max-w-[150px]" title={dispRef}>
+                                                                            Ref: {dispRef.length > 14 ? `${dispRef.substring(0, 11)}...` : dispRef}
+                                                                        </span>
+                                                                        <button
+                                                                            onClick={() => {
+                                                                                navigator.clipboard.writeText(dispRef);
+                                                                                alert('Ref ID copied');
+                                                                            }}
+                                                                            title="Copy Ref ID"
+                                                                            className="text-slate-400 hover:text-indigo-600 transition-colors flex items-center justify-center"
+                                                                        >
+                                                                            <i className="fi flex fi-rr-copy text-[10px]"></i>
+                                                                        </button>
+                                                                    </div>
+                                                                ) : null;
+                                                            })()}
+                                                        </div>
+
+                                                        <button
+                                                            onClick={() => fetchSmartfloLogs()}
+                                                            disabled={isLoadingSmartfloLogs}
+                                                            className="w-7 h-7 shrink-0 aspect-square rounded-lg bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-indigo-600 transition-all disabled:opacity-50 shadow-none"
+                                                            title="Refresh status"
+                                                        >
+                                                            <i className={`fi flex fi-rr-refresh text-xs ${isLoadingSmartfloLogs ? 'animate-spin' : ''}`}></i>
+                                                        </button>
+                                                    </div>
+
+                                                    {(() => {
+                                                        const activeRef = lastCheckedRefId || activeSmartfloRefIdRef.current || null;
+                                                        const activeCallId = lastCheckedCallId || activeSmartfloCallIdRef.current || null;
+                                                        const matchedLog = (activeRef || activeCallId)
+                                                            ? smartfloLogs.find(l => {
+                                                                const raw = (l.rawPayload || {}) as any;
+                                                                const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
+                                                                return (
+                                                                    (activeRef && (l.refId === activeRef || l.callId === activeRef || raw.ref_id === activeRef || raw.call_id === activeRef || raw.uuid === activeRef || customIdStr.includes(activeRef))) ||
+                                                                    (activeCallId && (l.callId === activeCallId || l.refId === activeCallId || raw.call_id === activeCallId || raw.ref_id === activeCallId || raw.uuid === activeCallId || customIdStr.includes(activeCallId)))
+                                                                );
+                                                            })
+                                                            : (smartfloLogs.length > 0 ? smartfloLogs[0] : null);
+
+                                                        let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
+                                                        let agentSublabel = 'Standby';
+                                                        let customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
+                                                        let customerSublabel = 'Standby';
+                                                        let hangupColor: 'gray' | 'indigo' | 'violet' | 'red' = 'gray';
+                                                        let hangupSublabel = 'Standby';
+
+                                                        // 1. Real-time Status from Tata Smartflo Live API: GET /v1/live_calls/{call_id}
+                                                        if (smartfloLifecycle) {
+                                                            agentColor = smartfloLifecycle.agentColor;
+                                                            agentSublabel = smartfloLifecycle.agentSublabel;
+                                                            customerColor = smartfloLifecycle.customerColor;
+                                                            customerSublabel = smartfloLifecycle.customerSublabel;
+                                                            hangupColor = smartfloLifecycle.hangupColor;
+                                                            hangupSublabel = smartfloLifecycle.hangupSublabel;
+                                                        }
+                                                        // 2. Real-time Status from Webhook / CDR Record
+                                                        else if (matchedLog) {
+                                                            const raw = (matchedLog.rawPayload || {}) as any;
+                                                            const statusStr = String(matchedLog.status || raw.call_status || '').toLowerCase();
+                                                            const causeStr = String(matchedLog.hangupCause || raw.hangup_cause_description || raw.hangup_cause_key || '').toLowerCase();
+                                                            const reasonStr = String(raw.reason_key || '').toLowerCase();
+
+                                                            const isBusy = causeStr.includes('busy') || reasonStr.includes('busy') || statusStr.includes('busy');
+                                                            const isAnswered = statusStr.includes('answer') || matchedLog.callType === 'Answered' || raw.call_connected === '1';
+                                                            const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
+
+                                                            const hasMissedAgent = Boolean(raw.missed_agent && (Array.isArray(raw.missed_agent) ? raw.missed_agent.length > 0 : String(raw.missed_agent).trim() !== ''));
+                                                            const agentRingSecs = Number(raw.agent_ring_time || 0);
+
+                                                            // Agent: Orange=Ringing, Green=Answered, Violet=Busy, Red=Cut
+                                                            if (hasMissedAgent || (agentRingSecs === 0 && isBusy)) {
+                                                                agentColor = isBusy ? 'violet' : 'red';
+                                                                agentSublabel = isBusy ? 'Busy' : 'Cut / Rejected';
+                                                            } else {
+                                                                agentColor = 'green';
+                                                                agentSublabel = 'Answered';
+                                                            }
+
+                                                            // Customer: Orange=Ringing, Green=Speaking, Violet=Busy, Red=Cut/Dropped
+                                                            if (agentColor === 'violet' || agentColor === 'red') {
+                                                                customerColor = 'gray';
+                                                                customerSublabel = 'Not Reached';
+                                                            } else if (isAnswered && !isMissedOrDropped) {
+                                                                customerColor = 'green';
+                                                                customerSublabel = 'Speaking';
+                                                            } else if (isBusy) {
+                                                                customerColor = 'violet';
+                                                                customerSublabel = 'Busy';
+                                                            } else if (isMissedOrDropped) {
+                                                                customerColor = 'red';
+                                                                customerSublabel = raw.reason_key || raw.hangup_cause_description || raw.hangup_cause || 'Cancel / Dropped';
+                                                            } else {
+                                                                customerColor = 'green';
+                                                                customerSublabel = 'Connected';
+                                                            }
+
+                                                            // Hangup: Indigo=Completed, Violet=Busy, Red=Cut/Dropped
+                                                            if (agentColor === 'violet' || customerColor === 'violet') {
+                                                                hangupColor = 'violet';
+                                                                hangupSublabel = raw.hangup_cause_description || 'User Busy';
+                                                            } else if (agentColor === 'red' || customerColor === 'red') {
+                                                                hangupColor = 'red';
+                                                                hangupSublabel = raw.hangup_cause_description || raw.reason_key || 'Dropped / Cut';
+                                                            } else {
+                                                                hangupColor = 'indigo';
+                                                                hangupSublabel = raw.hangup_cause_description || 'Completed';
+                                                            }
+                                                        }
+                                                        // 3. Call in progress, awaiting first real API / webhook response
+                                                        else if (isPlacingCall || isCalling) {
+                                                            agentColor = 'orange';
+                                                            agentSublabel = isPlacingCall ? 'Dialing Agent...' : 'Ringing Agent...';
+                                                            customerColor = 'gray';
+                                                            customerSublabel = 'Waiting';
+                                                            hangupColor = isEndingCall ? 'red' : 'gray';
+                                                            hangupSublabel = isEndingCall ? 'Ending...' : 'Connecting...';
+                                                        }
+
+                                                        const getCircleClass = (color: 'orange' | 'green' | 'violet' | 'red' | 'gray') => {
+                                                            switch (color) {
+                                                                case 'orange':
+                                                                    return 'bg-amber-500 text-white animate-pulse ring-2 ring-amber-300 ring-offset-1';
+                                                                case 'green':
+                                                                    return 'bg-emerald-500 text-white ring-2 ring-emerald-300 ring-offset-1';
+                                                                case 'violet':
+                                                                    return 'bg-purple-600 text-white ring-2 ring-purple-300 ring-offset-1';
+                                                                case 'red':
+                                                                    return 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1';
+                                                                default:
+                                                                    return 'bg-slate-200 text-slate-400';
+                                                            }
+                                                        };
+
+                                                        const getSublabelClass = (color: 'orange' | 'green' | 'violet' | 'red' | 'gray') => {
+                                                            switch (color) {
+                                                                case 'orange':
+                                                                    return 'text-amber-600 font-bold';
+                                                                case 'green':
+                                                                    return 'text-emerald-600 font-bold';
+                                                                case 'violet':
+                                                                    return 'text-purple-600 font-bold';
+                                                                case 'red':
+                                                                    return 'text-red-500 font-bold';
+                                                                default:
+                                                                    return 'text-slate-400 font-medium';
+                                                            }
+                                                        };
+
+                                                        const getHangupCircleClass = (color: 'gray' | 'indigo' | 'violet' | 'red') => {
+                                                            switch (color) {
+                                                                case 'indigo':
+                                                                    return 'bg-indigo-600 text-white ring-2 ring-indigo-300 ring-offset-1';
+                                                                case 'violet':
+                                                                    return 'bg-purple-600 text-white ring-2 ring-purple-300 ring-offset-1';
+                                                                case 'red':
+                                                                    return 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1';
+                                                                default:
+                                                                    return 'bg-slate-200 text-slate-400';
+                                                            }
+                                                        };
+
+                                                        const getHangupSublabelClass = (color: 'gray' | 'indigo' | 'violet' | 'red') => {
+                                                            switch (color) {
+                                                                case 'indigo':
+                                                                    return 'text-indigo-600 font-bold';
+                                                                case 'violet':
+                                                                    return 'text-purple-600 font-bold';
+                                                                case 'red':
+                                                                    return 'text-red-500 font-bold';
+                                                                default:
+                                                                    return 'text-slate-400 font-medium';
+                                                            }
+                                                        };
+
+                                                        return (
+                                                            <div className="relative pt-1 pb-0.5">
+                                                                {/* Connecting track line between circles */}
+                                                                <div className="absolute top-[17px] left-[12%] right-[12%] h-[2px] bg-slate-200 -z-0" />
+
+                                                                <div className="grid grid-cols-4 gap-1 relative z-10 text-center">
+                                                                    {/* Step 1: Originated */}
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold mb-1 ring-2 ring-emerald-300 ring-offset-1 shadow-none">
+                                                                            <i className="fi flex fi-rr-check text-[10px]"></i>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-bold text-slate-800">Originated</span>
+                                                                        <span className="text-[8px] text-emerald-600 font-semibold">Ref Issued</span>
+                                                                    </div>
+
+                                                                    {/* Step 2: Agent Leg */}
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold mb-1 shadow-none ${getCircleClass(agentColor)}`}>
+                                                                            <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
+                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
+                                                                            {agentSublabel}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {/* Step 3: Customer Leg */}
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold mb-1 shadow-none ${getCircleClass(customerColor)}`}>
+                                                                            <i className="fi flex fi-rr-user text-[10px]"></i>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-bold text-slate-800">Customer</span>
+                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
+                                                                            {customerSublabel}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    {/* Step 4: Hangup & Wrapup */}
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold mb-1 shadow-none ${getHangupCircleClass(hangupColor)}`}>
+                                                                            <i className="fi flex fi-rr-phone-slash text-[10px]"></i>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-bold text-slate-800">Hangup</span>
+                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getHangupSublabelClass(hangupColor)}`} title={hangupSublabel}>
+                                                                            {hangupSublabel}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        );
+                                                    })()}
+                                                </div>
+                                            )}
+
+                                            {/* Smartflo Logs List */}
+                                            {isLoadingSmartfloLogs && smartfloLogs.length === 0 ? (
+                                                <div className="h-[280px] flex flex-col items-center justify-center text-center py-10">
+                                                    <i className="fi flex fi-rr-spinner animate-spin text-3xl text-indigo-600 mb-3"></i>
+                                                    <p className="text-xs font-bold text-slate-700">Querying Smartflo API...</p>
+                                                    <p className="text-[10px] text-slate-400 mt-1">Fetching latest call records & webhook events</p>
+                                                </div>
+                                            ) : smartfloLogs.length === 0 ? (
+                                                <div className="h-[300px] flex flex-col items-center justify-center text-center opacity-70 py-12 bg-white rounded-2xl border border-slate-200/80">
+                                                    <div className="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center mb-3">
+                                                        <i className="fi flex fi-rr-cloud-download text-2xl text-indigo-400"></i>
+                                                    </div>
+                                                    <p className="text-xs font-bold text-slate-700">No Smartflo Records Yet</p>
+                                                    <p className="text-[10px] text-slate-400 mt-1 max-w-[220px]">
+                                                        Place a call or click Refresh to fetch call status directly from Smartflo.
+                                                    </p>
+                                                    <button
+                                                        onClick={() => fetchSmartfloLogs()}
+                                                        className="mt-4 px-3 py-1.5 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[11px] font-bold flex items-center gap-1.5 transition-all"
+                                                    >
+                                                        <i className="fi flex fi-rr-refresh"></i>
+                                                        Fetch Now
+                                                    </button>
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-3">
+                                                    {!lastCheckedRefId && (
+                                                        <div className="flex items-center justify-between pb-1 px-1">
+                                                            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Recent Call Records</span>
+                                                            <button
+                                                                onClick={() => fetchSmartfloLogs()}
+                                                                disabled={isLoadingSmartfloLogs}
+                                                                className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 text-[10px] font-bold flex items-center gap-1.5 transition-all disabled:opacity-50"
+                                                                title="Refresh logs"
+                                                            >
+                                                                <i className={`fi flex fi-rr-refresh text-[10px] ${isLoadingSmartfloLogs ? 'animate-spin' : ''}`}></i>
+                                                                Refresh
+                                                            </button>
+                                                        </div>
+                                                    )}
+                                                    {smartfloLogs.map((log: any, idx: number) => {
+                                                        const isAnswered = String(log.status || '').toLowerCase().includes('answer') || log.callType === 'Answered';
+                                                        const isMissed = String(log.status || '').toLowerCase().includes('miss') || log.callType === 'Missed';
+                                                        const isExpanded = expandedLogId === (log.id || String(idx));
+                                                        const mins = Math.floor((log.duration || 0) / 60);
+                                                        const secs = (log.duration || 0) % 60;
+                                                        const durationFormatted = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+
+                                                        return (
+                                                            <div key={log.id || idx} className="p-3.5 rounded-2xl bg-white border border-slate-200/80 hover:border-indigo-200 hover:shadow-md transition-all duration-300">
+                                                                <div className="flex items-center justify-between gap-2 mb-2">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider ${
+                                                                            isAnswered ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                                                                            isMissed ? 'bg-red-50 text-red-700 border border-red-200' :
+                                                                            'bg-blue-50 text-blue-700 border border-blue-200'
+                                                                        }`}>
+                                                                            {log.status || log.callType || 'Call'}
+                                                                        </span>
+                                                                        <span className="text-[9px] font-semibold text-slate-500 uppercase tracking-tight">
+                                                                            {log.callType || 'Click to Call'}
+                                                                        </span>
+                                                                    </div>
+                                                                    <span className="text-[9px] text-slate-400 font-medium">
+                                                                        {log.receivedAt ? formatDate(log.receivedAt) : 'Recent'}
+                                                                    </span>
+                                                                </div>
+
+                                                                <div className="grid grid-cols-2 gap-2 text-[10px] bg-slate-50/70 p-2.5 rounded-xl border border-slate-100">
+                                                                    <div>
+                                                                        <span className="text-slate-400 block text-[8px] uppercase font-bold">Ref ID</span>
+                                                                        <div className="flex items-center gap-1">
+                                                                            <span className="font-mono text-slate-700 truncate max-w-[120px]" title={log.refId}>
+                                                                                {log.refId || 'N/A'}
+                                                                            </span>
+                                                                            {log.refId && (
+                                                                                <button 
+                                                                                    onClick={() => {
+                                                                                        navigator.clipboard.writeText(log.refId);
+                                                                                        alert('Copied Ref ID');
+                                                                                    }}
+                                                                                    className="text-slate-400 hover:text-indigo-600"
+                                                                                    title="Copy Ref ID"
+                                                                                >
+                                                                                    <i className="fi flex fi-rr-copy text-[10px]"></i>
+                                                                                </button>
+                                                                            )}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="text-slate-400 block text-[8px] uppercase font-bold">Talk Duration</span>
+                                                                        <span className="font-bold text-slate-800 font-mono">
+                                                                            {durationFormatted} ({log.duration || 0}s)
+                                                                        </span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="text-slate-400 block text-[8px] uppercase font-bold">Agent / Ext</span>
+                                                                        <span className="text-slate-700 font-medium truncate block">
+                                                                            {log.agentNumber || 'Default'}
+                                                                        </span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <span className="text-slate-400 block text-[8px] uppercase font-bold">Hangup Cause</span>
+                                                                        <span className="text-slate-700 font-semibold truncate block" title={log.hangupCause}>
+                                                                            {log.hangupCause || 'NORMAL_CLEARING'}
+                                                                        </span>
+                                                                    </div>
+                                                                </div>
+
+                                                                {log.recordingUrl && (
+                                                                    <div className="mt-2.5 pt-2 border-t border-slate-100">
+                                                                        <div className="flex items-center justify-between mb-1">
+                                                                            <span className="text-[9px] font-bold text-indigo-600 flex items-center gap-1">
+                                                                                <i className="fi flex fi-rr-headphones text-xs"></i> Call Recording
+                                                                            </span>
+                                                                            <a 
+                                                                                href={log.recordingUrl} 
+                                                                                target="_blank" 
+                                                                                rel="noreferrer" 
+                                                                                className="text-[9px] text-indigo-500 hover:underline flex items-center gap-1 font-semibold"
+                                                                            >
+                                                                                Open <i className="fi flex fi-rr-arrow-up-right-from-square text-[9px]"></i>
+                                                                            </a>
+                                                                        </div>
+                                                                        <audio controls className="w-full h-8 mt-1 rounded-lg" src={log.recordingUrl} preload="none" />
+                                                                    </div>
+                                                                )}
+
+                                                                {log.rawPayload && (
+                                                                    <div className="mt-2 pt-2 border-t border-slate-100 flex flex-col">
+                                                                        <button 
+                                                                            onClick={() => setExpandedLogId(isExpanded ? null : (log.id || String(idx)))}
+                                                                            className="text-[9px] font-bold text-slate-400 hover:text-indigo-600 flex items-center justify-between"
+                                                                        >
+                                                                            <span>{isExpanded ? 'Hide Payload' : 'View Smartflo Payload (Debug)'}</span>
+                                                                            <i className={`fi flex fi-rr-angle-small-${isExpanded ? 'up' : 'down'}`}></i>
+                                                                        </button>
+                                                                        {isExpanded && (
+                                                                            <pre className="mt-1.5 p-2 bg-slate-900 text-slate-200 text-[9px] font-mono rounded-lg overflow-x-auto max-h-40 custom-scrollbar">
+                                                                                {JSON.stringify(log.rawPayload, null, 2)}
+                                                                            </pre>
+                                                                        )}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                     

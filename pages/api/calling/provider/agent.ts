@@ -7,9 +7,23 @@ interface ProviderFlags {
   in_use: boolean;
 }
 
+export interface SmartfloDetail {
+  id: string;
+  smartflo_agent_id: string;
+  agent_name: string | null;
+  caller_id: string | null;
+  extension: string | null;
+  intercom: string | null;
+  user_id: string | null;
+  is_mapped: boolean;
+}
+
 interface ProviderState {
   sim: ProviderFlags;
-  smartflo: ProviderFlags;
+  smartflo: ProviderFlags & {
+    agent_id?: string | null;
+    is_mapped?: boolean;
+  };
 }
 
 interface OrganizationProviderState {
@@ -22,6 +36,7 @@ interface ApiResponse {
   data?: {
     organization: OrganizationProviderState;
     user: ProviderState;
+    smartflo_details?: SmartfloDetail[];
   };
   message?: string;
 }
@@ -33,7 +48,12 @@ function normalizeUserProvider(value: unknown): ProviderState {
 
   return {
     sim: { enable: sim.enable === true, in_use: sim.in_use === true },
-    smartflo: { enable: smartflo.enable === true, in_use: smartflo.in_use === true },
+    smartflo: {
+      enable: smartflo.enable === true,
+      in_use: smartflo.in_use === true,
+      agent_id: typeof smartflo.agent_id === 'string' ? smartflo.agent_id : null,
+      is_mapped: smartflo.is_mapped === true,
+    },
   };
 }
 
@@ -121,9 +141,111 @@ export default async function handler(
   const organizationProvider = normalizeOrganizationProvider(organization.calling_provider);
 
   if (req.method === 'GET') {
+    const { data: smartfloDetails } = await supabaseAdmin
+      .from('user_smartflo_details')
+      .select('id, smartflo_agent_id, agent_name, caller_id, extension, intercom, user_id, is_mapped')
+      .eq('organization_id', targetProfile.organization_id)
+      .order('agent_name', { ascending: true });
+
     return res.status(200).json({
       success: true,
-      data: { organization: organizationProvider, user: userProvider },
+      data: {
+        organization: organizationProvider,
+        user: userProvider,
+        smartflo_details: (smartfloDetails as SmartfloDetail[]) || [],
+      },
+    });
+  }
+
+  // Handle Smartflo DID Assignment action
+  if (req.body?.action === 'assign_smartflo_did' || (req.body?.provider === 'smartflo' && (req.body?.smartfloAgentId || req.body?.agentId))) {
+    const smartfloAgentId = String(req.body.smartfloAgentId || req.body.agentId || '').trim();
+    if (!smartfloAgentId) {
+      return res.status(400).json({ success: false, message: 'Please select a Smartflo DID / agent.' });
+    }
+
+    // 1. Verify agent exists in organization
+    const { data: targetAgent, error: agentErr } = await supabaseAdmin
+      .from('user_smartflo_details')
+      .select('id, smartflo_agent_id, agent_name, caller_id, extension, intercom')
+      .eq('organization_id', targetProfile.organization_id)
+      .eq('smartflo_agent_id', smartfloAgentId)
+      .maybeSingle();
+
+    if (agentErr || !targetAgent) {
+      return res.status(404).json({ success: false, message: 'Smartflo agent not found in this organization.' });
+    }
+
+    // 2. Unassign any other agent in this organization that was previously mapped to targetUserId
+    await supabaseAdmin
+      .from('user_smartflo_details')
+      .update({ user_id: null, is_mapped: false })
+      .eq('organization_id', targetProfile.organization_id)
+      .eq('user_id', targetUserId)
+      .neq('smartflo_agent_id', smartfloAgentId);
+
+    // 3. Map this agent to targetUserId in user_smartflo_details
+    const { error: updateAgentErr } = await supabaseAdmin
+      .from('user_smartflo_details')
+      .update({ user_id: targetUserId, is_mapped: true })
+      .eq('organization_id', targetProfile.organization_id)
+      .eq('smartflo_agent_id', smartfloAgentId);
+
+    if (updateAgentErr) {
+      return res.status(500).json({ success: false, message: 'Unable to assign agent in user_smartflo_details' });
+    }
+
+    // 4. Update user_profiles calling_provider:
+    // agent_id filled with smartfloAgentId, is_mapped set to true, enable set to true
+    const currentCallingProvider = (targetProfile.calling_provider && typeof targetProfile.calling_provider === 'object')
+      ? targetProfile.calling_provider as Record<string, any>
+      : {};
+    const currentSim = currentCallingProvider.sim && typeof currentCallingProvider.sim === 'object'
+      ? currentCallingProvider.sim
+      : {};
+    const currentSmartflo = currentCallingProvider.smartflo && typeof currentCallingProvider.smartflo === 'object'
+      ? currentCallingProvider.smartflo
+      : {};
+
+    const updatedCallingProvider = {
+      sim: {
+        enable: currentSim.enable !== undefined ? Boolean(currentSim.enable) : true,
+        in_use: currentSim.in_use !== undefined ? Boolean(currentSim.in_use) : true,
+      },
+      smartflo: {
+        enable: true,
+        in_use: currentSmartflo.in_use === true,
+        agent_id: smartfloAgentId,
+        is_mapped: true,
+      },
+    };
+
+    const { data: updatedProfile, error: profileUpdateError } = await supabaseAdmin
+      .from('user_profiles')
+      .update({ calling_provider: updatedCallingProvider })
+      .eq('user_id', targetUserId)
+      .eq('organization_id', targetProfile.organization_id)
+      .select('calling_provider')
+      .maybeSingle();
+
+    if (profileUpdateError || !updatedProfile) {
+      return res.status(500).json({ success: false, message: 'Unable to update user_profiles calling_provider' });
+    }
+
+    const { data: updatedSmartfloDetails } = await supabaseAdmin
+      .from('user_smartflo_details')
+      .select('id, smartflo_agent_id, agent_name, caller_id, extension, intercom, user_id, is_mapped')
+      .eq('organization_id', targetProfile.organization_id)
+      .order('agent_name', { ascending: true });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        organization: organizationProvider,
+        user: normalizeUserProvider(updatedProfile.calling_provider),
+        smartflo_details: (updatedSmartfloDetails as SmartfloDetail[]) || [],
+      },
+      message: 'Smartflo DID assigned successfully.',
     });
   }
 
@@ -139,9 +261,14 @@ export default async function handler(
   }
 
   const providerName = provider as CallingProviderName;
+  const currentSmartflo = (targetProfile.calling_provider as any)?.smartflo || {};
   const updatedProvider = {
     sim: { ...userProvider.sim },
-    smartflo: { ...userProvider.smartflo },
+    smartflo: {
+      ...userProvider.smartflo,
+      agent_id: currentSmartflo.agent_id || null,
+      is_mapped: currentSmartflo.is_mapped === true,
+    },
   };
 
   if (hasEnableValue) {
@@ -174,11 +301,18 @@ export default async function handler(
     return res.status(500).json({ success: false, message: 'Unable to update agent provider settings' });
   }
 
+  const { data: finalSmartfloDetails } = await supabaseAdmin
+    .from('user_smartflo_details')
+    .select('id, smartflo_agent_id, agent_name, caller_id, extension, intercom, user_id, is_mapped')
+    .eq('organization_id', targetProfile.organization_id)
+    .order('agent_name', { ascending: true });
+
   return res.status(200).json({
     success: true,
     data: {
       organization: organizationProvider,
       user: normalizeUserProvider(updatedProfile.calling_provider),
+      smartflo_details: (finalSmartfloDetails as SmartfloDetail[]) || [],
     },
   });
 }

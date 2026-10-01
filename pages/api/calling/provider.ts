@@ -75,6 +75,7 @@ export default async function handler(
           user: state.user,
           smartflo_agent: smartfloAgent,
           active_provider: resolution.allowed ? resolution.provider : null,
+          resolution,
         },
       });
     } catch {
@@ -85,6 +86,16 @@ export default async function handler(
   const requestedProvider = req.body?.provider;
   if (requestedProvider !== 'sim' && requestedProvider !== 'smartflo') {
     return res.status(400).json({ success: false, message: 'Invalid provider' });
+  }
+
+  if (requestedProvider === 'smartflo') {
+    const currentState = await getCallingProviderState(authenticatedUser.id);
+    if (!currentState?.user.smartflo.is_mapped) {
+      return res.status(400).json({
+        success: false,
+        message: 'DID number not avilable config softllow setting. Please contact your admin.',
+      });
+    }
   }
 
   try {

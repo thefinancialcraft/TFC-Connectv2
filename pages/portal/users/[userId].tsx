@@ -77,6 +77,17 @@ interface UserDetail {
 
 type CallingProviderName = "sim" | "smartflo";
 
+export interface SmartfloDetail {
+  id: string;
+  smartflo_agent_id: string;
+  agent_name: string | null;
+  caller_id: string | null;
+  extension: string | null;
+  intercom: string | null;
+  user_id: string | null;
+  is_mapped: boolean;
+}
+
 interface AgentCallingProviderState {
   organization: {
     sim: { enable: boolean };
@@ -84,8 +95,14 @@ interface AgentCallingProviderState {
   };
   user: {
     sim: { enable: boolean; in_use: boolean };
-    smartflo: { enable: boolean; in_use: boolean };
+    smartflo: {
+      enable: boolean;
+      in_use: boolean;
+      agent_id?: string | null;
+      is_mapped?: boolean;
+    };
   };
+  smartflo_details?: SmartfloDetail[];
 }
 
 function UserProfilePage() {
@@ -131,6 +148,25 @@ function UserProfilePage() {
     const [loadingAgentProviders, setLoadingAgentProviders] = useState(false);
     const [savingAgentProvider, setSavingAgentProvider] = useState(false);
     const [agentProviderError, setAgentProviderError] = useState("");
+    const [showSmartfloDidModal, setShowSmartfloDidModal] = useState<boolean>(false);
+    const [selectedSmartfloAgentId, setSelectedSmartfloAgentId] = useState<string>("");
+    const [assigningSmartfloDid, setAssigningSmartfloDid] = useState<boolean>(false);
+    const [assignSmartfloError, setAssignSmartfloError] = useState<string>("");
+    const [assignSmartfloSuccess, setAssignSmartfloSuccess] = useState<string>("");
+    const [isCustomDropdownOpen, setIsCustomDropdownOpen] = useState<boolean>(false);
+    const [dropdownSearchTerm, setDropdownSearchTerm] = useState<string>("");
+    const customDropdownRef = useRef<HTMLDivElement | null>(null);
+
+    useEffect(() => {
+      if (!isCustomDropdownOpen) return;
+      const handleClickOutside = (e: MouseEvent) => {
+        if (customDropdownRef.current && !customDropdownRef.current.contains(e.target as Node)) {
+          setIsCustomDropdownOpen(false);
+        }
+      };
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isCustomDropdownOpen]);
 
     const [accountModal, setAccountModal] = useState<{
       isOpen: boolean;
@@ -650,6 +686,46 @@ function UserProfilePage() {
     }
   };
 
+  const handleAssignSmartfloDid = async (agentIdToAssign: string) => {
+    if (!userDetail?.user_id || assigningSmartfloDid) return;
+    if (!agentIdToAssign) {
+      setAssignSmartfloError("Please select a Smartflo DID / agent from the dropdown.");
+      return;
+    }
+
+    try {
+      setAssigningSmartfloDid(true);
+      setAssignSmartfloError("");
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error("Please sign in again to assign Smartflo DID");
+
+      const response = await fetch("/api/calling/provider/agent", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          targetUserId: userDetail.user_id,
+          action: "assign_smartflo_did",
+          smartfloAgentId: agentIdToAssign,
+        }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.message || "Failed to assign Smartflo DID");
+
+      setAgentProviderState(result.data);
+      setShowSmartfloDidModal(false);
+      setAssignSmartfloSuccess("Smartflo DID assigned and enabled successfully!");
+      setTimeout(() => setAssignSmartfloSuccess(""), 4000);
+    } catch (err: any) {
+      setAssignSmartfloError(err.message || "Unable to assign Smartflo DID");
+    } finally {
+      setAssigningSmartfloDid(false);
+    }
+  };
+
   // User Deletion Handler
   const handleDeleteUserAccount = async () => {
     const confirmDelete = window.confirm(
@@ -1074,6 +1150,13 @@ function UserProfilePage() {
                                 </p>
                               )}
 
+                              {assignSmartfloSuccess && (
+                                <p className="mb-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs text-emerald-700 flex items-center gap-1.5" role="alert">
+                                  <i className="fi fi-rr-check text-xs" />
+                                  <span>{assignSmartfloSuccess}</span>
+                                </p>
+                              )}
+
                               {loadingAgentProviders || !agentProviderState ? (
                                 <div className="flex items-center gap-2 py-3 text-xs text-gray-500" aria-live="polite">
                                   {loadingAgentProviders ? (
@@ -1105,8 +1188,20 @@ function UserProfilePage() {
                                               role="switch"
                                               aria-checked={providerConfig.enable}
                                               aria-label={`${providerConfig.enable ? "Disable" : "Enable"} ${providerLabel} for this agent`}
-                                              disabled={savingAgentProvider}
-                                              onClick={() => void handleAgentProviderChange(provider, "enable", !providerConfig.enable)}
+                                              disabled={savingAgentProvider || assigningSmartfloDid}
+                                              onClick={() => {
+                                                if (provider === "smartflo") {
+                                                  if (!providerConfig.enable || !(providerConfig as any).is_mapped) {
+                                                    setAssignSmartfloError("");
+                                                    setSelectedSmartfloAgentId((providerConfig as any).agent_id || "");
+                                                    setShowSmartfloDidModal(true);
+                                                  } else {
+                                                    void handleAgentProviderChange(provider, "enable", false);
+                                                  }
+                                                } else {
+                                                  void handleAgentProviderChange(provider, "enable", !providerConfig.enable);
+                                                }
+                                              }}
                                               className={`flex h-6 w-11 shrink-0 items-center rounded-full border p-0.5 transition-colors disabled:cursor-not-allowed disabled:opacity-50 ${
                                                 providerConfig.enable ? "justify-end border-emerald-600 bg-emerald-600" : "justify-start border-gray-300 bg-gray-200"
                                               }`}
@@ -1114,6 +1209,25 @@ function UserProfilePage() {
                                               <span className="h-4 w-4 rounded-full bg-white shadow-sm" />
                                             </button>
                                           </div>
+
+                                          {provider === "smartflo" && (
+                                            <div className="flex items-center justify-between rounded-lg border border-purple-100 bg-purple-50/60 px-2.5 py-1.5 text-[11px]">
+                                              <span className="text-gray-600 truncate">
+                                                DID: <strong className="font-mono text-purple-900">{(providerConfig as any).agent_id || "Not assigned"}</strong>
+                                              </span>
+                                              <button
+                                                type="button"
+                                                onClick={() => {
+                                                  setAssignSmartfloError("");
+                                                  setSelectedSmartfloAgentId((providerConfig as any).agent_id || "");
+                                                  setShowSmartfloDidModal(true);
+                                                }}
+                                                className="text-[#4b33e8] hover:text-[#3d27cf] font-semibold text-[10px] underline ml-2"
+                                              >
+                                                {(providerConfig as any).agent_id ? "Change" : "Assign"}
+                                              </button>
+                                            </div>
+                                          )}
 
                                           <div className="flex items-center justify-between gap-3 border-t border-gray-200 pt-3">
                                             <span className="text-xs text-gray-700">In use</span>
@@ -1505,6 +1619,227 @@ function UserProfilePage() {
               onRelogin={() => router.push('/login')}
               onContactAdmin={() => setAccountModal(prev => ({ ...prev, isOpen: false }))}
             />
+
+            {/* Compact Minimal Smartflo DID Assignment Modal (Without Shadow) */}
+            {showSmartfloDidModal && (() => {
+              const selectedAgent = agentProviderState?.smartflo_details?.find(
+                (a) => a.smartflo_agent_id === selectedSmartfloAgentId
+              );
+
+              const filteredAgents = (agentProviderState?.smartflo_details || []).filter((agent) => {
+                if (!dropdownSearchTerm.trim()) return true;
+                const term = dropdownSearchTerm.toLowerCase();
+                return (
+                  (agent.agent_name && agent.agent_name.toLowerCase().includes(term)) ||
+                  (agent.caller_id && agent.caller_id.toLowerCase().includes(term)) ||
+                  (agent.smartflo_agent_id && agent.smartflo_agent_id.toLowerCase().includes(term)) ||
+                  (agent.extension && agent.extension.toLowerCase().includes(term)) ||
+                  (agent.intercom && agent.intercom.toLowerCase().includes(term))
+                );
+              });
+
+              return (
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  aria-labelledby="smartflo-did-modal-title"
+                  className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 p-4"
+                  onClick={() => {
+                    if (!assigningSmartfloDid) {
+                      setShowSmartfloDidModal(false);
+                      setIsCustomDropdownOpen(false);
+                    }
+                  }}
+                >
+                  <div
+                    className="w-full max-w-sm rounded-xl border border-gray-200 bg-white p-5"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between pb-3 border-b border-gray-100">
+                      <div className="min-w-0 pr-3">
+                        <h3 id="smartflo-did-modal-title" className="text-sm font-semibold text-gray-900 leading-snug">
+                          Smartflo DID Mapping
+                        </h3>
+                        <p className="mt-0.5 text-[11px] text-gray-400">
+                          Assign an active DID number to enable Smartflo calling
+                        </p>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowSmartfloDidModal(false);
+                          setIsCustomDropdownOpen(false);
+                        }}
+                        disabled={assigningSmartfloDid}
+                        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors disabled:opacity-50"
+                        aria-label="Close modal"
+                      >
+                        <i className="fi fi-rr-cross text-xs" />
+                      </button>
+                    </div>
+
+                    {/* Error Banner */}
+                    {assignSmartfloError && (
+                      <div className="mt-3 rounded-lg border border-red-200 bg-red-50 px-2.5 py-1.5 text-[11px] text-red-700 flex items-center gap-1.5">
+                        <i className="fi fi-rr-exclamation text-xs shrink-0" />
+                        <span>{assignSmartfloError}</span>
+                      </div>
+                    )}
+
+                    {/* Custom Dropdown */}
+                    <div className="mt-4 relative" ref={customDropdownRef}>
+                      <label className="block text-[11px] font-medium text-gray-600 mb-1.5">
+                        Select Smartflo DID
+                      </label>
+
+                      {/* Custom Trigger */}
+                      <button
+                        type="button"
+                        onClick={() => setIsCustomDropdownOpen((prev) => !prev)}
+                        disabled={assigningSmartfloDid}
+                        className={`flex w-full items-center justify-between rounded-lg border bg-white px-3 py-2 text-left text-xs transition-colors ${
+                          isCustomDropdownOpen ? "border-[#4b33e8]" : "border-gray-200 hover:border-gray-300"
+                        } disabled:bg-gray-50 disabled:cursor-not-allowed`}
+                      >
+                        {selectedAgent ? (
+                          <div className="min-w-0 flex-1 truncate">
+                            <span className="font-medium text-gray-900">{selectedAgent.agent_name || "Agent"}</span>
+                            <span className="mx-1 text-gray-300">·</span>
+                            <span className="font-mono text-gray-600 text-[11px]">{selectedAgent.caller_id || selectedAgent.smartflo_agent_id}</span>
+                            {(selectedAgent.extension || selectedAgent.intercom) && (
+                              <span className="ml-1 text-[10px] text-gray-400">({selectedAgent.extension || selectedAgent.intercom})</span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">Select DID / Agent...</span>
+                        )}
+                        <i className={`fi fi-rr-angle-small-${isCustomDropdownOpen ? "up" : "down"} ml-2 text-sm text-gray-400 shrink-0`} />
+                      </button>
+
+                      {/* Custom Dropdown List (No Shadow) */}
+                      {isCustomDropdownOpen && (
+                        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-52 overflow-y-auto rounded-lg border border-gray-200 bg-white py-1">
+                          {agentProviderState?.smartflo_details && agentProviderState.smartflo_details.length > 3 && (
+                            <div className="border-b border-gray-100 p-1.5">
+                              <input
+                                type="text"
+                                placeholder="Search by name or number..."
+                                value={dropdownSearchTerm}
+                                onChange={(e) => setDropdownSearchTerm(e.target.value)}
+                                onClick={(e) => e.stopPropagation()}
+                                className="w-full rounded border border-gray-200 px-2 py-1 text-[11px] text-gray-800 placeholder-gray-400 focus:border-[#4b33e8] focus:outline-none"
+                                autoFocus
+                              />
+                            </div>
+                          )}
+
+                          <div className="divide-y divide-gray-50">
+                            {filteredAgents.length === 0 ? (
+                              <div className="px-3 py-2 text-center text-xs text-gray-400">
+                                No matching DID records
+                              </div>
+                            ) : (
+                              filteredAgents.map((agent) => {
+                                const isSelected = agent.smartflo_agent_id === selectedSmartfloAgentId;
+                                const isCurrent = agent.user_id === userDetail?.user_id;
+
+                                return (
+                                  <div
+                                    key={agent.id}
+                                    onClick={() => {
+                                      setSelectedSmartfloAgentId(agent.smartflo_agent_id);
+                                      setIsCustomDropdownOpen(false);
+                                      setAssignSmartfloError("");
+                                    }}
+                                    className={`flex cursor-pointer items-center justify-between px-3 py-2 text-xs transition-colors hover:bg-gray-50 ${
+                                      isSelected ? "bg-purple-50/70" : ""
+                                    }`}
+                                  >
+                                    <div className="min-w-0 flex-1 pr-2">
+                                      <div className="flex items-center gap-1.5">
+                                        <span className={`truncate font-medium ${isSelected ? "text-[#4b33e8]" : "text-gray-800"}`}>
+                                          {agent.agent_name || "Agent"}
+                                        </span>
+                                        <span className="font-mono text-[10px] text-gray-500">
+                                          {agent.caller_id || agent.smartflo_agent_id}
+                                        </span>
+                                      </div>
+                                      <div className="mt-0.5 text-[10px] text-gray-400">
+                                        Ext: {agent.extension || agent.intercom || "—"}
+                                      </div>
+                                    </div>
+                                    <div className="shrink-0">
+                                      {isCurrent ? (
+                                        <span className="rounded bg-purple-100 px-1.5 py-0.5 text-[9px] font-semibold text-[#4b33e8]">Current</span>
+                                      ) : agent.is_mapped ? (
+                                        <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[9px] text-gray-500">Assigned</span>
+                                      ) : (
+                                        <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-600">Available</span>
+                                      )}
+                                    </div>
+                                  </div>
+                                );
+                              })
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Selected DID Minimal Details */}
+                    {selectedAgent && (
+                      <div className="mt-3 rounded-lg border border-gray-100 bg-gray-50/80 p-2.5 text-[11px] space-y-1">
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">Agent:</span>
+                          <span className="font-medium text-gray-800">{selectedAgent.agent_name || "—"}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-400">DID Number:</span>
+                          <span className="font-mono font-semibold text-[#4b33e8]">{selectedAgent.caller_id || selectedAgent.smartflo_agent_id}</span>
+                        </div>
+                        {(selectedAgent.extension || selectedAgent.intercom) && (
+                          <div className="flex justify-between">
+                            <span className="text-gray-400">Extension:</span>
+                            <span className="font-mono text-gray-600">{selectedAgent.extension || selectedAgent.intercom}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Action Buttons */}
+                    <div className="mt-4 flex items-center justify-end gap-2 pt-3 border-t border-gray-100">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowSmartfloDidModal(false);
+                          setIsCustomDropdownOpen(false);
+                        }}
+                        disabled={assigningSmartfloDid}
+                        className="rounded-lg border border-gray-200 bg-white px-3.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleAssignSmartfloDid(selectedSmartfloAgentId)}
+                        disabled={!selectedSmartfloAgentId || assigningSmartfloDid}
+                        className="flex items-center gap-1.5 rounded-lg bg-[#4b33e8] px-4 py-1.5 text-xs font-medium text-white hover:bg-[#3d27cf] transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        {assigningSmartfloDid ? (
+                          <>
+                            <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                            <span>Assigning...</span>
+                          </>
+                        ) : (
+                          <span>Assign</span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
         </div>
     );
 }

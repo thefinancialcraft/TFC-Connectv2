@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
+  ArrowRight,
   CalendarClock,
   CalendarDays,
   Check,
@@ -426,13 +427,27 @@ function CreatedAtDatePicker({ value, disabled, onChange }: CreatedAtDatePickerP
   );
 }
 
-function ClickToCallCard() {
-  const [isConfigExpanded, setIsConfigExpanded] = useState(false);
+interface ClickToCallContentProps {
+  isWebhookSetup?: boolean;
+  onActivatedChange?: (activated: boolean) => void;
+  onSwitchToWebhook?: () => void;
+  onWebhookDetected?: () => void;
+}
+
+function ClickToCallContent({
+  isWebhookSetup = false,
+  onActivatedChange,
+  onSwitchToWebhook,
+  onWebhookDetected,
+}: ClickToCallContentProps) {
   const [isActivated, setIsActivated] = useState(false);
+  const [hasWebhookResponses, setHasWebhookResponses] = useState(false);
   const [token, setToken] = useState('');
   const [expiryDays, setExpiryDays] = useState<number>(30);
   const [createdDate, setCreatedDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [integrationId, setIntegrationId] = useState<string | null>(null);
+  const [organizationId, setOrganizationId] = useState<string>('');
+  const [webhookId, setWebhookId] = useState<string>('');
   const [hasSavedConfiguration, setHasSavedConfiguration] = useState(false);
   const [hasSavedToken, setHasSavedToken] = useState(false);
   const [authStatus, setAuthStatus] = useState<'idle' | 'checking' | 'verified' | 'error'>('idle');
@@ -448,6 +463,11 @@ function ClickToCallCard() {
   const [requestView, setRequestView] = useState<'html' | 'json'>('html');
   const [testCallStatus, setTestCallStatus] = useState<'idle' | 'sending' | 'error'>('idle');
   const [testCallMessage, setTestCallMessage] = useState('');
+  const [testCallDetails, setTestCallDetails] = useState<{
+    message: string;
+    refId: string | null;
+    callId: string | null;
+  } | null>(null);
   const [testDestinationNumber, setTestDestinationNumber] = useState('9217175080');
   const isAuthenticated = authStatus === 'verified';
   const isSavingRequestParameters = parameterSaveStatus === 'saving';
@@ -456,6 +476,69 @@ function ClickToCallCard() {
   const effectiveCallerId = callerId.trim() || (selectedAgentNumbers.length
     ? callerIdDrafts[selectedAgentNumbers[0]]?.trim() || ''
     : '');
+  const isWebhookActive = Boolean(isWebhookSetup || hasWebhookResponses || testCallDetails?.callId);
+  const [copiedField, setCopiedField] = useState<'ref' | 'call' | null>(null);
+
+  const copyToClipboard = async (text: string, field: 'ref' | 'call') => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedField(field);
+      setTimeout(() => setCopiedField(null), 2000);
+    } catch {
+      // fallback
+    }
+  };
+
+  // Real-time lookup: auto-fetch call_id from webhook response matching test call refId
+  useEffect(() => {
+    if (!testCallDetails?.refId || testCallDetails.callId) return;
+
+    let isMounted = true;
+    let attempts = 0;
+    const maxAttempts = 30;
+
+    const checkCallId = async () => {
+      try {
+        const targetOrg = organizationId;
+        const targetWebhook = webhookId || integrationId;
+        if (!targetOrg || !targetWebhook) return;
+        const res = await fetch(`/api/webhook/${targetOrg}/${targetWebhook}`, {
+          cache: 'no-store',
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (Array.isArray(data.events)) {
+          const match = data.events.find((ev: any) => {
+            const evRef = String(ev.refId || ev.rawPayload?.ref_id || ev.rawPayload?.uuid || '');
+            return evRef === testCallDetails.refId;
+          });
+          if (match && isMounted) {
+            const foundCallId = match.rawPayload?.call_id || match.callId;
+            if (foundCallId && String(foundCallId) !== testCallDetails.refId) {
+              setTestCallDetails((prev) => prev ? { ...prev, callId: String(foundCallId) } : prev);
+              setHasWebhookResponses(true);
+              onWebhookDetected?.();
+            }
+          }
+        }
+      } catch {
+        // ignore
+      }
+    };
+
+    const interval = setInterval(() => {
+      attempts++;
+      void checkCallId();
+      if (attempts >= maxAttempts) clearInterval(interval);
+    }, 1000);
+
+    void checkCallId();
+
+    return () => {
+      isMounted = false;
+      clearInterval(interval);
+    };
+  }, [testCallDetails?.refId, testCallDetails?.callId, organizationId, webhookId, integrationId]);
 
   useEffect(() => {
     void loadConfiguration();
@@ -474,7 +557,10 @@ function ClickToCallCard() {
         cache: 'no-store',
       });
 
-      if (!response.ok) return;
+      if (!response.ok) {
+        console.error('Failed to load configuration:', response.status);
+        return;
+      }
       const result = await response.json();
       const configuration = result?.configuration;
       const loadedAgents: SmartfloAgentOption[] = Array.isArray(result?.smartfloAgents) ? result.smartfloAgents : [];
@@ -483,13 +569,20 @@ function ClickToCallCard() {
       setCrmUsers(Array.isArray(result?.crmUsers) ? result.crmUsers : []);
       if (!configuration) return;
 
+      if (configuration.organizationId) setOrganizationId(configuration.organizationId);
+      if (configuration.webhookId) setWebhookId(configuration.webhookId);
+      if (Array.isArray(configuration.webhookEvents) && configuration.webhookEvents.length > 0) {
+        setHasWebhookResponses(true);
+        onWebhookDetected?.();
+      }
       setIntegrationId(configuration.integrationId ?? null);
       if (configuration.tokenCreatedAt) {
         setCreatedDate(String(configuration.tokenCreatedAt).slice(0, 10));
       }
       setHasSavedConfiguration(Boolean(configuration.integrationId || configuration.tokenCreatedAt));
-      setHasSavedToken(Boolean(configuration.hasToken));
-      setIsActivated(Boolean(configuration.isActivated));
+      const isAct = Boolean(configuration.isActivated);
+      setIsActivated(isAct);
+      onActivatedChange?.(isAct);
       setExpiryDays(normalizeExpiryDays(configuration.expiryDays ?? 30));
       setSelectedParameters(configuration.clickToCallParams ?? {});
       const savedCallerId = configuration.clickToCallParams?.caller_id;
@@ -605,11 +698,13 @@ function ClickToCallCard() {
     if (!destination) {
       setTestCallStatus('error');
       setTestCallMessage('Please enter a destination phone number to test.');
+      setTestCallDetails(null);
       return;
     }
 
     setTestCallStatus('sending');
     setTestCallMessage('');
+    setTestCallDetails(null);
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -631,11 +726,18 @@ function ClickToCallCard() {
       }
 
       setIsActivated(true);
+      onActivatedChange?.(true);
       setTestCallMessage(result.message || 'Originate successfully queued');
+      setTestCallDetails({
+        message: result.message || 'Originate successfully queued',
+        refId: result.ref_id || null,
+        callId: result.call_id || null,
+      });
       setTestCallStatus('idle');
     } catch (error) {
       setTestCallStatus('error');
       setTestCallMessage(error instanceof Error ? error.message : 'Unable to test Click to Call.');
+      setTestCallDetails(null);
     }
   };
 
@@ -681,6 +783,7 @@ function ClickToCallCard() {
       setSelectedParameters((previous) => ({ ...previous, ...(result.configuration?.clickToCallParams ?? {}) }));
       setAuthStatus('verified');
       setAuthMessage(retry ? 'Token refreshed. Smartflo is verified again.' : 'Token verified. Configuration fields are now available.');
+      await loadConfiguration();
     } catch (error) {
       setAuthStatus('error');
       setAuthMessage(error instanceof Error ? error.message : 'Unable to verify the Smartflo token.');
@@ -688,57 +791,24 @@ function ClickToCallCard() {
   };
 
   return (
-    <div id="card-click-to-call" className="mb-4 rounded-lg border border-gray-200">
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-50 px-4 py-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className={`flex h-9 shrink-0 items-center rounded-md bg-white text-[#4b33e8] ring-1 ring-gray-200 ${headerAgent ? 'max-w-[18rem] gap-2 px-2.5' : 'w-9 justify-center rounded-full'}`}>
-            <i className="fi flex fi-rr-phone-call" aria-hidden="true" />
-            {headerAgent && (
-              <span className="min-w-0 border-l border-gray-200 pl-2 leading-tight">
-                <span className="block truncate text-[11px] font-semibold text-gray-800">{headerAgent.agentName || headerAgent.loginId || 'Mapped agent'}</span>
-                <span className="block truncate text-[10px] text-gray-500">Agent ID: {headerAgent.agentId}</span>
-              </span>
-            )}
-          </span>
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Click to Call</h3>
-            <p className="text-xs text-gray-500">Outbound API calling</p>
-            {testCallMessage && testCallStatus !== 'error' && (
-              <p className="mt-0.5 text-[11px] text-emerald-700" role="status">{testCallMessage}</p>
-            )}
+    <div id="panel-click-to-call-config" className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="border-b border-gray-200 bg-gray-50/50 px-4 py-3.5 sm:px-5 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-bold text-gray-900">Click-to-Call Configuration</h2>
+          <p className="mt-0.5 break-all text-xs text-gray-500">
+            Integration ID: {integrationId || 'Not configured'}
+          </p>
+        </div>
+        {headerAgent && (
+          <div className="flex items-center gap-2 rounded-md border border-gray-200 bg-white px-2.5 py-1 text-xs">
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="font-semibold text-gray-700">{headerAgent.agentName || headerAgent.loginId}</span>
+            <span className="text-gray-400 font-mono text-[11px]">({headerAgent.agentId})</span>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {isActivated && (
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
-              Activated
-            </span>
-          )}
-          <button
-            type="button"
-            aria-label={isActivated ? 'Open Click to Call settings' : isConfigExpanded ? 'Hide configuration' : 'Configure Click to Call'}
-            aria-expanded={isConfigExpanded}
-            title={isActivated ? 'Settings' : isConfigExpanded ? 'Hide configuration' : 'Configure'}
-            onClick={() => setIsConfigExpanded((expanded) => !expanded)}
-            className={isActivated
-              ? 'flex h-9 w-9 items-center justify-center rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
-              : 'rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50'}
-          >
-            {isActivated ? <Settings className="h-4 w-4" aria-hidden="true" /> : isConfigExpanded ? 'Hide configuration' : 'Configure'}
-          </button>
-        </div>
+        )}
       </div>
 
-      {isConfigExpanded && (
-        <div className="border-t border-gray-200 bg-white">
-          <div className="border-b border-gray-200 px-4 py-4 sm:px-5">
-            <h2 className="text-base font-bold text-gray-900">Click-to-Call Configuration</h2>
-            <p className="mt-1 break-all text-xs text-gray-500">
-              Integration ID: {integrationId || 'Not configured'}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2">
+      <div className="grid grid-cols-1 lg:grid-cols-2">
             <div className="space-y-6 p-5 sm:p-6 lg:col-span-1">
               <section>
                 <h3 className="mb-3 text-xs font-bold uppercase text-gray-500">Connection Details</h3>
@@ -945,13 +1015,156 @@ function ClickToCallCard() {
                     </button>
                   </div>
                   {testCallStatus === 'sending' && (
-                    <p className="mt-2 text-xs text-gray-500" role="status">Sending test call…</p>
+                    <p className="mt-2.5 text-xs text-gray-500" role="status">Sending test call…</p>
                   )}
                   {testCallStatus === 'error' && (
-                    <p className="mt-2 text-xs text-rose-600" role="status">{testCallMessage}</p>
+                    <p className="mt-2.5 text-xs text-rose-600" role="status">{testCallMessage}</p>
                   )}
-                  {testCallStatus === 'idle' && testCallMessage && (
-                    <p className="mt-2 text-xs text-emerald-600" role="status">{testCallMessage}</p>
+                  {testCallStatus === 'idle' && testCallDetails && (
+                    <div
+                      className={`mt-4 rounded-xl border p-4 sm:p-5 transition-all space-y-3.5 ${
+                        isWebhookActive
+                          ? 'border-emerald-200/90 bg-white shadow-xs'
+                          : 'border-amber-200/90 bg-white shadow-xs'
+                      }`}
+                    >
+                      {/* Top Header */}
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="flex items-center gap-3">
+                          <div
+                            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
+                              isWebhookActive
+                                ? 'border-emerald-200 bg-emerald-50 text-emerald-600'
+                                : 'border-amber-200 bg-amber-50 text-amber-600'
+                            }`}
+                          >
+                            {isWebhookActive ? (
+                              <Check className="h-5 w-5" aria-hidden="true" />
+                            ) : (
+                              <PhoneCall className="h-5 w-5" aria-hidden="true" />
+                            )}
+                          </div>
+                          <div>
+                            <h4 className="text-sm font-bold text-gray-900 leading-tight">
+                              {isWebhookActive ? 'Setup ready to run' : 'Call Originated · Webhook Setup Needed'}
+                            </h4>
+                            <p className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500">
+                              <span
+                                className={`h-1.5 w-1.5 rounded-full ${
+                                  isWebhookActive ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+                                }`}
+                              />
+                              {testCallDetails.message || 'Originate successfully queued'}
+                            </p>
+                          </div>
+                        </div>
+
+                        {isWebhookActive ? (
+                          <button
+                            type="button"
+                            onClick={() => onSwitchToWebhook?.()}
+                            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                          >
+                            <span>View in Webhook Logs</span>
+                            <ArrowRight className="h-3.5 w-3.5 text-gray-400" />
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => onSwitchToWebhook?.()}
+                            className="inline-flex items-center gap-1.5 rounded-lg bg-[#4b33e8] px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-[#3b25d1] transition-colors"
+                          >
+                            <span>Setup Webhook</span>
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Details Box */}
+                      <div className="rounded-lg border border-gray-100 bg-gray-50/80 p-3 divide-y divide-gray-200/60">
+                        {/* Reference ID Row */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5">
+                          <span className="text-xs font-medium text-gray-500">Reference ID (Originate)</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="rounded border border-gray-200 bg-white px-2 py-0.5 font-mono text-xs font-semibold text-gray-900 select-all">
+                              {testCallDetails.refId || 'N/A'}
+                            </span>
+                            {testCallDetails.refId && (
+                              <button
+                                type="button"
+                                title="Copy Reference ID"
+                                onClick={() => void copyToClipboard(testCallDetails.refId!, 'ref')}
+                                className="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-200 bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors"
+                              >
+                                {copiedField === 'ref' ? (
+                                  <Check className="h-3 w-3 text-emerald-600" />
+                                ) : (
+                                  <Copy className="h-3 w-3" />
+                                )}
+                              </button>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Call ID Row */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 pt-2.5">
+                          <span className="text-xs font-medium text-gray-500">Call ID (Smartflo Webhook)</span>
+                          <div className="flex items-center gap-1.5">
+                            {testCallDetails.callId ? (
+                              <>
+                                <span className="rounded border border-emerald-200 bg-emerald-50 px-2 py-0.5 font-mono text-xs font-semibold text-emerald-800 select-all">
+                                  {testCallDetails.callId}
+                                </span>
+                                <button
+                                  type="button"
+                                  title="Copy Call ID"
+                                  onClick={() => void copyToClipboard(testCallDetails.callId!, 'call')}
+                                  className="inline-flex h-6 w-6 items-center justify-center rounded border border-gray-200 bg-white text-gray-500 hover:bg-gray-100 hover:text-gray-800 transition-colors"
+                                >
+                                  {copiedField === 'call' ? (
+                                    <Check className="h-3 w-3 text-emerald-600" />
+                                  ) : (
+                                    <Copy className="h-3 w-3" />
+                                  )}
+                                </button>
+                              </>
+                            ) : (
+                              <span className="inline-flex items-center gap-1.5 font-sans text-xs italic text-amber-700">
+                                <LoaderCircle className="h-3 w-3 animate-spin text-amber-600 inline shrink-0" />
+                                Waiting for webhook response…
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Footer Message */}
+                      {isWebhookActive ? (
+                        <div className="flex items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50/70 px-3 py-2 text-xs text-emerald-800">
+                          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-600" />
+                          <span className="text-[11px] font-medium leading-relaxed">
+                            Smartflo outbound call originate & incoming webhook events are fully connected.
+                          </span>
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-amber-200/70 bg-amber-50/60 p-3 text-xs text-amber-900">
+                          <div className="flex items-start gap-2 flex-1 min-w-0">
+                            <Info className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" />
+                            <p className="text-[11px] leading-relaxed">
+                              <strong className="font-semibold">Setup webhook for see response:</strong> Add the webhook URL in your Tata Smartflo portal under <em>Services &gt; Webhooks</em> to automatically receive call logs, hangup causes & call recordings.
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => onSwitchToWebhook?.()}
+                            className="inline-flex items-center gap-1 text-xs font-bold text-[#4b33e8] hover:underline shrink-0"
+                          >
+                            <span>Go to Webhook Setup</span>
+                            <ArrowRight className="h-3 w-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
                 </>
@@ -1041,10 +1254,8 @@ function ClickToCallCard() {
             </section>
           </div>
         </div>
-      )}
-    </div>
-  );
-}
+      );
+    }
 
 interface WebhookResponseItem {
   id: string;
@@ -1062,8 +1273,11 @@ interface WebhookResponseItem {
   rawPayload: Record<string, unknown>;
 }
 
-function SetupWebhookCard() {
-  const [isConfigExpanded, setIsConfigExpanded] = useState(false);
+interface SetupWebhookContentProps {
+  onEventsCountChange?: (count: number) => void;
+}
+
+function SetupWebhookContent({ onEventsCountChange }: SetupWebhookContentProps) {
   const [organizationId, setOrganizationId] = useState<string>('');
   const [webhookId, setWebhookId] = useState<string>('');
   const [events, setEvents] = useState<WebhookResponseItem[]>([]);
@@ -1077,14 +1291,49 @@ function SetupWebhookCard() {
   const activePollAbortRef = useRef<AbortController | null>(null);
   const latestRequestTimeRef = useRef<number>(0);
 
+  const leftColRef = useRef<HTMLDivElement>(null);
+  const [leftHeight, setLeftHeight] = useState<number | null>(null);
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(window.innerWidth >= 1024);
+    checkDesktop();
+    window.addEventListener('resize', checkDesktop);
+    return () => window.removeEventListener('resize', checkDesktop);
+  }, []);
+
+  useEffect(() => {
+    const el = leftColRef.current;
+    if (!el) return;
+
+    const updateHeight = () => {
+      if (el) {
+        setLeftHeight(el.offsetHeight);
+      }
+    };
+
+    updateHeight();
+
+    const ro = new ResizeObserver(() => {
+      updateHeight();
+    });
+    ro.observe(el);
+
+    return () => {
+      ro.disconnect();
+    };
+  }, []);
+
+  useEffect(() => {
+    onEventsCountChange?.(events.length);
+  }, [events.length, onEventsCountChange]);
+
   useEffect(() => {
     void loadWebhookData(false);
   }, []);
 
-  // Real-time polling: automatically refreshes every 1000ms (1 second) when expanded
+  // Real-time polling: automatically refreshes every 1000ms (1 second) when mounted
   useEffect(() => {
-    if (!isConfigExpanded) return;
-
     const interval = setInterval(() => {
       void loadWebhookData(true);
     }, 1000);
@@ -1095,7 +1344,7 @@ function SetupWebhookCard() {
         activePollAbortRef.current.abort();
       }
     };
-  }, [isConfigExpanded, organizationId, webhookId]);
+  }, [organizationId, webhookId]);
 
   const loadWebhookData = async (silent = false) => {
     // If clearing is currently in progress or guarded, skip loading to prevent reviving deleted items
@@ -1114,8 +1363,12 @@ function SetupWebhookCard() {
     try {
       if (!silent) setIsLoading(true);
 
-      const targetOrg = organizationId || '5fda76df-9265-46e0-a602-0c5301c8084c';
-      const targetWebhook = webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2';
+      const targetOrg = organizationId;
+      const targetWebhook = webhookId;
+      if (!targetOrg || !targetWebhook) {
+        if (!silent) setIsLoading(false);
+        return;
+      }
 
       // 1. Direct fetch via lightweight webhook endpoint for real-time responsiveness
       const directRes = await fetch(`/api/webhook/${targetOrg}/${targetWebhook}`, {
@@ -1216,8 +1469,13 @@ function SetupWebhookCard() {
     setEvents([]);
     setExpandedPayloadId(null);
 
-    const targetOrg = organizationId || '5fda76df-9265-46e0-a602-0c5301c8084c';
-    const targetWebhook = webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2';
+    const targetOrg = organizationId;
+    const targetWebhook = webhookId;
+    if (!targetOrg || !targetWebhook) {
+      isClearingRef.current = false;
+      setIsClearing(false);
+      return;
+    }
 
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -1253,10 +1511,10 @@ function SetupWebhookCard() {
   };
 
   const domain = 'https://www.rynxly.in';
-  const effectiveOrgId = organizationId || '5fda76df-9265-46e0-a602-0c5301c8084c';
-  const effectiveWebhookId = webhookId || '82988d1b-5a42-4aab-aa80-be818ebfc4d2';
-  const effectiveWebhookPath = `/webhook/${effectiveOrgId}/${effectiveWebhookId}`;
-  const fullWebhookUrl = `${domain}${effectiveWebhookPath}`;
+  const effectiveOrgId = organizationId;
+  const effectiveWebhookId = webhookId;
+  const effectiveWebhookPath = effectiveOrgId && effectiveWebhookId ? `/webhook/${effectiveOrgId}/${effectiveWebhookId}` : '';
+  const fullWebhookUrl = effectiveWebhookPath ? `${domain}${effectiveWebhookPath}` : '';
 
   const copyWebhookUrl = async () => {
     try {
@@ -1269,46 +1527,24 @@ function SetupWebhookCard() {
   };
 
   return (
-    <div id="card-setup-webhook" className="mb-4 rounded-lg border border-gray-200">
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-50 px-4 py-3">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white text-[#4b33e8] ring-1 ring-gray-200">
-            <Webhook className="h-4 w-4" aria-hidden="true" />
+    <div id="panel-webhook-config" className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+      <div className="border-b border-gray-200 bg-gray-50/50 px-4 py-3.5 sm:px-5 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-bold text-gray-900">Outbound Webhook Configuration</h2>
+          <p className="mt-0.5 break-all text-xs text-gray-500">
+            Webhook ID: {effectiveWebhookId} · Organization ID: {effectiveOrgId}
+          </p>
+        </div>
+        {events.length > 0 && (
+          <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
+            {events.length} event{events.length > 1 ? 's' : ''} received
           </span>
-          <div>
-            <h3 className="text-sm font-semibold text-gray-800">Setup Webhook</h3>
-            <p className="text-xs text-gray-500">Outbound call events & hangup details</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          {events.length > 0 && (
-            <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-semibold text-emerald-700">
-              {events.length} event{events.length > 1 ? 's' : ''} received
-            </span>
-          )}
-          <button
-            type="button"
-            aria-expanded={isConfigExpanded}
-            onClick={() => setIsConfigExpanded((expanded) => !expanded)}
-            className="rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-50"
-          >
-            {isConfigExpanded ? 'Hide configuration' : 'Configure'}
-          </button>
-        </div>
+        )}
       </div>
 
-      {isConfigExpanded && (
-        <div className="border-t border-gray-200 bg-white">
-          <div className="border-b border-gray-200 px-4 py-4 sm:px-5">
-            <h2 className="text-base font-bold text-gray-900">Outbound Webhook Configuration</h2>
-            <p className="mt-1 break-all text-xs text-gray-500">
-              Webhook ID: {effectiveWebhookId} · Organization ID: {effectiveOrgId}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 divide-y divide-gray-200 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
+      <div className="grid grid-cols-1 divide-y divide-gray-200 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
             {/* Left End: Webhook URL & Smartflo Portal Setup Guide */}
-            <div className="space-y-6 p-5 sm:p-6 lg:col-span-1">
+            <div ref={leftColRef} className="space-y-6 p-5 sm:p-6 lg:col-span-1">
               {/* Webhook URL Box */}
               <section className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -1399,8 +1635,11 @@ function SetupWebhookCard() {
             </div>
 
             {/* Right End: Webhook Received Responses as Cards */}
-            <div className="space-y-4 bg-gray-50/50 p-5 sm:p-6 lg:col-span-1">
-              <div className="flex flex-wrap items-center justify-between gap-2">
+            <div
+              style={isDesktop && leftHeight ? { height: `${leftHeight}px`, maxHeight: `${leftHeight}px` } : undefined}
+              className="flex flex-col bg-gray-50/50 p-5 sm:p-6 lg:col-span-1 min-h-0 overflow-hidden"
+            >
+              <div className="shrink-0 mb-4 flex flex-wrap items-center justify-between gap-2">
                 <div>
                   <h3 className="text-sm font-bold text-gray-800">Received Webhook Responses</h3>
                   <p className="text-xs text-gray-500">Real-time incoming call hangup records</p>
@@ -1439,28 +1678,29 @@ function SetupWebhookCard() {
                 </div>
               </div>
 
-              {/* Cards list */}
-              {events.length === 0 ? (
-                <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
-                    <Webhook className="h-6 w-6" />
+              {/* Cards list - takes remaining height and scrolls */}
+              <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+                {events.length === 0 ? (
+                  <div className="flex h-full min-h-[16rem] flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                      <Webhook className="h-6 w-6" />
+                    </div>
+                    <h4 className="mt-3 text-xs font-bold text-gray-800">No Webhook Responses Yet</h4>
+                    <p className="mt-1 max-w-xs text-[11px] text-gray-500">
+                      Responses sent by Tata Smartflo upon call hangup will automatically show up here as individual cards.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => void handleSimulateWebhook()}
+                      disabled={isSimulating}
+                      className="mt-4 inline-flex items-center gap-2 rounded-md bg-black px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
+                    >
+                      {isSimulating ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Radio className="h-3.5 w-3.5" />}
+                      Simulate Sample Response
+                    </button>
                   </div>
-                  <h4 className="mt-3 text-xs font-bold text-gray-800">No Webhook Responses Yet</h4>
-                  <p className="mt-1 max-w-xs text-[11px] text-gray-500">
-                    Responses sent by Tata Smartflo upon call hangup will automatically show up here as individual cards.
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => void handleSimulateWebhook()}
-                    disabled={isSimulating}
-                    className="mt-4 inline-flex items-center gap-2 rounded-md bg-black px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-gray-800 disabled:opacity-50"
-                  >
-                    {isSimulating ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : <Radio className="h-3.5 w-3.5" />}
-                    Simulate Sample Response
-                  </button>
-                </div>
-              ) : (
-                <div className="max-h-[34rem] space-y-3 overflow-y-auto pr-1">
+                ) : (
+                  <div className="space-y-3">
                   {events.map((event) => {
                     const isAnswered = ['answered', 'completed', 'success'].includes(event.status.toLowerCase());
                     const isBusy = ['busy', 'user_busy'].includes(event.status.toLowerCase());
@@ -1558,9 +1798,253 @@ function SetupWebhookCard() {
                       </div>
                     );
                   })}
-                </div>
-              )}
+                  </div>
+                )}
+              </div>
             </div>
+          </div>
+        </div>
+      );
+    }
+
+function OutboundSetupSection() {
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [isToggling, setIsToggling] = useState(false);
+  const [formResetKey, setFormResetKey] = useState(0);
+  const [activeTab, setActiveTab] = useState<'click-to-call' | 'webhook'>('click-to-call');
+  const [isClickToCallActivated, setIsClickToCallActivated] = useState(false);
+  const [webhookEventsCount, setWebhookEventsCount] = useState<number>(0);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadStatus = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const res = await fetch('/api/smartflo/configuration', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          cache: 'no-store',
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data?.configuration && isMounted) {
+          const active = Boolean(data.configuration.isActivated || data.configuration.hasToken || data.configuration.isTokenValid);
+          setIsEnabled(active);
+          if (data.configuration.isActivated) {
+            setIsClickToCallActivated(true);
+          }
+          if (Array.isArray(data.configuration.webhookEvents) && data.configuration.webhookEvents.length > 0) {
+            setWebhookEventsCount(data.configuration.webhookEvents.length);
+          }
+        }
+      } catch {
+        // ignore
+      }
+    };
+    void loadStatus();
+    return () => {
+      isMounted = false;
+    };
+  }, [formResetKey]);
+
+  const handleToggleEnabled = async (nextEnabled: boolean) => {
+    if (isToggling) return;
+    setIsToggling(true);
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Please sign in again.');
+
+      if (!nextEnabled) {
+        // DISABLE: Call API to reset all Click to Call records in Supabase
+        const res = await fetch('/api/smartflo/configuration', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ action: 'disable' }),
+        });
+        if (!res.ok) throw new Error('Failed to disable Click to Call');
+
+        setIsEnabled(false);
+        setIsClickToCallActivated(false);
+        setWebhookEventsCount(0);
+        setFormResetKey((k) => k + 1);
+      } else {
+        // ENABLE: Update enabled state in Supabase and show forms
+        const res = await fetch('/api/smartflo/configuration', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${session.access_token}`,
+          },
+          body: JSON.stringify({ action: 'enable' }),
+        });
+        if (!res.ok) throw new Error('Failed to enable Click to Call');
+
+        setIsEnabled(true);
+      }
+    } catch (err) {
+      console.error('Error toggling Click to Call:', err);
+    } finally {
+      setIsToggling(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      {/* Click to Call Setup Card with Enable / Disable Switch */}
+      <div className="rounded-xl border border-gray-200 bg-white p-4 sm:p-5">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div
+              className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                isEnabled ? 'bg-[#4b33e8] text-white' : 'bg-gray-100 text-gray-500'
+              }`}
+            >
+              <PhoneCall className="h-5 w-5" aria-hidden="true" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold text-gray-900">Click to Call Setup</h2>
+                <span
+                  className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${
+                    isEnabled
+                      ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
+                      : 'border border-gray-200 bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  {isEnabled ? 'Enabled' : 'Disabled'}
+                </span>
+              </div>
+              <p className="mt-0.5 text-xs text-gray-500">Outgoing call routing details</p>
+            </div>
+          </div>
+
+          {/* Toggle Switch */}
+          <div className="flex items-center gap-3">
+            {isToggling && <LoaderCircle className="h-4 w-4 animate-spin text-[#4b33e8]" />}
+            <span className="text-xs font-semibold text-gray-700">
+              {isEnabled ? 'Enabled' : 'Disabled'}
+            </span>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={isEnabled}
+              aria-label="Toggle Click to Call Setup"
+              disabled={isToggling}
+              onClick={() => void handleToggleEnabled(!isEnabled)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-[#4b33e8]/20 disabled:cursor-not-allowed disabled:opacity-50 ${
+                isEnabled ? 'bg-[#4b33e8]' : 'bg-gray-300'
+              }`}
+            >
+              <span
+                className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                  isEnabled ? 'translate-x-5' : 'translate-x-0'
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Forms shown only when enabled */}
+      {isEnabled && (
+        <div key={formResetKey} className="space-y-4 pt-1 animate-in fade-in duration-200">
+          {/* Top 2 Cards: Click to Call Config | Webhook */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {/* Card 1: Click to Call Config */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('click-to-call')}
+              className={`flex w-full items-start justify-between gap-3 rounded-xl border p-4 text-left transition-all duration-150 ${
+                activeTab === 'click-to-call'
+                  ? 'border-[#4b33e8] bg-[#4b33e8]/[0.03] ring-1 ring-[#4b33e8]'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                    activeTab === 'click-to-call'
+                      ? 'bg-[#4b33e8] text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  <PhoneCall className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900">Click to Call Config</h3>
+                  <p className="mt-0.5 text-xs text-gray-500">Outbound API calling & agent configuration</p>
+                </div>
+              </div>
+              <span
+                className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                  isClickToCallActivated
+                    ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                {isClickToCallActivated ? 'Activated' : 'Setup'}
+              </span>
+            </button>
+
+            {/* Card 2: Webhook */}
+            <button
+              type="button"
+              onClick={() => setActiveTab('webhook')}
+              className={`flex w-full items-start justify-between gap-3 rounded-xl border p-4 text-left transition-all duration-150 ${
+                activeTab === 'webhook'
+                  ? 'border-[#4b33e8] bg-[#4b33e8]/[0.03] ring-1 ring-[#4b33e8]'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <span
+                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg transition-colors ${
+                    activeTab === 'webhook'
+                      ? 'bg-[#4b33e8] text-white'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}
+                >
+                  <Webhook className="h-5 w-5" aria-hidden="true" />
+                </span>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900">Webhook</h3>
+                  <p className="mt-0.5 text-xs text-gray-500">Real-time call events & hangup details</p>
+                </div>
+              </div>
+              <span
+                className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${
+                  webhookEventsCount > 0
+                    ? 'border border-emerald-200 bg-emerald-50 text-emerald-700'
+                    : 'bg-gray-100 text-gray-600'
+                }`}
+              >
+                {webhookEventsCount > 0 ? `${webhookEventsCount} Event${webhookEventsCount > 1 ? 's' : ''}` : 'Active'}
+              </span>
+            </button>
+          </div>
+
+          {/* Active Configuration Screen Underneath */}
+          <div className="pt-1">
+            {activeTab === 'click-to-call' && (
+              <ClickToCallContent
+                isWebhookSetup={webhookEventsCount > 0}
+                onActivatedChange={(act) => {
+                  setIsClickToCallActivated(act);
+                  if (act) setIsEnabled(true);
+                }}
+                onSwitchToWebhook={() => setActiveTab('webhook')}
+                onWebhookDetected={() => setWebhookEventsCount((prev) => Math.max(prev, 1))}
+              />
+            )}
+            {activeTab === 'webhook' && (
+              <SetupWebhookContent
+                onEventsCountChange={setWebhookEventsCount}
+              />
+            )}
           </div>
         </div>
       )}
@@ -1591,13 +2075,13 @@ export default function SmartfloDialerConfiguration({ onBack }: SmartfloDialerCo
         </button>
       </div>
 
-      <div id="smartflo-dialer-config-sections" className="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-6">
-        <ConfigurationSection title="Outbound Configuration" description="Outgoing call routing details">
-          <ClickToCallCard />
-          <SetupWebhookCard />
-        </ConfigurationSection>
-        <ConfigurationSection title="Inbound Configuration" description="Incoming call routing details" fields={['Inbound Number', 'Extension Number']} />
-        <ConfigurationSection title="API Dialplan Configuration" description="API-based inbound routing and fallback transfer details" fields={['Dialplan ID', 'API Endpoint', 'Fallback Queue ID']} />
+      <div id="smartflo-dialer-config-sections" className="space-y-4">
+        <OutboundSetupSection />
+
+        <div className="divide-y divide-gray-200 rounded-xl border border-gray-200 bg-white px-4 py-5 sm:px-6">
+          <ConfigurationSection title="Inbound Configuration" description="Incoming call routing details" fields={['Inbound Number', 'Extension Number']} />
+          <ConfigurationSection title="API Dialplan Configuration" description="API-based inbound routing and fallback transfer details" fields={['Dialplan ID', 'API Endpoint', 'Fallback Queue ID']} />
+        </div>
       </div>
     </div>
   );

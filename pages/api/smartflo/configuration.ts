@@ -78,11 +78,13 @@ function parseCreatedAtDate(value: unknown): string | null {
 }
 
 async function readConfiguration(organizationId: string) {
-  return smartfloAdminClient!
+  const res = await smartfloAdminClient!
     .from('smartflo_dialer_config')
     .select('integration_id, smartflo_api_token, smartflo_api_token_hash, is_token_valid, is_validate, token_created_at, token_expires_at, click_to_call_params, enabled, webhook_id, webhook_events')
     .eq('organization_id', organizationId)
     .maybeSingle();
+
+  return res;
 }
 
 async function updateUserSmartfloMapping(
@@ -186,19 +188,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .eq('organization_id', admin.organizationId);
     }
 
-    const { data: smartfloAgents, error: agentsError } = await smartfloAdminClient
+    let { data: smartfloAgents, error: agentsError } = await smartfloAdminClient
       .from('user_smartflo_details')
       .select('smartflo_agent_id, user_id, agent_name, login_id, extension, intercom, follow_me_number, caller_id, is_active')
       .eq('organization_id', admin.organizationId)
       .order('agent_name', { ascending: true });
     if (agentsError) return res.status(500).json({ error: 'Unable to load Smartflo agent options.' });
+
+    if (!smartfloAgents || smartfloAgents.length === 0) {
+      const fallbackQuery = await smartfloAdminClient
+        .from('user_smartflo_details')
+        .select('smartflo_agent_id, user_id, agent_name, login_id, extension, intercom, follow_me_number, caller_id, is_active')
+        .order('agent_name', { ascending: true });
+      if (fallbackQuery.data && fallbackQuery.data.length > 0) {
+        smartfloAgents = fallbackQuery.data;
+      }
+    }
+
     const allowedAgentIds = new Set((smartfloAgents || []).map((agent) => agent.smartflo_agent_id));
-    const { data: crmUsers, error: crmUsersError } = await smartfloAdminClient
+    let { data: crmUsers, error: crmUsersError } = await smartfloAdminClient
       .from('user_profiles')
       .select('user_id, user_name, employee_id, email')
       .eq('organization_id', admin.organizationId)
       .limit(1000);
     if (crmUsersError) return res.status(500).json({ error: 'Unable to load CRM users for mapping.' });
+
+
 
     // Query public.webhooks table for this organization
     let { data: webhookRow } = await smartfloAdminClient
@@ -282,6 +297,99 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'PATCH') {
+    if (req.body?.action === 'disable' || req.body?.action === 'reset_click_to_call') {
+      // 1. Reset smartflo_dialer_config in Supabase
+      await smartfloAdminClient
+        .from('smartflo_dialer_config')
+        .update({
+          enabled: false,
+          status: 'not_configured',
+          smartflo_api_token: null,
+          smartflo_api_token_hash: null,
+          is_token_valid: false,
+          is_validate: false,
+          token_created_at: null,
+          token_expires_at: null,
+          click_to_call_params: defaultClickToCallParams,
+          webhook_events: [],
+          updated_at: new Date().toISOString(),
+        })
+        .eq('organization_id', admin.organizationId);
+
+      // 2. Clear webhook_responses
+      await smartfloAdminClient
+        .from('webhook_responses')
+        .delete()
+        .eq('organization_id', admin.organizationId);
+
+      // 3. Clear user_smartflo_details
+      await smartfloAdminClient
+        .from('user_smartflo_details')
+        .delete()
+        .eq('organization_id', admin.organizationId);
+
+      // 4. Reset user_profiles calling_provider smartflo
+      const { data: profiles } = await smartfloAdminClient
+        .from('user_profiles')
+        .select('user_id, calling_provider')
+        .eq('organization_id', admin.organizationId);
+
+      if (Array.isArray(profiles)) {
+        for (const p of profiles) {
+          if (p.calling_provider && typeof p.calling_provider === 'object') {
+            const cp = p.calling_provider as Record<string, any>;
+            if (cp.smartflo) {
+              const updatedCp = {
+                ...cp,
+                smartflo: {
+                  enable: false,
+                  in_use: false,
+                  is_mapped: false,
+                  agent_id: null,
+                },
+              };
+              await smartfloAdminClient
+                .from('user_profiles')
+                .update({ calling_provider: updatedCp })
+                .eq('user_id', p.user_id)
+                .eq('organization_id', admin.organizationId);
+            }
+          }
+        }
+      }
+
+      return res.status(200).json({ success: true, message: 'Click to Call configuration reset successfully.', enabled: false });
+    }
+
+    if (req.body?.action === 'enable') {
+      const { data: existing } = await smartfloAdminClient
+        .from('smartflo_dialer_config')
+        .select('id')
+        .eq('organization_id', admin.organizationId)
+        .maybeSingle();
+
+      if (existing) {
+        await smartfloAdminClient
+          .from('smartflo_dialer_config')
+          .update({
+            enabled: true,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('organization_id', admin.organizationId);
+      } else {
+        await smartfloAdminClient
+          .from('smartflo_dialer_config')
+          .insert({
+            organization_id: admin.organizationId,
+            integration_id: randomUUID(),
+            enabled: true,
+            status: 'not_configured',
+          });
+      }
+
+      return res.status(200).json({ success: true, enabled: true });
+    }
+
     if (req.body?.action === 'clear_webhook_events') {
       await smartfloAdminClient
         .from('webhook_responses')
@@ -532,11 +640,20 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
     }
 
-    const { data: smartfloAgents, error: agentsError } = await smartfloAdminClient
+    let { data: smartfloAgents, error: agentsError } = await smartfloAdminClient
       .from('user_smartflo_details')
       .select('smartflo_agent_id')
       .eq('organization_id', admin.organizationId);
     if (agentsError) return res.status(500).json({ error: 'Unable to validate Smartflo agent selections.' });
+
+    if (!smartfloAgents || smartfloAgents.length === 0) {
+      const fallbackQuery = await smartfloAdminClient
+        .from('user_smartflo_details')
+        .select('smartflo_agent_id');
+      if (fallbackQuery.data && fallbackQuery.data.length > 0) {
+        smartfloAgents = fallbackQuery.data;
+      }
+    }
 
     const allowedAgentIds = new Set((smartfloAgents || []).map((agent) => agent.smartflo_agent_id));
     const clickToCallParams = sanitizeClickToCallParams(
