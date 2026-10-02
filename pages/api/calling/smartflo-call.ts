@@ -309,7 +309,13 @@ export default async function handler(
       ? responseData.ref_id
       : typeof responseData.refId === 'string'
         ? responseData.refId
-        : null;
+        : typeof responseData.uuid === 'string'
+          ? responseData.uuid
+          : typeof (responseData.data as any)?.ref_id === 'string'
+            ? (responseData.data as any).ref_id
+            : typeof (responseData.data as any)?.uuid === 'string'
+              ? (responseData.data as any).uuid
+              : null;
 
     // Set metadata headers on the API response
     res.setHeader('customer-id', customerId);
@@ -319,12 +325,25 @@ export default async function handler(
     res.setHeader('integration_id', integrationId);
 
     // Update user_profiles when ref_id / call_id is successfully returned
-    if (user?.id && (refId || callId)) {
-      await supabaseAdmin.from('user_profiles').update({
+    const client = supabaseAdmin || supabase;
+    if (client && user?.id && (refId || callId || responseData.success !== false)) {
+      const updatePayload = {
         on_call: true,
         is_personal: false,
-        updated_at: new Date().toISOString()
-      }).eq('user_id', user.id);
+        updated_at: new Date().toISOString(),
+      };
+
+      try {
+        await client.from('user_profiles').update(updatePayload).eq('user_id', user.id);
+        if (profile?.id) {
+          await client.from('user_profiles').update(updatePayload).eq('id', profile.id);
+        } else {
+          await client.from('user_profiles').update(updatePayload).eq('id', user.id);
+        }
+        console.info(`📞 [Smartflo] Successfully updated user_profiles on_call = true for user ${user.id}`);
+      } catch (err) {
+        console.error('❌ [Smartflo] Failed to update user_profiles on_call status:', err);
+      }
     }
 
     return res.status(200).json({

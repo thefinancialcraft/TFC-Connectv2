@@ -152,18 +152,22 @@ export default async function handler(
     const nowIso = new Date().toISOString();
     const effectiveStatus = updatePayload.manual_status || updatePayload.status;
     if (effectiveStatus === 'active') {
-        await client.from('user_profiles').update({
+        const payload = {
             on_call: true,
             is_personal: false,
             updated_at: nowIso
-        }).eq('user_id', user.id);
+        };
+        await client.from('user_profiles').update(payload).eq('user_id', user.id);
+        await client.from('user_profiles').update(payload).eq('id', user.id);
     } else if (effectiveStatus === 'disposition_pending' || effectiveStatus === 'closed' || effectiveStatus === 'assigned') {
-        await client.from('user_profiles').update({
+        const payload = {
             on_call: false,
             is_personal: false,
             idle_time: nowIso,
             updated_at: nowIso
-        }).eq('user_id', user.id);
+        };
+        await client.from('user_profiles').update(payload).eq('user_id', user.id);
+        await client.from('user_profiles').update(payload).eq('id', user.id);
     }
 
     return res.status(200).json({ 

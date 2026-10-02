@@ -449,12 +449,14 @@ export default function CallingPage() {
         // Update state to disposition_pending in call_sessions table & update user_profiles
         if (user?.uid) {
             const nowIso = new Date().toISOString();
-            supabase.from('user_profiles').update({
+            const updatePayload = {
                 on_call: false,
                 is_personal: false,
                 idle_time: nowIso,
                 updated_at: nowIso
-            }).eq('user_id', user.uid).then();
+            };
+            void supabase.from('user_profiles').update(updatePayload).eq('user_id', user.uid);
+            void supabase.from('user_profiles').update(updatePayload).eq('id', user.uid);
 
             console.log('🤙 [EndCall] Fetching auth session for API update...');
             const { data: { session: authSession } } = await supabase.auth.getSession();
@@ -2231,7 +2233,7 @@ useEffect(() => {
                         throw new Error(result.message || result.error || "Smartflo call initiation failed.");
                     }
 
-                    if (result.ref_id || result.call_id) {
+                    if (result.ref_id || result.call_id || result.success) {
                         const rId = result.ref_id || result.call_id;
                         const cIdVal = result.call_id || result.ref_id;
                         activeSmartfloRefIdRef.current = rId;
@@ -2240,14 +2242,18 @@ useEffect(() => {
                         setLastCheckedCallId(cIdVal);
                         hasSeenCustomerRingingRef.current = false;
                         setSmartfloLifecycle(null);
-                        setTimeout(() => fetchSmartfloLogs(rId, cIdVal), 500);
+                        if (rId) {
+                            setTimeout(() => fetchSmartfloLogs(rId, cIdVal), 500);
+                        }
 
                         if (user?.uid) {
-                            supabase.from('user_profiles').update({
+                            const updatePayload = {
                                 on_call: true,
                                 is_personal: false,
                                 updated_at: new Date().toISOString()
-                            }).eq('user_id', user.uid).then();
+                            };
+                            void supabase.from('user_profiles').update(updatePayload).eq('user_id', user.uid);
+                            void supabase.from('user_profiles').update(updatePayload).eq('id', user.uid);
                         }
                     }
                     console.info("📞 [Smartflo] Originate queued successfully, ref_id:", result.ref_id, "call_id:", result.call_id);

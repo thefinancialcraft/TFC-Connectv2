@@ -322,6 +322,27 @@ export default async function handler(
     }
   }
 
+  const client = supabaseAdmin || supabase;
+  if (client && user?.id) {
+    const nowIso = new Date().toISOString();
+    const updatePayload = {
+      on_call: false,
+      is_personal: false,
+      idle_time: nowIso,
+      updated_at: nowIso,
+    };
+    try {
+      await client.from('user_profiles').update(updatePayload).eq('user_id', user.id);
+      if (profile?.id) {
+        await client.from('user_profiles').update(updatePayload).eq('id', profile.id);
+      } else {
+        await client.from('user_profiles').update(updatePayload).eq('id', user.id);
+      }
+    } catch (err) {
+      console.error('[Smartflo Cancel] Failed to update user_profiles on_call status:', err);
+    }
+  }
+
   return res.status(200).json({
     success: true,
     message: successful ? 'Call cancelled successfully.' : 'Cancel request executed.',
