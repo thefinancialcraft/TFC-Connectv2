@@ -334,12 +334,12 @@ export default function AgentPerformanceTab({
       const maxLastActiveTs = Math.max(callLastActive, portalLastActive, syncUpdatedAt, sessionLastActive);
       const lastActive = maxLastActiveTs > 0 ? new Date(maxLastActiveTs).toISOString() : null;
 
-      const isActuallyOnline = (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 60000); // 1m threshold
-
       // On Call / Personal status directly from user_profiles table (with fallback to item and syncData)
       const isSyncFresh = syncUpdatedAt > 0 && (now.getTime() - syncUpdatedAt) < 180000;
       const isOnCall = profileData?.on_call != null ? Boolean(profileData.on_call) : (item.on_call != null ? Boolean(item.on_call) : !!(syncData?.on_call && isSyncFresh));
       const isPersonal = profileData?.is_personal != null ? (Boolean(profileData.is_personal) && isOnCall) : (item.is_personal != null ? (Boolean(item.is_personal) && isOnCall) : !!(syncData?.is_personal && isOnCall));
+
+      const isActuallyOnline = isOnCall || (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 60000); // 1m threshold or active on call
       
       // Idle start timestamp from user_profiles.idle_time (or last_call_at fallback)
       const idleTimeRef = profileData?.idle_time || item.idle_time || item.last_call_at || null;
