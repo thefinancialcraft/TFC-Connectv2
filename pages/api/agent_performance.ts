@@ -28,6 +28,7 @@ interface AgentDataPoint {
   follow_ups_count: number;
   last_active: string | null;
   last_online: string | null;
+  idle_time?: string | null;
   on_call: boolean;
   is_personal: boolean;
   consecutive_failed_stats: string;
@@ -218,6 +219,7 @@ export default async function handler(
         follow_ups_count: Number(a.follow_ups_count) || 0,
         last_active: a.last_active || null,
         last_online: a.last_online || null,
+        idle_time: a.idle_time || null,
         on_call: !!a.on_call,
         is_personal: !!a.is_personal,
         consecutive_failed_stats: a.consecutive_failed_stats || '0/0s'

@@ -14,6 +14,7 @@ export interface AgentDataPoint {
   follow_ups_count: number;
   last_active: string | null;
   last_online: string | null;
+  idle_time?: string | null;
   on_call: boolean;
   is_personal: boolean;
   consecutive_failed_stats: string;

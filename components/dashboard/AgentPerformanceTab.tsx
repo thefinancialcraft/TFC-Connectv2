@@ -39,6 +39,10 @@ interface AgentPerformanceRecord {
   streak_gap: string;
   avg_talk: string;
   profile_pic_url: string | null;
+  on_call?: boolean | null;
+  is_personal?: boolean | null;
+  idle_time?: string | null;
+  last_online?: string | null;
   dispositions?: Record<string, number>;
   total_dispositions?: number;
 }
@@ -86,7 +90,7 @@ export default function AgentPerformanceTab({
     try {
       setRpcLoading(true);
       
-      let agentQuery = supabase.from('user_profiles').select('user_id, user_name, employee_id, organization_id, profile_pic_url');
+      let agentQuery = supabase.from('user_profiles').select('id, user_id, user_name, employee_id, organization_id, profile_pic_url, on_call, is_personal, idle_time, last_online');
       if (selectedOrgId && selectedOrgId !== "all") agentQuery = agentQuery.eq('organization_id', selectedOrgId);
       if (restrictedUserIds && restrictedUserIds.length > 0) agentQuery = agentQuery.in('user_id', restrictedUserIds);
       else if (selectedUserId && selectedUserId !== "all") agentQuery = agentQuery.eq('user_id', selectedUserId);
@@ -95,7 +99,7 @@ export default function AgentPerformanceTab({
       if (agentError) throw agentError;
       if (!agents || agents.length === 0) { setRpcData([]); return; }
 
-      const agentIds = agents.map(a => a.user_id);
+      const agentIds = agents.map(a => a.user_id || a.id);
       const employeeIds = agents.map(a => a.employee_id?.trim()).filter(Boolean) as string[];
 
       // PAGINATED FETCHING to overcome Supabase 1000-row limit
@@ -224,6 +228,10 @@ export default function AgentPerformanceTab({
           streak_gap: `${streakCount}/${avgGapStr}`,
           avg_talk: `${Math.floor(avgTalkSec / 60)}m ${avgTalkSec % 60}s`,
           profile_pic_url: a.profile_pic_url,
+          on_call: a.on_call,
+          is_personal: a.is_personal,
+          idle_time: a.idle_time,
+          last_online: a.last_online,
           dispositions: dispositionCounts,
           total_dispositions: totalDispositions
         };
@@ -263,26 +271,46 @@ export default function AgentPerformanceTab({
     return () => clearInterval(interval);
   }, [selectedOrgId, dateFilter, selectedUserId, restrictedUserIds]);
 
-  // Real-time Status Sync
+  // Real-time Status Sync (Fast 4s polling + realtime updates)
   useEffect(() => {
     if (rpcData.length > 0) {
       const userIds = rpcData.map(i => i.user_id_val).filter(Boolean);
       const employeeIds = rpcData.map(i => i.employee_id_val).filter(Boolean);
+      
       const fetchStatus = async () => {
-        const [syncRes, sessionRes, profileRes] = await Promise.all([
-          supabase.from('sync_meta').select('employee_id, on_call, is_personal, updated_at').in('employee_id', employeeIds),
-          supabase.from('user_sessions').select('user_id, last_accessed_at').in('user_id', userIds).order('last_accessed_at', { ascending: false }),
-          supabase.from('user_profiles').select('user_id, last_online, on_call, is_personal, idle_time').in('user_id', userIds)
-        ]);
-        if (syncRes.data) setRawSyncMeta(syncRes.data);
-        if (profileRes.data) setRawProfiles(profileRes.data);
-        if (sessionRes.data) {
-          const latest: any[] = []; const seen = new Set();
-          sessionRes.data.forEach(s => { if (!seen.has(s.user_id)) { latest.push(s); seen.add(s.user_id); } });
-          setRawSessions(latest);
+        try {
+          const [syncRes, sessionRes, profileRes] = await Promise.all([
+            supabase.from('sync_meta').select('employee_id, on_call, is_personal, updated_at').in('employee_id', employeeIds),
+            supabase.from('user_sessions').select('user_id, last_accessed_at').in('user_id', userIds).order('last_accessed_at', { ascending: false }),
+            supabase.from('user_profiles').select('id, user_id, employee_id, last_online, on_call, is_personal, idle_time')
+          ]);
+          if (syncRes.data) setRawSyncMeta(syncRes.data);
+          if (profileRes.data) setRawProfiles(profileRes.data);
+          if (sessionRes.data) {
+            const latest: any[] = []; const seen = new Set();
+            sessionRes.data.forEach(s => { if (!seen.has(s.user_id)) { latest.push(s); seen.add(s.user_id); } });
+            setRawSessions(latest);
+          }
+          setLastUpdated(new Date());
+        } catch (e) {
+          console.error("[AgentPerformanceTab] Realtime status sync error:", e);
         }
       };
+
       fetchStatus();
+      const statusInterval = setInterval(fetchStatus, 4000);
+
+      const channel = supabase
+        .channel('agent-perf-realtime-profiles')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'user_profiles' }, () => {
+          fetchStatus();
+        })
+        .subscribe();
+
+      return () => {
+        clearInterval(statusInterval);
+        supabase.removeChannel(channel);
+      };
     }
   }, [rpcData]);
 
@@ -295,11 +323,11 @@ export default function AgentPerformanceTab({
       const empId = item.employee_id_val;
       const syncData = rawSyncMeta.find(s => s.employee_id === empId);
       const sessionData = rawSessions.find(s => s.user_id === uId);
-      const profileData = rawProfiles.find(p => p.user_id === uId);
+      const profileData = rawProfiles.find(p => (uId && (p.user_id === uId || p.id === uId)) || (empId && p.employee_id && p.employee_id.trim().toLowerCase() === empId.trim().toLowerCase()));
       
       // Robust Last Active: Max of (Call History, Portal Activity, Sync Updated At)
       const callLastActive = item.last_call_at ? new Date(item.last_call_at).getTime() : 0;
-      const portalLastActive = profileData?.last_online ? new Date(profileData.last_online).getTime() : 0;
+      const portalLastActive = (profileData?.last_online || item.last_online) ? new Date(profileData?.last_online || item.last_online).getTime() : 0;
       const syncUpdatedAt = syncData?.updated_at ? new Date(syncData.updated_at).getTime() : 0;
       const sessionLastActive = sessionData?.last_accessed_at ? new Date(sessionData.last_accessed_at).getTime() : 0;
       
@@ -308,13 +336,13 @@ export default function AgentPerformanceTab({
 
       const isActuallyOnline = (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 60000); // 1m threshold
 
-      // On Call / Personal status directly from user_profiles table (with fallback to syncData)
+      // On Call / Personal status directly from user_profiles table (with fallback to item and syncData)
       const isSyncFresh = syncUpdatedAt > 0 && (now.getTime() - syncUpdatedAt) < 180000;
-      const isOnCall = profileData?.on_call != null ? Boolean(profileData.on_call) : !!(syncData?.on_call && isSyncFresh);
-      const isPersonal = profileData?.is_personal != null ? (Boolean(profileData.is_personal) && isOnCall) : !!(syncData?.is_personal && isOnCall);
+      const isOnCall = profileData?.on_call != null ? Boolean(profileData.on_call) : (item.on_call != null ? Boolean(item.on_call) : !!(syncData?.on_call && isSyncFresh));
+      const isPersonal = profileData?.is_personal != null ? (Boolean(profileData.is_personal) && isOnCall) : (item.is_personal != null ? (Boolean(item.is_personal) && isOnCall) : !!(syncData?.is_personal && isOnCall));
       
       // Idle start timestamp from user_profiles.idle_time (or last_call_at fallback)
-      const idleTimeRef = profileData?.idle_time || item.last_call_at || null;
+      const idleTimeRef = profileData?.idle_time || item.idle_time || item.last_call_at || null;
       
       let idleTimeStr = "N/A";
       if (lastActive) {
