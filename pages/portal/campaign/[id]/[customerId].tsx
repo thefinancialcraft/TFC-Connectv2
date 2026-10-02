@@ -2209,6 +2209,7 @@ useEffect(() => {
                         throw new Error("Please sign in again to place the call.");
                     }
 
+                    const isManualEvent = Boolean(isManualMode || isManualUrl);
                     const response = await fetch("/api/calling/smartflo-call", {
                         method: "POST",
                         headers: {
@@ -2218,6 +2219,8 @@ useEffect(() => {
                             "rynxly_user_id": String(user?.uid || ""),
                             "campaign_id": String(cId || ""),
                             "org_id": String(user?.organization_id || ""),
+                            "is_manual": String(isManualEvent),
+                            "call_type": "c2c_cus_out",
                         },
                         body: JSON.stringify({
                             destination_number: decryptedPhone,
@@ -2225,6 +2228,8 @@ useEffect(() => {
                             customer_id: custId,
                             rynxly_user_id: user?.uid,
                             org_id: user?.organization_id,
+                            is_manual: isManualEvent,
+                            call_type: "c2c_cus_out",
                         }),
                     });
 
@@ -2774,32 +2779,6 @@ useEffect(() => {
 
                 logDuration = (disposition === 'Not Contactable') ? 0 : sfOutboundSec;
                 logRecordingUrl = matchedSfLog?.recordingUrl || raw.recording_url || raw.record_url || null;
-
-                const sfExtension = raw.answered_agent_number ||
-                    raw.answered_agent?.number ||
-                    raw.answered_agent?.extension ||
-                    raw.extension ||
-                    matchedSfLog?.agentNumber ||
-                    'Smartflo Extension';
-
-                // Insert into call_history table for Smartflo
-                const decryptedPhone = customer?.phone_no ? decryptPhone(customer.phone_no) : '';
-                supabase.from('call_history').insert({
-                    ref_id: logRefId,
-                    number: decryptedPhone,
-                    name: customer?.customer_name || 'Customer',
-                    call_type: logDuration > 0 ? 'Outgoing' : 'Missed',
-                    duration: logDuration,
-                    timestamp: now,
-                    device_id: String(sfExtension),
-                    call_recording: logRecordingUrl,
-                    is_personal: false,
-                    employee_id: user?.employeeId || null,
-                    user_name: user?.displayName || (user as any)?.user_name || null,
-                    organization_id: campaign?.organization_id || customer?.organization_id || null
-                }).then(({ error: histErr }) => {
-                    if (histErr) console.warn('⚠️ [SaveDisposition] call_history insert warning:', histErr);
-                });
             }
 
             // 1. Save Call Log FIRST

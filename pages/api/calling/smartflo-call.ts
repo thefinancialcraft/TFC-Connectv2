@@ -214,6 +214,8 @@ export default async function handler(
   const rynxlyUserId = String(user.id || req.headers['rynxly_user_id'] || '').trim();
   const orgId = String(profile.organization_id || req.headers['org_id'] || '').trim();
   const integrationId = String(config?.integration_id || '').trim();
+  const isManual = req.body?.is_manual === true || req.body?.is_manual === 'true' || req.headers['is_manual'] === 'true';
+  const callType = String(req.body?.call_type || req.headers['call_type'] || 'c2c_cus_out').trim();
 
   // Object structure for Smartflo custom_identifier (echoed in webhooks)
   const customIdentifierObj = {
@@ -222,6 +224,8 @@ export default async function handler(
     campaign_id: campaignId,
     org_id: orgId,
     integration_id: integrationId,
+    is_manual: isManual,
+    call_type: callType,
   };
 
   const customIdentifier = typeof req.body?.custom_identifier === 'string'

@@ -262,3 +262,149 @@ export function isUuid(value: unknown): value is string {
   return typeof value === 'string' &&
     /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 }
+
+export async function syncSmartfloWebhookToCallHistory(payload: Record<string, unknown>, fallbackOrgId?: string) {
+  if (!smartfloAdminClient) return null;
+
+  try {
+    const inner = (payload.rawPayload && typeof payload.rawPayload === 'object' ? payload.rawPayload : payload) as Record<string, any>;
+
+    // 1. Extract custom_identifier
+    let customId: Record<string, any> = {};
+    if (typeof inner.custom_identifier === 'object' && inner.custom_identifier !== null) {
+      customId = inner.custom_identifier;
+    } else if (typeof inner.custom_identifier === 'string') {
+      try {
+        customId = JSON.parse(inner.custom_identifier);
+      } catch {
+        customId = {};
+      }
+    }
+
+    const callTypeKey = String(customId.call_type || inner.call_type || '').toLowerCase().replace(/-/g, '_');
+    
+    // Only process when call_type is 'c2c_cus_out' (or similar c2c-cus-out)
+    if (callTypeKey !== 'c2c_cus_out') {
+      return null;
+    }
+
+    const refId = String(inner.ref_id || inner.uuid || inner.call_id || '').trim();
+    const callId = String(inner.call_id || inner.ref_id || inner.uuid || '').trim();
+    const primaryId = refId || callId;
+    if (!primaryId) return null;
+
+    const orgId = customId.org_id || inner.org_id || fallbackOrgId || null;
+    const rynxlyUserId = customId.rynxly_user_id || inner.rynxly_user_id || null;
+    const customerId = customId.customer_id || inner.customer_id || null;
+
+    // 2. Fetch agent details from user_profiles
+    let employeeId: string | null = null;
+    let userName: string | null = null;
+    if (rynxlyUserId) {
+      const { data: userProfile } = await smartfloAdminClient
+        .from('user_profiles')
+        .select('employee_id, user_name, id, user_id')
+        .or(`user_id.eq.${rynxlyUserId},id.eq.${rynxlyUserId}`)
+        .maybeSingle();
+
+      if (userProfile) {
+        employeeId = userProfile.employee_id || null;
+        userName = userProfile.user_name || null;
+      }
+    }
+
+    // 3. Fetch customer details
+    let customerName = 'Customer';
+    let rawPhone = String(
+      inner.call_to_number ||
+      inner['customer_no_with_prefix '] ||
+      inner.customer_no_with_prefix ||
+      inner.destination_number ||
+      inner.customer_number ||
+      inner.digits_dialed ||
+      ''
+    ).trim();
+
+    if (customerId) {
+      const { data: custData } = await smartfloAdminClient
+        .from('customers')
+        .select('customer_name, phone_no')
+        .eq('id', customerId)
+        .maybeSingle();
+
+      if (custData) {
+        if (custData.customer_name) customerName = custData.customer_name;
+        if (!rawPhone && custData.phone_no) rawPhone = custData.phone_no;
+      }
+    }
+
+    const cleanNumber = rawPhone.replace(/\D/g, '').slice(-10);
+    if (!cleanNumber) {
+      console.warn('[Smartflo Webhook] Could not extract 10-digit customer number for call_history:', rawPhone);
+      return null;
+    }
+
+    const duration = Number(
+      inner.outbound_sec ??
+      inner.billsec ??
+      inner.duration ??
+      inner.talk_duration ??
+      0
+    );
+
+    const sfExtension =
+      inner.answered_agent_number ||
+      inner.answered_agent?.number ||
+      inner.answered_agent?.extension ||
+      inner.extension ||
+      inner.caller_id_number ||
+      'Smartflo';
+
+    const recordingUrl = inner.recording_url || inner.record_url || inner.recording || null;
+    const rawTimestamp = inner.start_stamp || inner.answer_stamp || inner.time || null;
+    let timestamp = new Date().toISOString();
+    if (rawTimestamp) {
+      try {
+        const parsed = new Date(rawTimestamp);
+        if (!isNaN(parsed.getTime())) timestamp = parsed.toISOString();
+      } catch {
+        // use now
+      }
+    }
+
+    const idx = `sf_${primaryId}`;
+
+    const callHistoryRow = {
+      idx,
+      ref_id: primaryId,
+      number: cleanNumber,
+      name: customerName,
+      call_type: 'outgoing',
+      duration: Number.isFinite(duration) ? duration : 0,
+      timestamp,
+      device_id: String(sfExtension),
+      call_recording: recordingUrl ? String(recordingUrl) : null,
+      is_personal: false,
+      employee_id: employeeId,
+      user_name: userName,
+      organization_id: orgId,
+    };
+
+    const { data: inserted, error: upsertErr } = await smartfloAdminClient
+      .from('call_history')
+      .upsert(callHistoryRow, { onConflict: 'idx' })
+      .select()
+      .maybeSingle();
+
+    if (upsertErr) {
+      console.error('❌ [Smartflo Webhook] Error upserting to call_history:', upsertErr);
+    } else {
+      console.info(`✅ [Smartflo Webhook] Logged to call_history (idx: ${idx}, duration: ${duration}s, emp: ${employeeId})`);
+    }
+
+    return inserted;
+  } catch (err) {
+    console.error('❌ [Smartflo Webhook] Exception syncing to call_history:', err);
+    return null;
+  }
+}
