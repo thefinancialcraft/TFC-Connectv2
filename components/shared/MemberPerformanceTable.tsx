@@ -474,7 +474,7 @@ const MemberPerformanceTable: React.FC<MemberPerformanceTableProps> = ({
                                 totalDispositions: 0
                             };
                             
-                            const isOnline = mStats.onCall || mStats.status === 'Online' || mStats.status === 'On Call' || mStats.status === 'Personal Call';
+                            const isOnline = mStats.onCall || mStats.isOnline || mStats.status === 'Online' || mStats.status === 'On Call' || mStats.status === 'Personal Call';
                             const disps = mStats.dispositions || {};
                             const dispKeys = Object.keys(disps);
                             

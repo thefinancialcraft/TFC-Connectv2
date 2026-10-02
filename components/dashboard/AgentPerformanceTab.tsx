@@ -280,7 +280,7 @@ export default function AgentPerformanceTab({
       const fetchStatus = async () => {
         try {
           const [syncRes, sessionRes, profileRes] = await Promise.all([
-            supabase.from('sync_meta').select('employee_id, on_call, is_personal, updated_at').in('employee_id', employeeIds),
+            supabase.from('sync_meta').select('employee_id, on_call, is_personal, updated_at, last_seen').in('employee_id', employeeIds),
             supabase.from('user_sessions').select('user_id, last_accessed_at').in('user_id', userIds).order('last_accessed_at', { ascending: false }),
             supabase.from('user_profiles').select('id, user_id, employee_id, last_online, on_call, is_personal, idle_time')
           ]);
@@ -325,10 +325,13 @@ export default function AgentPerformanceTab({
       const sessionData = rawSessions.find(s => s.user_id === uId);
       const profileData = rawProfiles.find(p => (uId && (p.user_id === uId || p.id === uId)) || (empId && p.employee_id && p.employee_id.trim().toLowerCase() === empId.trim().toLowerCase()));
       
-      // Robust Last Active: Max of (Call History, Portal Activity, Sync Updated At)
+      // Robust Last Active: Max of (Call History, Portal Activity, Sync Updated At / Last Seen, Session Activity)
       const callLastActive = item.last_call_at ? new Date(item.last_call_at).getTime() : 0;
       const portalLastActive = (profileData?.last_online || item.last_online) ? new Date(profileData?.last_online || item.last_online).getTime() : 0;
-      const syncUpdatedAt = syncData?.updated_at ? new Date(syncData.updated_at).getTime() : 0;
+      const syncUpdatedAt = Math.max(
+        syncData?.updated_at ? new Date(syncData.updated_at).getTime() : 0,
+        syncData?.last_seen ? new Date(syncData.last_seen).getTime() : 0
+      );
       const sessionLastActive = sessionData?.last_accessed_at ? new Date(sessionData.last_accessed_at).getTime() : 0;
       
       const maxLastActiveTs = Math.max(callLastActive, portalLastActive, syncUpdatedAt, sessionLastActive);
@@ -339,7 +342,7 @@ export default function AgentPerformanceTab({
       const isOnCall = profileData?.on_call != null ? Boolean(profileData.on_call) : (item.on_call != null ? Boolean(item.on_call) : !!(syncData?.on_call && isSyncFresh));
       const isPersonal = profileData?.is_personal != null ? (Boolean(profileData.is_personal) && isOnCall) : (item.is_personal != null ? (Boolean(item.is_personal) && isOnCall) : !!(syncData?.is_personal && isOnCall));
 
-      const isActuallyOnline = isOnCall || (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 60000); // 1m threshold or active on call
+      const isActuallyOnline = isOnCall || (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 120000); // 2m threshold or active on call
       
       // Idle start timestamp from user_profiles.idle_time (or last_call_at fallback)
       const idleTimeRef = profileData?.idle_time || item.idle_time || item.last_call_at || null;
@@ -374,6 +377,7 @@ export default function AgentPerformanceTab({
         idleTimestamp: idleTimeRef,
         idleTime: idleTimeStr,
         status: isOnCall ? (isPersonal ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle'),
+        isOnline: isActuallyOnline,
         onCall: isOnCall,
         isPersonal: isPersonal,
         lastOnline: profileData?.last_online || syncData?.updated_at || sessionData?.last_accessed_at || null,
