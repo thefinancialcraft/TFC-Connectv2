@@ -83,6 +83,12 @@ export default async function handler(
     return res.status(503).json({ success: false, message: 'Provider service unavailable' });
   }
 
+  const bearerMatch = req.headers.authorization?.match(/^Bearer\s+(\S+)$/i);
+  if (!bearerMatch) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+
+  const token = bearerMatch[1];
   let actor = null;
   const client = supabaseAdmin || supabase;
   if (!client) {
@@ -90,10 +96,10 @@ export default async function handler(
   }
 
   try {
-    const { data: { user }, error: authError } = await client.auth.getUser(bearerMatch[1]);
+    const { data: { user }, error: authError } = await client.auth.getUser(token);
     if (!authError && user) actor = user;
     if (!actor && supabaseAdmin && client !== supabase) {
-      const { data: { user: fallbackUser }, error: fallbackErr } = await supabase.auth.getUser(bearerMatch[1]);
+      const { data: { user: fallbackUser }, error: fallbackErr } = await supabase.auth.getUser(token);
       if (!fallbackErr && fallbackUser) actor = fallbackUser;
     }
   } catch {
