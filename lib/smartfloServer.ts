@@ -361,14 +361,19 @@ export async function syncSmartfloWebhookToCallHistory(payload: Record<string, u
       'Smartflo';
 
     const recordingUrl = inner.recording_url || inner.record_url || inner.recording || null;
-    const rawTimestamp = inner.start_stamp || inner.answer_stamp || inner.time || null;
+    const rawTimestamp = inner.start_stamp || inner.answer_stamp || inner.created_at || inner.time || null;
     let timestamp = new Date().toISOString();
     if (rawTimestamp) {
       try {
-        const parsed = new Date(rawTimestamp);
-        if (!isNaN(parsed.getTime())) timestamp = parsed.toISOString();
+        if (typeof rawTimestamp === 'number') {
+          const ms = rawTimestamp > 1e11 ? rawTimestamp : rawTimestamp * 1000;
+          timestamp = new Date(ms).toISOString();
+        } else {
+          const parsed = new Date(String(rawTimestamp).replace(' ', 'T'));
+          if (!isNaN(parsed.getTime())) timestamp = parsed.toISOString();
+        }
       } catch {
-        // use now
+        timestamp = new Date().toISOString();
       }
     }
 
@@ -400,6 +405,22 @@ export async function syncSmartfloWebhookToCallHistory(payload: Record<string, u
       console.error('❌ [Smartflo Webhook] Error upserting to call_history:', upsertErr);
     } else {
       console.info(`✅ [Smartflo Webhook] Logged to call_history (idx: ${idx}, duration: ${duration}s, emp: ${employeeId})`);
+    }
+
+    // Reset user_profiles on_call to false when call finishes
+    if (rynxlyUserId) {
+      try {
+        await smartfloAdminClient
+          .from('user_profiles')
+          .update({
+            on_call: false,
+            is_personal: false,
+            updated_at: new Date().toISOString()
+          })
+          .or(`user_id.eq.${rynxlyUserId},id.eq.${rynxlyUserId}`);
+      } catch (profErr) {
+        console.warn('[Smartflo Webhook] Warning resetting user on_call:', profErr);
+      }
     }
 
     return inserted;

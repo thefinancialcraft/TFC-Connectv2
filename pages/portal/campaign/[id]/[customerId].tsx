@@ -335,7 +335,13 @@ export default function CallingPage() {
             if (hangupRefId || hangupCallId) {
                 if (hangupRefId) cancelledRefIdsRef.current.add(hangupRefId);
                 if (hangupCallId) cancelledRefIdsRef.current.add(hangupCallId);
-                console.log('🤙 [EndCall] Disconnecting Smartflo call via /api/calling/smartflo-hangup with:', { hangupRefId, hangupCallId });
+                console.info('🛑 [Call Hangup] Initiating Smartflo disconnect request:', {
+                    ref_id: hangupRefId,
+                    call_id: hangupCallId,
+                    customer_phone: customer?.phone_no ? decryptPhone(customer.phone_no) : undefined,
+                    provider: providerForCall,
+                    timestamp: new Date().toLocaleTimeString()
+                });
                 try {
                     const { data: { session: authSession } } = await supabase.auth.getSession();
                     if (authSession) {
@@ -352,7 +358,11 @@ export default function CallingPage() {
                             }),
                         }).then(async (res) => {
                             const data = await res.json().catch(() => null);
-                            console.log('🤙 [EndCall] Smartflo hangup response:', data);
+                            console.info('✅ [Call Hangup] Smartflo hangup completed:', {
+                                status: res.status,
+                                ok: res.ok,
+                                response: data
+                            });
                             return data;
                         });
 
@@ -361,7 +371,7 @@ export default function CallingPage() {
                         await Promise.race([hangupPromise, timeoutPromise]);
                     }
                 } catch (e) {
-                    console.warn('🤙 [EndCall] Smartflo hangup error:', e);
+                    console.warn('⚠️ [Call Hangup] Smartflo hangup exception:', e);
                 }
             }
 
@@ -515,6 +525,7 @@ export default function CallingPage() {
     }, [handleEndCall]);
 
     const cancelledRefIdsRef = useRef<Set<string>>(new Set());
+    const autoHangsSentRef = useRef<Set<string>>(new Set());
 
     const fetchSchedules = useCallback(async () => {
         if (!user?.uid) return;
@@ -594,7 +605,8 @@ export default function CallingPage() {
             const isThisCancelled = (currentRef && cancelledRefIdsRef.current.has(currentRef)) || (currentCallId && cancelledRefIdsRef.current.has(currentCallId));
             if (isThisCancelled && (data.active_call_id || data.is_live)) {
                 const termCallId = data.active_call_id || data.live_calls_api_result?.matched_live_call?.call_id;
-                if (termCallId) {
+                if (termCallId && !autoHangsSentRef.current.has(termCallId)) {
+                    autoHangsSentRef.current.add(termCallId);
                     console.log('🛑 [SafetyGuard] Active call detected on switch for a cancelled originate! Instantly hanging up to protect customer:', termCallId);
                     fetch('/api/calling/smartflo-hangup', {
                         method: 'POST',

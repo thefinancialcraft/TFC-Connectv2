@@ -164,14 +164,9 @@ export default async function handler(
       data: sfData,
     });
 
-    if (!sfRes.ok) {
-      return res.status(sfRes.status).json({
-        success: false,
-        message: 'Smartflo hangup request failed.',
-        data: sfData,
-      });
-    }
+    const isIgnorableSfStatus = sfRes.status === 422 || sfRes.status === 404 || sfRes.status === 429;
 
+    // Always reset user_profiles on_call status to false when hangup is requested
     const client = supabaseAdmin || supabase;
     if (client && user?.id) {
       const nowIso = new Date().toISOString();
@@ -193,9 +188,24 @@ export default async function handler(
       }
     }
 
+    if (!sfRes.ok && !isIgnorableSfStatus) {
+      return res.status(sfRes.status).json({
+        success: false,
+        message: 'Smartflo hangup request failed.',
+        data: sfData,
+      });
+    }
+
+    let statusMsg = 'Call hangup request sent successfully.';
+    if (sfRes.status === 422 || sfRes.status === 404) {
+      statusMsg = 'Call already disconnected on switch.';
+    } else if (sfRes.status === 429) {
+      statusMsg = 'Hangup acknowledged (switch rate limit cooldown).';
+    }
+
     return res.status(200).json({
       success: true,
-      message: 'Call hangup request sent successfully.',
+      message: statusMsg,
       data: sfData,
     });
   } catch (err: any) {

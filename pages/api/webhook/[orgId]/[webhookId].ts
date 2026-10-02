@@ -276,6 +276,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           })
           .eq('id', currentConfig.id);
       }
+    } catch (err) {
+      console.error('[Webhook] Dual-write to dialer config failed:', err);
+    }
+
     // Automatic insertion to call_history if custom_identifier.call_type === 'c2c_cus_out'
     try {
       await syncSmartfloWebhookToCallHistory(payload, organizationId);
