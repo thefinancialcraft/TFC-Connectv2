@@ -99,11 +99,8 @@ export function UserProvider({ children }: UserProviderProps) {
     const sendHeartbeat = async () => {
       try {
         const { supabase } = await import("../lib/supabase");
-        // We use RPC to update our presence in user_profiles
-        const { error: hbError } = await supabase.rpc('update_user_presence', {
-          p_on_call: false,
-          p_is_personal: false
-        });
+        // We update presence (last_online) without overwriting active call status
+        const { error: hbError } = await supabase.rpc('update_user_presence');
         
         if (hbError) throw hbError;
         console.log("💓 [Presence] Portal heartbeat sent successfully.");
