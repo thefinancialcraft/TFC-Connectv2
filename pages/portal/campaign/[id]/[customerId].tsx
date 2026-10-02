@@ -73,6 +73,7 @@ export default function CallingPage() {
     const [postCall, setPostCall] = useState(false);
     const [callDuration, setCallDuration] = useState(0);
     const activeCallProviderRef = useRef<CallingProviderName | null>(null);
+    const lastCallProviderRef = useRef<CallingProviderName | null>(null);
     const activeSmartfloRefIdRef = useRef<string | null>(null);
     const activeSmartfloCallIdRef = useRef<string | null>(null);
     const hasSeenCustomerRingingRef = useRef(false);
@@ -445,8 +446,16 @@ export default function CallingPage() {
             console.warn('🤙 [EndCall] Customer phone number missing');
         }
 
-        // Update state to disposition_pending in call_sessions table
+        // Update state to disposition_pending in call_sessions table & update user_profiles
         if (user?.uid) {
+            const nowIso = new Date().toISOString();
+            supabase.from('user_profiles').update({
+                on_call: false,
+                is_personal: false,
+                idle_time: nowIso,
+                updated_at: nowIso
+            }).eq('user_id', user.uid).then();
+
             console.log('🤙 [EndCall] Fetching auth session for API update...');
             const { data: { session: authSession } } = await supabase.auth.getSession();
             if (authSession) {
@@ -1013,28 +1022,47 @@ export default function CallingPage() {
         )
     );
 
+    const isCustomerAnswered = Boolean(
+        isCalling && isAgentAnswered && (
+            isSmartfloCall
+                ? (smartfloLifecycle?.customerColor === 'green' || smartfloLifecycle?.customerSublabel === 'Speaking' || smartfloLifecycle?.customerSublabel === 'Connected')
+                : (localCallingStatus === 'connected')
+        )
+    );
+
+    const isCustomerRinging = Boolean(
+        isCalling && isAgentAnswered && !isCustomerAnswered
+    );
+
     const isWaitingForAgent = isPlacingCall || (isCalling && !isAgentAnswered);
 
     const agentAnsweredAtRef = useRef<number | null>(null);
+    const customerAnsweredAtRef = useRef<number | null>(null);
 
     useEffect(() => {
         if (!isCalling) {
             agentAnsweredAtRef.current = null;
+            customerAnsweredAtRef.current = null;
             return;
         }
 
         if (isAgentAnswered && agentAnsweredAtRef.current === null) {
             agentAnsweredAtRef.current = Date.now();
-            setCallStartTime(prev => (!prev || Math.abs(Date.now() - prev) < 120000 ? Date.now() : prev));
+        }
+
+        if (isCustomerAnswered && customerAnsweredAtRef.current === null) {
+            const answerTime = Date.now();
+            customerAnsweredAtRef.current = answerTime;
+            setCallStartTime(answerTime);
             setCallDuration(0);
         }
-    }, [isCalling, isAgentAnswered]);
+    }, [isCalling, isAgentAnswered, isCustomerAnswered]);
 
     useEffect(() => {
         let interval: any;
         
         const updateDuration = () => {
-            if (isCalling && isAgentAnswered && callStartTime) {
+            if (isCalling && isCustomerAnswered && callStartTime) {
                 // Calibrate duration using server offset
                 const now = Date.now() + serverTimeOffset;
                 const diff = Math.floor((now - callStartTime) / 1000);
@@ -1042,17 +1070,17 @@ export default function CallingPage() {
             }
         };
 
-        if (isCalling && isAgentAnswered && callStartTime && !isAssigning) {
+        if (isCalling && isCustomerAnswered && callStartTime && !isAssigning) {
             updateDuration(); // Sync immediately
             interval = setInterval(updateDuration, 1000);
         } else {
             clearInterval(interval);
-            if (!isAgentAnswered) {
+            if (!isCustomerAnswered) {
                 setCallDuration(0);
             }
         }
         return () => clearInterval(interval);
-    }, [isCalling, isAgentAnswered, callStartTime, serverTimeOffset, isAssigning]);
+    }, [isCalling, isCustomerAnswered, callStartTime, serverTimeOffset, isAssigning]);
 
     const formatTime = (seconds: number) => {
         const hours = Math.floor(seconds / 3600);
@@ -2213,6 +2241,14 @@ useEffect(() => {
                         hasSeenCustomerRingingRef.current = false;
                         setSmartfloLifecycle(null);
                         setTimeout(() => fetchSmartfloLogs(rId, cIdVal), 500);
+
+                        if (user?.uid) {
+                            supabase.from('user_profiles').update({
+                                on_call: true,
+                                is_personal: false,
+                                updated_at: new Date().toISOString()
+                            }).eq('user_id', user.uid).then();
+                        }
                     }
                     console.info("📞 [Smartflo] Originate queued successfully, ref_id:", result.ref_id, "call_id:", result.call_id);
                 } catch (callErr: any) {
@@ -2230,9 +2266,7 @@ useEffect(() => {
         // Flag is now handled automatically by the centralized useEffect watcher above
 
         // --- Optimistic UI Update ---
-        // Set state immediately using local time so the timer starts without waiting for API
-        const localNow = new Date();
-        setCallStartTime(localNow.getTime());
+        setCallStartTime(null);
         setIsCalling(true);
         setIsPlacingCall(false);
         setPostCall(false);
@@ -2260,6 +2294,14 @@ useEffect(() => {
                 
                 if (!bridgeConnected) {
                     window.location.href = `tel:${decryptedPhone}`;
+                }
+
+                if (user?.uid) {
+                    supabase.from('user_profiles').update({
+                        on_call: true,
+                        is_personal: false,
+                        updated_at: new Date().toISOString()
+                    }).eq('user_id', user.uid).then();
                 }
             }
 
@@ -2689,6 +2731,71 @@ useEffect(() => {
                 finalLogAssignedTo = currentOwner;
             }
 
+            // Determine Smartflo vs SIM context
+            const isSmartflo = lastCallProviderRef.current === 'smartflo' ||
+                activeCallProviderRef.current === 'smartflo' ||
+                Boolean(lastCheckedRefId || activeSmartfloRefIdRef.current);
+
+            let logDuration = (disposition === 'Not Contactable') ? 0 : callDuration;
+            let logRefId: string | null = null;
+            let logRecordingUrl: string | null = null;
+
+            if (isSmartflo) {
+                const targetRef = lastCheckedRefId || activeSmartfloRefIdRef.current;
+                const targetCall = lastCheckedCallId || activeSmartfloCallIdRef.current;
+                
+                const matchedSfLog = smartfloLogs.find((l: any) => {
+                    const raw = (l.rawPayload || {}) as any;
+                    return (
+                        (targetRef && (l.refId === targetRef || l.callId === targetRef || raw.ref_id === targetRef || raw.call_id === targetRef || raw.uuid === targetRef)) ||
+                        (targetCall && (l.callId === targetCall || l.refId === targetCall || raw.call_id === targetCall || raw.ref_id === targetCall || raw.uuid === targetCall))
+                    );
+                }) || (targetRef && smartfloLogs.length > 0 ? smartfloLogs[0] : null);
+
+                const raw = (matchedSfLog?.rawPayload || {}) as any;
+                logRefId = targetRef || matchedSfLog?.refId || raw.ref_id || raw.call_id || null;
+                
+                const sfOutboundSec = Number(
+                    raw.outbound_sec ??
+                    raw.outbound_talktime ??
+                    raw.outbound_talk_time ??
+                    matchedSfLog?.duration ??
+                    raw.duration ??
+                    raw.billsec ??
+                    (disposition === 'Not Contactable' ? 0 : callDuration) ??
+                    0
+                );
+
+                logDuration = (disposition === 'Not Contactable') ? 0 : sfOutboundSec;
+                logRecordingUrl = matchedSfLog?.recordingUrl || raw.recording_url || raw.record_url || null;
+
+                const sfExtension = raw.answered_agent_number ||
+                    raw.answered_agent?.number ||
+                    raw.answered_agent?.extension ||
+                    raw.extension ||
+                    matchedSfLog?.agentNumber ||
+                    'Smartflo Extension';
+
+                // Insert into call_history table for Smartflo
+                const decryptedPhone = customer?.phone_no ? decryptPhone(customer.phone_no) : '';
+                supabase.from('call_history').insert({
+                    ref_id: logRefId,
+                    number: decryptedPhone,
+                    name: customer?.customer_name || 'Customer',
+                    call_type: logDuration > 0 ? 'Outgoing' : 'Missed',
+                    duration: logDuration,
+                    timestamp: now,
+                    device_id: String(sfExtension),
+                    call_recording: logRecordingUrl,
+                    is_personal: false,
+                    employee_id: user?.employeeId || null,
+                    user_name: user?.displayName || (user as any)?.user_name || null,
+                    organization_id: campaign?.organization_id || customer?.organization_id || null
+                }).then(({ error: histErr }) => {
+                    if (histErr) console.warn('⚠️ [SaveDisposition] call_history insert warning:', histErr);
+                });
+            }
+
             // 1. Save Call Log FIRST
             // agent_id: The "Lead Owner" (or the person responsible).
             //           If lead is owned by someone else -> Use THEIR ID.
@@ -2709,13 +2816,15 @@ useEffect(() => {
                     sub_disposition: subDisposition,
                     is_connected: isConnected,
                     notes: notes,
-                    duration: (disposition === 'Not Contactable') ? 0 : callDuration,
+                    duration: logDuration,
                     last_called_at: now,
                     updated_at: now,
                     next_called_at: logNextCalledAt,
                     status: logStatus,
                     assigned_to: finalLogAssignedTo, // The Assigned To
-                    outcome: outcome // New outcome field
+                    outcome: outcome, // New outcome field
+                    ref_id: logRefId,
+                    call_recording: logRecordingUrl
                 });
 
             if (logError) throw logError;
@@ -3938,37 +4047,49 @@ Campaign: ${campaign?.name || campaignId}
                                             {/* ULTRA COMPACT STATUS SECTION */}
                                             <div className="w-full text-center space-y-1 pt-1">
                                                 {/* Dynamic Status Badge */}
-                                                <div className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full border    backdrop-blur-md transition-all duration-500 mx-auto ${
-                                                    isCalling && isAgentAnswered 
-                                                    ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-100' 
-                                                    : isWaitingForAgent
-                                                    ? 'bg-amber-50 border-amber-200 text-amber-700'
-                                                    : 'bg-white/60 border-indigo-100 text-indigo-600'
-                                                }`}>
-                                                    
-                                                    <div className="relative flex h-1.5 w-1.5">
-                                                        <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                                                            isCalling && isAgentAnswered ? 'bg-emerald-400' : isWaitingForAgent ? 'bg-amber-400' : 'bg-indigo-400'
-                                                        }`}></span>
-                                                        <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
-                                                            isCalling && isAgentAnswered ? 'bg-emerald-500' : isWaitingForAgent ? 'bg-amber-500' : 'bg-indigo-500'
-                                                        }`}></span>
+                                                {!isCustomerRinging && (
+                                                    <div className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border backdrop-blur-md transition-all duration-500 mx-auto ${
+                                                        isCalling && isCustomerAnswered 
+                                                        ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-100' 
+                                                        : isWaitingForAgent
+                                                        ? 'bg-amber-50 border-amber-200 text-amber-700'
+                                                        : 'bg-white/60 border-indigo-100 text-indigo-600'
+                                                    }`}>
+                                                        
+                                                        <div className="relative flex h-1.5 w-1.5">
+                                                            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
+                                                                isCalling && isCustomerAnswered ? 'bg-emerald-400' : isWaitingForAgent ? 'bg-amber-400' : 'bg-indigo-400'
+                                                            }`}></span>
+                                                            <span className={`relative inline-flex rounded-full h-1.5 w-1.5 ${
+                                                                isCalling && isCustomerAnswered ? 'bg-emerald-500' : isWaitingForAgent ? 'bg-amber-500' : 'bg-indigo-500'
+                                                            }`}></span>
+                                                        </div>
+                                                        <span className="text-[8px] font-black uppercase tracking-widest leading-none pt-px">
+                                                            {isWaitingForAgent ? 'Connecting' :
+                                                             isCalling && isCustomerAnswered ? 'Live' :
+                                                             postCall ? 'Done' : 
+                                                             'Ready'}
+                                                        </span>
                                                     </div>
-                                                    <span className="text-[8px] font-black uppercase tracking-widest leading-none pt-px">
-                                                        {isWaitingForAgent ? 'Connecting' :
-                                                         isCalling && isAgentAnswered ? 'Live' :
-                                                         postCall ? 'Done' : 
-                                                         'Ready'}
-                                                    </span>
-                                                </div>
+                                                )}
 
                                                 {/* Compact Timer / Title */}
                                                 <div>
-                                                    {isCalling && isAgentAnswered ? (
+                                                    {isCalling && isCustomerAnswered ? (
                                                         <div className="animate-in zoom-in duration-300 flex flex-col items-center">
                                                             <h1 className="text-2xl sm:text-3xl mt-2 font-bold text-white tracking-tighter tabular-nums " style={{ textShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
                                                                 {formatTime(callDuration)}
                                                             </h1>
+                                                        </div>
+                                                    ) : isCustomerRinging ? (
+                                                        <div className="animate-in zoom-in duration-300 flex flex-col items-center">
+                                                            <h1 className="text-2xl sm:text-3xl mt-2 font-extrabold text-white tracking-tight animate-pulse" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.1)' }}>
+                                                                Ringing...
+                                                            </h1>
+                                                            <p className="text-[10px] font-semibold text-indigo-100/90 mt-1 flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block"></span>
+                                                                Agent Answered • Calling Customer
+                                                            </p>
                                                         </div>
                                                     ) : (
                                                         <div className="flex flex-col items-center">
@@ -4007,10 +4128,19 @@ Campaign: ${campaign?.name || campaignId}
                                                 
                                                 {/* Visualizer Spacer (Middle) */}
                                                 <div className="flex mt-4 items-center justify-center min-h-[15px] py-1">
-                                                    {isCalling && isAgentAnswered && (
+                                                    {(isCalling && (isCustomerAnswered || isCustomerRinging)) && (
                                                         <div className="flex items-center gap-1 h-4">
                                                             {[...Array(5)].map((_, i) => (
-                                                                <div key={i} className="w-1 bg-white/60 rounded-full animate-[bounce_1s_infinite]" style={{ animationDelay: `${i * 0.12}s`, height: `${30 + Math.random() * 70}%` }} />
+                                                                <div 
+                                                                    key={i} 
+                                                                    className={`w-1 rounded-full animate-[bounce_1s_infinite] ${
+                                                                        isCustomerAnswered ? 'bg-white/75' : 'bg-white/60'
+                                                                    }`} 
+                                                                    style={{ 
+                                                                        animationDelay: `${i * 0.12}s`, 
+                                                                        height: `${30 + Math.random() * 70}%` 
+                                                                    }} 
+                                                                />
                                                             ))}
                                                         </div>
                                                     )}
@@ -5094,10 +5224,25 @@ Campaign: ${campaign?.name || campaignId}
                                                                         <i className="fi flex  fi-rr-clock-three"></i>
                                                                         {formatTime(log.duration || 0)}
                                                                     </div>
+                                                                    {log.ref_id && (
+                                                                        <span className="text-[10px] font-mono text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md" title={`Ref ID: ${log.ref_id}`}>
+                                                                            Ref: {log.ref_id.slice(0, 8)}...
+                                                                        </span>
+                                                                    )}
                                                                     <span className="text-[12px] font-semibold text-slate-300">
                                                                         {new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                                     </span>
                                                                 </div>
+
+                                                                {/* Recording Player */}
+                                                                {log.call_recording && (
+                                                                    <div className="pt-2 border-t border-slate-100">
+                                                                        <span className="text-[10px] font-bold text-indigo-600 flex items-center gap-1 mb-1">
+                                                                            <i className="fi flex fi-rr-headphones text-xs"></i> Call Recording
+                                                                        </span>
+                                                                        <audio controls className="w-full h-8 rounded-lg" src={log.call_recording} preload="none" />
+                                                                    </div>
+                                                                )}
                                                             </div>
                                                              {/* Agent */}
                                                                     <div className="flex items-center gap-1.5">
@@ -5215,13 +5360,23 @@ Campaign: ${campaign?.name || campaignId}
                                                                     </span>
                                                                 </div>
                                                             </div>
-                                                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200" title={`Device: ${log.device_id || 'Unknown'}`}>
-                                                                <i className="fi flex fi-rr-smartphone text-[12px] text-slate-400"></i>
+                                                            <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200" title={`Device / Ext: ${log.device_id || 'Unknown'}`}>
+                                                                <i className={`fi flex ${log.ref_id ? 'fi-rr-headset text-indigo-500' : 'fi-rr-smartphone text-slate-400'} text-[12px]`}></i>
                                                                 <span className="text-[10px] font-semibold text-slate-500 font-mono tracking-tight">
-                                                                    {log.device_model || (log.device_id ? log.device_id.substring(0, 8) + '...' : 'Unknown')}
+                                                                    {log.device_model || log.device_id || 'Unknown'}
                                                                 </span>
                                                             </div>
                                                         </div>
+
+                                                        {/* Recording Player for Call History */}
+                                                        {log.call_recording && (
+                                                            <div className="relative z-10 mt-3 pt-2 border-t border-dashed border-slate-200">
+                                                                <span className="text-[10px] font-bold text-indigo-600 flex items-center gap-1 mb-1">
+                                                                    <i className="fi flex fi-rr-headphones text-xs"></i> Call Recording
+                                                                </span>
+                                                                <audio controls className="w-full h-8 rounded-lg" src={log.call_recording} preload="none" />
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 ))
                                             )}
@@ -5724,8 +5879,18 @@ Campaign: ${campaign?.name || campaignId}
                                                         const isAnswered = String(log.status || '').toLowerCase().includes('answer') || log.callType === 'Answered';
                                                         const isMissed = String(log.status || '').toLowerCase().includes('miss') || log.callType === 'Missed';
                                                         const isExpanded = expandedLogId === (log.id || String(idx));
-                                                        const mins = Math.floor((log.duration || 0) / 60);
-                                                        const secs = (log.duration || 0) % 60;
+                                                        const raw = (log.rawPayload || {}) as any;
+                                                        const outboundSec = Number(
+                                                            raw.outbound_sec ??
+                                                            raw.outbound_talktime ??
+                                                            raw.outbound_talk_time ??
+                                                            log.duration ??
+                                                            raw.duration ??
+                                                            raw.billsec ??
+                                                            0
+                                                        );
+                                                        const mins = Math.floor(outboundSec / 60);
+                                                        const secs = outboundSec % 60;
                                                         const durationFormatted = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
 
                                                         return (
@@ -5770,9 +5935,9 @@ Campaign: ${campaign?.name || campaignId}
                                                                         </div>
                                                                     </div>
                                                                     <div>
-                                                                        <span className="text-slate-400 block text-[8px] uppercase font-bold">Talk Duration</span>
+                                                                        <span className="text-slate-400 block text-[8px] uppercase font-bold">Outbound Talktime</span>
                                                                         <span className="font-bold text-slate-800 font-mono">
-                                                                            {durationFormatted} ({log.duration || 0}s)
+                                                                            {durationFormatted} ({outboundSec}s)
                                                                         </span>
                                                                     </div>
                                                                     <div>

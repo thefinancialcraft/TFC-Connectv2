@@ -265,9 +265,10 @@ const MemberPerformanceTable: React.FC<MemberPerformanceTableProps> = ({
             const mStats = memberStats[mId] || {};
             const isOnline = mStats.status === 'Online';
             const activeStatus = formatActiveStatus(isOnline, mStats.lastActive).text;
+            const idleRef = mStats.idleTimestamp || mStats.lastCallAt;
             const callStatus = mStats.onCall 
                 ? (mStats.isPersonal ? 'Personal' : 'On Call') 
-                : (mStats.lastCallAt ? formatIdleTime(mStats.lastCallAt) : 'Idle');
+                : (idleRef ? formatIdleTime(idleRef) : 'Idle');
             const disps = mStats.dispositions || {};
             const dispStr = Object.keys(disps).map(k => `${k}:${disps[k]}`).join(' | ') || '0';
             const lastCallStr = mStats.lastCallAt ? new Date(mStats.lastCallAt).toLocaleString() : 'Never';
@@ -515,10 +516,10 @@ const MemberPerformanceTable: React.FC<MemberPerformanceTableProps> = ({
                                               <i className={`fi flex ${mStats.isPersonal ? 'fi-rr-book-user text-amber-500' : 'fi-rr-headset text-indigo-500'} text-[10px] animate-pulse`}></i>
                                               {mStats.isPersonal ? 'Personal' : 'On Call'}
                                           </div>
-                                        ) : mStats.lastCallAt ? (
+                                        ) : (mStats.idleTimestamp || mStats.lastCallAt) ? (
                                           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-50 text-gray-600 border border-gray-200">
                                               <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
-                                              {formatIdleTime(mStats.lastCallAt)}
+                                              {formatIdleTime(mStats.idleTimestamp || mStats.lastCallAt)}
                                           </div>
                                         ) : (
                                           <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-gray-50 text-gray-600 border border-gray-200">

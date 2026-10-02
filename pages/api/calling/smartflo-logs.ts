@@ -276,7 +276,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           destinationNumber: String(rec.destination || rec.customer_number || rec.destination_number || ''),
           status: rec.status || (rec.call_type === 'c' ? 'answered' : 'missed'),
           hangupCause: rec.hangup_cause || rec.status || 'NORMAL_CLEARING',
-          duration: Number(rec.duration || rec.billsec || rec.talk_duration || 0),
+          duration: Number(rec.outbound_sec ?? rec.outbound_talktime ?? rec.duration ?? rec.billsec ?? rec.talk_duration ?? 0),
           recordingUrl: rec.recording_url || rec.record_url || null,
           source: 'smartflo_api',
           rawPayload: rec,

@@ -158,6 +158,16 @@ export default async function handler(
       });
     }
 
+    if (user?.id) {
+      const nowIso = new Date().toISOString();
+      await supabaseAdmin.from('user_profiles').update({
+        on_call: false,
+        is_personal: false,
+        idle_time: nowIso,
+        updated_at: nowIso
+      }).eq('user_id', user.id);
+    }
+
     return res.status(200).json({
       success: true,
       message: 'Call hangup request sent successfully.',

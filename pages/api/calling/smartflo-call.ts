@@ -304,6 +304,15 @@ export default async function handler(
     res.setHeader('org_id', orgId);
     res.setHeader('integration_id', integrationId);
 
+    // Update user_profiles when ref_id / call_id is successfully returned
+    if (user?.id && (refId || callId)) {
+      await supabaseAdmin.from('user_profiles').update({
+        on_call: true,
+        is_personal: false,
+        updated_at: new Date().toISOString()
+      }).eq('user_id', user.id);
+    }
+
     return res.status(200).json({
       success: true,
       message: typeof responseData.message === 'string' ? responseData.message : 'Originate successfully queued',

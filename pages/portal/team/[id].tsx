@@ -100,7 +100,7 @@ export default function TeamDetails() {
       // 2. Fetch Members (Profiles) First to get Employee IDs & Names
       const { data: membersData, error: membersError } = await supabase
         .from('user_profiles')
-        .select('user_id, user_name, employee_id, profile_pic_url, status, last_online')
+        .select('user_id, user_name, employee_id, profile_pic_url, status, last_online, on_call, is_personal, idle_time')
         .in('user_id', memberIds)
         .eq('status', 'active');
 
@@ -397,9 +397,11 @@ export default function TeamDetails() {
           lastOnline: member.last_online || syncData?.last_seen || sessionData?.last_accessed_at || null,
           idleTime: idleTimeStr,
           idleMins,
-          onCall: !!syncData?.on_call,
-          isPersonal: !!syncData?.is_personal,
-          status: syncData?.on_call ? (syncData.is_personal ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle'),
+          idleTimestamp: member.idle_time || lastCallTime || null,
+          lastCallAt: member.idle_time || lastCallTime || null,
+          onCall: member.on_call != null ? Boolean(member.on_call) : !!syncData?.on_call,
+          isPersonal: member.is_personal != null ? Boolean(member.is_personal) : !!syncData?.is_personal,
+          status: (member.on_call ?? syncData?.on_call) ? ((member.is_personal ?? syncData?.is_personal) ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle'),
           utilization: ((((totalDuration / 60) * 1.67) + totalCalls) / 3).toFixed(1) + '%',
           utilizationRaw: (((totalDuration / 60) * 1.67) + totalCalls) / 3
         };

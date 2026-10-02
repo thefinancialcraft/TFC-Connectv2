@@ -173,6 +173,42 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
   const [switchingProvider, setSwitchingProvider] = useState<CallingProviderName | null>(null);
   const [refreshingProviderState, setRefreshingProviderState] = useState(false);
   const [showProviderMenu, setShowProviderMenu] = useState(false);
+  const [smartfloExtStatus, setSmartfloExtStatus] = useState<'online' | 'offline' | 'checking'>('checking');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const checkSmartfloExtensionStatus = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) return;
+        const res = await fetch('/api/calling/smartflo-extension-status', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        });
+        const data = await res.json().catch(() => null);
+        if (!cancelled && data && data.status) {
+          setSmartfloExtStatus(data.status);
+        }
+      } catch {
+        if (!cancelled) setSmartfloExtStatus('offline');
+      }
+    };
+
+    const handleExtStatusEvent = (event: Event) => {
+      const detail = (event as CustomEvent<{ status: 'online' | 'offline' | 'checking' }>).detail;
+      if (detail?.status) {
+        setSmartfloExtStatus(detail.status);
+      }
+    };
+
+    void checkSmartfloExtensionStatus();
+    window.addEventListener('smartflo-extension-status', handleExtStatusEvent);
+
+    return () => {
+      cancelled = true;
+      window.removeEventListener('smartflo-extension-status', handleExtStatusEvent);
+    };
+  }, [user?.uid]);
 
   useEffect(() => {
     let cancelled = false;
@@ -717,8 +753,8 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
       : null;
     const mappedAgentName = mappedSmartfloAgent?.agentName || 'Mapped agent';
     const mappedAgentWidth = mappedSmartfloAgent
-      ? Math.min(288, Math.max(132, 52 + Math.max(mappedAgentName.length * 6, mappedSmartfloAgent.agentId.length * 5.2)))
-      : 32;
+      ? Math.min(300, Math.max(140, 60 + Math.max(mappedAgentName.length * 6, mappedSmartfloAgent.agentId.length * 5.2)))
+      : 36;
 
     return (
       <div className="relative" data-calling-provider-menu>
@@ -729,7 +765,7 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
           aria-label={`Calling provider: ${activeLabel}`}
           aria-expanded={showProviderMenu}
           aria-haspopup="menu"
-          title={`Calling provider: ${activeLabel}`}
+          title={`Calling provider: ${activeLabel}${activeProvider === 'smartflo' ? ` • Softphone ${smartfloExtStatus === 'online' ? 'Online' : smartfloExtStatus === 'offline' ? 'Offline' : 'Checking'}` : ''}`}
           style={{ width: `${mappedAgentWidth}px` }}
           className={`flex shrink-0 items-center overflow-hidden whitespace-nowrap rounded-lg border transition-[width] duration-300 ease-in-out disabled:cursor-wait ${mappedSmartfloAgent ? 'h-8.5 gap-2 px-2.5' : 'h-8 gap-1 px-2'} ${
             activeProviderEnabled
@@ -742,12 +778,18 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
           {switchingProvider || refreshingProviderState ? (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" aria-hidden="true" />
           ) : (
-            <ActiveIcon className="h-4 w-4" aria-hidden="true" />
+            <div className="relative flex items-center justify-center">
+              <ActiveIcon className="h-4 w-4" aria-hidden="true" />
+            </div>
           )}
           {mappedSmartfloAgent && (
-            <span className="min-w-0 border-l border-current/20 pl-2 text-left leading-tight">
-                <span className="block truncate text-[11px] font-semibold">{mappedAgentName}</span>
-                <span className="block truncate mb-[-2px] text-[8px] opacity-75">{mappedSmartfloAgent.agentId}</span>
+            <span className="min-w-0 border-l border-current/20 pl-2 text-left leading-tight flex-1">
+                <div className="flex items-center gap-1.5">
+                  <span className="block truncate text-[11px] font-semibold">{mappedAgentName}</span>
+                </div>
+                <span className="block truncate mb-[-2px] text-[8px] opacity-75">
+                  {mappedSmartfloAgent.agentId}
+                </span>
             </span>
           )}
         </button>
@@ -795,9 +837,27 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
                     : "text-gray-400"
               }`}
             >
-              <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+              <div className="relative flex items-center justify-center">
+                <Icon className="h-4 w-4 shrink-0" aria-hidden="true" />
+                {provider === "smartflo" && (
+                  <span className={`absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full ${
+                    smartfloExtStatus === 'online' ? 'bg-emerald-500' :
+                    smartfloExtStatus === 'offline' ? 'bg-rose-500' : 'bg-amber-500'
+                  }`} />
+                )}
+              </div>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-xs font-semibold">{label}</span>
+                <div className="flex items-center justify-between">
+                  <span className="block truncate text-xs font-semibold">{label}</span>
+                  {provider === "smartflo" && (
+                    <span className={`text-[9px] font-bold uppercase tracking-wider ${
+                      smartfloExtStatus === 'online' ? 'text-emerald-600' :
+                      smartfloExtStatus === 'offline' ? 'text-rose-600' : 'text-amber-600'
+                    }`}>
+                      {smartfloExtStatus === 'online' ? 'Online' : smartfloExtStatus === 'offline' ? 'Offline' : 'Checking'}
+                    </span>
+                  )}
+                </div>
                 <span className="block text-[10px] text-gray-500">{unavailableReason}</span>
               </span>
               {isActive ? <span className="h-2 w-2 rounded-full bg-emerald-500" aria-hidden="true" /> : null}

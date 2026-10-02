@@ -55,6 +55,15 @@ export default async function handler(
             console.error('[API-Session] Delete Error:', deleteError);
             return res.status(500).json({ error: deleteError.message });
         }
+
+        const nowIso = new Date().toISOString();
+        await client.from('user_profiles').update({
+            on_call: false,
+            is_personal: false,
+            idle_time: nowIso,
+            updated_at: nowIso
+        }).eq('user_id', user.id);
+
         const responseData: Data = { success: true, message: 'Session terminated' };
         return res.status(200).json(responseData);
     }
@@ -139,10 +148,28 @@ export default async function handler(
         return res.status(500).json({ error: upsertError.message });
     }
 
+    // Sync on_call & idle_time to user_profiles
+    const nowIso = new Date().toISOString();
+    const effectiveStatus = updatePayload.manual_status || updatePayload.status;
+    if (effectiveStatus === 'active') {
+        await client.from('user_profiles').update({
+            on_call: true,
+            is_personal: false,
+            updated_at: nowIso
+        }).eq('user_id', user.id);
+    } else if (effectiveStatus === 'disposition_pending' || effectiveStatus === 'closed' || effectiveStatus === 'assigned') {
+        await client.from('user_profiles').update({
+            on_call: false,
+            is_personal: false,
+            idle_time: nowIso,
+            updated_at: nowIso
+        }).eq('user_id', user.id);
+    }
+
     return res.status(200).json({ 
         success: true, 
         session: updated,
-        server_now: new Date().toISOString()
+        server_now: nowIso
     });
 
   } catch (error: any) {

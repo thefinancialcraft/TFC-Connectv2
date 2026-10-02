@@ -201,7 +201,15 @@ export function formatSmartfloWebhookEvent(
       ? 'Click to Call'
       : String(p.callType || 'Click to Call');
 
-  const durCandidate = p.duration ?? innerPayload.duration ?? innerPayload.billsec ?? innerPayload.call_duration ?? 0;
+  const durCandidate =
+    p.duration ??
+    innerPayload.outbound_sec ??
+    innerPayload.outbound_talktime ??
+    innerPayload.duration ??
+    innerPayload.billsec ??
+    innerPayload.talk_duration ??
+    innerPayload.call_duration ??
+    0;
   const durNum = Number(durCandidate);
 
   const recUrl = innerPayload.recording_url || innerPayload.record_url || p.recordingUrl || null;

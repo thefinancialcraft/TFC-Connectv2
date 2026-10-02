@@ -272,7 +272,7 @@ export default function AgentPerformanceTab({
         const [syncRes, sessionRes, profileRes] = await Promise.all([
           supabase.from('sync_meta').select('employee_id, on_call, is_personal, updated_at').in('employee_id', employeeIds),
           supabase.from('user_sessions').select('user_id, last_accessed_at').in('user_id', userIds).order('last_accessed_at', { ascending: false }),
-          supabase.from('user_profiles').select('user_id, last_online').in('user_id', userIds)
+          supabase.from('user_profiles').select('user_id, last_online, on_call, is_personal, idle_time').in('user_id', userIds)
         ]);
         if (syncRes.data) setRawSyncMeta(syncRes.data);
         if (profileRes.data) setRawProfiles(profileRes.data);
@@ -308,10 +308,13 @@ export default function AgentPerformanceTab({
 
       const isActuallyOnline = (lastActive && (now.getTime() - new Date(lastActive).getTime()) < 60000); // 1m threshold
 
-      // Freshness check for on_call status using strictly updated_at (within 3 minutes)
+      // On Call / Personal status directly from user_profiles table (with fallback to syncData)
       const isSyncFresh = syncUpdatedAt > 0 && (now.getTime() - syncUpdatedAt) < 180000;
-      const isOnCall = !!(syncData?.on_call && isSyncFresh);
-      const isPersonal = !!(syncData?.is_personal && isOnCall);
+      const isOnCall = profileData?.on_call != null ? Boolean(profileData.on_call) : !!(syncData?.on_call && isSyncFresh);
+      const isPersonal = profileData?.is_personal != null ? (Boolean(profileData.is_personal) && isOnCall) : !!(syncData?.is_personal && isOnCall);
+      
+      // Idle start timestamp from user_profiles.idle_time (or last_call_at fallback)
+      const idleTimeRef = profileData?.idle_time || item.last_call_at || null;
       
       let idleTimeStr = "N/A";
       if (lastActive) {
@@ -339,7 +342,8 @@ export default function AgentPerformanceTab({
         utilization: utilRaw.toFixed(1) + '%',
         utilizationRaw: utilRaw,
         lastActive,
-        lastCallAt: item.last_call_at,
+        lastCallAt: idleTimeRef,
+        idleTimestamp: idleTimeRef,
         idleTime: idleTimeStr,
         status: isOnCall ? (isPersonal ? 'Personal Call' : 'On Call') : (isActuallyOnline ? 'Online' : 'Idle'),
         onCall: isOnCall,
