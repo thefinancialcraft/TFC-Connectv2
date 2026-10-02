@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, supabase } from '@/lib/supabase';
 import {
   getCallingProviderState,
   resolveCallingProviderFromState,
@@ -15,10 +15,25 @@ interface ApiResponse {
 async function getAuthenticatedUser(req: NextApiRequest) {
   const authorization = req.headers.authorization;
   const bearerMatch = authorization?.match(/^Bearer\s+(\S+)$/i);
-  if (!bearerMatch || !supabaseAdmin) return null;
+  if (!bearerMatch) return null;
 
-  const { data: { user }, error } = await supabaseAdmin.auth.getUser(bearerMatch[1]);
-  return error || !user ? null : user;
+  const token = bearerMatch[1];
+  const client = supabaseAdmin || supabase;
+  if (!client) return null;
+
+  try {
+    const { data: { user }, error } = await client.auth.getUser(token);
+    if (!error && user) return user;
+
+    if (supabaseAdmin && client !== supabase) {
+      const { data: { user: fallbackUser }, error: fallbackError } = await supabase.auth.getUser(token);
+      if (!fallbackError && fallbackUser) return fallbackUser;
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
 }
 
 export default async function handler(
@@ -34,10 +49,11 @@ export default async function handler(
 
   const authenticatedUser = await getAuthenticatedUser(req);
   if (!authenticatedUser) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
+    return res.status(401).json({ success: false, message: 'Unauthorized. Please sign in.' });
   }
 
-  if (!supabaseAdmin) {
+  const client = supabaseAdmin || supabase;
+  if (!client) {
     return res.status(503).json({ success: false, message: 'Provider service unavailable' });
   }
 
@@ -51,7 +67,7 @@ export default async function handler(
       const resolution = resolveCallingProviderFromState(state);
       let smartfloAgent: { agentId: string; agentName: string | null } | null = null;
       if (state.user.smartflo.is_mapped && state.user.smartflo.agent_id) {
-        const { data: mappedAgent, error: mappedAgentError } = await supabaseAdmin
+        const { data: mappedAgent, error: mappedAgentError } = await client
           .from('user_smartflo_details')
           .select('smartflo_agent_id, agent_name')
           .eq('organization_id', state.organizationId)
@@ -99,7 +115,7 @@ export default async function handler(
   }
 
   try {
-    const { data, error } = await supabaseAdmin.rpc('select_calling_provider', {
+    const { data, error } = await client.rpc('select_calling_provider', {
       p_user_id: authenticatedUser.id,
       p_provider: requestedProvider as CallingProviderName,
     });

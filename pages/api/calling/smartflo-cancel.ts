@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, supabase } from '@/lib/supabase';
 import {
   decryptSmartfloToken,
   smartfloAdminClient,
@@ -22,10 +22,24 @@ interface ApiResponse {
 async function getAuthenticatedUser(req: NextApiRequest) {
   const authorization = req.headers.authorization;
   const bearerMatch = authorization?.match(/^Bearer\s+(\S+)$/i);
-  if (!bearerMatch || !supabaseAdmin) return null;
+  if (!bearerMatch) return null;
 
-  const { data: { user }, error } = await supabaseAdmin.auth.getUser(bearerMatch[1]);
-  return error || !user ? null : user;
+  const token = bearerMatch[1];
+  const client = supabaseAdmin || supabase;
+  if (!client) return null;
+
+  try {
+    const { data: { user }, error } = await client.auth.getUser(token);
+    if (!error && user) return user;
+
+    if (supabaseAdmin && client !== supabase) {
+      const { data: { user: fallbackUser }, error: fallbackError } = await supabase.auth.getUser(token);
+      if (!fallbackError && fallbackUser) return fallbackUser;
+    }
+  } catch {
+    return null;
+  }
+  return null;
 }
 
 function cleanPhone(raw: string): string {

@@ -310,10 +310,21 @@ function UserProfilePage() {
         if (isInternalOrCeo && profileData.user_id) {
           setLoadingAgentProviders(true);
           try {
-            const providerResponse = await fetch(
+            let activeToken = session.access_token;
+            let providerResponse = await fetch(
               `/api/calling/provider/agent?targetUserId=${encodeURIComponent(profileData.user_id)}`,
-              { headers: { Authorization: `Bearer ${session.access_token}` } }
+              { headers: { Authorization: `Bearer ${activeToken}` } }
             );
+            if (providerResponse.status === 401) {
+              const { data: refreshData } = await supabase.auth.refreshSession();
+              if (refreshData.session) {
+                activeToken = refreshData.session.access_token;
+                providerResponse = await fetch(
+                  `/api/calling/provider/agent?targetUserId=${encodeURIComponent(profileData.user_id)}`,
+                  { headers: { Authorization: `Bearer ${activeToken}` } }
+                );
+              }
+            }
             const providerResult = await providerResponse.json();
             if (!providerResponse.ok) {
               throw new Error(providerResult.message || "Unable to load calling provider settings");

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, supabase } from '@/lib/supabase';
 import type { CallingProviderName } from '@/lib/callingProvider';
 
 interface ProviderFlags {
@@ -83,21 +83,41 @@ export default async function handler(
     return res.status(503).json({ success: false, message: 'Provider service unavailable' });
   }
 
-  const bearerMatch = req.headers.authorization?.match(/^Bearer\s+(\S+)$/i);
-  if (!bearerMatch) {
+  let actor = null;
+  const client = supabaseAdmin || supabase;
+  if (!client) {
+    return res.status(503).json({ success: false, message: 'Provider service unavailable' });
+  }
+
+  try {
+    const { data: { user }, error: authError } = await client.auth.getUser(bearerMatch[1]);
+    if (!authError && user) actor = user;
+    if (!actor && supabaseAdmin && client !== supabase) {
+      const { data: { user: fallbackUser }, error: fallbackErr } = await supabase.auth.getUser(bearerMatch[1]);
+      if (!fallbackErr && fallbackUser) actor = fallbackUser;
+    }
+  } catch {
+    actor = null;
+  }
+
+  if (!actor) {
     return res.status(401).json({ success: false, message: 'Unauthorized' });
   }
 
-  const { data: { user: actor }, error: authError } = await supabaseAdmin.auth.getUser(bearerMatch[1]);
-  if (authError || !actor) {
-    return res.status(401).json({ success: false, message: 'Unauthorized' });
-  }
-
-  const { data: actorProfile, error: actorError } = await supabaseAdmin
+  let { data: actorProfile, error: actorError } = await client
     .from('user_profiles')
     .select('designation, is_client, organization_id, role, super_admin')
     .eq('user_id', actor.id)
     .maybeSingle();
+
+  if (!actorProfile && !actorError) {
+    const { data: fallbackActorProfile } = await client
+      .from('user_profiles')
+      .select('designation, is_client, organization_id, role, super_admin')
+      .eq('id', actor.id)
+      .maybeSingle();
+    if (fallbackActorProfile) actorProfile = fallbackActorProfile;
+  }
 
   if (actorError || !actorProfile) {
     return res.status(403).json({ success: false, message: 'Access denied' });

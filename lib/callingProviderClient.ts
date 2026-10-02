@@ -2,15 +2,49 @@ import { supabase } from '@/lib/supabase';
 
 export type CallingProviderName = 'sim' | 'smartflo';
 
+async function getValidSession() {
+  try {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      const { data: refreshData } = await supabase.auth.refreshSession();
+      return refreshData.session;
+    }
+
+    if (session.expires_at && session.expires_at * 1000 < Date.now() + 30000) {
+      const { data: refreshData } = await supabase.auth.refreshSession();
+      if (refreshData.session) return refreshData.session;
+    }
+    return session;
+  } catch {
+    return null;
+  }
+}
+
 export async function resolveActiveCallingProvider(): Promise<CallingProviderName | null> {
-  const { data: { session } } = await supabase.auth.getSession();
+  let session = await getValidSession();
   if (!session) throw new Error('Please sign in again to verify the calling provider.');
 
-  const response = await fetch('/api/calling/provider', {
+  let response = await fetch('/api/calling/provider', {
     headers: { Authorization: `Bearer ${session.access_token}` },
     cache: 'no-store',
   });
-  const result = await response.json();
+
+  if (response.status === 401) {
+    try {
+      const { data: refreshData } = await supabase.auth.refreshSession();
+      if (refreshData.session) {
+        session = refreshData.session;
+        response = await fetch('/api/calling/provider', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          cache: 'no-store',
+        });
+      }
+    } catch {
+      // Continue to parse response
+    }
+  }
+
+  const result = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(result.message || 'Unable to verify the active calling provider.');
   }
@@ -28,14 +62,30 @@ export interface ActiveProviderDetails {
 }
 
 export async function getCallingProviderDetails(): Promise<ActiveProviderDetails> {
-  const { data: { session } } = await supabase.auth.getSession();
+  let session = await getValidSession();
   if (!session) throw new Error('Please sign in again to verify the calling provider.');
 
-  const response = await fetch('/api/calling/provider', {
+  let response = await fetch('/api/calling/provider', {
     headers: { Authorization: `Bearer ${session.access_token}` },
     cache: 'no-store',
   });
-  const result = await response.json();
+
+  if (response.status === 401) {
+    try {
+      const { data: refreshData } = await supabase.auth.refreshSession();
+      if (refreshData.session) {
+        session = refreshData.session;
+        response = await fetch('/api/calling/provider', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+          cache: 'no-store',
+        });
+      }
+    } catch {
+      // Continue to parse response
+    }
+  }
+
+  const result = await response.json().catch(() => ({}));
   if (!response.ok) {
     throw new Error(result.message || 'Unable to verify the active calling provider.');
   }

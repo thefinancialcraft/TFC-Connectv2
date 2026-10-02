@@ -220,12 +220,27 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
       }
 
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        let { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          const { data: refreshData } = await supabase.auth.refreshSession();
+          session = refreshData.session;
+        }
         if (!session) return;
 
-        const response = await fetch("/api/calling/provider", {
+        let response = await fetch("/api/calling/provider", {
           headers: { Authorization: `Bearer ${session.access_token}` },
         });
+
+        if (response.status === 401) {
+          const { data: refreshData } = await supabase.auth.refreshSession();
+          if (refreshData.session) {
+            session = refreshData.session;
+            response = await fetch("/api/calling/provider", {
+              headers: { Authorization: `Bearer ${session.access_token}` },
+            });
+          }
+        }
+
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || "Unable to load calling providers");
         if (!cancelled) setCallingProviderState(result.data as HeaderCallingProviderState);
@@ -685,10 +700,14 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
     setSwitchingProvider(provider);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        const { data: refreshData } = await supabase.auth.refreshSession();
+        session = refreshData.session;
+      }
       if (!session) throw new Error("Please sign in again to change calling provider.");
 
-      const response = await fetch("/api/calling/provider", {
+      let response = await fetch("/api/calling/provider", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -696,6 +715,22 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
         },
         body: JSON.stringify({ provider }),
       });
+
+      if (response.status === 401) {
+        const { data: refreshData } = await supabase.auth.refreshSession();
+        if (refreshData.session) {
+          session = refreshData.session;
+          response = await fetch("/api/calling/provider", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.access_token}`,
+            },
+            body: JSON.stringify({ provider }),
+          });
+        }
+      }
+
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || "Unable to change calling provider.");
       setCallingProviderState({
@@ -720,13 +755,29 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
     setRefreshingProviderState(true);
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      let { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        const { data: refreshData } = await supabase.auth.refreshSession();
+        session = refreshData.session;
+      }
       if (!session) throw new Error("Please sign in again to view calling providers.");
 
-      const response = await fetch("/api/calling/provider", {
+      let response = await fetch("/api/calling/provider", {
         headers: { Authorization: `Bearer ${session.access_token}` },
         cache: "no-store",
       });
+
+      if (response.status === 401) {
+        const { data: refreshData } = await supabase.auth.refreshSession();
+        if (refreshData.session) {
+          session = refreshData.session;
+          response = await fetch("/api/calling/provider", {
+            headers: { Authorization: `Bearer ${session.access_token}` },
+            cache: "no-store",
+          });
+        }
+      }
+
       const result = await response.json();
       if (!response.ok) throw new Error(result.message || "Unable to refresh calling provider status.");
 

@@ -1,4 +1,4 @@
-import { supabaseAdmin } from '@/lib/supabase';
+import { supabaseAdmin, supabase } from '@/lib/supabase';
 
 export type CallingProviderName = 'sim' | 'smartflo';
 
@@ -75,18 +75,30 @@ function normalizeCallingProvider(
 }
 
 export async function getCallingProviderState(userId: string): Promise<CallingProviderState | null> {
-  if (!supabaseAdmin) throw new Error('calling_provider_service_unavailable');
+  const client = supabaseAdmin || supabase;
+  if (!client) throw new Error('calling_provider_service_unavailable');
 
-  const { data: profile, error: profileError } = await supabaseAdmin
+  let { data: profile, error: profileError } = await client
     .from('user_profiles')
     .select('organization_id, calling_provider')
     .eq('user_id', userId)
     .maybeSingle();
 
-  if (profileError) throw new Error('calling_provider_state_unavailable');
+  if (!profile && !profileError) {
+    const { data: fallbackProfile, error: fallbackError } = await client
+      .from('user_profiles')
+      .select('organization_id, calling_provider')
+      .eq('id', userId)
+      .maybeSingle();
+    if (!fallbackError && fallbackProfile) {
+      profile = fallbackProfile;
+    }
+  }
+
+  if (profileError && !profile) throw new Error('calling_provider_state_unavailable');
   if (!profile?.organization_id) return null;
 
-  const { data: organization, error: organizationError } = await supabaseAdmin
+  const { data: organization, error: organizationError } = await client
     .from('organizations')
     .select('calling_provider')
     .eq('id', profile.organization_id)
