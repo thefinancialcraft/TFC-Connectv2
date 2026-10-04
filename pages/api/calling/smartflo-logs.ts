@@ -333,7 +333,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           });
       }
     }
-    }
   } catch (liveErr) {
     console.warn('[Smartflo Logs API] Smartflo query exception (non-fatal):', liveErr);
   }
