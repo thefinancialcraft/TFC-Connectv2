@@ -5103,46 +5103,7 @@ Campaign: ${campaign?.name || campaignId}
 
                                         {/* Smartflo Live Calling Flow Stepper (Card Outside Timeline Box) */}
                                         {(activeCallingProvider === 'smartflo' || lastCheckedRefId || smartfloLogs.length > 0) && (
-                                            <div className="mb-5 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 shadow-none">
-                                                {/* Header: Title + Monospace Ref ID + Refresh */}
-                                                <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-200/70">
-                                                    <div className="flex items-center gap-2.5 min-w-0">
-                                                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                                                            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
-                                                            Flow
-                                                        </span>
-                                                        {(() => {
-                                                            const dispRef = lastCheckedRefId || activeSmartfloRefIdRef.current || (smartfloLogs.length > 0 ? (smartfloLogs[0]?.refId || smartfloLogs[0]?.callId) : null);
-                                                            return dispRef ? (
-                                                                <div className="h-7 flex items-center gap-1.5 bg-white px-2.5 rounded-lg border border-slate-200 shadow-none">
-                                                                    <span className="text-[9px] font-mono font-semibold text-indigo-700 truncate max-w-[150px]" title={dispRef}>
-                                                                        Ref: {dispRef.length > 14 ? `${dispRef.substring(0, 11)}...` : dispRef}
-                                                                    </span>
-                                                                    <button
-                                                                        onClick={() => {
-                                                                            navigator.clipboard.writeText(dispRef);
-                                                                            alert('Ref ID copied');
-                                                                        }}
-                                                                        title="Copy Ref ID"
-                                                                        className="text-slate-400 hover:text-indigo-600 transition-colors flex items-center justify-center"
-                                                                    >
-                                                                        <i className="fi flex fi-rr-copy text-[10px]"></i>
-                                                                    </button>
-                                                                </div>
-                                                            ) : null;
-                                                        })()}
-                                                    </div>
-
-                                                    <button
-                                                        onClick={() => fetchSmartfloLogs()}
-                                                        disabled={isLoadingSmartfloLogs}
-                                                        className="w-7 h-7 shrink-0 aspect-square rounded-lg bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-indigo-600 transition-all disabled:opacity-50 shadow-none"
-                                                        title="Refresh status"
-                                                    >
-                                                        <i className={`fi flex fi-rr-refresh text-xs ${isLoadingSmartfloLogs ? 'animate-spin' : ''}`}></i>
-                                                    </button>
-                                                </div>
-
+                                            <div className="py-2 px-1">
                                                 {(() => {
                                                     const activeRef = lastCheckedRefId || activeSmartfloRefIdRef.current || null;
                                                     const activeCallId = lastCheckedCallId || activeSmartfloCallIdRef.current || null;
