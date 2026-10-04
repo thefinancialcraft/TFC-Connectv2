@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import {
+  Activity,
   ArrowRight,
   ArrowUpDown,
   CalendarClock,
@@ -2502,13 +2503,13 @@ function DialplanContent({
             {JSON.stringify(
               {
                 action: 'bridge',
+                destination: selectedFallbackAgent?.extension || '0607733050014',
                 agent_extension: selectedFallbackAgent?.extension || '0607733050014',
-                agent_number: selectedFallbackAgent?.followMeNumber || selectedFallbackAgent?.callerId || '9217175080',
+                agent_number: selectedFallbackAgent?.followMeNumber || selectedFallbackAgent?.callerId || '+919217175070',
                 rynxly_agent_id: selectedCrmUser?.userId || selectedFallbackAgent?.userId || 'usr_f893e271',
                 user_id: selectedCrmUser?.userId || selectedFallbackAgent?.userId || 'usr_f893e271',
-                agent_id: selectedFallbackAgent?.agentId || 'ag_smartflo_001',
+                agent_id: selectedFallbackAgent?.agentId || '0507733050014',
                 fallback_queue: 'QUEUE-DEFAULT-SUPPORT',
-                call_timeout: 30,
               },
               null,
               2
@@ -3284,9 +3285,26 @@ function SetupWebhookContent({
                       </div>
 
                       {isExpandedPayload && (
-                        <pre className="mt-2.5 max-h-48 overflow-auto rounded-lg bg-stone-900 p-3 font-mono text-[10px] leading-relaxed text-emerald-400">
-                          <code>{JSON.stringify(event.rawPayload || event, null, 2)}</code>
-                        </pre>
+                        <div className="mt-2.5 space-y-2.5">
+                          {Array.isArray(event.rawPayload?.process_logs) && event.rawPayload.process_logs.length > 0 && (
+                            <div className="rounded-lg border border-purple-200 bg-purple-50/70 p-3">
+                              <div className="flex items-center gap-1.5 font-bold text-xs text-purple-900 mb-2">
+                                <Activity className="h-3.5 w-3.5 text-purple-600" />
+                                <span>Execution Steps / Process Logs</span>
+                              </div>
+                              <div className="space-y-1 font-mono text-[11px] text-purple-950">
+                                {event.rawPayload.process_logs.map((log: string, lIdx: number) => (
+                                  <div key={lIdx} className="leading-snug bg-white/85 rounded px-2 py-1 border border-purple-100/80">
+                                    {log}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          <pre className="max-h-48 overflow-auto rounded-lg bg-stone-900 p-3 font-mono text-[10px] leading-relaxed text-emerald-400">
+                            <code>{JSON.stringify(event.rawPayload || event, null, 2)}</code>
+                          </pre>
+                        </div>
                       )}
                     </div>
                   );

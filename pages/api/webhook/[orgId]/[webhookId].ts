@@ -137,11 +137,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     console.log('\n=================== 📞 [SMARTFLO WEBHOOK INCOMING] ===================');
-    console.log('\n================== 📥 SMARTFLO WEBHOOK RECEIVED ==================');
-    console.log(`[Webhook-Dialplan:Step 0] Method: ${req.method} | Org: ${organizationId} | WebhookID: ${currentWebhookId}`);
-    console.log('[Webhook-Dialplan:Step 0] Query:', JSON.stringify(req.query));
-    console.log('[Webhook-Dialplan:Step 0] Headers:', JSON.stringify(req.headers));
-    console.log('[Webhook-Dialplan:Step 0] Body Payload:', JSON.stringify(payload, null, 2));
+    const processLogs: string[] = [];
+    const logStep = (msg: string) => {
+      console.log(msg);
+      processLogs.push(`[${new Date().toISOString().slice(11, 19)}] ${msg}`);
+    };
+
+    logStep(`[Webhook-Dialplan:Step 0] Method: ${req.method} | Org: ${organizationId} | WebhookID: ${currentWebhookId}`);
+    logStep(`[Webhook-Dialplan:Step 0] Body Payload: ${JSON.stringify(payload)}`);
 
     // 1. Identify if this is an Inbound Dialplan request
     const callTypeParam = String(
@@ -160,7 +163,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         !payload.customer_no_with_prefix &&
         !payload.answered_agent_name);
 
-    console.log(`[Webhook-Dialplan:Step 1] Is Inbound Dialplan: ${isInboundDialplan} (call_type param: "${callTypeParam}")`);
+    logStep(`[Webhook-Dialplan:Step 1] Is Inbound Dialplan: ${isInboundDialplan} (call_type param: "${callTypeParam}")`);
 
     // 2. INBOUND DIALPLAN FLOW: Dynamic Lead Routing & Call Session Activation
     if (isInboundDialplan) {
@@ -197,8 +200,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         cleanPhone ? computePhoneHash(`0${cleanPhone}`) : null,
       ].filter((h): h is string => Boolean(h));
 
-      console.log(`[Webhook-Dialplan:Step 1] 📞 Raw Phone: "${rawCustomerPhone}" -> Clean 10-Digit: "${cleanPhone}" | Virtual DID: "${virtualDid}"`);
-      console.log(`[Webhook-Dialplan:Step 1] 🔑 Phone Search Hashes Generated:`, hashes);
+      logStep(`[Webhook-Dialplan:Step 1] 📞 Raw Phone: "${rawCustomerPhone}" -> Clean 10-Digit: "${cleanPhone}" | Virtual DID: "${virtualDid}"`);
 
       let matchedLead: {
         id: string;
@@ -213,7 +215,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (cleanPhone || hashes.length > 0) {
         // A. Search 'customers' table
         try {
-          console.log(`[Webhook-Dialplan:Step 2A] 🔎 Searching 'customers' table for phone: ${cleanPhone}...`);
+          logStep(`[Webhook-Dialplan:Step 2A] 🔎 Searching 'customers' table for phone: ${cleanPhone}...`);
           let query = smartfloAdminClient
             .from('customers')
             .select('id, campaign_id, customer_name, phone_no, phone_search_hash, assigned_to, organization_id')
@@ -237,9 +239,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .maybeSingle();
 
           if (custErr) {
-            console.error('[Webhook-Dialplan:Step 2A] ❌ Error searching customers table:', custErr);
+            logStep(`[Webhook-Dialplan:Step 2A] ❌ Error searching customers table: ${custErr.message}`);
           } else if (customerData) {
-            console.log(`[Webhook-Dialplan:Step 2A] ✅ Matched lead in 'customers' table: ID=${customerData.id}, Assigned User=${customerData.assigned_to}`);
+            logStep(`[Webhook-Dialplan:Step 2A] ✅ Matched lead in 'customers' table: ID=${customerData.id}, Assigned User=${customerData.assigned_to}`);
             matchedLead = {
               id: customerData.id,
               customer_id: customerData.id,
@@ -249,16 +251,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               table: 'customers',
             };
           } else {
-            console.log(`[Webhook-Dialplan:Step 2A] ℹ️ No match found in 'customers' table.`);
+            logStep(`[Webhook-Dialplan:Step 2A] ℹ️ No match found in 'customers' table.`);
           }
-        } catch (e) {
-          console.error('[Webhook-Dialplan:Step 2A] ❌ Exception querying customers:', e);
+        } catch (e: any) {
+          logStep(`[Webhook-Dialplan:Step 2A] ❌ Exception querying customers: ${e?.message}`);
         }
 
         // B. Search 'rejected_leads' table
         if (!matchedLead) {
           try {
-            console.log(`[Webhook-Dialplan:Step 2B] 🔎 Searching 'rejected_leads' table for phone: ${cleanPhone}...`);
+            logStep(`[Webhook-Dialplan:Step 2B] 🔎 Searching 'rejected_leads' table for phone: ${cleanPhone}...`);
             let rejQuery = smartfloAdminClient
               .from('rejected_leads')
               .select('id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, organization_id')
@@ -282,9 +284,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               .maybeSingle();
 
             if (rejErr) {
-              console.error('[Webhook-Dialplan:Step 2B] ❌ Error searching rejected_leads table:', rejErr);
+              logStep(`[Webhook-Dialplan:Step 2B] ❌ Error searching rejected_leads table: ${rejErr.message}`);
             } else if (rejectedData) {
-              console.log(`[Webhook-Dialplan:Step 2B] ✅ Matched lead in 'rejected_leads' table: ID=${rejectedData.id}, Assigned User=${rejectedData.agent_id}`);
+              logStep(`[Webhook-Dialplan:Step 2B] ✅ Matched lead in 'rejected_leads' table: ID=${rejectedData.id}, Assigned User=${rejectedData.agent_id}`);
               matchedLead = {
                 id: rejectedData.id,
                 customer_id: rejectedData.id,
@@ -294,17 +296,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 table: 'rejected_leads',
               };
             } else {
-              console.log(`[Webhook-Dialplan:Step 2B] ℹ️ No match found in 'rejected_leads' table.`);
+              logStep(`[Webhook-Dialplan:Step 2B] ℹ️ No match found in 'rejected_leads' table.`);
             }
-          } catch (e) {
-            console.error('[Webhook-Dialplan:Step 2B] ❌ Exception querying rejected_leads:', e);
+          } catch (e: any) {
+            logStep(`[Webhook-Dialplan:Step 2B] ❌ Exception querying rejected_leads: ${e?.message}`);
           }
         }
 
         // C. Search 'closed_deals' table
         if (!matchedLead) {
           try {
-            console.log(`[Webhook-Dialplan:Step 2C] 🔎 Searching 'closed_deals' table for phone: ${cleanPhone}...`);
+            logStep(`[Webhook-Dialplan:Step 2C] 🔎 Searching 'closed_deals' table for phone: ${cleanPhone}...`);
             let closedQuery = smartfloAdminClient
               .from('closed_deals')
               .select('id, customer_id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, organization_id')
@@ -328,9 +330,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               .maybeSingle();
 
             if (closedErr) {
-              console.error('[Webhook-Dialplan:Step 2C] ❌ Error searching closed_deals table:', closedErr);
+              logStep(`[Webhook-Dialplan:Step 2C] ❌ Error searching closed_deals table: ${closedErr.message}`);
             } else if (closedData) {
-              console.log(`[Webhook-Dialplan:Step 2C] ✅ Matched lead in 'closed_deals' table: ID=${closedData.id}, Assigned User=${closedData.agent_id}`);
+              logStep(`[Webhook-Dialplan:Step 2C] ✅ Matched lead in 'closed_deals' table: ID=${closedData.id}, Assigned User=${closedData.agent_id}`);
               matchedLead = {
                 id: closedData.id,
                 customer_id: closedData.customer_id || closedData.id,
@@ -340,16 +342,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 table: 'closed_deals',
               };
             } else {
-              console.log(`[Webhook-Dialplan:Step 2C] ℹ️ No match found in 'closed_deals' table.`);
+              logStep(`[Webhook-Dialplan:Step 2C] ℹ️ No match found in 'closed_deals' table.`);
             }
-          } catch (e) {
-            console.error('[Webhook-Dialplan:Step 2C] ❌ Exception querying closed_deals:', e);
+          } catch (e: any) {
+            logStep(`[Webhook-Dialplan:Step 2C] ❌ Exception querying closed_deals: ${e?.message}`);
           }
         }
       }
 
       if (!matchedLead) {
-        console.warn(`[Webhook-Dialplan:Step 2] ⚠️ Customer phone "${rawCustomerPhone}" not found in CRM leads. Proceeding to Fallback Agent.`);
+        logStep(`[Webhook-Dialplan:Step 2] ⚠️ Customer phone "${rawCustomerPhone}" not found in CRM leads. Proceeding to Fallback Agent.`);
       }
 
       let assignedExtension = '';
@@ -361,7 +363,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Check if lead was matched and assigned to a specific CRM user
       if (matchedLead?.assigned_to) {
         try {
-          console.log(`[Webhook-Dialplan:Step 3] 👤 Looking up Smartflo details for user_id: ${matchedLead.assigned_to}...`);
+          logStep(`[Webhook-Dialplan:Step 3] 👤 Looking up Smartflo details for user_id: ${matchedLead.assigned_to}...`);
           const { data: agentDetails, error: agQueryErr } = await smartfloAdminClient
             .from('user_smartflo_details')
             .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
@@ -370,7 +372,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .maybeSingle();
 
           if (agQueryErr) {
-            console.error('[Webhook-Dialplan:Step 3] ❌ Error querying user_smartflo_details:', agQueryErr);
+            logStep(`[Webhook-Dialplan:Step 3] ❌ Error querying user_smartflo_details: ${agQueryErr.message}`);
           } else if (agentDetails) {
             assignedUserId = agentDetails.user_id || matchedLead.assigned_to;
             assignedSmartfloAgentId = agentDetails.smartflo_agent_id || agentDetails.extension || '';
@@ -378,20 +380,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             assignedNumber = agentDetails.follow_me_number || agentDetails.caller_id || '';
             assignedAgentDisplayName = agentDetails.agent_name || agentDetails.login_id || `User ${assignedUserId.slice(0, 8)}`;
 
-            console.log(`[Webhook-Dialplan:Step 3] ✅ Found Agent Details:`, {
-              userId: assignedUserId,
-              name: assignedAgentDisplayName,
-              extension: assignedExtension,
-              number: assignedNumber,
-              smartfloAgentId: assignedSmartfloAgentId,
-            });
+            logStep(`[Webhook-Dialplan:Step 3] ✅ Found Agent Details: User=${assignedUserId}, Ext=${assignedExtension}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}`);
 
             // Step 4: Sync with call_sessions so CRM UI pops the lead open for the agent
             const targetCustId = matchedLead.customer_id || matchedLead.id;
             const targetCampId = matchedLead.campaign_id;
             if (targetCustId && targetCampId) {
               const nowIso = new Date().toISOString();
-              console.log(`[Webhook-Dialplan:Step 4] 🚀 Screen Pop: upserting call_sessions (user: ${assignedUserId}, cust: ${targetCustId}, camp: ${targetCampId})`);
+              logStep(`[Webhook-Dialplan:Step 4] 🚀 Screen Pop: upserting call_sessions (user: ${assignedUserId}, cust: ${targetCustId}, camp: ${targetCampId})`);
               const { error: sessionErr } = await smartfloAdminClient
                 .from('call_sessions')
                 .upsert(
@@ -413,9 +409,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 );
 
               if (sessionErr) {
-                console.error('[Webhook-Dialplan:Step 4] ❌ Error upserting call_sessions:', sessionErr);
+                logStep(`[Webhook-Dialplan:Step 4] ❌ Error upserting call_sessions: ${sessionErr.message}`);
               } else {
-                console.log(`[Webhook-Dialplan:Step 4] ✅ call_sessions upserted successfully.`);
+                logStep(`[Webhook-Dialplan:Step 4] ✅ call_sessions upserted successfully.`);
               }
 
               // Mark agent as on_call in user_profiles
@@ -429,17 +425,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 .eq('user_id', assignedUserId);
             }
           } else {
-            console.warn(`[Webhook-Dialplan:Step 3] ⚠️ No Smartflo mapping found for user_id: ${matchedLead.assigned_to}`);
+            logStep(`[Webhook-Dialplan:Step 3] ⚠️ No Smartflo mapping found for user_id: ${matchedLead.assigned_to}`);
           }
-        } catch (agentErr) {
-          console.error('[Webhook-Dialplan:Step 3] ❌ Exception retrieving assigned agent details:', agentErr);
+        } catch (agentErr: any) {
+          logStep(`[Webhook-Dialplan:Step 3] ❌ Exception retrieving assigned agent details: ${agentErr?.message}`);
         }
       }
 
       // Step 5: Fallback Agent Flow (if lead not found or agent not mapped)
       if (!assignedExtension && !assignedNumber) {
         try {
-          console.log(`[Webhook-Dialplan:Step 5] 🔁 Resolving Fallback Agent...`);
+          logStep(`[Webhook-Dialplan:Step 5] 🔁 Resolving Fallback Agent...`);
           const { data: config, error: cfgErr } = await smartfloAdminClient
             .from('smartflo_dialer_config')
             .select('click_to_call_params')
@@ -447,11 +443,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .maybeSingle();
 
           if (cfgErr) {
-            console.error('[Webhook-Dialplan:Step 5] ❌ Error fetching dialer config:', cfgErr);
+            logStep(`[Webhook-Dialplan:Step 5] ❌ Error fetching dialer config: ${cfgErr.message}`);
           }
 
           const configuredFallbackAgentId = config?.click_to_call_params?.fallback_agent_id;
-          console.log(`[Webhook-Dialplan:Step 5] Configured Fallback Agent ID in dialer config: "${configuredFallbackAgentId}"`);
+          logStep(`[Webhook-Dialplan:Step 5] Configured Fallback Agent ID in dialer config: "${configuredFallbackAgentId}"`);
 
           let fallbackAgentRecord: any = null;
 
@@ -478,7 +474,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
           // Fallback to first available active mapped agent
           if (!fallbackAgentRecord) {
-            console.log(`[Webhook-Dialplan:Step 5] Fallback agent not set or not found; fetching first active mapped agent in org...`);
+            logStep(`[Webhook-Dialplan:Step 5] Fallback agent not set or not found; fetching first active mapped agent in org...`);
             const { data: defaultAgent } = await smartfloAdminClient
               .from('user_smartflo_details')
               .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
@@ -497,18 +493,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               ? `${fallbackAgentRecord.agent_name || fallbackAgentRecord.login_id} (Fallback)`
               : 'Fallback Agent';
 
-            console.log(`[Webhook-Dialplan:Step 5] ✅ Selected Fallback Agent:`, {
-              userId: assignedUserId,
-              name: assignedAgentDisplayName,
-              extension: assignedExtension,
-              number: assignedNumber,
-              smartfloAgentId: assignedSmartfloAgentId,
-            });
+            logStep(`[Webhook-Dialplan:Step 5] ✅ Selected Fallback Agent: User=${assignedUserId}, Ext=${assignedExtension}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}`);
           } else {
-            console.error(`[Webhook-Dialplan:Step 5] ❌ No active Smartflo agents available in organization for fallback.`);
+            logStep(`[Webhook-Dialplan:Step 5] ❌ No active Smartflo agents available in organization for fallback.`);
           }
-        } catch (fbErr) {
-          console.error('[Webhook-Dialplan:Step 5] ❌ Error in fallback agent resolution:', fbErr);
+        } catch (fbErr: any) {
+          logStep(`[Webhook-Dialplan:Step 5] ❌ Error in fallback agent resolution: ${fbErr?.message}`);
         }
       }
 
@@ -566,11 +556,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           routed_to_name: assignedAgentDisplayName || null,
           routed_to_extension: assignedExtension || null,
           routed_to_number: assignedNumber || null,
+          process_logs: processLogs,
         },
       };
 
       // Record in public.webhook_responses
-      console.log(`[Webhook-Dialplan:Step 6] 💾 Saving event to webhook_responses (ID: ${eventRecord.id})...`);
+      logStep(`[Webhook-Dialplan:Step 6] 💾 Saving event to webhook_responses (ID: ${eventRecord.id})...`);
       const { error: insErr } = await smartfloAdminClient.from('webhook_responses').insert({
         id: eventRecord.id,
         webhook_id: currentWebhookId,
@@ -580,9 +571,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       });
 
       if (insErr) {
-        console.error('[Webhook-Dialplan:Step 6] ❌ Error inserting webhook_responses:', insErr);
+        logStep(`[Webhook-Dialplan:Step 6] ❌ Error inserting webhook_responses: ${insErr.message}`);
       } else {
-        console.log(`[Webhook-Dialplan:Step 6] ✅ Webhook response record inserted.`);
+        logStep(`[Webhook-Dialplan:Step 6] ✅ Webhook response record inserted.`);
       }
 
       // Dual-write to dialer config
@@ -603,13 +594,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             })
             .eq('id', currentConfig.id);
         }
-      } catch (e) {
-        console.error('[Webhook-Dialplan:Step 6] ❌ Error dual-writing to dialer config:', e);
+      } catch (e: any) {
+        logStep(`[Webhook-Dialplan:Step 6] ❌ Error dual-writing to dialer config: ${e?.message}`);
       }
 
       // Step 7: Return dynamic bridge response to Tata Smartflo (Clean JSON format required by PBX)
+      const primaryTarget = assignedExtension || assignedNumber || undefined;
       const bridgeResponse: Record<string, any> = {
         action: 'bridge',
+        destination: primaryTarget,
         agent_extension: assignedExtension || undefined,
         agent_number: assignedNumber || undefined,
         rynxly_agent_id: assignedUserId || undefined,
@@ -618,8 +611,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         fallback_queue: 'QUEUE-DEFAULT-SUPPORT',
       };
 
-      console.log(`[Webhook-Dialplan:Step 7] 🎯 Final Bridge Response Sent to Smartflo:`, JSON.stringify(bridgeResponse, null, 2));
-      console.log('====================================================================\n');
+      logStep(`[Webhook-Dialplan:Step 7] 🎯 Final Bridge Response Sent to Smartflo: ${JSON.stringify(bridgeResponse)}`);
 
       return res.status(200).json(bridgeResponse);
     }
