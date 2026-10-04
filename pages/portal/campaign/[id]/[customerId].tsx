@@ -53,6 +53,8 @@ export default function CallingPage() {
         hangupColor: 'gray' | 'indigo' | 'violet' | 'red';
         hangupSublabel: string;
         isEnded: boolean;
+        isInbound?: boolean;
+        rawPayload?: any;
     } | null>(null);
     const [expandedLogId, setExpandedLogId] = useState<string | null>(null);
     const [scheduledCalls, setScheduledCalls] = useState<any[]>([]);
@@ -646,14 +648,14 @@ export default function CallingPage() {
                         return prev;
                     }
 
-                    // Track if we have witnessed the customer's phone ringing
-                    if (newStatus.customer.color === 'orange' || (newStatus.customer.sublabel && newStatus.customer.sublabel.toLowerCase().includes('ring'))) {
+                    // Track if we have witnessed the customer's phone ringing (only for outbound Click-to-Call)
+                    if (!newStatus.isInbound && (newStatus.customer.color === 'orange' || (newStatus.customer.sublabel && newStatus.customer.sublabel.toLowerCase().includes('ring')))) {
                         hasSeenCustomerRingingRef.current = true;
                     }
 
-                    // In Smartflo Click-to-Call, when the agent answers Leg 1, the switch initially reports state 'Answered'.
+                    // In Smartflo Click-to-Call (outbound), when the agent answers Leg 1, the switch initially reports state 'Answered'.
                     // If the customer has not yet been in the ringing state, hold customer in Ringing Customer...
-                    if (newStatus.customer.sublabel === 'Speaking' && !hasSeenCustomerRingingRef.current) {
+                    if (!newStatus.isInbound && newStatus.customer.sublabel === 'Speaking' && !hasSeenCustomerRingingRef.current) {
                         newStatus.customer.color = 'orange';
                         newStatus.customer.sublabel = 'Ringing Customer...';
                     }
@@ -687,6 +689,8 @@ export default function CallingPage() {
                         hangupColor: newStatus.hangup.color,
                         hangupSublabel: newStatus.hangup.sublabel,
                         isEnded: Boolean(newStatus.isEnded),
+                        isInbound: Boolean(newStatus.isInbound),
+                        rawPayload: newStatus.rawPayload,
                     };
                 });
             }
@@ -5589,7 +5593,29 @@ Campaign: ${campaign?.name || campaignId}
                                                                     (activeCallId && (l.callId === activeCallId || l.refId === activeCallId || raw.call_id === activeCallId || raw.ref_id === activeCallId || raw.uuid === activeCallId || customIdStr.includes(activeCallId)))
                                                                 );
                                                             })
-                                                            : null;
+                                                            : (smartfloLogs.length > 0 ? smartfloLogs[0] : null);
+
+                                                        const isInboundCall = Boolean(
+                                                            (matchedLog && (
+                                                                matchedLog.direction === 'inbound' ||
+                                                                matchedLog.callType?.toLowerCase().includes('inbound') ||
+                                                                (matchedLog.rawPayload as any)?.call_to_number ||
+                                                                (matchedLog.rawPayload as any)?.direction === 'inbound' ||
+                                                                String((matchedLog.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
+                                                            )) ||
+                                                            (smartfloLifecycle && (
+                                                                smartfloLifecycle.isInbound ||
+                                                                (smartfloLifecycle.rawPayload as any)?.direction === 'inbound' ||
+                                                                String((smartfloLifecycle.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound') ||
+                                                                Boolean((smartfloLifecycle.rawPayload as any)?.call_to_number)
+                                                            )) ||
+                                                            (!matchedLog && !smartfloLifecycle && smartfloLogs.length > 0 && (
+                                                                smartfloLogs[0]?.direction === 'inbound' ||
+                                                                smartfloLogs[0]?.callType?.toLowerCase().includes('inbound') ||
+                                                                Boolean((smartfloLogs[0]?.rawPayload as any)?.call_to_number) ||
+                                                                String((smartfloLogs[0]?.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
+                                                            ))
+                                                        );
 
                                                         let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
                                                         let agentSublabel = 'Standby';
@@ -5608,8 +5634,16 @@ Campaign: ${campaign?.name || campaignId}
                                                                 customerSublabel = smartfloLifecycle.customerSublabel;
                                                                 hangupColor = smartfloLifecycle.hangupColor;
                                                                 hangupSublabel = smartfloLifecycle.hangupSublabel;
+                                                            } else if (isInboundCall) {
+                                                                // Inbound: Customer connected/waiting, Agent ringing
+                                                                customerColor = isEndingCall ? 'gray' : 'green';
+                                                                customerSublabel = isEndingCall ? 'Ended' : 'Waiting...';
+                                                                agentColor = isEndingCall ? 'green' : 'orange';
+                                                                agentSublabel = isEndingCall ? 'Answered' : 'Ringing Agent...';
+                                                                hangupColor = isEndingCall ? 'red' : 'gray';
+                                                                hangupSublabel = isEndingCall ? 'Ending...' : 'Connecting...';
                                                             } else {
-                                                                // Agent phone is ringing (before agent answers)
+                                                                // Outbound: Agent phone ringing (before agent answers)
                                                                 agentColor = isEndingCall ? 'green' : 'orange';
                                                                 agentSublabel = isEndingCall ? 'Answered' : (isPlacingCall ? 'Dialing Agent...' : 'Ringing Agent...');
                                                                 customerColor = isEndingCall ? 'gray' : 'gray';
@@ -5629,37 +5663,53 @@ Campaign: ${campaign?.name || campaignId}
                                                             const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || reasonStr.includes('noanswer') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
                                                             const isAnswered = !isMissedOrDropped && (statusStr.includes('answer') || matchedLog.callType === 'Answered');
 
-                                                            const hasMissedAgent = Boolean(raw.missed_agent && (Array.isArray(raw.missed_agent) ? raw.missed_agent.length > 0 : String(raw.missed_agent).trim() !== ''));
-                                                            const agentRingSecs = Number(raw.agent_ring_time || 0);
-
-                                                            // Agent: Orange=Ringing, Green=Answered, Violet=Busy, Red=Cut
-                                                            if (hasMissedAgent || (agentRingSecs === 0 && isBusy)) {
-                                                                agentColor = isBusy ? 'violet' : 'red';
-                                                                agentSublabel = isBusy ? 'Busy' : 'Cut / Rejected';
-                                                            } else {
-                                                                agentColor = 'green';
-                                                                agentSublabel = 'Answered';
-                                                            }
-
-                                                            // Customer: Orange=Ringing, Green=Connected, Violet=Busy, Red=Cut/Dropped
-                                                            if (agentColor === 'violet' || agentColor === 'red') {
-                                                                customerColor = 'gray';
-                                                                customerSublabel = 'Not Reached';
-                                                            } else if (isAnswered) {
+                                                            if (isInboundCall) {
+                                                                // INBOUND Call
                                                                 customerColor = 'green';
-                                                                customerSublabel = 'Connected';
-                                                            } else if (isBusy) {
-                                                                customerColor = 'violet';
-                                                                customerSublabel = 'Busy';
-                                                            } else if (isMissedOrDropped) {
-                                                                customerColor = 'red';
-                                                                customerSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : raw.reason_key === 'cancel' ? 'Cancelled' : raw.reason_key || raw.hangup_cause_description || 'Missed';
+                                                                customerSublabel = isAnswered ? 'Connected' : isBusy ? 'Busy' : 'Connected';
+
+                                                                if (isAnswered) {
+                                                                    agentColor = 'green';
+                                                                    agentSublabel = 'Answered';
+                                                                } else if (isBusy) {
+                                                                    agentColor = 'violet';
+                                                                    agentSublabel = 'Busy';
+                                                                } else {
+                                                                    agentColor = 'red';
+                                                                    agentSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : 'Missed / Cut';
+                                                                }
                                                             } else {
-                                                                customerColor = 'gray';
-                                                                customerSublabel = 'Not Reached';
+                                                                // OUTBOUND Call
+                                                                const hasMissedAgent = Boolean(raw.missed_agent && (Array.isArray(raw.missed_agent) ? raw.missed_agent.length > 0 : String(raw.missed_agent).trim() !== ''));
+                                                                const agentRingSecs = Number(raw.agent_ring_time || 0);
+
+                                                                if (hasMissedAgent || (agentRingSecs === 0 && isBusy)) {
+                                                                    agentColor = isBusy ? 'violet' : 'red';
+                                                                    agentSublabel = isBusy ? 'Busy' : 'Cut / Rejected';
+                                                                } else {
+                                                                    agentColor = 'green';
+                                                                    agentSublabel = 'Answered';
+                                                                }
+
+                                                                if (agentColor === 'violet' || agentColor === 'red') {
+                                                                    customerColor = 'gray';
+                                                                    customerSublabel = 'Not Reached';
+                                                                } else if (isAnswered) {
+                                                                    customerColor = 'green';
+                                                                    customerSublabel = 'Connected';
+                                                                } else if (isBusy) {
+                                                                    customerColor = 'violet';
+                                                                    customerSublabel = 'Busy';
+                                                                } else if (isMissedOrDropped) {
+                                                                    customerColor = 'red';
+                                                                    customerSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : raw.reason_key === 'cancel' ? 'Cancelled' : raw.reason_key || raw.hangup_cause_description || 'Missed';
+                                                                } else {
+                                                                    customerColor = 'gray';
+                                                                    customerSublabel = 'Not Reached';
+                                                                }
                                                             }
 
-                                                            // Hangup: Indigo=Completed, Violet=Busy, Red=Cut/Dropped
+                                                            // Hangup
                                                             if (agentColor === 'violet' || customerColor === 'violet') {
                                                                 hangupColor = 'violet';
                                                                 hangupSublabel = raw.hangup_cause_description || 'User Busy';
@@ -5780,37 +5830,70 @@ Campaign: ${campaign?.name || campaignId}
                                                                             <i className="fi flex fi-rr-check text-[10px]"></i>
                                                                         </div>
                                                                         <span className="text-[9px] font-bold text-slate-800">Originated</span>
-                                                                        <span className="text-[8px] text-emerald-600 font-semibold">Ref Issued</span>
-                                                                    </div>
-
-                                                                    {/* Step 2: Agent Leg */}
-                                                                    <div className="flex flex-col items-center">
-                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
-                                                                            {agentColor === 'orange' && renderSnakeRing('orange')}
-                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(agentColor)}`}>
-                                                                                <i className="fi flex fi-rr-phone-call text-[10px]"></i>
-                                                                            </div>
-                                                                        </div>
-                                                                        <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
-                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
-                                                                            {agentSublabel}
+                                                                        <span className="text-[8px] text-emerald-600 font-semibold">
+                                                                            {isInboundCall ? 'Inbound Call' : 'Ref Issued'}
                                                                         </span>
                                                                     </div>
 
-                                                                    {/* Step 3: Customer Leg */}
-                                                                    <div className="flex flex-col items-center">
-                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
-                                                                            {customerColor === 'orange' && renderSnakeRing('orange')}
-                                                                            {customerColor === 'green' && customerSublabel === 'Speaking' && renderSnakeRing('green')}
-                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(customerColor)}`}>
-                                                                                <i className="fi flex fi-rr-user text-[10px]"></i>
+                                                                    {/* Step 2: Customer (Inbound) OR Agent Leg (Outbound) */}
+                                                                    {isInboundCall ? (
+                                                                        <div className="flex flex-col items-center">
+                                                                            <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                                {customerColor === 'orange' && renderSnakeRing('orange')}
+                                                                                {customerColor === 'green' && customerSublabel === 'Speaking' && renderSnakeRing('green')}
+                                                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(customerColor)}`}>
+                                                                                    <i className="fi flex fi-rr-user text-[10px]"></i>
+                                                                                </div>
                                                                             </div>
+                                                                            <span className="text-[9px] font-bold text-slate-800">Customer</span>
+                                                                            <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
+                                                                                {customerSublabel}
+                                                                            </span>
                                                                         </div>
-                                                                        <span className="text-[9px] font-bold text-slate-800">Customer</span>
-                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
-                                                                            {customerSublabel}
-                                                                        </span>
-                                                                    </div>
+                                                                    ) : (
+                                                                        <div className="flex flex-col items-center">
+                                                                            <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                                {agentColor === 'orange' && renderSnakeRing('orange')}
+                                                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(agentColor)}`}>
+                                                                                    <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                                                </div>
+                                                                            </div>
+                                                                            <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
+                                                                            <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
+                                                                                {agentSublabel}
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
+
+                                                                    {/* Step 3: Agent Leg (Inbound) OR Customer (Outbound) */}
+                                                                    {isInboundCall ? (
+                                                                        <div className="flex flex-col items-center">
+                                                                            <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                                {agentColor === 'orange' && renderSnakeRing('orange')}
+                                                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(agentColor)}`}>
+                                                                                    <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                                                </div>
+                                                                            </div>
+                                                                            <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
+                                                                            <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
+                                                                                {agentSublabel}
+                                                                            </span>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div className="flex flex-col items-center">
+                                                                            <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                                {customerColor === 'orange' && renderSnakeRing('orange')}
+                                                                                {customerColor === 'green' && customerSublabel === 'Speaking' && renderSnakeRing('green')}
+                                                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(customerColor)}`}>
+                                                                                    <i className="fi flex fi-rr-user text-[10px]"></i>
+                                                                                </div>
+                                                                            </div>
+                                                                            <span className="text-[9px] font-bold text-slate-800">Customer</span>
+                                                                            <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
+                                                                                {customerSublabel}
+                                                                            </span>
+                                                                        </div>
+                                                                    )}
 
                                                                     {/* Step 4: Hangup & Wrapup */}
                                                                     <div className="flex flex-col items-center">

@@ -136,9 +136,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    if (targetPhone && item.destinationNumber) {
-      const itemDest = cleanPhone(item.destinationNumber);
-      if (itemDest.includes(targetPhone) || targetPhone.includes(itemDest)) {
+    if (targetPhone) {
+      const itemDest = cleanPhone(item.destinationNumber || '');
+      const raw = (item.rawPayload || {}) as any;
+      const itemCaller = cleanPhone(
+        item.agentNumber ||
+        raw.caller_id_number ||
+        raw.caller_id ||
+        raw.customer_number ||
+        raw.from ||
+        ''
+      );
+      if (
+        (itemDest && (itemDest.includes(targetPhone) || targetPhone.includes(itemDest))) ||
+        (itemCaller && (itemCaller.includes(targetPhone) || targetPhone.includes(itemCaller)))
+      ) {
         return true;
       }
     }
@@ -158,7 +170,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     filteredLogs = formattedEvents.slice(0, 15);
   }
 
-  // 3. Real-time query to Tata Smartflo Live Calls API (GET v1/live_calls/{call_id}) & CDR (v1/call/records)
+  // 3. Real-time query to Tata Smartflo Live Calls API (GET v1/live_calls) & CDR (v1/call/records)
   let liveSmartfloRecords: any[] = [];
   let liveCallStatusData: any = null;
   let liveCallsApiResult: any = null;
@@ -225,11 +237,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const rawCustId = c.custom_identifier ? JSON.stringify(c.custom_identifier) : '';
             const cRef = String(c.ref_id || c.refId || c.uuid || '');
             const cCallId = String(c.call_id || c.callId || c.id || '');
-            const cDest = cleanPhone(String(c.destination || c.customer_number || c.destination_number || ''));
+            const cDest = cleanPhone(String(c.destination || c.customer_number || c.destination_number || c.call_to_number || c.to || ''));
+            const cCaller = cleanPhone(String(c.caller_id_number || c.caller_id || c.from || c.caller || ''));
 
             if (targetRefId && (cRef === targetRefId || cCallId === targetRefId || rawCustId.includes(targetRefId))) return true;
             if (targetCallId && (cCallId === targetCallId || cRef === targetCallId || rawCustId.includes(targetCallId))) return true;
-            if (targetPhone && cDest && (cDest.includes(targetPhone) || targetPhone.includes(cDest))) return true;
+            if (targetPhone && ((cDest && (cDest.includes(targetPhone) || targetPhone.includes(cDest))) || (cCaller && (cCaller.includes(targetPhone) || targetPhone.includes(cCaller))))) return true;
             return false;
           });
 
@@ -257,10 +270,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const recordsUrl = new URL('https://api-smartflo.tatateleservices.com/v1/call/records');
       recordsUrl.searchParams.set('from_date', fromDate);
       recordsUrl.searchParams.set('to_date', toDate);
-      if (targetPhone) {
-        recordsUrl.searchParams.set('destination', targetPhone);
-      }
-      recordsUrl.searchParams.set('limit', '20');
+      recordsUrl.searchParams.set('limit', '40');
 
       const sfRes = await fetch(recordsUrl.toString(), {
         headers: {
@@ -279,23 +289,50 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               ? sfData
               : [];
 
-        liveSmartfloRecords = records.map((rec: any, idx: number) => ({
-          id: rec.call_id || rec.id || `live-${idx}`,
-          receivedAt: rec.created_at || rec.start_time || new Date().toISOString(),
-          callId: String(rec.call_id || rec.id || ''),
-          refId: String(rec.ref_id || rec.custom_identifier || rec.call_id || ''),
-          direction: String(rec.direction || 'outbound'),
-          callType: String(rec.call_type === 'c' ? 'Answered' : rec.call_type === 'm' ? 'Missed' : rec.call_type || 'Call'),
-          agentNumber: String(rec.agent_number || rec.caller_id || ''),
-          destinationNumber: String(rec.destination || rec.customer_number || rec.destination_number || ''),
-          status: rec.status || (rec.call_type === 'c' ? 'answered' : 'missed'),
-          hangupCause: rec.hangup_cause || rec.status || 'NORMAL_CLEARING',
-          duration: Number(rec.outbound_sec ?? rec.outbound_talktime ?? rec.duration ?? rec.billsec ?? rec.talk_duration ?? 0),
-          recordingUrl: rec.recording_url || rec.record_url || null,
-          source: 'smartflo_api',
-          rawPayload: rec,
-        }));
+        // Filter and map CDR records
+        liveSmartfloRecords = records
+          .filter((rec: any) => {
+            if (!targetPhone && !targetRefId && !targetCallId) return true;
+            const recRef = String(rec.ref_id || rec.custom_identifier || rec.uuid || '');
+            const recCallId = String(rec.call_id || rec.id || '');
+            const recDest = cleanPhone(String(rec.destination || rec.customer_number || rec.destination_number || rec.call_to_number || rec.to || ''));
+            const recCaller = cleanPhone(String(rec.caller_id_number || rec.caller_id || rec.agent_number || rec.from || rec.caller || ''));
+
+            if (targetRefId && (recRef === targetRefId || recCallId === targetRefId)) return true;
+            if (targetCallId && (recCallId === targetCallId || recRef === targetCallId)) return true;
+            if (targetPhone && (
+              (recDest && (recDest.includes(targetPhone) || targetPhone.includes(recDest))) ||
+              (recCaller && (recCaller.includes(targetPhone) || targetPhone.includes(recCaller)))
+            )) return true;
+            return false;
+          })
+          .map((rec: any, idx: number) => {
+            const isRecInbound =
+              String(rec.direction || '').toLowerCase() === 'inbound' ||
+              String(rec.call_type || '').toLowerCase().includes('inbound') ||
+              Boolean(rec.call_to_number && !rec.customer_no_with_prefix);
+
+            return {
+              id: rec.call_id || rec.id || `live-${idx}`,
+              receivedAt: rec.created_at || rec.start_time || new Date().toISOString(),
+              callId: String(rec.call_id || rec.id || ''),
+              refId: String(rec.ref_id || rec.custom_identifier || rec.call_id || ''),
+              direction: isRecInbound ? 'inbound' : String(rec.direction || 'outbound'),
+              callType: isRecInbound
+                ? 'Inbound Call'
+                : String(rec.call_type === 'c' ? 'Answered' : rec.call_type === 'm' ? 'Missed' : rec.call_type || 'Call'),
+              agentNumber: String(rec.agent_number || rec.caller_id || ''),
+              destinationNumber: String(rec.destination || rec.customer_number || rec.destination_number || ''),
+              status: rec.status || (rec.call_type === 'c' ? 'answered' : 'missed'),
+              hangupCause: rec.hangup_cause || rec.status || 'NORMAL_CLEARING',
+              duration: Number(rec.outbound_sec ?? rec.outbound_talktime ?? rec.duration ?? rec.billsec ?? rec.talk_duration ?? 0),
+              recordingUrl: rec.recording_url || rec.record_url || null,
+              source: 'smartflo_api',
+              rawPayload: rec,
+            };
+          });
       }
+    }
     }
   } catch (liveErr) {
     console.warn('[Smartflo Logs API] Smartflo query exception (non-fatal):', liveErr);
@@ -346,6 +383,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // 1. If actively returned by GET /v1/live_calls/{call_id}:
   if (liveCallStatusData) {
+    const isLiveInbound =
+      String(liveCallStatusData.direction || '').toLowerCase() === 'inbound' ||
+      String(liveCallStatusData.type || '').toLowerCase().includes('inbound') ||
+      Boolean(liveCallStatusData.call_to_number);
+
     // Switch state directly from Tata Smartflo switch (e.g. "Ringing", "Answered", "In-Call")
     const switchState = String(
       liveCallStatusData.state ||
@@ -394,71 +436,78 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ? callTimeParts[0] * 60 + callTimeParts[1]
         : Number(callTimeRaw) || 0;
 
-    // In Smartflo Click-to-Call:
-    // 1. When agent first picks up (call_time usually <= 15s), the switch reports state 'Answered'.
-    //    This is ONLY the agent answering Leg 1! The customer has not answered yet.
-    // 2. The switch then dials the customer and reports state 'Ringing'.
-    // 3. Customer answers only after ringing.
-    const isLiveCallRingingCustomer =
-      switchState === 'ringing' ||
-      switchState === 'dialing' ||
-      customerStatusStr.includes('ring') ||
-      customerStatusStr.includes('dial') ||
-      (isClickToCall && (switchState.includes('ring') || (switchState === 'answered' && callTimeSec <= 15)));
-
     const isLiveCallBothAnswered =
-      !isLiveCallRingingCustomer &&
-      (switchState === 'answered' ||
-       switchState === 'in-call' ||
-       switchState === 'connected' ||
-       switchState === 'bridge' ||
-       customerStatusStr.includes('answer') ||
-       customerStatusStr.includes('connect') ||
-       customerStatusStr.includes('speak'));
+      switchState === 'in-call' ||
+      switchState === 'connected' ||
+      switchState === 'bridge' ||
+      (switchState === 'answered' && callTimeSec > 5) ||
+      customerStatusStr.includes('speak') ||
+      agentStatusStr.includes('speak');
 
-    // Agent Leg: In live_calls, agent is already connected
-    let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'green';
-    let agentSublabel = 'Answered';
-
-    const isAgentBusy = agentStatusStr.includes('busy') || causeStr.includes('busy');
-    const isAgentCut = agentStatusStr.includes('reject') || agentStatusStr.includes('cut') || agentStatusStr.includes('miss');
-
-    if (isAgentBusy) {
-      agentColor = 'violet';
-      agentSublabel = 'Busy';
-    } else if (isAgentCut) {
-      agentColor = 'red';
-      agentSublabel = 'Cut / Rejected';
-    } else {
-      agentColor = 'green';
-      agentSublabel = 'Answered';
-    }
-
-    // Customer Leg
+    let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
+    let agentSublabel = 'Standby';
     let customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
-    let customerSublabel = 'Waiting';
+    let customerSublabel = 'Standby';
 
-    const isCustBusy = customerStatusStr.includes('busy') || causeStr.includes('busy');
-    const isCustCut = customerStatusStr.includes('cancel') || customerStatusStr.includes('reject') || customerStatusStr.includes('drop');
-
-    if (agentColor === 'violet' || agentColor === 'red') {
-      customerColor = 'gray';
-      customerSublabel = 'Not Reached';
-    } else if (isCustBusy) {
-      customerColor = 'violet';
-      customerSublabel = 'Busy';
-    } else if (isCustCut) {
-      customerColor = 'red';
-      customerSublabel = 'Cancel / Dropped';
-    } else if (isLiveCallRingingCustomer) {
-      customerColor = 'orange';
-      customerSublabel = 'Ringing Customer...';
-    } else if (isLiveCallBothAnswered) {
+    if (isLiveInbound) {
+      // INBOUND: Customer initiated call -> Customer connected first
       customerColor = 'green';
-      customerSublabel = 'Speaking';
+      customerSublabel = isLiveCallBothAnswered ? 'Speaking' : 'Waiting...';
+
+      if (isLiveCallBothAnswered) {
+        agentColor = 'green';
+        agentSublabel = 'Answered';
+      } else if (agentStatusStr.includes('busy') || causeStr.includes('busy')) {
+        agentColor = 'violet';
+        agentSublabel = 'Busy';
+      } else if (agentStatusStr.includes('reject') || agentStatusStr.includes('miss')) {
+        agentColor = 'red';
+        agentSublabel = 'Missed / Cut';
+      } else {
+        agentColor = 'orange';
+        agentSublabel = 'Ringing Agent...';
+      }
     } else {
-      customerColor = 'orange';
-      customerSublabel = 'Ringing Customer...';
+      // OUTBOUND: Agent initiated call -> Agent connected first
+      const isAgentBusy = agentStatusStr.includes('busy') || causeStr.includes('busy');
+      const isAgentCut = agentStatusStr.includes('reject') || agentStatusStr.includes('cut') || agentStatusStr.includes('miss');
+
+      if (isAgentBusy) {
+        agentColor = 'violet';
+        agentSublabel = 'Busy';
+      } else if (isAgentCut) {
+        agentColor = 'red';
+        agentSublabel = 'Cut / Rejected';
+      } else {
+        agentColor = 'green';
+        agentSublabel = 'Answered';
+      }
+
+      const isCustBusy = customerStatusStr.includes('busy') || causeStr.includes('busy');
+      const isCustCut = customerStatusStr.includes('cancel') || customerStatusStr.includes('reject') || customerStatusStr.includes('drop');
+      const isLiveCallRingingCustomer =
+        switchState === 'ringing' ||
+        switchState === 'dialing' ||
+        customerStatusStr.includes('ring') ||
+        customerStatusStr.includes('dial') ||
+        (isClickToCall && (switchState.includes('ring') || (switchState === 'answered' && callTimeSec <= 15)));
+
+      if (agentColor === 'violet' || agentColor === 'red') {
+        customerColor = 'gray';
+        customerSublabel = 'Not Reached';
+      } else if (isCustBusy) {
+        customerColor = 'violet';
+        customerSublabel = 'Busy';
+      } else if (isCustCut) {
+        customerColor = 'red';
+        customerSublabel = 'Cancel / Dropped';
+      } else if (isLiveCallBothAnswered) {
+        customerColor = 'green';
+        customerSublabel = 'Speaking';
+      } else {
+        customerColor = 'orange';
+        customerSublabel = 'Ringing Customer...';
+      }
     }
 
     // Hangup
@@ -486,6 +535,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       hasRecord: true,
       isLive: true,
       isEnded: isCallEnded,
+      isInbound: Boolean(isLiveInbound),
       agent: { color: agentColor, sublabel: agentSublabel },
       customer: { color: customerColor, sublabel: customerSublabel },
       hangup: { color: hangupColor, sublabel: hangupSublabel },
@@ -511,6 +561,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     if (matched) {
       const raw = (matched.rawPayload || {}) as any;
+      const isMatchedInbound = Boolean(
+        matched.direction === 'inbound' ||
+        matched.callType?.toLowerCase().includes('inbound') ||
+        raw.call_to_number ||
+        String(raw.call_type || '').toLowerCase().includes('inbound')
+      );
+
       const statusStr = String(matched.status || raw.call_status || '').toLowerCase();
       const causeStr = String(matched.hangupCause || raw.hangup_cause_description || raw.hangup_cause_key || '').toLowerCase();
       const reasonStr = String(raw.reason_key || '').toLowerCase();
@@ -519,44 +576,60 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || reasonStr.includes('noanswer') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
       const isAnswered = !isMissedOrDropped && (statusStr.includes('answer') || matched.callType === 'Answered');
 
-      // 1. Agent Status: Orange=Ringing, Green=Answered, Violet=Busy, Red=Cut/Rejected
       let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'green';
       let agentSublabel = 'Answered';
-      const hasMissedAgent = Boolean(raw.missed_agent && (Array.isArray(raw.missed_agent) ? raw.missed_agent.length > 0 : String(raw.missed_agent).trim() !== ''));
-      const agentRingSecs = Number(raw.agent_ring_time || 0);
+      let customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
+      let customerSublabel = 'Waiting';
 
-      if (hasMissedAgent || (agentRingSecs === 0 && isBusy)) {
-        if (isBusy) {
+      if (isMatchedInbound) {
+        // INBOUND Call: Customer is caller, Agent is receiver
+        customerColor = 'green';
+        customerSublabel = isAnswered ? 'Connected' : isBusy ? 'Busy' : 'Connected';
+
+        if (isAnswered) {
+          agentColor = 'green';
+          agentSublabel = 'Answered';
+        } else if (isBusy) {
           agentColor = 'violet';
           agentSublabel = 'Busy';
         } else {
           agentColor = 'red';
-          agentSublabel = 'Cut / Rejected';
+          agentSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : 'Missed / Cut';
         }
       } else {
-        agentColor = 'green';
-        agentSublabel = 'Answered';
-      }
+        // OUTBOUND Call: Agent is caller, Customer is destination
+        const hasMissedAgent = Boolean(raw.missed_agent && (Array.isArray(raw.missed_agent) ? raw.missed_agent.length > 0 : String(raw.missed_agent).trim() !== ''));
+        const agentRingSecs = Number(raw.agent_ring_time || 0);
 
-      // 2. Customer Status: Orange=Ringing, Green=Connected, Violet=Busy, Red=Cut/Dropped, Gray=Waiting
-      let customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
-      let customerSublabel = 'Waiting';
+        if (hasMissedAgent || (agentRingSecs === 0 && isBusy)) {
+          if (isBusy) {
+            agentColor = 'violet';
+            agentSublabel = 'Busy';
+          } else {
+            agentColor = 'red';
+            agentSublabel = 'Cut / Rejected';
+          }
+        } else {
+          agentColor = 'green';
+          agentSublabel = 'Answered';
+        }
 
-      if (agentColor === 'violet' || agentColor === 'red') {
-        customerColor = 'gray';
-        customerSublabel = 'Not Reached';
-      } else if (isAnswered) {
-        customerColor = 'green';
-        customerSublabel = 'Connected';
-      } else if (isBusy) {
-        customerColor = 'violet';
-        customerSublabel = 'Busy';
-      } else if (isMissedOrDropped) {
-        customerColor = 'red';
-        customerSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : raw.reason_key === 'cancel' ? 'Cancelled' : raw.reason_key || raw.hangup_cause_description || 'Missed';
-      } else {
-        customerColor = 'gray';
-        customerSublabel = 'Not Reached';
+        if (agentColor === 'violet' || agentColor === 'red') {
+          customerColor = 'gray';
+          customerSublabel = 'Not Reached';
+        } else if (isAnswered) {
+          customerColor = 'green';
+          customerSublabel = 'Connected';
+        } else if (isBusy) {
+          customerColor = 'violet';
+          customerSublabel = 'Busy';
+        } else if (isMissedOrDropped) {
+          customerColor = 'red';
+          customerSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : raw.reason_key === 'cancel' ? 'Cancelled' : raw.reason_key || raw.hangup_cause_description || 'Missed';
+        } else {
+          customerColor = 'gray';
+          customerSublabel = 'Not Reached';
+        }
       }
 
       // 3. Hangup Status: Indigo=Completed, Violet=Busy, Red=Cut/Dropped
@@ -580,6 +653,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         hasRecord: true,
         isLive: false,
         isEnded: true,
+        isInbound: isMatchedInbound,
         agent: { color: agentColor, sublabel: agentSublabel },
         customer: { color: customerColor, sublabel: customerSublabel },
         hangup: { color: hangupColor, sublabel: hangupSublabel },
