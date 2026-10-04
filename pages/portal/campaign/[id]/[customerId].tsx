@@ -71,6 +71,8 @@ export default function CallingPage() {
     // Call States
     const [isCalling, setIsCalling] = useState(false);
     const [isPlacingCall, setIsPlacingCall] = useState(false);
+    const isPlacingCallRef = useRef(false);
+    const lastCallPlacedAtRef = useRef(0);
     const [isEndingCall, setIsEndingCall] = useState(false);
     const [postCall, setPostCall] = useState(false);
     const [callDuration, setCallDuration] = useState(0);
@@ -2195,7 +2197,13 @@ useEffect(() => {
     };
 
     const handleStartCall = async () => {
-        if (isPlacingCall) return;
+        const now = Date.now();
+        if (isPlacingCallRef.current || isPlacingCall || isCalling || (now - lastCallPlacedAtRef.current < 2500)) {
+            console.warn('⚠️ [Click-to-Call] Blocked duplicate call initiation attempt');
+            return;
+        }
+        isPlacingCallRef.current = true;
+        lastCallPlacedAtRef.current = now;
         setIsPlacingCall(true);
         isApiUpdatingRef.current = true; // LOCK ON IMMEDIATELY
         const cId = campaignId as string;
@@ -2203,6 +2211,7 @@ useEffect(() => {
 
         if (!cId || !custId) {
             console.error('[Session] Missing campaignId or customerId in router query');
+            isPlacingCallRef.current = false;
             isApiUpdatingRef.current = false;
             setIsPlacingCall(false);
             return;
@@ -2217,6 +2226,7 @@ useEffect(() => {
 
                 // If user selected smartflo in-use but it is not mapped
                 if (providerDetails.user?.smartflo?.in_use && !providerDetails.user?.smartflo?.is_mapped) {
+                    isPlacingCallRef.current = false;
                     isApiUpdatingRef.current = false;
                     setIsPlacingCall(false);
                     showWarning(
@@ -2228,6 +2238,7 @@ useEffect(() => {
 
                 const activeProvider = providerDetails.activeProvider;
                 if (!activeProvider) {
+                    isPlacingCallRef.current = false;
                     isApiUpdatingRef.current = false;
                     setIsPlacingCall(false);
                     showWarning(
@@ -2240,6 +2251,7 @@ useEffect(() => {
                 providerToUse = activeProvider;
                 activeCallProviderRef.current = activeProvider;
             } catch (providerError) {
+                isPlacingCallRef.current = false;
                 isApiUpdatingRef.current = false;
                 setIsPlacingCall(false);
                 showWarning(
@@ -2253,6 +2265,7 @@ useEffect(() => {
 
             decryptedPhone = decryptPhone(customer.phone_no);
             if (!decryptedPhone) {
+                isPlacingCallRef.current = false;
                 isApiUpdatingRef.current = false;
                 setIsPlacingCall(false);
                 showWarning("Customer phone number is invalid or could not be decrypted.", "Calling Error");
@@ -2321,6 +2334,7 @@ useEffect(() => {
                     }
                     console.info("📞 [Smartflo] Originate queued successfully, ref_id:", result.ref_id, "call_id:", result.call_id);
                 } catch (callErr: any) {
+                    isPlacingCallRef.current = false;
                     isApiUpdatingRef.current = false;
                     setIsPlacingCall(false);
                     showWarning(
@@ -2337,6 +2351,7 @@ useEffect(() => {
         // --- Optimistic UI Update ---
         setCallStartTime(null);
         setIsCalling(true);
+        isPlacingCallRef.current = false;
         setIsPlacingCall(false);
         setPostCall(false);
         setCallDuration(0);

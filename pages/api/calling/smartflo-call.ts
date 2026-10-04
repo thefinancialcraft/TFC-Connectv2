@@ -7,6 +7,24 @@ import {
 
 const clickToCallUrl = 'https://api-smartflo.tatateleservices.com/v1/click_to_call';
 
+// In-flight deduplication guard (prevents rapid double-clicks from placing 2 simultaneous calls)
+const inFlightCalls = new Map<string, number>();
+
+function isDuplicateCall(key: string): boolean {
+  const now = Date.now();
+  const lastTime = inFlightCalls.get(key);
+  if (lastTime && now - lastTime < 3500) {
+    return true;
+  }
+  inFlightCalls.set(key, now);
+  if (inFlightCalls.size > 200) {
+    for (const [k, time] of inFlightCalls.entries()) {
+      if (now - time > 10000) inFlightCalls.delete(k);
+    }
+  }
+  return false;
+}
+
 interface ApiResponse {
   success: boolean;
   message?: string;
@@ -210,6 +228,16 @@ export default async function handler(
     return res.status(400).json({
       success: false,
       message: 'Please provide a valid destination customer phone number (minimum 10 digits).',
+    });
+  }
+
+  // Deduplication Check
+  const dedupeKey = `${user.id}_${destinationNumber}`;
+  if (isDuplicateCall(dedupeKey)) {
+    console.warn(`[Smartflo CRM Call] ⚠️ Blocked duplicate simultaneous call for user ${user.id} -> ${destinationNumber}`);
+    return res.status(429).json({
+      success: false,
+      message: 'A call is already being initiated for this number. Please wait a moment.',
     });
   }
 
