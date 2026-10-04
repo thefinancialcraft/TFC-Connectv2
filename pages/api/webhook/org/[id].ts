@@ -354,21 +354,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Build Smartflo Official API Dialplan Response Array based on c2c_routing
       let targetDestination = '';
-      let destinationType = 'agent';
+      const destinationType = 'agent';
 
-      const isPhoneRouting = assignedRouting === 'phone' || assignedRouting === 'number' || assignedRouting === 'agent_mobile';
       const isExtRouting = assignedRouting === 'extension' || assignedRouting === 'extention' || assignedRouting === 'webrtc';
 
-      if (isPhoneRouting && assignedNumber) {
-        destinationType = 'number';
-        targetDestination = assignedNumber;
-      } else if (isExtRouting && assignedExtension) {
-        // Direct extension routing (WebRTC softphone / deskphone)
-        destinationType = 'agent';
+      if (isExtRouting && assignedExtension) {
+        // 💻 Extension / Softphone Routing: Pass Extension ID (060...)
         targetDestination = assignedExtension;
       } else {
-        // Agent account routing (Smartflo agent profile)
-        destinationType = 'agent';
+        // 📱 Mobile / Agent Profile Routing: Pass Smartflo Agent ID (050...)
         targetDestination = assignedSmartfloAgentId || assignedExtension || assignedNumber;
       }
 
@@ -383,7 +377,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         },
       ];
 
-      logStep(`[Webhook-Org:Step 7] 🎯 Dialplan Response (Type=${destinationType}, Dest=${targetDestination}): ${JSON.stringify(dialplanResponse)}`);
+      logStep(`[Webhook-Org:Step 7] 🎯 Dialplan Response (Routing=${isExtRouting ? 'Extension' : 'Mobile'}, Type=${destinationType}, Data=${targetDestination}): ${JSON.stringify(dialplanResponse)}`);
 
       // Build Inbound Dialplan Webhook Event Record
       const eventRecord = formatSmartfloWebhookEvent(
