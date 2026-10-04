@@ -350,26 +350,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       }
 
-      // Build bridge response (Destination & Extension & Number)
-      const primaryTarget = assignedExtension || assignedSmartfloAgentId || assignedNumber || undefined;
-      const bridgeResponse: Record<string, any> = {
-        action: 'transfer',
-        type: 'agent',
-        destination: primaryTarget,
-        value: primaryTarget,
-        transfer_to: primaryTarget,
-        agent_id: assignedSmartfloAgentId || undefined,
-        agent_extension: assignedExtension || undefined,
-        extension: assignedExtension || undefined,
-        intercom: assignedIntercom || undefined,
-        agent_number: assignedNumber || undefined,
-        phone_number: assignedNumber || undefined,
-        rynxly_agent_id: assignedUserId || undefined,
-        user_id: assignedUserId || undefined,
-        fallback_queue: 'QUEUE-DEFAULT-SUPPORT',
-      };
+      // Build Smartflo Official API Dialplan Response Array
+      const targetDestination = assignedExtension || assignedSmartfloAgentId || assignedNumber;
+      const destinationType = (assignedExtension || assignedSmartfloAgentId) ? 'agent' : 'number';
 
-      logStep(`[Webhook-Org:Step 7] 🎯 Bridge Response: ${JSON.stringify(bridgeResponse)}`);
+      const dialplanResponse = [
+        {
+          transfer: {
+            type: destinationType,
+            data: targetDestination ? [targetDestination] : [],
+            ring_type: 'order_by',
+            skip_active: true,
+          },
+        },
+      ];
+
+      logStep(`[Webhook-Org:Step 7] 🎯 Dialplan Response: ${JSON.stringify(dialplanResponse)}`);
 
       // Build Inbound Dialplan Webhook Event Record
       const eventRecord = formatSmartfloWebhookEvent(
@@ -404,7 +400,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }
       })();
 
-      return res.status(200).json(bridgeResponse);
+      return res.status(200).json(dialplanResponse);
     }
 
     const eventRecord = formatSmartfloWebhookEvent(
