@@ -5163,21 +5163,24 @@ Campaign: ${campaign?.name || campaignId}
                                                                 (activeCallId && (l.callId === activeCallId || l.refId === activeCallId || raw.call_id === activeCallId || raw.ref_id === activeCallId || raw.uuid === activeCallId || customIdStr.includes(activeCallId)))
                                                             );
                                                         })
-                                                        : null;
+                                                        : (smartfloLogs.find(l => {
+                                                            const raw = (l.rawPayload || {}) as any;
+                                                            const isLeadMatch = raw.matched_lead_id === customerId || raw.customer_id === customerId;
+                                                            const isInbound = l.direction === 'inbound' || l.callType?.toLowerCase().includes('inbound') || raw.call_type === 'Inbound Dialplan';
+                                                            return isLeadMatch || (isInbound && (isCalling || isPlacingCall));
+                                                        }) || null);
 
                                                     const hasOriginated = Boolean(isPlacingCall || isCalling || activeRef || activeCallId || smartfloLifecycle || matchedLog);
 
                                                     const isInboundCall = Boolean(
+                                                        smartfloLifecycle?.isInbound ||
+                                                        String((smartfloLifecycle?.rawPayload as any)?.direction || '').toLowerCase() === 'inbound' ||
+                                                        String((smartfloLifecycle?.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound') ||
                                                         (matchedLog && (
                                                             String(matchedLog.direction || '').toLowerCase() === 'inbound' ||
                                                             String(matchedLog.callType || '').toLowerCase().includes('inbound') ||
                                                             String((matchedLog.rawPayload as any)?.direction || '').toLowerCase() === 'inbound' ||
                                                             String((matchedLog.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
-                                                        )) ||
-                                                        (smartfloLifecycle && (
-                                                            Boolean(smartfloLifecycle.isInbound) ||
-                                                            String((smartfloLifecycle.rawPayload as any)?.direction || '').toLowerCase() === 'inbound' ||
-                                                            String((smartfloLifecycle.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
                                                         ))
                                                     );
 
@@ -5190,7 +5193,7 @@ Campaign: ${campaign?.name || campaignId}
 
                                                     // Priority 1: Call is actively placing or in progress in the CRM
                                                     if (isPlacingCall || isCalling) {
-                                                        if (smartfloLifecycle && (!smartfloLifecycle.isEnded || smartfloLifecycle.refId === activeRef || smartfloLifecycle.refId === activeCallId)) {
+                                                        if (smartfloLifecycle && (!smartfloLifecycle.isEnded || smartfloLifecycle.refId === activeRef || smartfloLifecycle.refId === activeCallId || smartfloLifecycle.isInbound)) {
                                                             agentColor = smartfloLifecycle.agentColor;
                                                             agentSublabel = smartfloLifecycle.agentSublabel;
                                                             customerColor = smartfloLifecycle.customerColor;
@@ -5199,7 +5202,7 @@ Campaign: ${campaign?.name || campaignId}
                                                             hangupSublabel = smartfloLifecycle.hangupSublabel;
                                                         } else if (isInboundCall) {
                                                             customerColor = isEndingCall ? 'gray' : 'green';
-                                                            customerSublabel = isEndingCall ? 'Ended' : 'Waiting...';
+                                                            customerSublabel = isEndingCall ? 'Ended' : 'Connected';
                                                             agentColor = isEndingCall ? 'green' : 'orange';
                                                             agentSublabel = isEndingCall ? 'Answered' : 'Ringing Agent...';
                                                             hangupColor = isEndingCall ? 'red' : 'gray';
