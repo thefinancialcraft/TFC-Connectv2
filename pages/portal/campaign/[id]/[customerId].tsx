@@ -5169,17 +5169,15 @@ Campaign: ${campaign?.name || campaignId}
 
                                                     const isInboundCall = Boolean(
                                                         (matchedLog && (
-                                                            matchedLog.direction === 'inbound' ||
-                                                            matchedLog.callType?.toLowerCase().includes('inbound') ||
-                                                            (matchedLog.rawPayload as any)?.call_to_number ||
-                                                            (matchedLog.rawPayload as any)?.direction === 'inbound' ||
+                                                            String(matchedLog.direction || '').toLowerCase() === 'inbound' ||
+                                                            String(matchedLog.callType || '').toLowerCase().includes('inbound') ||
+                                                            String((matchedLog.rawPayload as any)?.direction || '').toLowerCase() === 'inbound' ||
                                                             String((matchedLog.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
                                                         )) ||
                                                         (smartfloLifecycle && (
-                                                            smartfloLifecycle.isInbound ||
-                                                            (smartfloLifecycle.rawPayload as any)?.direction === 'inbound' ||
-                                                            String((smartfloLifecycle.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound') ||
-                                                            Boolean((smartfloLifecycle.rawPayload as any)?.call_to_number)
+                                                            Boolean(smartfloLifecycle.isInbound) ||
+                                                            String((smartfloLifecycle.rawPayload as any)?.direction || '').toLowerCase() === 'inbound' ||
+                                                            String((smartfloLifecycle.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
                                                         ))
                                                     );
 

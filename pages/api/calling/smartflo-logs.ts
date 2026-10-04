@@ -385,7 +385,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const isLiveInbound =
       String(liveCallStatusData.direction || '').toLowerCase() === 'inbound' ||
       String(liveCallStatusData.type || '').toLowerCase().includes('inbound') ||
-      Boolean(liveCallStatusData.call_to_number);
+      String(liveCallStatusData.call_type || '').toLowerCase().includes('inbound');
 
     // Switch state directly from Tata Smartflo switch (e.g. "Ringing", "Answered", "In-Call")
     const switchState = String(
@@ -561,9 +561,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (matched) {
       const raw = (matched.rawPayload || {}) as any;
       const isMatchedInbound = Boolean(
-        matched.direction === 'inbound' ||
-        matched.callType?.toLowerCase().includes('inbound') ||
-        raw.call_to_number ||
+        String(matched.direction || '').toLowerCase() === 'inbound' ||
+        String(matched.callType || '').toLowerCase().includes('inbound') ||
+        String(raw.direction || '').toLowerCase() === 'inbound' ||
         String(raw.call_type || '').toLowerCase().includes('inbound')
       );
 
