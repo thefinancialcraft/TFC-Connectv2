@@ -218,7 +218,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         custPromise = smartfloAdminClient
           .from('customers')
-          .select('id, campaign_id, customer_name, phone_no, phone_search_hash, assigned_to, organization_id')
+          .select('id, campaign_id, customer_name, phone_no, phone_search_hash, assigned_to, last_updated_by, organization_id')
           .eq('organization_id', organizationId)
           .or(orStr)
           .order('updated_at', { ascending: false })
@@ -227,7 +227,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         rejPromise = smartfloAdminClient
           .from('rejected_leads')
-          .select('id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, organization_id')
+          .select('id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, last_updated_by, organization_id')
           .eq('organization_id', organizationId)
           .or(orStr)
           .order('created_at', { ascending: false })
@@ -236,7 +236,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         closedPromise = smartfloAdminClient
           .from('closed_deals')
-          .select('id, customer_id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, organization_id')
+          .select('id, customer_id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, last_updated_by, organization_id')
           .eq('organization_id', organizationId)
           .or(orStr)
           .order('created_at', { ascending: false })
@@ -263,6 +263,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         campaign_id: string;
         customer_name?: string;
         assigned_to: string | null;
+        last_updated_by: string | null;
         table: 'customers' | 'rejected_leads' | 'closed_deals';
       } | null = null;
 
@@ -272,36 +273,40 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           customer_id: custRes.data.id,
           campaign_id: custRes.data.campaign_id,
           customer_name: custRes.data.customer_name,
-          assigned_to: custRes.data.assigned_to,
+          assigned_to: custRes.data.assigned_to || null,
+          last_updated_by: custRes.data.last_updated_by || null,
           table: 'customers',
         };
-        logStep(`[Webhook-Dialplan:Step 2A] ✅ Matched in 'customers': ID=${custRes.data.id}, Assigned=${custRes.data.assigned_to}`);
+        logStep(`[Webhook-Dialplan:Step 2A] ✅ Matched in 'customers': ID=${custRes.data.id}, Assigned=${custRes.data.assigned_to}, LastUpdatedBy=${custRes.data.last_updated_by}`);
       } else if (rejRes.data) {
         matchedLead = {
           id: rejRes.data.id,
           customer_id: rejRes.data.id,
           campaign_id: rejRes.data.campaign_id,
           customer_name: rejRes.data.customer_name,
-          assigned_to: rejRes.data.agent_id,
+          assigned_to: rejRes.data.agent_id || null,
+          last_updated_by: rejRes.data.last_updated_by || null,
           table: 'rejected_leads',
         };
-        logStep(`[Webhook-Dialplan:Step 2B] ✅ Matched in 'rejected_leads': ID=${rejRes.data.id}, Assigned=${rejRes.data.agent_id}`);
+        logStep(`[Webhook-Dialplan:Step 2B] ✅ Matched in 'rejected_leads': ID=${rejRes.data.id}, Assigned=${rejRes.data.agent_id}, LastUpdatedBy=${rejRes.data.last_updated_by}`);
       } else if (closedRes.data) {
         matchedLead = {
           id: closedRes.data.id,
           customer_id: closedRes.data.customer_id || closedRes.data.id,
           campaign_id: closedRes.data.campaign_id,
           customer_name: closedRes.data.customer_name,
-          assigned_to: closedRes.data.agent_id,
+          assigned_to: closedRes.data.agent_id || null,
+          last_updated_by: closedRes.data.last_updated_by || null,
           table: 'closed_deals',
         };
-        logStep(`[Webhook-Dialplan:Step 2C] ✅ Matched in 'closed_deals': ID=${closedRes.data.id}, Assigned=${closedRes.data.agent_id}`);
+        logStep(`[Webhook-Dialplan:Step 2C] ✅ Matched in 'closed_deals': ID=${closedRes.data.id}, Assigned=${closedRes.data.agent_id}, LastUpdatedBy=${closedRes.data.last_updated_by}`);
       } else {
         logStep(`[Webhook-Dialplan:Step 2] ℹ️ Lead not found in CRM. Proceeding with Fallback Agent.`);
       }
 
       const configuredFallbackAgentId = configRes.data?.click_to_call_params?.fallback_agent_id;
-      const targetUserId = matchedLead?.assigned_to || configuredFallbackAgentId;
+      const assignedAgentUserId = matchedLead?.assigned_to || null;
+      const lastUpdatedByUserId = matchedLead?.last_updated_by || null;
 
       let assignedExtension = '';
       let assignedNumber = '';
@@ -310,30 +315,78 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let assignedIntercom = '';
       let assignedRouting = 'extension';
       let assignedAgentDisplayName = '';
+      let routingSource: 'assigned_agent' | 'last_updated_by' | 'fallback_agent' | 'default_agent' = 'fallback_agent';
 
-      // Step 3 & 5: Fetch agent details (assigned or fallback)
+      // Step 3 & 5: Fetch agent details (Priority 1: Assigned Agent -> Priority 2: Last Updated By -> Priority 3: Fallback Agent -> Priority 4: Org Default)
       try {
-        let agentQuery = smartfloAdminClient
-          .from('user_smartflo_details')
-          .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
-          .eq('organization_id', organizationId);
+        let agentRecord: any = null;
 
-        if (targetUserId) {
-          agentQuery = agentQuery.eq('user_id', targetUserId);
-        }
-
-        let { data: agentRecord } = await agentQuery.limit(1).maybeSingle();
-
-        if (!agentRecord && configuredFallbackAgentId) {
-          const { data: fbBySmartfloId } = await smartfloAdminClient
+        // Priority 1: Check Assigned Agent
+        if (assignedAgentUserId) {
+          const { data: assignedAgentRec } = await smartfloAdminClient
             .from('user_smartflo_details')
             .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
             .eq('organization_id', organizationId)
-            .eq('smartflo_agent_id', configuredFallbackAgentId)
+            .eq('user_id', assignedAgentUserId)
             .maybeSingle();
-          agentRecord = fbBySmartfloId;
+
+          if (assignedAgentRec) {
+            agentRecord = assignedAgentRec;
+            routingSource = 'assigned_agent';
+            logStep(`[Webhook-Dialplan:Step 3] 🎯 Target Agent: Assigned User (${assignedAgentUserId})`);
+          } else {
+            logStep(`[Webhook-Dialplan:Step 3] ⚠️ Assigned agent (${assignedAgentUserId}) has no Smartflo mapping. Checking Last Updated By...`);
+          }
         }
 
+        // Priority 2: If Assigned Agent is null/unmapped, Check Last Updated By User
+        if (!agentRecord && lastUpdatedByUserId) {
+          const { data: lastUpdaterRec } = await smartfloAdminClient
+            .from('user_smartflo_details')
+            .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
+            .eq('organization_id', organizationId)
+            .eq('user_id', lastUpdatedByUserId)
+            .maybeSingle();
+
+          if (lastUpdaterRec) {
+            agentRecord = lastUpdaterRec;
+            routingSource = 'last_updated_by';
+            logStep(`[Webhook-Dialplan:Step 3] 🔄 Routing to Last Updated By User (${lastUpdatedByUserId})`);
+          } else {
+            logStep(`[Webhook-Dialplan:Step 3] ⚠️ Last Updated By user (${lastUpdatedByUserId}) has no Smartflo mapping. Falling back to Fallback Agent...`);
+          }
+        }
+
+        // Priority 3: If both are null/unmapped, Check Configured Fallback Agent
+        if (!agentRecord && configuredFallbackAgentId) {
+          const { data: fbByUserId } = await smartfloAdminClient
+            .from('user_smartflo_details')
+            .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
+            .eq('organization_id', organizationId)
+            .eq('user_id', configuredFallbackAgentId)
+            .maybeSingle();
+
+          if (fbByUserId) {
+            agentRecord = fbByUserId;
+            routingSource = 'fallback_agent';
+            logStep(`[Webhook-Dialplan:Step 3] ⚠️ Routing to Fallback Agent (by user_id: ${configuredFallbackAgentId})`);
+          } else {
+            const { data: fbBySmartfloId } = await smartfloAdminClient
+              .from('user_smartflo_details')
+              .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
+              .eq('organization_id', organizationId)
+              .eq('smartflo_agent_id', configuredFallbackAgentId)
+              .maybeSingle();
+
+            if (fbBySmartfloId) {
+              agentRecord = fbBySmartfloId;
+              routingSource = 'fallback_agent';
+              logStep(`[Webhook-Dialplan:Step 3] ⚠️ Routing to Fallback Agent (by smartflo_agent_id: ${configuredFallbackAgentId})`);
+            }
+          }
+        }
+
+        // Priority 4: Org Default Agent
         if (!agentRecord) {
           const { data: defaultAgent } = await smartfloAdminClient
             .from('user_smartflo_details')
@@ -341,21 +394,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             .eq('organization_id', organizationId)
             .limit(1)
             .maybeSingle();
-          agentRecord = defaultAgent;
+          if (defaultAgent) {
+            agentRecord = defaultAgent;
+            routingSource = 'default_agent';
+            logStep(`[Webhook-Dialplan:Step 3] ℹ️ Routing to Default Org Agent`);
+          }
         }
 
         if (agentRecord) {
-          assignedUserId = agentRecord.user_id || targetUserId || '';
+          assignedUserId = agentRecord.user_id || '';
           assignedSmartfloAgentId = agentRecord.smartflo_agent_id || agentRecord.extension || '';
           assignedExtension = agentRecord.extension || agentRecord.smartflo_agent_id || '';
           assignedIntercom = agentRecord.intercom || '';
           assignedNumber = agentRecord.follow_me_number || agentRecord.caller_id || '';
           assignedRouting = String(agentRecord.c2c_routing || 'extension').trim().toLowerCase();
-          assignedAgentDisplayName = agentRecord.agent_name || agentRecord.login_id
-            ? (matchedLead?.assigned_to ? (agentRecord.agent_name || agentRecord.login_id) : `${agentRecord.agent_name || agentRecord.login_id} (Fallback)`)
-            : 'Agent';
 
-          logStep(`[Webhook-Dialplan:Step 3] ✅ Resolved Agent: User=${assignedUserId}, Ext=${assignedExtension}, Intercom=${assignedIntercom}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}, RoutingPreference=${assignedRouting}`);
+          const baseName = agentRecord.agent_name || agentRecord.login_id || 'Agent';
+          if (routingSource === 'assigned_agent') {
+            assignedAgentDisplayName = baseName;
+          } else if (routingSource === 'last_updated_by') {
+            assignedAgentDisplayName = `${baseName} (Last Updated By)`;
+          } else {
+            assignedAgentDisplayName = `${baseName} (Fallback)`;
+          }
+
+          logStep(`[Webhook-Dialplan:Step 3] ✅ Resolved Agent (${routingSource}): User=${assignedUserId}, Ext=${assignedExtension}, Intercom=${assignedIntercom}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}, RoutingPreference=${assignedRouting}`);
         } else {
           logStep(`[Webhook-Dialplan:Step 3] ❌ No active Smartflo agent found.`);
         }
