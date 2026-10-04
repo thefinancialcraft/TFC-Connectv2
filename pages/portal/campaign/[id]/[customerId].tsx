@@ -5136,7 +5136,14 @@ Campaign: ${campaign?.name || campaignId}
                             <div className="md:col-span-4 flex flex-col gap-4">
 
                                         {/* Smartflo Live Calling Flow Stepper (Card Outside Timeline Box) */}
-                                        {activeCallingProvider === 'smartflo' && (() => {
+                                        <div 
+                                            className={`transition-all duration-500 ease-in-out transform ${
+                                                activeCallingProvider === 'smartflo'
+                                                    ? 'max-h-48 opacity-100 translate-y-0 pointer-events-auto'
+                                                    : 'max-h-0 opacity-0 -translate-y-3 pointer-events-none -mb-4 overflow-hidden'
+                                            }`}
+                                        >
+                                            {(() => {
                                                     const activeRef = lastCheckedRefId || activeSmartfloRefIdRef.current || null;
                                                     const activeCallId = lastCheckedCallId || activeSmartfloCallIdRef.current || null;
                                                     const matchedLog = (activeRef || activeCallId)
@@ -5446,6 +5453,7 @@ Campaign: ${campaign?.name || campaignId}
                                                         </div>
                                                     );
                                                 })()}
+                                        </div>
 
                                         {/* Activity Sidebar / Timeline Container */}
                                         <div className="bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 h-auto xl:min-h-[800px] flex flex-col flex-1">
