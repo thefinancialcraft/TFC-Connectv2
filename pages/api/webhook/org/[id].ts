@@ -351,8 +351,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Build Smartflo Official API Dialplan Response Array
-      const targetDestination = assignedExtension || assignedSmartfloAgentId || assignedNumber;
-      const destinationType = (assignedExtension || assignedSmartfloAgentId) ? 'agent' : 'number';
+      // Smartflo 'agent' type requires the Agent ID (starts with 050...) to lookup the live agent session
+      const targetDestination = assignedSmartfloAgentId || assignedExtension || assignedNumber;
+      const destinationType = (assignedSmartfloAgentId || assignedExtension) ? 'agent' : 'number';
 
       const dialplanResponse = [
         {
