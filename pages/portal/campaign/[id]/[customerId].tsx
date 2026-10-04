@@ -753,6 +753,14 @@ export default function CallingPage() {
     }, [lastCheckedRefId, lastCheckedCallId, smartfloLogs, fetchSmartfloLogs]);
 
     useEffect(() => {
+        setLastCheckedRefId(null);
+        setLastCheckedCallId(null);
+        activeSmartfloRefIdRef.current = null;
+        activeSmartfloCallIdRef.current = null;
+        setSmartfloLifecycle(null);
+    }, [customerId]);
+
+    useEffect(() => {
         let isMounted = true;
 
         const loadProvider = async () => {
@@ -5155,7 +5163,9 @@ Campaign: ${campaign?.name || campaignId}
                                                                 (activeCallId && (l.callId === activeCallId || l.refId === activeCallId || raw.call_id === activeCallId || raw.ref_id === activeCallId || raw.uuid === activeCallId || customIdStr.includes(activeCallId)))
                                                             );
                                                         })
-                                                        : (smartfloLogs.length > 0 ? smartfloLogs[0] : null);
+                                                        : null;
+
+                                                    const hasOriginated = Boolean(isPlacingCall || isCalling || activeRef || activeCallId || smartfloLifecycle || matchedLog);
 
                                                     const isInboundCall = Boolean(
                                                         (matchedLog && (
@@ -5170,12 +5180,6 @@ Campaign: ${campaign?.name || campaignId}
                                                             (smartfloLifecycle.rawPayload as any)?.direction === 'inbound' ||
                                                             String((smartfloLifecycle.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound') ||
                                                             Boolean((smartfloLifecycle.rawPayload as any)?.call_to_number)
-                                                        )) ||
-                                                        (!matchedLog && !smartfloLifecycle && smartfloLogs.length > 0 && (
-                                                            smartfloLogs[0]?.direction === 'inbound' ||
-                                                            smartfloLogs[0]?.callType?.toLowerCase().includes('inbound') ||
-                                                            Boolean((smartfloLogs[0]?.rawPayload as any)?.call_to_number) ||
-                                                            String((smartfloLogs[0]?.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
                                                         ))
                                                     );
 
@@ -5367,13 +5371,27 @@ Campaign: ${campaign?.name || campaignId}
                                                             <div className="grid grid-cols-4 gap-1 mt-3 relative z-10 text-center">
                                                                 {/* Step 1: Originated */}
                                                                 <div className="flex flex-col items-center">
-                                                                    <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold mb-1 ring-2 ring-emerald-300 ring-offset-1 shadow-none">
-                                                                        <i className="fi flex fi-rr-check text-[10px]"></i>
-                                                                    </div>
-                                                                    <span className="text-[9px] font-bold text-slate-800">Originated</span>
-                                                                    <span className="text-[8px] text-emerald-600 font-semibold">
-                                                                        {isInboundCall ? 'Inbound Call' : 'Ref Issued'}
-                                                                    </span>
+                                                                    {hasOriginated ? (
+                                                                        <>
+                                                                            <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold mb-1 ring-2 ring-emerald-300 ring-offset-1 shadow-none">
+                                                                                <i className="fi flex fi-rr-check text-[10px]"></i>
+                                                                            </div>
+                                                                            <span className="text-[9px] font-bold text-slate-800">Originated</span>
+                                                                            <span className="text-[8px] text-emerald-600 font-semibold">
+                                                                                {isInboundCall ? 'Inbound Call' : 'Ref Issued'}
+                                                                            </span>
+                                                                        </>
+                                                                    ) : (
+                                                                        <>
+                                                                            <div className="w-7 h-7 rounded-full bg-slate-200 text-slate-400 flex items-center justify-center text-[10px] font-bold mb-1 shadow-none">
+                                                                                <i className="fi flex fi-rr-play text-[9px] translate-x-[0.5px]"></i>
+                                                                            </div>
+                                                                            <span className="text-[9px] font-bold text-slate-800">Originated</span>
+                                                                            <span className="text-[8px] text-slate-400 font-medium">
+                                                                                Standby
+                                                                            </span>
+                                                                        </>
+                                                                    )}
                                                                 </div>
 
                                                                 {/* Step 2: Customer (Inbound) OR Agent Leg (Outbound) */}
