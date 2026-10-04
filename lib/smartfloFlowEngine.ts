@@ -60,17 +60,18 @@ export function computeSmartfloFlowState(params: {
   let direction: CallDirection = params.direction || 'outbound';
   if (liveCallData) {
     const d = String(liveCallData.direction || liveCallData.call_type || '').toLowerCase();
-    if (d.includes('inbound')) direction = 'inbound';
+    if (d.includes('inbound') || d === 'rynxly_inbound') direction = 'inbound';
   } else if (matchedLog) {
     const raw = (matchedLog.rawPayload || {}) as any;
+    const rawCallType = String(raw.call_type || matchedLog.callType || '').toLowerCase();
     const d = String(
       matchedLog.direction ||
-      matchedLog.callType ||
       raw.direction ||
-      raw.call_type ||
       ''
     ).toLowerCase();
-    if (d.includes('inbound')) direction = 'inbound';
+    if (rawCallType === 'rynxly_inbound' || rawCallType.includes('inbound') || d.includes('inbound')) {
+      direction = 'inbound';
+    }
   }
 
   const hasOriginated = Boolean(

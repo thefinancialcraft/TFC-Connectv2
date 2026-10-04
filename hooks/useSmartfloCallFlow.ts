@@ -257,9 +257,11 @@ export function useSmartfloCallFlow({
               destNum.includes(currentCustPhone) ||
               currentCustPhone.includes(destNum))
           ) {
+            const rawCallType = String(raw.call_type || resPayload.callType || '').toLowerCase();
             const isInbound = Boolean(
+              rawCallType === 'rynxly_inbound' ||
+              rawCallType.includes('inbound') ||
               String(resPayload.direction || raw.direction || '').toLowerCase().includes('inbound') ||
-              String(resPayload.callType || raw.call_type || '').toLowerCase().includes('inbound') ||
               raw.call_type === 'Inbound Dialplan'
             );
 
