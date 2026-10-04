@@ -753,10 +753,44 @@ export default function CallingPage() {
     }, [lastCheckedRefId, lastCheckedCallId, smartfloLogs, fetchSmartfloLogs]);
 
     useEffect(() => {
-        resolveActiveCallingProvider().then(p => {
-            setActiveCallingProvider(p);
-        }).catch(() => {});
-    }, [user?.uid]);
+        let isMounted = true;
+
+        const loadProvider = async () => {
+            try {
+                const p = await resolveActiveCallingProvider();
+                if (isMounted) {
+                    setActiveCallingProvider(p);
+                }
+            } catch {
+                // Ignore silent load errors
+            }
+        };
+
+        void loadProvider();
+
+        const handleCallingProviderUpdated = (event: Event) => {
+            const detail = (event as CustomEvent<{ userId?: string; state?: any }>).detail;
+            if (detail?.userId && user?.uid && detail.userId !== user.uid) return;
+
+            if (detail?.state?.active_provider) {
+                const p = detail.state.active_provider;
+                if (p === 'sim' || p === 'smartflo') {
+                    setActiveCallingProvider(p);
+                    if (p !== 'smartflo' && timelineView === 'smartflo_logs') {
+                        setTimelineView('timeline');
+                    }
+                    return;
+                }
+            }
+            void loadProvider();
+        };
+
+        window.addEventListener('calling-provider-updated', handleCallingProviderUpdated);
+        return () => {
+            isMounted = false;
+            window.removeEventListener('calling-provider-updated', handleCallingProviderUpdated);
+        };
+    }, [user?.uid, timelineView]);
 
     useEffect(() => {
         if (timelineView === 'smartflo_logs') {
