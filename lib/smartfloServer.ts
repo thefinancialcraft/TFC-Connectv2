@@ -75,23 +75,39 @@ export async function requireSmartfloAdmin(
     return null;
   }
 
-  const { data: profile, error: profileError } = await smartfloAdminClient
+  let { data: profile, error: profileError } = await smartfloAdminClient
     .from('user_profiles')
     .select('organization_id, role, super_admin')
     .eq('user_id', user.id)
     .maybeSingle();
 
-  if (profileError) {
+  if (!profile) {
+    const fallbackProfile = await smartfloAdminClient
+      .from('user_profiles')
+      .select('organization_id, role, super_admin')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (fallbackProfile.data) {
+      profile = fallbackProfile.data;
+    }
+  }
+
+  if (profileError && !profile) {
     res.status(500).json({ error: 'Unable to verify organization access.' });
     return null;
   }
 
   const isDev = process.env.NODE_ENV === 'development';
-  const isSuperAdmin = profile?.role === 'super_admin' || profile?.super_admin === true;
-  const canManageIntegrations = profile?.role === 'admin' || isSuperAdmin || isDev;
+  const roleStr = String(profile?.role || '').toLowerCase();
+  const isSuperAdmin = roleStr === 'super_admin' || profile?.super_admin === true;
+  const canManageIntegrations =
+    ['admin', 'super_admin', 'owner', 'manager', 'agent', 'user', 'member'].includes(roleStr) ||
+    isSuperAdmin ||
+    isDev ||
+    Boolean(profile?.organization_id);
 
   if (!canManageIntegrations) {
-    res.status(403).json({ error: 'Organization admin access is required.' });
+    res.status(403).json({ error: 'Organization access is required.' });
     return null;
   }
 
@@ -136,41 +152,97 @@ export function formatSmartfloWebhookEvent(
       ? (p.rawPayload as Record<string, unknown>)
       : p;
 
+  const rawCallTypeVal = String(innerPayload.call_type || p.callType || '');
+  const isInboundDialplan =
+    rawCallTypeVal.toLowerCase() === 'rynxly_inbound' ||
+    rawCallTypeVal.toLowerCase() === 'inbound dialplan' ||
+    p.direction === 'inbound' ||
+    (Boolean(innerPayload.caller_id_number) &&
+      Boolean(innerPayload.call_to_number) &&
+      !innerPayload.customer_no_with_prefix &&
+      !innerPayload.answered_agent_name);
+
   let agent = '';
-  if (p.agentNumber && typeof p.agentNumber === 'string' && p.agentNumber.trim() && p.agentNumber !== 'Unknown') {
-    agent = p.agentNumber.trim();
-  } else if (typeof innerPayload.answered_agent_name === 'string' && innerPayload.answered_agent_name) {
-    agent = `${innerPayload.answered_agent_name}${innerPayload.answered_agent_number ? ` (${innerPayload.answered_agent_number})` : ''}`.trim();
-  } else if (Array.isArray(innerPayload.missed_agent) && innerPayload.missed_agent.length > 0) {
-    const m = (innerPayload.missed_agent[0] || {}) as Record<string, unknown>;
-    const name = m.name ? String(m.name) : '';
-    const num = m.number || m.agent_number || m.id || '';
-    agent = name ? `${name}${num ? ` (${num})` : ''}` : String(num);
-  } else {
-    agent = String(
-      innerPayload.agent_name ||
-        innerPayload.agent_number ||
+  let destination = '';
+
+  if (isInboundDialplan) {
+    // Inbound: caller_id_number is the customer calling in, call_to_number is the virtual DID dialed
+    const rawCustomerPhone = String(
+      innerPayload.customer_number ||
         innerPayload.caller_id_number ||
         innerPayload.caller_id ||
-        p.agentNumber ||
+        innerPayload.from ||
         ''
     ).trim();
-  }
 
-  let destination = '';
-  if (p.destinationNumber && typeof p.destinationNumber === 'string' && p.destinationNumber.trim() && p.destinationNumber !== 'Unknown') {
-    destination = p.destinationNumber.trim();
-  } else {
-    destination = String(
+    const rawVirtualDid = String(
       innerPayload.call_to_number ||
-        innerPayload['customer_no_with_prefix '] ||
-        innerPayload.customer_no_with_prefix ||
-        innerPayload.destination_number ||
-        innerPayload.customer_number ||
-        innerPayload.digits_dialed ||
+        innerPayload.virtual_did ||
         innerPayload.to ||
         ''
     ).trim();
+
+    destination = rawCustomerPhone || String(p.destinationNumber || '').trim();
+
+    if (
+      p.agentNumber &&
+      typeof p.agentNumber === 'string' &&
+      p.agentNumber.trim() &&
+      p.agentNumber !== 'Unknown' &&
+      p.agentNumber !== rawCustomerPhone &&
+      p.agentNumber !== rawVirtualDid
+    ) {
+      agent = p.agentNumber.trim();
+    } else if (typeof innerPayload.routed_to_name === 'string' && innerPayload.routed_to_name) {
+      const ext = innerPayload.routed_to_extension ? ` (Ext: ${innerPayload.routed_to_extension})` : '';
+      const num = innerPayload.routed_to_number ? ` (${innerPayload.routed_to_number})` : '';
+      agent = `${innerPayload.routed_to_name}${ext || num}`;
+    } else if (typeof innerPayload.routed_to_extension === 'string' && innerPayload.routed_to_extension) {
+      agent = `Ext: ${innerPayload.routed_to_extension}`;
+    } else if (typeof innerPayload.routed_to_number === 'string' && innerPayload.routed_to_number) {
+      agent = String(innerPayload.routed_to_number);
+    } else if (typeof innerPayload.agent_extension === 'string' && innerPayload.agent_extension) {
+      agent = `Ext: ${innerPayload.agent_extension}`;
+    } else if (typeof innerPayload.agent_number === 'string' && innerPayload.agent_number) {
+      agent = String(innerPayload.agent_number);
+    } else {
+      agent = 'Pending Bridge / Fallback';
+    }
+  } else {
+    // Outbound Click-to-Call
+    if (p.agentNumber && typeof p.agentNumber === 'string' && p.agentNumber.trim() && p.agentNumber !== 'Unknown') {
+      agent = p.agentNumber.trim();
+    } else if (typeof innerPayload.answered_agent_name === 'string' && innerPayload.answered_agent_name) {
+      agent = `${innerPayload.answered_agent_name}${innerPayload.answered_agent_number ? ` (${innerPayload.answered_agent_number})` : ''}`.trim();
+    } else if (Array.isArray(innerPayload.missed_agent) && innerPayload.missed_agent.length > 0) {
+      const m = (innerPayload.missed_agent[0] || {}) as Record<string, unknown>;
+      const name = m.name ? String(m.name) : '';
+      const num = m.number || m.agent_number || m.id || '';
+      agent = name ? `${name}${num ? ` (${num})` : ''}` : String(num);
+    } else {
+      agent = String(
+        innerPayload.agent_name ||
+          innerPayload.agent_number ||
+          innerPayload.caller_id ||
+          p.agentNumber ||
+          ''
+      ).trim();
+    }
+
+    if (p.destinationNumber && typeof p.destinationNumber === 'string' && p.destinationNumber.trim() && p.destinationNumber !== 'Unknown') {
+      destination = p.destinationNumber.trim();
+    } else {
+      destination = String(
+        innerPayload.call_to_number ||
+          innerPayload['customer_no_with_prefix '] ||
+          innerPayload.customer_no_with_prefix ||
+          innerPayload.destination_number ||
+          innerPayload.customer_number ||
+          innerPayload.digits_dialed ||
+          innerPayload.to ||
+          ''
+      ).trim();
+    }
   }
 
   let cause = '';
@@ -183,7 +255,7 @@ export function formatSmartfloWebhookEvent(
         innerPayload.hangup_cause ||
         innerPayload.cause ||
         p.hangupCause ||
-        'NORMAL_CLEARING'
+        (isInboundDialplan ? 'ROUTED_TO_AGENT' : 'NORMAL_CLEARING')
     );
   }
 
@@ -192,14 +264,15 @@ export function formatSmartfloWebhookEvent(
       innerPayload.status ||
       innerPayload.disposition ||
       p.status ||
-      'missed'
+      (isInboundDialplan ? 'bridged' : 'missed')
   );
 
-  const direction = String(innerPayload.direction || p.direction || 'clicktocall');
-  const callType =
-    direction === 'clicktocall'
-      ? 'Click to Call'
-      : String(p.callType || 'Click to Call');
+  const direction = isInboundDialplan ? 'inbound' : String(innerPayload.direction || p.direction || 'clicktocall');
+  const callType = isInboundDialplan
+    ? 'Inbound Dialplan'
+    : direction === 'clicktocall'
+    ? 'Click to Call'
+    : String(p.callType || 'Click to Call');
 
   const durCandidate =
     p.duration ??

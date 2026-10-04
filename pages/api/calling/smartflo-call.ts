@@ -100,17 +100,17 @@ export default async function handler(
     });
   }
 
-  // 3. Query user_smartflo_details for the agent's extension and assigned caller_id
+  // 3. Query user_smartflo_details for the agent's extension, assigned caller_id, and c2c_routing
   let { data: agentRow, error: agentError } = await smartfloAdminClient
     .from('user_smartflo_details')
-    .select('smartflo_agent_id, agent_name, extension, intercom, caller_id, user_id, is_mapped')
+    .select('smartflo_agent_id, agent_name, extension, intercom, caller_id, user_id, is_mapped, c2c_routing')
     .eq('user_id', user.id)
     .maybeSingle();
 
   if (!agentRow && profile.id && profile.id !== user.id) {
     const byRowId = await smartfloAdminClient
       .from('user_smartflo_details')
-      .select('smartflo_agent_id, agent_name, extension, intercom, caller_id, user_id, is_mapped')
+      .select('smartflo_agent_id, agent_name, extension, intercom, caller_id, user_id, is_mapped, c2c_routing')
       .eq('user_id', profile.id)
       .maybeSingle();
     if (byRowId.data) {
@@ -121,7 +121,7 @@ export default async function handler(
   if (!agentRow && smartfloUser?.agent_id) {
     const fallbackAgent = await smartfloAdminClient
       .from('user_smartflo_details')
-      .select('smartflo_agent_id, agent_name, extension, intercom, caller_id, user_id, is_mapped')
+      .select('smartflo_agent_id, agent_name, extension, intercom, caller_id, user_id, is_mapped, c2c_routing')
       .eq('smartflo_agent_id', smartfloUser.agent_id)
       .maybeSingle();
     if (fallbackAgent.data) {
@@ -136,8 +136,12 @@ export default async function handler(
     });
   }
 
-  // Agent number: Use agent extension so Smartflo routes directly to the softphone/WebRTC
-  const agentNumber = agentRow.extension?.trim() || agentRow.smartflo_agent_id?.trim();
+  // Agent number: If c2c_routing is 'agent' / 'caller_forward_first', route to smartflo_agent_id (mobile forward).
+  // Otherwise default to agent extension (softphone/WebRTC).
+  const isMobileRouting = agentRow.c2c_routing === 'agent' || agentRow.c2c_routing === 'agent_mobile' || agentRow.c2c_routing === 'caller_forward_first';
+  const agentNumber = isMobileRouting
+    ? (agentRow.smartflo_agent_id?.trim() || agentRow.extension?.trim())
+    : (agentRow.extension?.trim() || agentRow.smartflo_agent_id?.trim());
   if (!agentNumber) {
     return res.status(400).json({
       success: false,

@@ -52,13 +52,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   let { data: agentRows, error: agentsError } = await smartfloAdminClient
     .from('user_smartflo_details')
-    .select('smartflo_agent_id, extension, intercom, caller_id')
+    .select('smartflo_agent_id, extension, intercom, caller_id, c2c_routing')
     .eq('organization_id', admin.organizationId);
 
   if (!agentRows || agentRows.length === 0) {
     const fallbackAgents = await smartfloAdminClient
       .from('user_smartflo_details')
-      .select('smartflo_agent_id, extension, intercom, caller_id');
+      .select('smartflo_agent_id, extension, intercom, caller_id, c2c_routing');
     if (fallbackAgents.data && fallbackAgents.data.length > 0) {
       agentRows = fallbackAgents.data;
     }
@@ -108,7 +108,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // In Tata Smartflo Click-to-Call:
   // - Extension (060XXXXXX): Routes the first leg directly to the agent's Softphone (WebRTC / App).
   // - Agent ID (050XXXXXX): Routes to the agent's Call Forward Number (PSTN / personal mobile phone).
-  const targetAgentNumber = selectedAgent.extension?.trim() || selectedAgent.smartflo_agent_id;
+  const isMobileRouting = selectedAgent.c2c_routing === 'agent' || selectedAgent.c2c_routing === 'agent_mobile' || selectedAgent.c2c_routing === 'caller_forward_first';
+  const targetAgentNumber = isMobileRouting
+    ? (selectedAgent.smartflo_agent_id?.trim() || selectedAgent.extension?.trim())
+    : (selectedAgent.extension?.trim() || selectedAgent.smartflo_agent_id?.trim());
 
   console.info('[Smartflo Click-to-Call] Routing target:', {
     agent_number: targetAgentNumber,

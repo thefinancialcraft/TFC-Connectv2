@@ -22,6 +22,8 @@ const parameterOptions = {
 type ClickToCallParams = Record<keyof typeof parameterOptions, string> & {
   agent_number: string[];
   caller_id: string | null;
+  routing_mode?: string;
+  fallback_agent_id?: string | null;
 };
 
 const defaultClickToCallParams: ClickToCallParams = {
@@ -31,6 +33,8 @@ const defaultClickToCallParams: ClickToCallParams = {
   async: 'false',
   custom_identifier: 'Customer ID',
   call_timeout: '30 seconds',
+  routing_mode: 'extension_first',
+  fallback_agent_id: null,
 };
 
 function sanitizeClickToCallParams(
@@ -51,6 +55,11 @@ function sanitizeClickToCallParams(
   result.agent_number = sanitizeSelections(input.agent_number, allowedAgentIds);
   const callerId = Array.isArray(input.caller_id) ? input.caller_id[0] : input.caller_id;
   result.caller_id = typeof callerId === 'string' ? callerId.trim().slice(0, 50) || null : null;
+  if (typeof input.routing_mode === 'string' && ['extension_first', 'caller_forward_first', 'custom'].includes(input.routing_mode)) {
+    result.routing_mode = input.routing_mode;
+  }
+  const fallbackAgentId = typeof input.fallback_agent_id === 'string' ? input.fallback_agent_id.trim() : null;
+  result.fallback_agent_id = fallbackAgentId && fallbackAgentId.length > 0 ? fallbackAgentId : null;
 
   for (const key of Object.keys(parameterOptions) as (keyof typeof parameterOptions)[]) {
     const candidate = input[key];
@@ -190,7 +199,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     let { data: smartfloAgents, error: agentsError } = await smartfloAdminClient
       .from('user_smartflo_details')
-      .select('smartflo_agent_id, user_id, agent_name, login_id, extension, intercom, follow_me_number, caller_id, is_active')
+      .select('smartflo_agent_id, user_id, agent_name, login_id, extension, intercom, follow_me_number, caller_id, is_active, c2c_routing')
       .eq('organization_id', admin.organizationId)
       .order('agent_name', { ascending: true });
     if (agentsError) return res.status(500).json({ error: 'Unable to load Smartflo agent options.' });
@@ -198,7 +207,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (!smartfloAgents || smartfloAgents.length === 0) {
       const fallbackQuery = await smartfloAdminClient
         .from('user_smartflo_details')
-        .select('smartflo_agent_id, user_id, agent_name, login_id, extension, intercom, follow_me_number, caller_id, is_active')
+        .select('smartflo_agent_id, user_id, agent_name, login_id, extension, intercom, follow_me_number, caller_id, is_active, c2c_routing')
         .order('agent_name', { ascending: true });
       if (fallbackQuery.data && fallbackQuery.data.length > 0) {
         smartfloAgents = fallbackQuery.data;
@@ -223,8 +232,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       .eq('webhook_for', 'smartflo')
       .maybeSingle();
 
+    const configWebhookId = config?.webhook_id || config?.integration_id;
+
     if (!webhookRow) {
-      const initialWebhookId = randomUUID();
+      const initialWebhookId = configWebhookId || randomUUID();
       const { data: insertedWebhook } = await smartfloAdminClient
         .from('webhooks')
         .upsert(
@@ -241,7 +252,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       webhookRow = insertedWebhook;
     }
 
-    const currentWebhookId = webhookRow?.webhook_id || randomUUID();
+    const currentWebhookId = configWebhookId || webhookRow?.webhook_id || randomUUID();
 
     // Fetch responses from public.webhook_responses table for this organization
     const { data: dbResponses } = await smartfloAdminClient
@@ -262,20 +273,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
     }
 
+    // If smartflo_dialer_config exists and webhook_id is not set, sync it
+    if (config && !config.webhook_id && currentWebhookId) {
+      await smartfloAdminClient
+        .from('smartflo_dialer_config')
+        .update({ webhook_id: currentWebhookId })
+        .eq('organization_id', admin.organizationId);
+    }
+
     return res.status(200).json({
-      configuration: config ? {
+      configuration: {
         organizationId: admin.organizationId,
-        integrationId: config.integration_id,
+        integrationId: config?.integration_id || null,
         webhookId: currentWebhookId,
         webhookEvents: formattedEvents,
-        hasToken: Boolean(config.smartflo_api_token),
-        isActivated: Boolean(config.enabled),
+        hasToken: Boolean(config?.smartflo_api_token),
+        isActivated: Boolean(config?.enabled),
         isTokenValid: isTokenValid && !isExpired,
-        tokenCreatedAt: config.token_created_at,
-        tokenExpiresAt: config.token_expires_at,
-        expiryDays: calculateExpiryDays(config.token_created_at, config.token_expires_at),
-        clickToCallParams: sanitizeClickToCallParams(config.click_to_call_params, allowedAgentIds),
-      } : null,
+        tokenCreatedAt: config?.token_created_at || null,
+        tokenExpiresAt: config?.token_expires_at || null,
+        expiryDays: calculateExpiryDays(config?.token_created_at || null, config?.token_expires_at || null),
+        clickToCallParams: sanitizeClickToCallParams(config?.click_to_call_params, allowedAgentIds),
+      },
       smartfloAgents: (smartfloAgents || []).map((agent) => ({
         agentId: agent.smartflo_agent_id,
         userId: agent.user_id,
@@ -286,6 +305,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         followMeNumber: agent.follow_me_number,
         callerId: agent.caller_id,
         isActive: agent.is_active,
+        c2cRouting: agent.c2c_routing || 'extension',
       })),
       crmUsers: (crmUsers || []).map((user) => ({
         userId: user.user_id,
@@ -296,9 +316,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     });
   }
 
-  if (req.method === 'PATCH') {
+  if (req.method === 'PATCH' || (req.method === 'POST' && (req.body?.c2cRouting !== undefined || req.body?.agentUserMapping !== undefined || req.body?.agentCallerId !== undefined))) {
     if (req.body?.action === 'disable' || req.body?.action === 'reset_click_to_call') {
-      // 1. Reset smartflo_dialer_config in Supabase
+      // 1. Reset smartflo_dialer_config in Supabase (set webhook_id and webhook_events to null)
       await smartfloAdminClient
         .from('smartflo_dialer_config')
         .update({
@@ -311,24 +331,31 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           token_created_at: null,
           token_expires_at: null,
           click_to_call_params: defaultClickToCallParams,
-          webhook_events: [],
+          webhook_id: null,
+          webhook_events: null,
           updated_at: new Date().toISOString(),
         })
         .eq('organization_id', admin.organizationId);
 
-      // 2. Clear webhook_responses
+      // 2. Delete connected webhook from public.webhooks table
+      await smartfloAdminClient
+        .from('webhooks')
+        .delete()
+        .eq('organization_id', admin.organizationId);
+
+      // 3. Clear webhook_responses
       await smartfloAdminClient
         .from('webhook_responses')
         .delete()
         .eq('organization_id', admin.organizationId);
 
-      // 3. Clear user_smartflo_details
+      // 4. Clear user_smartflo_details
       await smartfloAdminClient
         .from('user_smartflo_details')
         .delete()
         .eq('organization_id', admin.organizationId);
 
-      // 4. Reset user_profiles calling_provider smartflo
+      // 5. Reset user_profiles calling_provider smartflo
       const { data: profiles } = await smartfloAdminClient
         .from('user_profiles')
         .select('user_id, calling_provider')
@@ -637,6 +664,136 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         success: true,
         agentId: updatedAgent.smartflo_agent_id,
         callerId: updatedAgent.caller_id,
+      });
+    }
+
+    if (req.body?.c2cRouting !== undefined) {
+      const routingPayload = req.body.c2cRouting as Record<string, unknown>;
+      const globalMode = typeof routingPayload?.globalMode === 'string' ? routingPayload.globalMode : null;
+      const agentId = typeof routingPayload?.agentId === 'string' ? routingPayload.agentId.trim() : null;
+      const agentRouting = typeof routingPayload?.routing === 'string' ? routingPayload.routing.trim() : null;
+
+      if (globalMode && (globalMode === 'extension_first' || globalMode === 'caller_forward_first')) {
+        const targetRouting = globalMode === 'caller_forward_first' ? 'agent' : 'extension';
+        const { error: bulkError } = await smartfloAdminClient
+          .from('user_smartflo_details')
+          .update({ c2c_routing: targetRouting })
+          .eq('organization_id', admin.organizationId);
+
+        if (bulkError) return res.status(500).json({ error: 'Unable to update bulk C2C routing for agents.' });
+
+        // Update routing_mode in smartflo_dialer_config
+        const { data: currentConfig } = await smartfloAdminClient
+          .from('smartflo_dialer_config')
+          .select('click_to_call_params')
+          .eq('organization_id', admin.organizationId)
+          .maybeSingle();
+
+        const prevParams = currentConfig?.click_to_call_params && typeof currentConfig.click_to_call_params === 'object'
+          ? currentConfig.click_to_call_params as Record<string, unknown>
+          : {};
+
+        await smartfloAdminClient
+          .from('smartflo_dialer_config')
+          .update({
+            click_to_call_params: { ...prevParams, routing_mode: globalMode },
+          })
+          .eq('organization_id', admin.organizationId);
+
+        return res.status(200).json({
+          success: true,
+          globalMode,
+          routing: targetRouting,
+        });
+      }
+
+      if (agentId && agentRouting && (agentRouting === 'extension' || agentRouting === 'agent')) {
+        let { data: updatedAgent, error: singleError } = await smartfloAdminClient
+          .from('user_smartflo_details')
+          .update({ c2c_routing: agentRouting })
+          .eq('organization_id', admin.organizationId)
+          .eq('smartflo_agent_id', agentId)
+          .select('smartflo_agent_id, c2c_routing')
+          .maybeSingle();
+
+        if (!updatedAgent && !singleError) {
+          const fallbackRes = await smartfloAdminClient
+            .from('user_smartflo_details')
+            .update({ c2c_routing: agentRouting, organization_id: admin.organizationId })
+            .eq('smartflo_agent_id', agentId)
+            .select('smartflo_agent_id, c2c_routing')
+            .maybeSingle();
+          if (fallbackRes.data) {
+            updatedAgent = fallbackRes.data;
+          }
+        }
+
+        if (singleError) return res.status(500).json({ error: 'Unable to update agent C2C routing.' });
+        if (!updatedAgent) return res.status(404).json({ error: 'Smartflo agent not found.' });
+
+        // Update routing_mode to custom in smartflo_dialer_config
+        const { data: currentConfig } = await smartfloAdminClient
+          .from('smartflo_dialer_config')
+          .select('click_to_call_params')
+          .eq('organization_id', admin.organizationId)
+          .maybeSingle();
+
+        const prevParams = currentConfig?.click_to_call_params && typeof currentConfig.click_to_call_params === 'object'
+          ? currentConfig.click_to_call_params as Record<string, unknown>
+          : {};
+
+        await smartfloAdminClient
+          .from('smartflo_dialer_config')
+          .update({
+            click_to_call_params: { ...prevParams, routing_mode: 'custom' },
+          })
+          .eq('organization_id', admin.organizationId);
+
+        return res.status(200).json({
+          success: true,
+          agentId: updatedAgent.smartflo_agent_id,
+          routing: updatedAgent.c2c_routing,
+        });
+      }
+
+      return res.status(400).json({ error: 'Invalid c2cRouting parameters.' });
+    }
+
+    if (req.body?.fallbackAgent !== undefined) {
+      const fallbackPayload = req.body.fallbackAgent as Record<string, unknown>;
+      const rawAgentId = typeof fallbackPayload?.fallback_agent_id === 'string'
+        ? fallbackPayload.fallback_agent_id.trim()
+        : null;
+      const fallbackAgentId = rawAgentId && rawAgentId !== '' ? rawAgentId : null;
+
+      const { data: currentConfig } = await smartfloAdminClient
+        .from('smartflo_dialer_config')
+        .select('click_to_call_params')
+        .eq('organization_id', admin.organizationId)
+        .maybeSingle();
+
+      const prevParams = currentConfig?.click_to_call_params && typeof currentConfig.click_to_call_params === 'object'
+        ? currentConfig.click_to_call_params as Record<string, unknown>
+        : {};
+
+      const updatedParams = { ...prevParams, fallback_agent_id: fallbackAgentId };
+
+      const { error: updateConfigErr } = await smartfloAdminClient
+        .from('smartflo_dialer_config')
+        .update({
+          click_to_call_params: updatedParams,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('organization_id', admin.organizationId);
+
+      if (updateConfigErr) {
+        return res.status(500).json({ error: 'Unable to save fallback agent.' });
+      }
+
+      return res.status(200).json({
+        success: true,
+        fallback_agent_id: fallbackAgentId,
+        clickToCallParams: updatedParams,
       });
     }
 
