@@ -2197,13 +2197,13 @@ useEffect(() => {
     };
 
     const handleStartCall = async () => {
-        const now = Date.now();
-        if (isPlacingCallRef.current || isPlacingCall || isCalling || (now - lastCallPlacedAtRef.current < 2500)) {
+        const callInitiatedAt = Date.now();
+        if (isPlacingCallRef.current || isPlacingCall || isCalling || (callInitiatedAt - lastCallPlacedAtRef.current < 2500)) {
             console.warn('⚠️ [Click-to-Call] Blocked duplicate call initiation attempt');
             return;
         }
         isPlacingCallRef.current = true;
-        lastCallPlacedAtRef.current = now;
+        lastCallPlacedAtRef.current = callInitiatedAt;
         setIsPlacingCall(true);
         isApiUpdatingRef.current = true; // LOCK ON IMMEDIATELY
         const cId = campaignId as string;
