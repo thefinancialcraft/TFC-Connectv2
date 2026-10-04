@@ -6,6 +6,7 @@ import {
   syncSmartfloWebhookToCallHistory,
   type FormattedSmartfloWebhookEvent,
 } from '@/lib/smartfloServer';
+import { computePhoneHash } from '@/lib/phoneUtils';
 
 export type SmartfloWebhookEvent = FormattedSmartfloWebhookEvent;
 
