@@ -5103,7 +5103,7 @@ Campaign: ${campaign?.name || campaignId}
 
                                         {/* Smartflo Live Calling Flow Stepper (Card Outside Timeline Box) */}
                                         {(activeCallingProvider === 'smartflo' || lastCheckedRefId || smartfloLogs.length > 0) && (
-                                            <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
+                                            <div className="mb-5 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 shadow-none">
                                                 {/* Header: Title + Monospace Ref ID + Refresh */}
                                                 <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-200/70">
                                                     <div className="flex items-center gap-2.5 min-w-0">
