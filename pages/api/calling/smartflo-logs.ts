@@ -542,23 +542,44 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       recordingUrl: null,
       rawPayload: liveCallStatusData,
     };
-  } else if (targetRefId || targetCallId) {
+  } else if (targetRefId || targetCallId || targetPhone) {
     // 2. Not live on switch -> Check completed CDR or webhook responses:
     const targetKey = targetRefId || targetCallId;
-    const matched = finalLogs.find((item) => {
-      const raw = (item.rawPayload || {}) as any;
-      const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
-      return (
-        item.refId === targetKey ||
-        item.callId === targetKey ||
-        raw.ref_id === targetKey ||
-        raw.call_id === targetKey ||
-        raw.uuid === targetKey ||
-        customIdStr.includes(targetKey)
-      );
-    });
+    const matched = targetKey
+      ? finalLogs.find((item) => {
+          const raw = (item.rawPayload || {}) as any;
+          const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
+          return (
+            item.refId === targetKey ||
+            item.callId === targetKey ||
+            raw.ref_id === targetKey ||
+            raw.call_id === targetKey ||
+            raw.uuid === targetKey ||
+            customIdStr.includes(targetKey)
+          );
+        })
+      : finalLogs.find((item) => {
+          if (!targetPhone) return false;
+          const itemDest = cleanPhone(item.destinationNumber || '');
+          const raw = (item.rawPayload || {}) as any;
+          const itemCaller = cleanPhone(
+            item.agentNumber ||
+            raw.caller_id_number ||
+            raw.caller_id ||
+            raw.customer_number ||
+            raw.from ||
+            ''
+          );
+          return (
+            (itemDest && (itemDest.includes(targetPhone) || targetPhone.includes(itemDest))) ||
+            (itemCaller && (itemCaller.includes(targetPhone) || targetPhone.includes(itemCaller)))
+          );
+        });
 
     if (matched) {
+      if (!targetCallId && matched.callId) {
+        targetCallId = String(matched.callId);
+      }
       const raw = (matched.rawPayload || {}) as any;
       const isMatchedInbound = Boolean(
         String(matched.direction || '').toLowerCase() === 'inbound' ||

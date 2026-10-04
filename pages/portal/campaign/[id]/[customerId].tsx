@@ -600,9 +600,10 @@ export default function CallingPage() {
                 ref_status: data.ref_status,
             });
 
-            if (data.active_call_id && data.active_call_id !== currentCallId) {
-                setLastCheckedCallId(data.active_call_id);
-                activeSmartfloCallIdRef.current = data.active_call_id;
+            const resolvedCallId = data.active_call_id || data.ref_status?.callId;
+            if (resolvedCallId && resolvedCallId !== currentCallId) {
+                setLastCheckedCallId(resolvedCallId);
+                activeSmartfloCallIdRef.current = resolvedCallId;
             }
 
             // If this call was cancelled by user and active_call_id appears (agent picked up), auto-hangup immediately!
@@ -716,8 +717,25 @@ export default function CallingPage() {
                 },
                 (payload) => {
                     console.log('⚡ [Realtime] New Smartflo webhook received:', payload.new);
+                    const resPayload = (payload.new?.response || {}) as any;
+                    const raw = (resPayload.rawPayload || resPayload) as any;
+                    
+                    const normalizeNum = (val: string) => String(val || '').replace(/[\s\-\(\)\+]/g, '').slice(-10);
+                    const callerNum = normalizeNum(raw.caller_id_number || raw.caller_id || resPayload.agentNumber || raw.customer_number || raw.from || '');
+                    const destNum = normalizeNum(raw.call_to_number || raw.destination || resPayload.destinationNumber || raw.to || '');
+                    const custPhone = customer?.phone_no ? normalizeNum(decryptPhone(customer.phone_no)) : '';
+
+                    const incomingCallId = String(raw.call_id || raw.uuid || resPayload.callId || resPayload.refId || '');
+                    
+                    if (custPhone && (callerNum.includes(custPhone) || custPhone.includes(callerNum) || destNum.includes(custPhone) || custPhone.includes(destNum))) {
+                        if (incomingCallId) {
+                            activeSmartfloCallIdRef.current = incomingCallId;
+                            setLastCheckedCallId(incomingCallId);
+                        }
+                    }
+
                     const currentRef = activeSmartfloRefIdRef.current || lastCheckedRefId;
-                    const currentCallId = activeSmartfloCallIdRef.current || lastCheckedCallId;
+                    const currentCallId = incomingCallId || activeSmartfloCallIdRef.current || lastCheckedCallId;
                     fetchSmartfloLogs(currentRef || undefined, currentCallId || undefined);
                 }
             )
@@ -726,33 +744,35 @@ export default function CallingPage() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [fetchSmartfloLogs, lastCheckedRefId, lastCheckedCallId]);
+    }, [fetchSmartfloLogs, lastCheckedRefId, lastCheckedCallId, customer?.phone_no]);
 
     // 2. Real-time polling for active Smartflo call status every 1.5s via /v1/live_calls/{call_id}
     useEffect(() => {
         const targetRef = lastCheckedRefId || activeSmartfloRefIdRef.current;
         const targetCallId = lastCheckedCallId || activeSmartfloCallIdRef.current;
-        if (!targetRef && !targetCallId) return;
+        if (!targetRef && !targetCallId && !isCalling) return;
 
         // Stop polling ONLY when we have a completed log record for targetRef / targetCallId
-        const hasCompletedLog = smartfloLogs.some((l: any) => {
-            const raw = (l.rawPayload || {}) as any;
-            const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
-            const isMatch = (
-                (targetRef && (l.refId === targetRef || l.callId === targetRef || raw.ref_id === targetRef || raw.call_id === targetRef || raw.uuid === targetRef || customIdStr.includes(targetRef))) ||
-                (targetCallId && (l.callId === targetCallId || l.refId === targetCallId || raw.call_id === targetCallId || raw.ref_id === targetCallId || raw.uuid === targetCallId || customIdStr.includes(targetCallId)))
-            );
-            return isMatch && l.hangupCause !== 'ACTIVE_CALL' && (l.hangupCause || raw.hangup_cause_description || raw.hangup_cause_key || raw.reason_key || l.status);
-        });
+        if (targetRef || targetCallId) {
+            const hasCompletedLog = smartfloLogs.some((l: any) => {
+                const raw = (l.rawPayload || {}) as any;
+                const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
+                const isMatch = (
+                    (targetRef && (l.refId === targetRef || l.callId === targetRef || raw.ref_id === targetRef || raw.call_id === targetRef || raw.uuid === targetRef || customIdStr.includes(targetRef))) ||
+                    (targetCallId && (l.callId === targetCallId || l.refId === targetCallId || raw.call_id === targetCallId || raw.ref_id === targetCallId || raw.uuid === targetCallId || customIdStr.includes(targetCallId)))
+                );
+                return isMatch && l.hangupCause !== 'ACTIVE_CALL' && (l.hangupCause || raw.hangup_cause_description || raw.hangup_cause_key || raw.reason_key || l.status);
+            });
 
-        if (hasCompletedLog) return;
+            if (hasCompletedLog) return;
+        }
 
         const pollTimer = setInterval(() => {
             fetchSmartfloLogs(targetRef || undefined, targetCallId || undefined);
         }, 1500);
 
         return () => clearInterval(pollTimer);
-    }, [lastCheckedRefId, lastCheckedCallId, smartfloLogs, fetchSmartfloLogs]);
+    }, [lastCheckedRefId, lastCheckedCallId, isCalling, smartfloLogs, fetchSmartfloLogs]);
 
     useEffect(() => {
         setLastCheckedRefId(null);
