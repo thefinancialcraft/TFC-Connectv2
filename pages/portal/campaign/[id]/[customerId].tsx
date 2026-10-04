@@ -5102,7 +5102,7 @@ Campaign: ${campaign?.name || campaignId}
                             <div className="md:col-span-4 flex flex-col gap-4">
 
                                         {/* Smartflo Live Calling Flow Stepper (Card Outside Timeline Box) */}
-                                        {(activeCallingProvider === 'smartflo' || lastCheckedRefId || smartfloLogs.length > 0) && (() => {
+                                        {activeCallingProvider === 'smartflo' && (() => {
                                                     const activeRef = lastCheckedRefId || activeSmartfloRefIdRef.current || null;
                                                     const activeCallId = lastCheckedCallId || activeSmartfloCallIdRef.current || null;
                                                     const matchedLog = (activeRef || activeCallId)
@@ -5321,9 +5321,9 @@ Campaign: ${campaign?.name || campaignId}
                                                     return (
                                                         <div className="relative pt-1 pb-0.5">
                                                             {/* Connecting track line between circles */}
-                                                            <div className="absolute top-[17px] left-[12%] right-[12%] h-[2px] bg-slate-200 -z-0" />
+                                                            <div className="absolute top-[17px] left-[12%] mt-3 right-[12%] h-[2px] bg-slate-200 -z-0" />
 
-                                                            <div className="grid grid-cols-4 gap-1 relative z-10 text-center">
+                                                            <div className="grid grid-cols-4 gap-1 mt-3 relative z-10 text-center">
                                                                 {/* Step 1: Originated */}
                                                                 <div className="flex flex-col items-center">
                                                                     <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold mb-1 ring-2 ring-emerald-300 ring-offset-1 shadow-none">
