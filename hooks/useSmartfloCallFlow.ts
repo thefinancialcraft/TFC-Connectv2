@@ -6,6 +6,11 @@ import {
   cleanPhone,
   CallDirection,
 } from '@/lib/smartfloFlowEngine';
+import {
+  SmartfloSessionStore,
+  SmartfloCallSession,
+  SmartfloTimelineEntry,
+} from '@/lib/smartfloSessionStore';
 
 interface UseSmartfloCallFlowParams {
   phone?: string | null;
@@ -31,6 +36,7 @@ export function useSmartfloCallFlow({
   onCallEndDetected,
 }: UseSmartfloCallFlowParams) {
   const [activeCallType, setActiveCallType] = useState<'inbound' | 'outbound' | null>(null);
+  const [activeSession, setActiveSession] = useState<SmartfloCallSession | null>(null);
 
   const [flowState, setFlowState] = useState<SmartfloCallFlowState>(() =>
     computeSmartfloFlowState({
@@ -53,6 +59,69 @@ export function useSmartfloCallFlow({
   const isFetchingRef = useRef(false);
   const callEndTriggeredRef = useRef(false);
   const lastSyncTimestampRef = useRef(0);
+  const callInitiatedTimestampRef = useRef<number>(0);
+  const currentSessionIdRef = useRef<string | null>(null);
+
+  // Track when an outbound call starts or ends
+  useEffect(() => {
+    if (isPlacingCall || isCalling) {
+      if (callInitiatedTimestampRef.current === 0) {
+        callInitiatedTimestampRef.current = Date.now();
+      }
+      callEndTriggeredRef.current = false;
+
+      // Initialize or get Outbound Session in LocalStorage
+      if (phone && activeCallingProvider === 'smartflo') {
+        const existingSession = SmartfloSessionStore.findSession({
+          targetKey: activeRefId || activeCallId,
+          phone,
+          customerId,
+          maxAgeMs: 120000,
+        });
+
+        if (!existingSession) {
+          const newSession = SmartfloSessionStore.createSession({
+            direction: 'outbound',
+            phone,
+            customerId,
+            ref_id: activeRefId || null,
+            call_id: activeCallId || null,
+            initialPayload: { isPlacingCall, isCalling },
+          });
+          currentSessionIdRef.current = newSession.id;
+          setActiveSession(newSession);
+        } else {
+          currentSessionIdRef.current = existingSession.id;
+          setActiveSession(existingSession);
+        }
+      }
+    } else if (!isEndingCall) {
+      callInitiatedTimestampRef.current = 0;
+      callEndTriggeredRef.current = false;
+    }
+  }, [isPlacingCall, isCalling, isEndingCall, phone, customerId, activeCallingProvider, activeRefId, activeCallId]);
+
+  // 30s Timeout Monitor for Agent Ringing (Outbound C2C)
+  useEffect(() => {
+    if (!isCalling && !isPlacingCall) return;
+    if (activeCallingProvider !== 'smartflo') return;
+
+    const timeoutInterval = setInterval(() => {
+      const sessId = currentSessionIdRef.current || activeRefId;
+      if (sessId) {
+        const isTimeout = SmartfloSessionStore.checkAgentRingingTimeout(sessId, 30);
+        if (isTimeout && !callEndTriggeredRef.current) {
+          console.warn('⏱️ [Smartflo-Flow] Agent ringing 30s timeout reached. Auto-disconnecting call.');
+          callEndTriggeredRef.current = true;
+          if (onCallEndDetected) {
+            onCallEndDetected(sessId);
+          }
+        }
+      }
+    }, 1000);
+
+    return () => clearInterval(timeoutInterval);
+  }, [isCalling, isPlacingCall, activeCallingProvider, activeRefId, onCallEndDetected]);
 
   // When CRM places an outbound call, immediately flag activeCallType as outbound
   useEffect(() => {
@@ -83,6 +152,7 @@ export function useSmartfloCallFlow({
     trackedRefIdRef.current = null;
     trackedCallIdRef.current = null;
     callEndTriggeredRef.current = false;
+    callInitiatedTimestampRef.current = 0;
     setTrackedRefId(null);
     setTrackedCallId(null);
     setInboundDetected(false);
@@ -162,28 +232,46 @@ export function useSmartfloCallFlow({
             });
           }
 
-          if (!matchedLog && cleanedTargetPhone) {
+          // ONLY fallback to matching by phone if we don't have an active targetKey
+          // AND the log was created AFTER call initiation (not an old historical call from hours ago!)
+          if (!matchedLog && !targetKey && cleanedTargetPhone) {
+            const minTimestamp =
+              callInitiatedTimestampRef.current > 0
+                ? callInitiatedTimestampRef.current - 15000
+                : Date.now() - 45000;
+
             matchedLog = logs.find((l: any) => {
               const raw = (l.rawPayload || {}) as any;
-              const dest = cleanPhone(l.destinationNumber || raw.destination || raw.call_to_number || '');
-              const caller = cleanPhone(l.agentNumber || raw.caller_id_number || raw.caller_id || '');
+              const logTime = new Date(
+                l.createdAt || raw.created_at || raw.start_stamp || 0
+              ).getTime();
+              if (logTime < minTimestamp) return false;
+
+              const dest = cleanPhone(
+                l.destinationNumber || raw.destination || raw.call_to_number || ''
+              );
+              const caller = cleanPhone(
+                l.agentNumber || raw.caller_id_number || raw.caller_id || ''
+              );
               return dest.includes(cleanedTargetPhone) || caller.includes(cleanedTargetPhone);
             });
           }
 
           const rawMatched = (matchedLog?.rawPayload || {}) as any;
-          const rawMatchedCallType = String(rawMatched.call_type || matchedLog?.callType || '').toLowerCase();
+          const rawMatchedCallType = String(
+            rawMatched.call_type || matchedLog?.callType || ''
+          ).toLowerCase();
 
           const isLiveInbound = Boolean(
             rawMatchedCallType === 'rynxly_inbound' ||
-            data.ref_status?.isInbound ||
-            (liveCall &&
-              (String(liveCall.direction || '').includes('inbound') ||
-                String(liveCall.call_type || '').includes('inbound') ||
-                String(liveCall.call_type || '') === 'rynxly_inbound')) ||
-            (matchedLog &&
-              (String(matchedLog.direction || '').includes('inbound') ||
-                String(matchedLog.callType || '').includes('inbound')))
+              data.ref_status?.isInbound ||
+              (liveCall &&
+                (String(liveCall.direction || '').includes('inbound') ||
+                  String(liveCall.call_type || '').includes('inbound') ||
+                  String(liveCall.call_type || '') === 'rynxly_inbound')) ||
+              (matchedLog &&
+                (String(matchedLog.direction || '').includes('inbound') ||
+                  String(matchedLog.callType || '').includes('inbound')))
           );
 
           if (isLiveInbound) {
@@ -207,12 +295,77 @@ export function useSmartfloCallFlow({
           setFlowState(computed);
           lastSyncTimestampRef.current = Date.now();
 
-          // Auto trigger call end when call has completed on backend switch
+          // Sync Smartflo Session Cache in LocalStorage & Append Timeline Entry
+          const activeKey = currentCallId || currentRef || liveCallId || currentSessionIdRef.current;
+          if (activeKey) {
+            const stageName = computed.isEnded
+              ? 'ended'
+              : computed.isLive
+              ? computed.steps.step3.sublabel === 'Speaking'
+                ? 'connected'
+                : 'customer_ringing'
+              : isPlacingCall || isCalling
+              ? 'agent_ringing'
+              : 'originated';
+
+            const updatedSess = SmartfloSessionStore.updateSession(
+              activeKey,
+              {
+                call_id: liveCallId || undefined,
+                duration: computed.duration,
+                recordingUrl: computed.recordingUrl,
+                status: stageName as any,
+                ...(computed.isEnded
+                  ? {
+                      endTime: Date.now(),
+                      hangupCause: matchedLog?.hangupCause || computed.steps.step4.sublabel,
+                    }
+                  : {}),
+              },
+              {
+                stage: stageName,
+                message: `Polling Sync: Step2=${computed.steps.step2.sublabel} | Step3=${computed.steps.step3.sublabel} | Step4=${computed.steps.step4.sublabel}`,
+                data: {
+                  is_live: Boolean(liveCall),
+                  duration: computed.duration,
+                  call_id: liveCallId || currentCallId,
+                },
+              }
+            );
+            if (updatedSess) {
+              setActiveSession(updatedSess);
+            }
+          }
+
+          // Auto trigger call end ONLY when the active call specifically completed on backend switch
+          // Never trigger while call is active on switch or on old historical logs!
+          const isCallSpecificallyEnded = Boolean(
+            !liveCall &&
+              matchedLog &&
+              (
+                (targetKey && (
+                  matchedLog.refId === targetKey ||
+                  matchedLog.callId === targetKey ||
+                  matchedLog.rawPayload?.ref_id === targetKey ||
+                  matchedLog.rawPayload?.call_id === targetKey ||
+                  matchedLog.rawPayload?.uuid === targetKey
+                )) ||
+                (callInitiatedTimestampRef.current > 0 &&
+                  new Date(
+                    matchedLog.createdAt ||
+                      matchedLog.rawPayload?.created_at ||
+                      matchedLog.rawPayload?.start_stamp ||
+                      0
+                  ).getTime() >= callInitiatedTimestampRef.current - 15000)
+              ) &&
+              matchedLog.hangupCause &&
+              matchedLog.hangupCause !== 'ACTIVE_CALL'
+          );
+
           if (
             isCalling &&
             !callEndTriggeredRef.current &&
-            (computed.isEnded ||
-              (matchedLog && matchedLog.hangupCause && matchedLog.hangupCause !== 'ACTIVE_CALL'))
+            isCallSpecificallyEnded
           ) {
             callEndTriggeredRef.current = true;
             if (onCallEndDetected) {
@@ -294,8 +447,55 @@ export function useSmartfloCallFlow({
             if (isInbound) {
               setInboundDetected(true);
               setActiveCallType('inbound');
+
+              // Create or Update Inbound Session in LocalStorage
+              let inboundSess = SmartfloSessionStore.findSession({
+                targetKey: incomingCallId,
+                phone: currentCustPhone,
+                customerId,
+                maxAgeMs: 120000,
+              });
+
+              if (!inboundSess) {
+                inboundSess = SmartfloSessionStore.createSession({
+                  direction: 'inbound',
+                  phone: currentCustPhone,
+                  customerId,
+                  call_id: incomingCallId,
+                  uuid: raw.uuid,
+                  initialPayload: raw,
+                });
+              } else {
+                inboundSess = SmartfloSessionStore.updateSession(
+                  inboundSess.id,
+                  {
+                    call_id: incomingCallId || inboundSess.call_id,
+                    rawPayload: raw,
+                  },
+                  {
+                    stage: 'inbound_webhook_event',
+                    message: `Inbound Call Webhook: ${rawCallType || 'event'}`,
+                    data: raw,
+                  }
+                );
+              }
+              if (inboundSess) {
+                currentSessionIdRef.current = inboundSess.id;
+                setActiveSession(inboundSess);
+              }
             } else {
               setActiveCallType('outbound');
+              if (incomingCallId && currentSessionIdRef.current) {
+                SmartfloSessionStore.updateSession(
+                  currentSessionIdRef.current,
+                  { call_id: incomingCallId },
+                  {
+                    stage: 'outbound_webhook_event',
+                    message: `Outbound Webhook: ${rawCallType || 'event'} (Call ID: ${incomingCallId})`,
+                    data: raw,
+                  }
+                );
+              }
             }
 
             if (incomingCallId) {
@@ -312,7 +512,7 @@ export function useSmartfloCallFlow({
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [activeCallingProvider, phone, refreshFlowState]);
+  }, [activeCallingProvider, phone, customerId, refreshFlowState]);
 
   // 2. Real-time Adaptive Polling Loop (1.2s when actively calling, auto-stops when ended)
   useEffect(() => {
@@ -351,6 +551,8 @@ export function useSmartfloCallFlow({
   return {
     flowState,
     activeCallType,
+    activeSession,
+    sessionTimeline: activeSession?.timeline || [],
     rawLogs,
     trackedRefId,
     trackedCallId,

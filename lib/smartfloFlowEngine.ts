@@ -117,10 +117,10 @@ export function computeSmartfloFlowState(params: {
 
       const hangupStep: FlowStepState = {
         title: 'Hangup',
-        sublabel: isAnswered ? (dur > 0 ? `${dur}s` : 'In Call') : 'Connecting...',
+        sublabel: isAnswered ? (dur > 0 ? `${dur}s` : 'In Call') : 'Standby',
         color: isAnswered ? 'indigo' : 'gray',
         icon: 'fi-rr-phone-slash',
-        isSpinning: true,
+        isSpinning: isAnswered,
         spinColor: 'indigo',
       };
 
@@ -415,7 +415,7 @@ export function computeSmartfloFlowState(params: {
           },
           step4: {
             title: 'Hangup',
-            sublabel: isEndingCall ? 'Ending...' : 'Connecting...',
+            sublabel: isEndingCall ? 'Ending...' : 'Standby',
             color: isEndingCall ? 'red' : 'gray',
             icon: 'fi-rr-phone-slash',
             isSpinning: isEndingCall,
@@ -461,7 +461,7 @@ export function computeSmartfloFlowState(params: {
           },
           step4: {
             title: 'Hangup',
-            sublabel: isEndingCall ? 'Ending...' : 'Connecting...',
+            sublabel: isEndingCall ? 'Ending...' : 'Standby',
             color: isEndingCall ? 'red' : 'gray',
             icon: 'fi-rr-phone-slash',
           },

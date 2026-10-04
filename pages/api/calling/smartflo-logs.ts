@@ -712,7 +712,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           isEnded: false,
           agent: { color: 'orange', sublabel: 'Ringing Agent...' },
           customer: { color: 'gray', sublabel: 'Waiting' },
-          hangup: { color: 'gray', sublabel: 'Connecting...' },
+          hangup: { color: 'gray', sublabel: 'Standby' },
           duration: 0,
           recordingUrl: null,
         };
