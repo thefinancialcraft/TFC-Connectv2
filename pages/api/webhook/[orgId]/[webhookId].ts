@@ -489,7 +489,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Return INSTANT HTTP 200 response to Smartflo PBX (< 200ms)
       return res.status(200).json(bridgeResponse);
     }
-    }
 
     // 4. OUTBOUND / STANDARD HANGUP WEBHOOK FLOW
     const callId = String(
