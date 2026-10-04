@@ -261,13 +261,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let assignedNumber = '';
       let assignedUserId = '';
       let assignedSmartfloAgentId = '';
+      let assignedIntercom = '';
       let assignedAgentDisplayName = '';
 
       // Step 3 & 5: Fetch agent details (assigned or fallback)
       try {
         let agentQuery = smartfloAdminClient
           .from('user_smartflo_details')
-          .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
+          .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
           .eq('organization_id', organizationId);
 
         if (targetUserId) {
@@ -279,7 +280,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!agentRecord && configuredFallbackAgentId) {
           const { data: fbBySmartfloId } = await smartfloAdminClient
             .from('user_smartflo_details')
-            .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
+            .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
             .eq('organization_id', organizationId)
             .eq('smartflo_agent_id', configuredFallbackAgentId)
             .maybeSingle();
@@ -289,7 +290,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         if (!agentRecord) {
           const { data: defaultAgent } = await smartfloAdminClient
             .from('user_smartflo_details')
-            .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
+            .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
             .eq('organization_id', organizationId)
             .limit(1)
             .maybeSingle();
@@ -300,12 +301,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           assignedUserId = agentRecord.user_id || targetUserId || '';
           assignedSmartfloAgentId = agentRecord.smartflo_agent_id || agentRecord.extension || '';
           assignedExtension = agentRecord.extension || agentRecord.smartflo_agent_id || '';
+          assignedIntercom = agentRecord.intercom || '';
           assignedNumber = agentRecord.follow_me_number || agentRecord.caller_id || '';
           assignedAgentDisplayName = agentRecord.agent_name || agentRecord.login_id
             ? (matchedLead?.assigned_to ? (agentRecord.agent_name || agentRecord.login_id) : `${agentRecord.agent_name || agentRecord.login_id} (Fallback)`)
             : 'Agent';
 
-          logStep(`[Webhook-Org:Step 3] ✅ Resolved Agent: User=${assignedUserId}, Ext=${assignedExtension}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}`);
+          logStep(`[Webhook-Org:Step 3] ✅ Resolved Agent: User=${assignedUserId}, Ext=${assignedExtension}, Intercom=${assignedIntercom}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}`);
         } else {
           logStep(`[Webhook-Org:Step 3] ❌ No active Smartflo agent found.`);
         }
@@ -349,15 +351,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Build bridge response (Destination & Extension & Number)
-      const primaryTarget = assignedExtension || assignedNumber || undefined;
+      const primaryTarget = assignedExtension || assignedSmartfloAgentId || assignedNumber || undefined;
       const bridgeResponse: Record<string, any> = {
-        action: 'bridge',
+        action: 'transfer',
+        type: 'agent',
         destination: primaryTarget,
+        value: primaryTarget,
+        transfer_to: primaryTarget,
+        agent_id: assignedSmartfloAgentId || undefined,
         agent_extension: assignedExtension || undefined,
+        extension: assignedExtension || undefined,
+        intercom: assignedIntercom || undefined,
         agent_number: assignedNumber || undefined,
+        phone_number: assignedNumber || undefined,
         rynxly_agent_id: assignedUserId || undefined,
         user_id: assignedUserId || undefined,
-        agent_id: assignedSmartfloAgentId || undefined,
         fallback_queue: 'QUEUE-DEFAULT-SUPPORT',
       };
 
