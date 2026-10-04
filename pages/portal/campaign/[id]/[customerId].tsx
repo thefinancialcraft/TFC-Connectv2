@@ -6065,12 +6065,13 @@ Campaign: ${campaign?.name || campaignId}
                                                 <i className="fi flex   fi-rr-phone-call text-xs"></i>
                                             </div>
                                             <span className="text-[10px] font-semibold ">Total Connects</span>
-                                        </div>
-                                        <span className="text-sm font-semibold">{history.filter(h => h.duration > 0).length}</span>
                                     </div>
+                                    <span className="text-sm font-semibold">{history.filter(h => h.duration > 0).length}</span>
                                 </div>
+                            </div>
                         </div>
                     </div>
+                </div>
                 </main>
             </div>
             <BottomNav activeNav="campaign" userRole={user?.role || null} />
@@ -6310,7 +6311,6 @@ Campaign: ${campaign?.name || campaignId}
                         </div>
                     </div>
                 </div>
-                            </div>
             )}
 
             {/* Enlarged Notes Modal - Compact Version */}
