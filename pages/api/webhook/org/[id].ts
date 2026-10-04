@@ -351,12 +351,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
 
       // Build bridge response (Destination & Extension & Number)
-      const primaryTarget = assignedSmartfloAgentId || assignedExtension || assignedNumber || undefined;
+      const primaryTarget = assignedExtension || assignedSmartfloAgentId || assignedNumber || undefined;
       const bridgeResponse: Record<string, any> = {
-        custom_field_1: primaryTarget,
-        custom_field_2: assignedExtension || undefined,
-        custom_field_3: assignedNumber || undefined,
-        data: primaryTarget,
         action: 'transfer',
         type: 'agent',
         destination: primaryTarget,
@@ -371,12 +367,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         rynxly_agent_id: assignedUserId || undefined,
         user_id: assignedUserId || undefined,
         fallback_queue: 'QUEUE-DEFAULT-SUPPORT',
-        transfer: {
-          type: 'agent',
-          data: primaryTarget,
-          ring_type: 'order_by',
-          skip_active: true,
-        },
       };
 
       logStep(`[Webhook-Org:Step 7] 🎯 Bridge Response: ${JSON.stringify(bridgeResponse)}`);
