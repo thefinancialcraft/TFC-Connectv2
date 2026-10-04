@@ -165,130 +165,106 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         table: 'customers' | 'rejected_leads' | 'closed_deals';
       } | null = null;
 
-      // Step 2: Search CRM Lead Tables
+      // Parallel Lead Search + Dialer Config in a single Promise.all for <200ms response
+      let custPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
+      let rejPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
+      let closedPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
+
       if (cleanPhone || hashes.length > 0) {
-        // A. Search customers
-        try {
-          logStep(`[Webhook-Org:Step 2A] 🔎 Searching 'customers' table for phone: ${cleanPhone}...`);
-          let query = smartfloAdminClient
-            .from('customers')
-            .select('id, campaign_id, customer_name, phone_no, phone_search_hash, assigned_to, organization_id')
-            .eq('organization_id', organizationId);
+        const orConditions: string[] = [];
+        for (const h of hashes) orConditions.push(`phone_search_hash.eq.${h}`);
+        if (cleanPhone) orConditions.push(`phone_no.ilike.%${cleanPhone}%`);
+        if (rawCustomerPhone && rawCustomerPhone !== cleanPhone) orConditions.push(`phone_no.eq.${rawCustomerPhone}`);
+        const orStr = orConditions.join(',');
 
-          const orConditions: string[] = [];
-          for (const h of hashes) orConditions.push(`phone_search_hash.eq.${h}`);
-          if (cleanPhone) orConditions.push(`phone_no.ilike.%${cleanPhone}%`);
-          if (rawCustomerPhone && rawCustomerPhone !== cleanPhone) orConditions.push(`phone_no.eq.${rawCustomerPhone}`);
-          query = query.or(orConditions.join(','));
+        logStep(`[Webhook-Org:Step 2] 🔎 Parallel searching CRM tables for phone: ${cleanPhone}...`);
 
-          const { data: customerData, error: custErr } = await query
-            .order('updated_at', { ascending: false })
-            .limit(1)
-            .maybeSingle();
+        custPromise = smartfloAdminClient
+          .from('customers')
+          .select('id, campaign_id, customer_name, phone_no, phone_search_hash, assigned_to, organization_id')
+          .eq('organization_id', organizationId)
+          .or(orStr)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-          if (custErr) {
-            logStep(`[Webhook-Org:Step 2A] ❌ Error querying customers table: ${custErr.message}`);
-          } else if (customerData) {
-            logStep(`[Webhook-Org:Step 2A] ✅ Matched lead in 'customers' table! ID: ${customerData.id}, Assigned User: ${customerData.assigned_to}`);
-            matchedLead = {
-              id: customerData.id,
-              customer_id: customerData.id,
-              campaign_id: customerData.campaign_id,
-              customer_name: customerData.customer_name,
-              assigned_to: customerData.assigned_to,
-              table: 'customers',
-            };
-          } else {
-            logStep(`[Webhook-Org:Step 2A] ℹ️ No match found in 'customers' table.`);
-          }
-        } catch (e: any) {
-          logStep(`[Webhook-Org:Step 2A] ❌ Exception querying customers: ${e?.message}`);
-        }
+        rejPromise = smartfloAdminClient
+          .from('rejected_leads')
+          .select('id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, organization_id')
+          .eq('organization_id', organizationId)
+          .or(orStr)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
 
-        // B. Search rejected_leads
-        if (!matchedLead) {
-          try {
-            logStep(`[Webhook-Org:Step 2B] 🔎 Searching 'rejected_leads' table for phone: ${cleanPhone}...`);
-            let rejQuery = smartfloAdminClient
-              .from('rejected_leads')
-              .select('id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, organization_id')
-              .eq('organization_id', organizationId);
-
-            const orConditions: string[] = [];
-            for (const h of hashes) orConditions.push(`phone_search_hash.eq.${h}`);
-            if (cleanPhone) orConditions.push(`phone_no.ilike.%${cleanPhone}%`);
-            if (rawCustomerPhone && rawCustomerPhone !== cleanPhone) orConditions.push(`phone_no.eq.${rawCustomerPhone}`);
-            rejQuery = rejQuery.or(orConditions.join(','));
-
-            const { data: rejectedData, error: rejErr } = await rejQuery
-              .order('created_at', { ascending: false })
-              .limit(1)
-              .maybeSingle();
-
-            if (rejErr) {
-              logStep(`[Webhook-Org:Step 2B] ❌ Error querying rejected_leads table: ${rejErr.message}`);
-            } else if (rejectedData) {
-              logStep(`[Webhook-Org:Step 2B] ✅ Matched lead in 'rejected_leads' table! ID: ${rejectedData.id}, Assigned User: ${rejectedData.agent_id}`);
-              matchedLead = {
-                id: rejectedData.id,
-                customer_id: rejectedData.id,
-                campaign_id: rejectedData.campaign_id,
-                customer_name: rejectedData.customer_name,
-                assigned_to: rejectedData.agent_id,
-                table: 'rejected_leads',
-              };
-            } else {
-              logStep(`[Webhook-Org:Step 2B] ℹ️ No match found in 'rejected_leads' table.`);
-            }
-          } catch (e: any) {
-            logStep(`[Webhook-Org:Step 2B] ❌ Exception querying rejected_leads: ${e?.message}`);
-          }
-        }
-
-        // C. Search closed_deals
-        if (!matchedLead) {
-          try {
-            logStep(`[Webhook-Org:Step 2C] 🔎 Searching 'closed_deals' table for phone: ${cleanPhone}...`);
-            let closedQuery = smartfloAdminClient
-              .from('closed_deals')
-              .select('id, customer_id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, organization_id')
-              .eq('organization_id', organizationId);
-
-            const orConditions: string[] = [];
-            for (const h of hashes) orConditions.push(`phone_search_hash.eq.${h}`);
-            if (cleanPhone) orConditions.push(`phone_no.ilike.%${cleanPhone}%`);
-            if (rawCustomerPhone && rawCustomerPhone !== cleanPhone) orConditions.push(`phone_no.eq.${rawCustomerPhone}`);
-            closedQuery = closedQuery.or(orConditions.join(','));
-
-            const { data: closedData, error: closedErr } = await closedQuery
-              .order('created_at', { ascending: false })
-              .limit(1)
-              .maybeSingle();
-
-            if (closedErr) {
-              logStep(`[Webhook-Org:Step 2C] ❌ Error querying closed_deals table: ${closedErr.message}`);
-            } else if (closedData) {
-              logStep(`[Webhook-Org:Step 2C] ✅ Matched lead in 'closed_deals' table! ID: ${closedData.id}, Assigned User: ${closedData.agent_id}`);
-              matchedLead = {
-                id: closedData.id,
-                customer_id: closedData.customer_id || closedData.id,
-                campaign_id: closedData.campaign_id,
-                customer_name: closedData.customer_name,
-                assigned_to: closedData.agent_id,
-                table: 'closed_deals',
-              };
-            } else {
-              logStep(`[Webhook-Org:Step 2C] ℹ️ No match found in 'closed_deals' table.`);
-            }
-          } catch (e: any) {
-            logStep(`[Webhook-Org:Step 2C] ❌ Exception querying closed_deals: ${e?.message}`);
-          }
-        }
+        closedPromise = smartfloAdminClient
+          .from('closed_deals')
+          .select('id, customer_id, campaign_id, customer_name, phone_no, phone_search_hash, agent_id, organization_id')
+          .eq('organization_id', organizationId)
+          .or(orStr)
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
       }
 
-      if (!matchedLead) {
-        logStep(`[Webhook-Org:Step 2] ⚠️ Lead not found in CRM for caller "${rawCustomerPhone}". Proceeding to Fallback Agent.`);
+      const configPromise = smartfloAdminClient
+        .from('smartflo_dialer_config')
+        .select('id, click_to_call_params')
+        .eq('organization_id', organizationId)
+        .maybeSingle();
+
+      const [custRes, rejRes, closedRes, configRes] = await Promise.all([
+        custPromise,
+        rejPromise,
+        closedPromise,
+        configPromise,
+      ]);
+
+      let matchedLead: {
+        id: string;
+        customer_id?: string;
+        campaign_id: string;
+        customer_name?: string;
+        assigned_to: string | null;
+        table: 'customers' | 'rejected_leads' | 'closed_deals';
+      } | null = null;
+
+      if (custRes.data) {
+        matchedLead = {
+          id: custRes.data.id,
+          customer_id: custRes.data.id,
+          campaign_id: custRes.data.campaign_id,
+          customer_name: custRes.data.customer_name,
+          assigned_to: custRes.data.assigned_to,
+          table: 'customers',
+        };
+        logStep(`[Webhook-Org:Step 2A] ✅ Matched in 'customers': ID=${custRes.data.id}, Assigned=${custRes.data.assigned_to}`);
+      } else if (rejRes.data) {
+        matchedLead = {
+          id: rejRes.data.id,
+          customer_id: rejRes.data.id,
+          campaign_id: rejRes.data.campaign_id,
+          customer_name: rejRes.data.customer_name,
+          assigned_to: rejRes.data.agent_id,
+          table: 'rejected_leads',
+        };
+        logStep(`[Webhook-Org:Step 2B] ✅ Matched in 'rejected_leads': ID=${rejRes.data.id}, Assigned=${rejRes.data.agent_id}`);
+      } else if (closedRes.data) {
+        matchedLead = {
+          id: closedRes.data.id,
+          customer_id: closedRes.data.customer_id || closedRes.data.id,
+          campaign_id: closedRes.data.campaign_id,
+          customer_name: closedRes.data.customer_name,
+          assigned_to: closedRes.data.agent_id,
+          table: 'closed_deals',
+        };
+        logStep(`[Webhook-Org:Step 2C] ✅ Matched in 'closed_deals': ID=${closedRes.data.id}, Assigned=${closedRes.data.agent_id}`);
+      } else {
+        logStep(`[Webhook-Org:Step 2] ℹ️ Lead not found in CRM. Proceeding with Fallback Agent.`);
       }
+
+      const configuredFallbackAgentId = configRes.data?.click_to_call_params?.fallback_agent_id;
+      const targetUserId = matchedLead?.assigned_to || configuredFallbackAgentId;
 
       let assignedExtension = '';
       let assignedNumber = '';
@@ -296,147 +272,106 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let assignedSmartfloAgentId = '';
       let assignedAgentDisplayName = '';
 
-      // Step 3: Mapped Assigned Lead Agent Details
-      if (matchedLead?.assigned_to) {
-        try {
-          logStep(`[Webhook-Org:Step 3] 👤 Looking up Smartflo mapping for assigned user_id: ${matchedLead.assigned_to}...`);
-          const { data: agentDetails, error: agErr } = await smartfloAdminClient
+      // Step 3 & 5: Fetch agent details (assigned or fallback)
+      try {
+        let agentQuery = smartfloAdminClient
+          .from('user_smartflo_details')
+          .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
+          .eq('organization_id', organizationId);
+
+        if (targetUserId) {
+          agentQuery = agentQuery.eq('user_id', targetUserId);
+        }
+
+        let { data: agentRecord } = await agentQuery.limit(1).maybeSingle();
+
+        if (!agentRecord && configuredFallbackAgentId) {
+          const { data: fbBySmartfloId } = await smartfloAdminClient
             .from('user_smartflo_details')
             .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
-            .eq('user_id', matchedLead.assigned_to)
             .eq('organization_id', organizationId)
+            .eq('smartflo_agent_id', configuredFallbackAgentId)
             .maybeSingle();
+          agentRecord = fbBySmartfloId;
+        }
 
-          if (agErr) {
-            logStep(`[Webhook-Org:Step 3] ❌ Error querying user_smartflo_details: ${agErr.message}`);
-          } else if (agentDetails) {
-            assignedUserId = agentDetails.user_id || matchedLead.assigned_to;
-            assignedSmartfloAgentId = agentDetails.smartflo_agent_id || agentDetails.extension || '';
-            assignedExtension = agentDetails.extension || agentDetails.smartflo_agent_id || '';
-            assignedNumber = agentDetails.follow_me_number || agentDetails.caller_id || '';
-            assignedAgentDisplayName = agentDetails.agent_name || agentDetails.login_id || `User ${assignedUserId.slice(0, 8)}`;
+        if (!agentRecord) {
+          const { data: defaultAgent } = await smartfloAdminClient
+            .from('user_smartflo_details')
+            .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
+            .eq('organization_id', organizationId)
+            .limit(1)
+            .maybeSingle();
+          agentRecord = defaultAgent;
+        }
 
-            logStep(`[Webhook-Org:Step 3] ✅ Assigned Agent Details: User=${assignedUserId}, Ext=${assignedExtension}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}`);
+        if (agentRecord) {
+          assignedUserId = agentRecord.user_id || targetUserId || '';
+          assignedSmartfloAgentId = agentRecord.smartflo_agent_id || agentRecord.extension || '';
+          assignedExtension = agentRecord.extension || agentRecord.smartflo_agent_id || '';
+          assignedNumber = agentRecord.follow_me_number || agentRecord.caller_id || '';
+          assignedAgentDisplayName = agentRecord.agent_name || agentRecord.login_id
+            ? (matchedLead?.assigned_to ? (agentRecord.agent_name || agentRecord.login_id) : `${agentRecord.agent_name || agentRecord.login_id} (Fallback)`)
+            : 'Agent';
 
-            // Step 4: Screen Pop & Call Session Activation
-            const targetCustId = matchedLead.customer_id || matchedLead.id;
-            const targetCampId = matchedLead.campaign_id;
-            if (targetCustId && targetCampId) {
-              const nowIso = new Date().toISOString();
-              logStep(`[Webhook-Org:Step 4] 🚀 Activating CRM Screen Pop: user=${assignedUserId}, customer=${targetCustId}, campaign=${targetCampId}`);
-              const { error: sessionErr } = await smartfloAdminClient
-                .from('call_sessions')
-                .upsert(
-                  {
-                    user_id: assignedUserId,
-                    campaign_id: targetCampId,
-                    customer_id: targetCustId,
-                    organization_id: organizationId,
-                    status: 'active',
-                    is_manual: true,
-                    manual_campaign_id: targetCampId,
-                    manual_customer_id: targetCustId,
-                    manual_status: 'active',
-                    is_unassigned: false,
-                    call_start_at: nowIso,
-                    updated_at: nowIso,
-                  },
-                  { onConflict: 'user_id,campaign_id' }
-                );
+          logStep(`[Webhook-Org:Step 3] ✅ Resolved Agent: User=${assignedUserId}, Ext=${assignedExtension}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}`);
+        } else {
+          logStep(`[Webhook-Org:Step 3] ❌ No active Smartflo agent found.`);
+        }
+      } catch (agentErr: any) {
+        logStep(`[Webhook-Org:Step 3] ❌ Exception resolving agent: ${agentErr?.message}`);
+      }
 
-              if (sessionErr) {
-                logStep(`[Webhook-Org:Step 4] ❌ Error upserting call_sessions: ${sessionErr.message}`);
-              } else {
-                logStep(`[Webhook-Org:Step 4] ✅ call_sessions upserted successfully.`);
-              }
-
-              await smartfloAdminClient
-                .from('user_profiles')
-                .update({
-                  on_call: true,
-                  is_personal: false,
-                  updated_at: nowIso,
-                })
-                .eq('user_id', assignedUserId);
-            }
-          } else {
-            logStep(`[Webhook-Org:Step 3] ⚠️ Assigned user ${matchedLead.assigned_to} has no user_smartflo_details mapping.`);
-          }
-        } catch (e: any) {
-          logStep(`[Webhook-Org:Step 3] ❌ Exception fetching agent details: ${e?.message}`);
+      // Step 4: CRM Screen Pop (fire & forget async)
+      if (assignedUserId && matchedLead) {
+        const targetCustId = matchedLead.customer_id || matchedLead.id;
+        const targetCampId = matchedLead.campaign_id;
+        if (targetCustId && targetCampId) {
+          const nowIso = new Date().toISOString();
+          smartfloAdminClient
+            .from('call_sessions')
+            .upsert(
+              {
+                user_id: assignedUserId,
+                campaign_id: targetCampId,
+                customer_id: targetCustId,
+                organization_id: organizationId,
+                status: 'active',
+                is_manual: true,
+                manual_campaign_id: targetCampId,
+                manual_customer_id: targetCustId,
+                manual_status: 'active',
+                is_unassigned: false,
+                call_start_at: nowIso,
+                updated_at: nowIso,
+              },
+              { onConflict: 'user_id,campaign_id' }
+            )
+            .then(() => {
+              logStep(`[Webhook-Org:Step 4] ✅ call_sessions upserted successfully.`);
+            })
+            .catch((err) => {
+              logStep(`[Webhook-Org:Step 4] ❌ Error upserting call_sessions: ${err?.message}`);
+            });
         }
       }
 
-      // Step 5: Fallback Agent Resolution
-      if (!assignedExtension && !assignedNumber) {
-        try {
-          logStep(`[Webhook-Org:Step 5] 🔁 Resolving Fallback Agent...`);
-          const { data: configData, error: cfgErr } = await smartfloAdminClient
-            .from('smartflo_dialer_config')
-            .select('click_to_call_params')
-            .eq('organization_id', organizationId)
-            .maybeSingle();
+      // Build bridge response (Destination & Extension & Number)
+      const primaryTarget = assignedExtension || assignedNumber || undefined;
+      const bridgeResponse: Record<string, any> = {
+        action: 'bridge',
+        destination: primaryTarget,
+        agent_extension: assignedExtension || undefined,
+        agent_number: assignedNumber || undefined,
+        rynxly_agent_id: assignedUserId || undefined,
+        user_id: assignedUserId || undefined,
+        agent_id: assignedSmartfloAgentId || undefined,
+        fallback_queue: 'QUEUE-DEFAULT-SUPPORT',
+      };
 
-          if (cfgErr) {
-            logStep(`[Webhook-Org:Step 5] ❌ Error fetching dialer config for fallback agent: ${cfgErr.message}`);
-          }
+      logStep(`[Webhook-Org:Step 7] 🎯 Bridge Response: ${JSON.stringify(bridgeResponse)}`);
 
-          const configuredFallbackAgentId = configData?.click_to_call_params?.fallback_agent_id;
-          logStep(`[Webhook-Org:Step 5] Configured Fallback Agent ID: "${configuredFallbackAgentId}"`);
-
-          let fallbackAgentRecord: any = null;
-
-          if (configuredFallbackAgentId) {
-            const { data: fbAgent } = await smartfloAdminClient
-              .from('user_smartflo_details')
-              .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
-              .eq('organization_id', organizationId)
-              .eq('user_id', configuredFallbackAgentId)
-              .maybeSingle();
-
-            fallbackAgentRecord = fbAgent;
-
-            if (!fallbackAgentRecord) {
-              const { data: fbBySmartfloId } = await smartfloAdminClient
-                .from('user_smartflo_details')
-                .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
-                .eq('organization_id', organizationId)
-                .eq('smartflo_agent_id', configuredFallbackAgentId)
-                .maybeSingle();
-              fallbackAgentRecord = fbBySmartfloId;
-            }
-          }
-
-          if (!fallbackAgentRecord) {
-            logStep(`[Webhook-Org:Step 5] Fetching first available active mapped agent in org...`);
-            const { data: defaultAgent } = await smartfloAdminClient
-              .from('user_smartflo_details')
-              .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id')
-              .eq('organization_id', organizationId)
-              .limit(1)
-              .maybeSingle();
-            fallbackAgentRecord = defaultAgent;
-          }
-
-          if (fallbackAgentRecord) {
-            assignedUserId = fallbackAgentRecord.user_id || configuredFallbackAgentId || '';
-            assignedSmartfloAgentId = fallbackAgentRecord.smartflo_agent_id || fallbackAgentRecord.extension || '';
-            assignedExtension = fallbackAgentRecord.extension || fallbackAgentRecord.smartflo_agent_id || '';
-            assignedNumber = fallbackAgentRecord.follow_me_number || fallbackAgentRecord.caller_id || '';
-            assignedAgentDisplayName = fallbackAgentRecord.agent_name || fallbackAgentRecord.login_id
-              ? `${fallbackAgentRecord.agent_name || fallbackAgentRecord.login_id} (Fallback)`
-              : 'Fallback Agent';
-
-            logStep(`[Webhook-Org:Step 5] ✅ Selected Fallback Agent: User=${assignedUserId}, Ext=${assignedExtension}, Number=${assignedNumber}, SmartfloID=${assignedSmartfloAgentId}`);
-          } else {
-            logStep(`[Webhook-Org:Step 5] ❌ No active Smartflo agent found in org for fallback routing!`);
-          }
-        } catch (e: any) {
-          logStep(`[Webhook-Org:Step 5] ❌ Exception resolving fallback agent: ${e?.message}`);
-        }
-      }
-
-      // Step 6: Create and Save Event Record
+      // Build Inbound Dialplan Webhook Event Record
       const eventRecord = formatSmartfloWebhookEvent(
         randomUUID(),
         new Date().toISOString(),
@@ -455,35 +390,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
 
       const targetWebhookId = config.webhook_id || config.integration_id || webhookId;
-      logStep(`[Webhook-Org:Step 6] 💾 Saving eventRecord to webhook_responses (ID: ${eventRecord.id})...`);
-      const { error: insErr } = await smartfloAdminClient.from('webhook_responses').insert({
+      smartfloAdminClient.from('webhook_responses').insert({
         id: eventRecord.id,
         webhook_id: targetWebhookId,
         organization_id: config.organization_id,
         response: eventRecord,
         created_at: eventRecord.receivedAt,
-      });
-
-      if (insErr) {
-        logStep(`[Webhook-Org:Step 6] ❌ Error inserting webhook_responses: ${insErr.message}`);
-      } else {
-        logStep(`[Webhook-Org:Step 6] ✅ Webhook event successfully saved.`);
-      }
-
-      // Step 7: Build & Return Clean Bridge Response
-      const primaryTarget = assignedExtension || assignedNumber || undefined;
-      const bridgeResponse: Record<string, any> = {
-        action: 'bridge',
-        destination: primaryTarget,
-        agent_extension: assignedExtension || undefined,
-        agent_number: assignedNumber || undefined,
-        rynxly_agent_id: assignedUserId || undefined,
-        user_id: assignedUserId || undefined,
-        agent_id: assignedSmartfloAgentId || undefined,
-        fallback_queue: 'QUEUE-DEFAULT-SUPPORT',
-      };
-
-      logStep(`[Webhook-Org:Step 7] 🎯 Final Bridge Response Sent to Smartflo: ${JSON.stringify(bridgeResponse)}`);
+      }).then(() => {}).catch(() => {});
 
       return res.status(200).json(bridgeResponse);
     }
