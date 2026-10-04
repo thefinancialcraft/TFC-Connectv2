@@ -5099,11 +5099,11 @@ Campaign: ${campaign?.name || campaignId}
                                     </div>
                             
                             {/* ACTIVITY SIDEBAR (Right) */}
-                            <div className="md:col-span-4 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 h-auto xl:min-h-[800px] flex flex-col">
+                            <div className="md:col-span-4 flex flex-col gap-4">
 
-                                        {/* Smartflo Live Calling Flow Stepper (Inside Activity Sidebar above tabs) */}
-{(activeCallingProvider === 'smartflo' || lastCheckedRefId || smartfloLogs.length > 0) && (
-                                            <div className="mb-5 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 shadow-none">
+                                        {/* Smartflo Live Calling Flow Stepper (Card Outside Timeline Box) */}
+                                        {(activeCallingProvider === 'smartflo' || lastCheckedRefId || smartfloLogs.length > 0) && (
+                                            <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm">
                                                 {/* Header: Title + Monospace Ref ID + Refresh */}
                                                 <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-200/70">
                                                     <div className="flex items-center gap-2.5 min-w-0">
@@ -5456,8 +5456,9 @@ Campaign: ${campaign?.name || campaignId}
                                             </div>
                                         )}
 
-                                        
-                                        <div className="flex items-center justify-between mb-6 gap-4">
+                                        {/* Activity Sidebar / Timeline Container */}
+                                        <div className="bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 h-auto xl:min-h-[800px] flex flex-col flex-1">
+                                            <div className="flex items-center justify-between mb-6 gap-4">
                                             <div className="flex bg-slate-100 p-1 rounded-xl overflow-x-auto whitespace-nowrap custom-scrollbar no-scrollbar scroll-smooth">
                                             <button 
                                                 onClick={() => setTimelineView('timeline')}
@@ -6309,6 +6310,7 @@ Campaign: ${campaign?.name || campaignId}
                         </div>
                     </div>
                 </div>
+                            </div>
             )}
 
             {/* Enlarged Notes Modal - Compact Version */}
