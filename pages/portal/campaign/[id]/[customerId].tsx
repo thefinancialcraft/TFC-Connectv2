@@ -5102,6 +5102,361 @@ Campaign: ${campaign?.name || campaignId}
                             
                             {/* ACTIVITY SIDEBAR (Right) */}
                             <div className="md:col-span-4 bg-white rounded-2xl p-5 sm:p-8 border border-slate-200 h-auto xl:min-h-[800px] flex flex-col">
+                                        {/* Smartflo Live Calling Flow Stepper (Placed ABOVE the timeline container) */}
+                                        {(activeCallingProvider === 'smartflo' || lastCheckedRefId || smartfloLogs.length > 0) && (
+                                            <div className="mb-5 p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 shadow-none">
+                                                {/* Header: Title + Monospace Ref ID + Refresh */}
+                                                <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-200/70">
+                                                    <div className="flex items-center gap-2.5 min-w-0">
+                                                        <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                                                            <span className="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                                                            Flow
+                                                        </span>
+                                                        {(() => {
+                                                            const dispRef = lastCheckedRefId || activeSmartfloRefIdRef.current || (smartfloLogs.length > 0 ? (smartfloLogs[0]?.refId || smartfloLogs[0]?.callId) : null);
+                                                            return dispRef ? (
+                                                                <div className="h-7 flex items-center gap-1.5 bg-white px-2.5 rounded-lg border border-slate-200 shadow-none">
+                                                                    <span className="text-[9px] font-mono font-semibold text-indigo-700 truncate max-w-[150px]" title={dispRef}>
+                                                                        Ref: {dispRef.length > 14 ? `${dispRef.substring(0, 11)}...` : dispRef}
+                                                                    </span>
+                                                                    <button
+                                                                        onClick={() => {
+                                                                            navigator.clipboard.writeText(dispRef);
+                                                                            alert('Ref ID copied');
+                                                                        }}
+                                                                        title="Copy Ref ID"
+                                                                        className="text-slate-400 hover:text-indigo-600 transition-colors flex items-center justify-center"
+                                                                    >
+                                                                        <i className="fi flex fi-rr-copy text-[10px]"></i>
+                                                                    </button>
+                                                                </div>
+                                                            ) : null;
+                                                        })()}
+                                                    </div>
+
+                                                    <button
+                                                        onClick={() => fetchSmartfloLogs()}
+                                                        disabled={isLoadingSmartfloLogs}
+                                                        className="w-7 h-7 shrink-0 aspect-square rounded-lg bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-indigo-600 transition-all disabled:opacity-50 shadow-none"
+                                                        title="Refresh status"
+                                                    >
+                                                        <i className={`fi flex fi-rr-refresh text-xs ${isLoadingSmartfloLogs ? 'animate-spin' : ''}`}></i>
+                                                    </button>
+                                                </div>
+
+                                                {(() => {
+                                                    const activeRef = lastCheckedRefId || activeSmartfloRefIdRef.current || null;
+                                                    const activeCallId = lastCheckedCallId || activeSmartfloCallIdRef.current || null;
+                                                    const matchedLog = (activeRef || activeCallId)
+                                                        ? smartfloLogs.find(l => {
+                                                            const raw = (l.rawPayload || {}) as any;
+                                                            const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
+                                                            return (
+                                                                (activeRef && (l.refId === activeRef || l.callId === activeRef || raw.ref_id === activeRef || raw.call_id === activeRef || raw.uuid === activeRef || customIdStr.includes(activeRef))) ||
+                                                                (activeCallId && (l.callId === activeCallId || l.refId === activeCallId || raw.call_id === activeCallId || raw.ref_id === activeCallId || raw.uuid === activeCallId || customIdStr.includes(activeCallId)))
+                                                            );
+                                                        })
+                                                        : (smartfloLogs.length > 0 ? smartfloLogs[0] : null);
+
+                                                    const isInboundCall = Boolean(
+                                                        (matchedLog && (
+                                                            matchedLog.direction === 'inbound' ||
+                                                            matchedLog.callType?.toLowerCase().includes('inbound') ||
+                                                            (matchedLog.rawPayload as any)?.call_to_number ||
+                                                            (matchedLog.rawPayload as any)?.direction === 'inbound' ||
+                                                            String((matchedLog.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
+                                                        )) ||
+                                                        (smartfloLifecycle && (
+                                                            smartfloLifecycle.isInbound ||
+                                                            (smartfloLifecycle.rawPayload as any)?.direction === 'inbound' ||
+                                                            String((smartfloLifecycle.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound') ||
+                                                            Boolean((smartfloLifecycle.rawPayload as any)?.call_to_number)
+                                                        )) ||
+                                                        (!matchedLog && !smartfloLifecycle && smartfloLogs.length > 0 && (
+                                                            smartfloLogs[0]?.direction === 'inbound' ||
+                                                            smartfloLogs[0]?.callType?.toLowerCase().includes('inbound') ||
+                                                            Boolean((smartfloLogs[0]?.rawPayload as any)?.call_to_number) ||
+                                                            String((smartfloLogs[0]?.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
+                                                        ))
+                                                    );
+
+                                                    let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
+                                                    let agentSublabel = 'Standby';
+                                                    let customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
+                                                    let customerSublabel = 'Standby';
+                                                    let hangupColor: 'gray' | 'indigo' | 'violet' | 'red' = 'gray';
+                                                    let hangupSublabel = 'Standby';
+
+                                                    // Priority 1: Call is actively placing or in progress in the CRM
+                                                    if (isPlacingCall || isCalling) {
+                                                        if (smartfloLifecycle && (!smartfloLifecycle.isEnded || smartfloLifecycle.refId === activeRef || smartfloLifecycle.refId === activeCallId)) {
+                                                            agentColor = smartfloLifecycle.agentColor;
+                                                            agentSublabel = smartfloLifecycle.agentSublabel;
+                                                            customerColor = smartfloLifecycle.customerColor;
+                                                            customerSublabel = smartfloLifecycle.customerSublabel;
+                                                            hangupColor = smartfloLifecycle.hangupColor;
+                                                            hangupSublabel = smartfloLifecycle.hangupSublabel;
+                                                        } else if (isInboundCall) {
+                                                            customerColor = isEndingCall ? 'gray' : 'green';
+                                                            customerSublabel = isEndingCall ? 'Ended' : 'Waiting...';
+                                                            agentColor = isEndingCall ? 'green' : 'orange';
+                                                            agentSublabel = isEndingCall ? 'Answered' : 'Ringing Agent...';
+                                                            hangupColor = isEndingCall ? 'red' : 'gray';
+                                                            hangupSublabel = isEndingCall ? 'Ending...' : 'Connecting...';
+                                                        } else {
+                                                            agentColor = isEndingCall ? 'green' : 'orange';
+                                                            agentSublabel = isEndingCall ? 'Answered' : (isPlacingCall ? 'Dialing Agent...' : 'Ringing Agent...');
+                                                            customerColor = isEndingCall ? 'gray' : 'gray';
+                                                            customerSublabel = isEndingCall ? 'Ended' : 'Waiting';
+                                                            hangupColor = isEndingCall ? 'red' : 'gray';
+                                                            hangupSublabel = isEndingCall ? 'Ending...' : 'Connecting...';
+                                                        }
+                                                    }
+                                                    // Priority 2: Call has ended -> Show matched Webhook / CDR Record
+                                                    else if (matchedLog) {
+                                                        const raw = (matchedLog.rawPayload || {}) as any;
+                                                        const statusStr = String(matchedLog.status || raw.call_status || '').toLowerCase();
+                                                        const causeStr = String(matchedLog.hangupCause || raw.hangup_cause_description || raw.hangup_cause_key || '').toLowerCase();
+                                                        const reasonStr = String(raw.reason_key || '').toLowerCase();
+
+                                                        const isBusy = causeStr.includes('busy') || reasonStr.includes('busy') || statusStr.includes('busy');
+                                                        const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || reasonStr.includes('noanswer') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
+                                                        const isAnswered = !isMissedOrDropped && (statusStr.includes('answer') || matchedLog.callType === 'Answered');
+
+                                                        if (isInboundCall) {
+                                                            customerColor = 'green';
+                                                            customerSublabel = isAnswered ? 'Connected' : isBusy ? 'Busy' : 'Connected';
+
+                                                            if (isAnswered) {
+                                                                agentColor = 'green';
+                                                                agentSublabel = 'Answered';
+                                                            } else if (isBusy) {
+                                                                agentColor = 'violet';
+                                                                agentSublabel = 'Busy';
+                                                            } else {
+                                                                agentColor = 'red';
+                                                                agentSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : 'Missed / Cut';
+                                                            }
+                                                        } else {
+                                                            const hasMissedAgent = Boolean(raw.missed_agent && (Array.isArray(raw.missed_agent) ? raw.missed_agent.length > 0 : String(raw.missed_agent).trim() !== ''));
+                                                            const agentRingSecs = Number(raw.agent_ring_time || 0);
+
+                                                            if (hasMissedAgent || (agentRingSecs === 0 && isBusy)) {
+                                                                agentColor = isBusy ? 'violet' : 'red';
+                                                                agentSublabel = isBusy ? 'Busy' : 'Cut / Rejected';
+                                                            } else {
+                                                                agentColor = 'green';
+                                                                agentSublabel = 'Answered';
+                                                            }
+
+                                                            if (agentColor === 'violet' || agentColor === 'red') {
+                                                                customerColor = 'gray';
+                                                                customerSublabel = 'Not Reached';
+                                                            } else if (isAnswered) {
+                                                                customerColor = 'green';
+                                                                customerSublabel = 'Connected';
+                                                            } else if (isBusy) {
+                                                                customerColor = 'violet';
+                                                                customerSublabel = 'Busy';
+                                                            } else if (isMissedOrDropped) {
+                                                                customerColor = 'red';
+                                                                customerSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : raw.reason_key === 'cancel' ? 'Cancelled' : raw.reason_key || raw.hangup_cause_description || 'Missed';
+                                                            } else {
+                                                                customerColor = 'gray';
+                                                                customerSublabel = 'Not Reached';
+                                                            }
+                                                        }
+
+                                                        // Hangup
+                                                        if (agentColor === 'violet' || customerColor === 'violet') {
+                                                            hangupColor = 'violet';
+                                                            hangupSublabel = raw.hangup_cause_description || 'User Busy';
+                                                        } else if (agentColor === 'red' || customerColor === 'red') {
+                                                            hangupColor = 'red';
+                                                            hangupSublabel = raw.hangup_cause_description || raw.reason_key || 'Dropped / Cut';
+                                                        } else {
+                                                            hangupColor = 'indigo';
+                                                            hangupSublabel = raw.hangup_cause_description || 'Completed';
+                                                        }
+                                                    }
+                                                    // Priority 3: Fallback to smartfloLifecycle if available
+                                                    else if (smartfloLifecycle) {
+                                                        agentColor = smartfloLifecycle.agentColor;
+                                                        agentSublabel = smartfloLifecycle.agentSublabel;
+                                                        customerColor = smartfloLifecycle.customerColor;
+                                                        customerSublabel = smartfloLifecycle.customerSublabel;
+                                                        hangupColor = smartfloLifecycle.hangupColor;
+                                                        hangupSublabel = smartfloLifecycle.hangupSublabel;
+                                                    }
+
+                                                    const getCircleClass = (color: 'orange' | 'green' | 'violet' | 'red' | 'gray') => {
+                                                        switch (color) {
+                                                            case 'orange':
+                                                                return 'bg-amber-500 text-white shadow-sm';
+                                                            case 'green':
+                                                                return 'bg-emerald-500 text-white ring-2 ring-emerald-300 ring-offset-1';
+                                                            case 'violet':
+                                                                return 'bg-purple-600 text-white ring-2 ring-purple-300 ring-offset-1';
+                                                            case 'red':
+                                                                return 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1';
+                                                            default:
+                                                                return 'bg-slate-200 text-slate-400';
+                                                        }
+                                                    };
+
+                                                    const getSublabelClass = (color: 'orange' | 'green' | 'violet' | 'red' | 'gray') => {
+                                                        switch (color) {
+                                                            case 'orange':
+                                                                return 'text-amber-600 font-bold';
+                                                            case 'green':
+                                                                return 'text-emerald-600 font-bold';
+                                                            case 'violet':
+                                                                return 'text-purple-600 font-bold';
+                                                            case 'red':
+                                                                return 'text-red-500 font-bold';
+                                                            default:
+                                                                return 'text-slate-400 font-medium';
+                                                        }
+                                                    };
+
+                                                    const getHangupCircleClass = (color: 'gray' | 'indigo' | 'violet' | 'red') => {
+                                                        switch (color) {
+                                                            case 'indigo':
+                                                                return 'bg-indigo-600 text-white ring-2 ring-indigo-300 ring-offset-1';
+                                                            case 'violet':
+                                                                return 'bg-purple-600 text-white ring-2 ring-purple-300 ring-offset-1';
+                                                            case 'red':
+                                                                return 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1';
+                                                            default:
+                                                                return 'bg-slate-200 text-slate-400';
+                                                        }
+                                                    };
+
+                                                    const getHangupSublabelClass = (color: 'gray' | 'indigo' | 'violet' | 'red') => {
+                                                        switch (color) {
+                                                            case 'indigo':
+                                                                return 'text-indigo-600 font-bold';
+                                                            case 'violet':
+                                                                return 'text-purple-600 font-bold';
+                                                            case 'red':
+                                                                return 'text-red-500 font-bold';
+                                                            default:
+                                                                return 'text-slate-400 font-medium';
+                                                        }
+                                                    };
+
+                                                    const renderSnakeRing = (color: 'orange' | 'green' | 'indigo') => {
+                                                        const stroke = color === 'green' ? '#10b981' : color === 'indigo' ? '#6366f1' : '#f59e0b';
+                                                        const track = color === 'green' ? 'rgba(16, 185, 129, 0.2)' : color === 'indigo' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(245, 158, 11, 0.25)';
+                                                        return (
+                                                            <svg
+                                                                className="snake-ring-spinner absolute -inset-1 w-9 h-9 pointer-events-none z-0"
+                                                                viewBox="0 0 36 36"
+                                                                style={{ animation: 'snakeRingSpin 1.1s linear infinite' }}
+                                                            >
+                                                                <circle cx="18" cy="18" r="16" fill="none" stroke={track} strokeWidth="1.5" />
+                                                                <circle cx="18" cy="18" r="16" fill="none" stroke={stroke} strokeWidth="2.5" strokeDasharray="28 72" strokeLinecap="round" />
+                                                            </svg>
+                                                        );
+                                                    };
+
+                                                    return (
+                                                        <div className="relative pt-1 pb-0.5">
+                                                            {/* Connecting track line between circles */}
+                                                            <div className="absolute top-[17px] left-[12%] right-[12%] h-[2px] bg-slate-200 -z-0" />
+
+                                                            <div className="grid grid-cols-4 gap-1 relative z-10 text-center">
+                                                                {/* Step 1: Originated */}
+                                                                <div className="flex flex-col items-center">
+                                                                    <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold mb-1 ring-2 ring-emerald-300 ring-offset-1 shadow-none">
+                                                                        <i className="fi flex fi-rr-check text-[10px]"></i>
+                                                                    </div>
+                                                                    <span className="text-[9px] font-bold text-slate-800">Originated</span>
+                                                                    <span className="text-[8px] text-emerald-600 font-semibold">
+                                                                        {isInboundCall ? 'Inbound Call' : 'Ref Issued'}
+                                                                    </span>
+                                                                </div>
+
+                                                                {/* Step 2: Customer (Inbound) OR Agent Leg (Outbound) */}
+                                                                {isInboundCall ? (
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                            {customerColor === 'orange' && renderSnakeRing('orange')}
+                                                                            {customerColor === 'green' && customerSublabel === 'Speaking' && renderSnakeRing('green')}
+                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(customerColor)}`}>
+                                                                                <i className="fi flex fi-rr-user text-[10px]"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-bold text-slate-800">Customer</span>
+                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
+                                                                            {customerSublabel}
+                                                                        </span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                            {agentColor === 'orange' && renderSnakeRing('orange')}
+                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(agentColor)}`}>
+                                                                                <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
+                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
+                                                                            {agentSublabel}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Step 3: Agent Leg (Inbound) OR Customer (Outbound) */}
+                                                                {isInboundCall ? (
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                            {agentColor === 'orange' && renderSnakeRing('orange')}
+                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(agentColor)}`}>
+                                                                                <i className="fi flex fi-rr-phone-call text-[10px]"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
+                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
+                                                                            {agentSublabel}
+                                                                        </span>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex flex-col items-center">
+                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                            {customerColor === 'orange' && renderSnakeRing('orange')}
+                                                                            {customerColor === 'green' && customerSublabel === 'Speaking' && renderSnakeRing('green')}
+                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(customerColor)}`}>
+                                                                                <i className="fi flex fi-rr-user text-[10px]"></i>
+                                                                            </div>
+                                                                        </div>
+                                                                        <span className="text-[9px] font-bold text-slate-800">Customer</span>
+                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
+                                                                            {customerSublabel}
+                                                                        </span>
+                                                                    </div>
+                                                                )}
+
+                                                                {/* Step 4: Hangup & Wrapup */}
+                                                                <div className="flex flex-col items-center">
+                                                                    <div className="relative w-7 h-7 flex items-center justify-center mb-1">
+                                                                        {(hangupSublabel === 'In Call' || hangupSublabel === 'Connecting...') && renderSnakeRing('indigo')}
+                                                                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getHangupCircleClass(hangupColor)}`}>
+                                                                            <i className="fi flex fi-rr-phone-slash text-[10px]"></i>
+                                                                        </div>
+                                                                    </div>
+                                                                    <span className="text-[9px] font-bold text-slate-800">Hangup</span>
+                                                                    <span className={`text-[8px] truncate max-w-[70px] ${getHangupSublabelClass(hangupColor)}`} title={hangupSublabel}>
+                                                                        {hangupSublabel}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    );
+                                                })()}
+                                            </div>
+                                        )}
+
                                         <div className="flex items-center justify-between mb-6 gap-4">
                                             <div className="flex bg-slate-100 p-1 rounded-xl overflow-x-auto whitespace-nowrap custom-scrollbar no-scrollbar scroll-smooth">
                                             <button 
@@ -5541,380 +5896,6 @@ Campaign: ${campaign?.name || campaignId}
                                         // SMARTFLO LOGS VIEW
                                         <div className="h-[650px] overflow-y-auto pr-2 custom-scrollbar space-y-4">
                                             {/* Point-by-point Call Lifecycle Tracker */}
-                                            {(lastCheckedRefId || smartfloLogs.length > 0) && (
-                                                <div className="p-3.5 rounded-2xl bg-slate-50/80 border border-slate-200 shadow-none">
-                                                    {/* Header: Title + Monospace Ref ID + Refresh */}
-                                                    <div className="flex items-center justify-between gap-2 mb-3 pb-2.5 border-b border-slate-200/70">
-                                                        <div className="flex items-center gap-2.5 min-w-0">
-                                                            <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-700">
-                                                                Flow
-                                                            </span>
-                                                            {(() => {
-                                                                const dispRef = lastCheckedRefId || activeSmartfloRefIdRef.current || (smartfloLogs.length > 0 ? (smartfloLogs[0]?.refId || smartfloLogs[0]?.callId) : null);
-                                                                return dispRef ? (
-                                                                    <div className="h-7 flex items-center gap-1.5 bg-white px-2.5 rounded-lg border border-slate-200 shadow-none">
-                                                                        <span className="text-[9px] font-mono font-semibold text-indigo-700 truncate max-w-[150px]" title={dispRef}>
-                                                                            Ref: {dispRef.length > 14 ? `${dispRef.substring(0, 11)}...` : dispRef}
-                                                                        </span>
-                                                                        <button
-                                                                            onClick={() => {
-                                                                                navigator.clipboard.writeText(dispRef);
-                                                                                alert('Ref ID copied');
-                                                                            }}
-                                                                            title="Copy Ref ID"
-                                                                            className="text-slate-400 hover:text-indigo-600 transition-colors flex items-center justify-center"
-                                                                        >
-                                                                            <i className="fi flex fi-rr-copy text-[10px]"></i>
-                                                                        </button>
-                                                                    </div>
-                                                                ) : null;
-                                                            })()}
-                                                        </div>
-
-                                                        <button
-                                                            onClick={() => fetchSmartfloLogs()}
-                                                            disabled={isLoadingSmartfloLogs}
-                                                            className="w-7 h-7 shrink-0 aspect-square rounded-lg bg-white border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-500 hover:text-indigo-600 transition-all disabled:opacity-50 shadow-none"
-                                                            title="Refresh status"
-                                                        >
-                                                            <i className={`fi flex fi-rr-refresh text-xs ${isLoadingSmartfloLogs ? 'animate-spin' : ''}`}></i>
-                                                        </button>
-                                                    </div>
-
-                                                    {(() => {
-                                                        const activeRef = lastCheckedRefId || activeSmartfloRefIdRef.current || null;
-                                                        const activeCallId = lastCheckedCallId || activeSmartfloCallIdRef.current || null;
-                                                        const matchedLog = (activeRef || activeCallId)
-                                                            ? smartfloLogs.find(l => {
-                                                                const raw = (l.rawPayload || {}) as any;
-                                                                const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
-                                                                return (
-                                                                    (activeRef && (l.refId === activeRef || l.callId === activeRef || raw.ref_id === activeRef || raw.call_id === activeRef || raw.uuid === activeRef || customIdStr.includes(activeRef))) ||
-                                                                    (activeCallId && (l.callId === activeCallId || l.refId === activeCallId || raw.call_id === activeCallId || raw.ref_id === activeCallId || raw.uuid === activeCallId || customIdStr.includes(activeCallId)))
-                                                                );
-                                                            })
-                                                            : (smartfloLogs.length > 0 ? smartfloLogs[0] : null);
-
-                                                        const isInboundCall = Boolean(
-                                                            (matchedLog && (
-                                                                matchedLog.direction === 'inbound' ||
-                                                                matchedLog.callType?.toLowerCase().includes('inbound') ||
-                                                                (matchedLog.rawPayload as any)?.call_to_number ||
-                                                                (matchedLog.rawPayload as any)?.direction === 'inbound' ||
-                                                                String((matchedLog.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
-                                                            )) ||
-                                                            (smartfloLifecycle && (
-                                                                smartfloLifecycle.isInbound ||
-                                                                (smartfloLifecycle.rawPayload as any)?.direction === 'inbound' ||
-                                                                String((smartfloLifecycle.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound') ||
-                                                                Boolean((smartfloLifecycle.rawPayload as any)?.call_to_number)
-                                                            )) ||
-                                                            (!matchedLog && !smartfloLifecycle && smartfloLogs.length > 0 && (
-                                                                smartfloLogs[0]?.direction === 'inbound' ||
-                                                                smartfloLogs[0]?.callType?.toLowerCase().includes('inbound') ||
-                                                                Boolean((smartfloLogs[0]?.rawPayload as any)?.call_to_number) ||
-                                                                String((smartfloLogs[0]?.rawPayload as any)?.call_type || '').toLowerCase().includes('inbound')
-                                                            ))
-                                                        );
-
-                                                        let agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
-                                                        let agentSublabel = 'Standby';
-                                                        let customerColor: 'orange' | 'green' | 'violet' | 'red' | 'gray' = 'gray';
-                                                        let customerSublabel = 'Standby';
-                                                        let hangupColor: 'gray' | 'indigo' | 'violet' | 'red' = 'gray';
-                                                        let hangupSublabel = 'Standby';
-
-                                                        // Priority 1: Call is actively placing or in progress in the CRM
-                                                        if (isPlacingCall || isCalling) {
-                                                            // If live call returned active data from Smartflo live_calls API
-                                                            if (smartfloLifecycle && (!smartfloLifecycle.isEnded || smartfloLifecycle.refId === activeRef || smartfloLifecycle.refId === activeCallId)) {
-                                                                agentColor = smartfloLifecycle.agentColor;
-                                                                agentSublabel = smartfloLifecycle.agentSublabel;
-                                                                customerColor = smartfloLifecycle.customerColor;
-                                                                customerSublabel = smartfloLifecycle.customerSublabel;
-                                                                hangupColor = smartfloLifecycle.hangupColor;
-                                                                hangupSublabel = smartfloLifecycle.hangupSublabel;
-                                                            } else if (isInboundCall) {
-                                                                // Inbound: Customer connected/waiting, Agent ringing
-                                                                customerColor = isEndingCall ? 'gray' : 'green';
-                                                                customerSublabel = isEndingCall ? 'Ended' : 'Waiting...';
-                                                                agentColor = isEndingCall ? 'green' : 'orange';
-                                                                agentSublabel = isEndingCall ? 'Answered' : 'Ringing Agent...';
-                                                                hangupColor = isEndingCall ? 'red' : 'gray';
-                                                                hangupSublabel = isEndingCall ? 'Ending...' : 'Connecting...';
-                                                            } else {
-                                                                // Outbound: Agent phone ringing (before agent answers)
-                                                                agentColor = isEndingCall ? 'green' : 'orange';
-                                                                agentSublabel = isEndingCall ? 'Answered' : (isPlacingCall ? 'Dialing Agent...' : 'Ringing Agent...');
-                                                                customerColor = isEndingCall ? 'gray' : 'gray';
-                                                                customerSublabel = isEndingCall ? 'Ended' : 'Waiting';
-                                                                hangupColor = isEndingCall ? 'red' : 'gray';
-                                                                hangupSublabel = isEndingCall ? 'Ending...' : 'Connecting...';
-                                                            }
-                                                        }
-                                                        // Priority 2: Call has ended -> Show matched Webhook / CDR Record for this exact call
-                                                        else if (matchedLog) {
-                                                            const raw = (matchedLog.rawPayload || {}) as any;
-                                                            const statusStr = String(matchedLog.status || raw.call_status || '').toLowerCase();
-                                                            const causeStr = String(matchedLog.hangupCause || raw.hangup_cause_description || raw.hangup_cause_key || '').toLowerCase();
-                                                            const reasonStr = String(raw.reason_key || '').toLowerCase();
-
-                                                            const isBusy = causeStr.includes('busy') || reasonStr.includes('busy') || statusStr.includes('busy');
-                                                            const isMissedOrDropped = statusStr.includes('miss') || reasonStr.includes('drop') || reasonStr.includes('noanswer') || causeStr.includes('normal_unspecified') || causeStr.includes('no_answer') || causeStr.includes('cancel') || causeStr.includes('reject');
-                                                            const isAnswered = !isMissedOrDropped && (statusStr.includes('answer') || matchedLog.callType === 'Answered');
-
-                                                            if (isInboundCall) {
-                                                                // INBOUND Call
-                                                                customerColor = 'green';
-                                                                customerSublabel = isAnswered ? 'Connected' : isBusy ? 'Busy' : 'Connected';
-
-                                                                if (isAnswered) {
-                                                                    agentColor = 'green';
-                                                                    agentSublabel = 'Answered';
-                                                                } else if (isBusy) {
-                                                                    agentColor = 'violet';
-                                                                    agentSublabel = 'Busy';
-                                                                } else {
-                                                                    agentColor = 'red';
-                                                                    agentSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : 'Missed / Cut';
-                                                                }
-                                                            } else {
-                                                                // OUTBOUND Call
-                                                                const hasMissedAgent = Boolean(raw.missed_agent && (Array.isArray(raw.missed_agent) ? raw.missed_agent.length > 0 : String(raw.missed_agent).trim() !== ''));
-                                                                const agentRingSecs = Number(raw.agent_ring_time || 0);
-
-                                                                if (hasMissedAgent || (agentRingSecs === 0 && isBusy)) {
-                                                                    agentColor = isBusy ? 'violet' : 'red';
-                                                                    agentSublabel = isBusy ? 'Busy' : 'Cut / Rejected';
-                                                                } else {
-                                                                    agentColor = 'green';
-                                                                    agentSublabel = 'Answered';
-                                                                }
-
-                                                                if (agentColor === 'violet' || agentColor === 'red') {
-                                                                    customerColor = 'gray';
-                                                                    customerSublabel = 'Not Reached';
-                                                                } else if (isAnswered) {
-                                                                    customerColor = 'green';
-                                                                    customerSublabel = 'Connected';
-                                                                } else if (isBusy) {
-                                                                    customerColor = 'violet';
-                                                                    customerSublabel = 'Busy';
-                                                                } else if (isMissedOrDropped) {
-                                                                    customerColor = 'red';
-                                                                    customerSublabel = raw.reason_key === 'noanswer' ? 'No Answer' : raw.reason_key === 'cancel' ? 'Cancelled' : raw.reason_key || raw.hangup_cause_description || 'Missed';
-                                                                } else {
-                                                                    customerColor = 'gray';
-                                                                    customerSublabel = 'Not Reached';
-                                                                }
-                                                            }
-
-                                                            // Hangup
-                                                            if (agentColor === 'violet' || customerColor === 'violet') {
-                                                                hangupColor = 'violet';
-                                                                hangupSublabel = raw.hangup_cause_description || 'User Busy';
-                                                            } else if (agentColor === 'red' || customerColor === 'red') {
-                                                                hangupColor = 'red';
-                                                                hangupSublabel = raw.hangup_cause_description || raw.reason_key || 'Dropped / Cut';
-                                                            } else {
-                                                                hangupColor = 'indigo';
-                                                                hangupSublabel = raw.hangup_cause_description || 'Completed';
-                                                            }
-                                                        }
-                                                        // Priority 3: Fallback to smartfloLifecycle if available
-                                                        else if (smartfloLifecycle) {
-                                                            agentColor = smartfloLifecycle.agentColor;
-                                                            agentSublabel = smartfloLifecycle.agentSublabel;
-                                                            customerColor = smartfloLifecycle.customerColor;
-                                                            customerSublabel = smartfloLifecycle.customerSublabel;
-                                                            hangupColor = smartfloLifecycle.hangupColor;
-                                                            hangupSublabel = smartfloLifecycle.hangupSublabel;
-                                                        }
-
-                                                        const getCircleClass = (color: 'orange' | 'green' | 'violet' | 'red' | 'gray') => {
-                                                            switch (color) {
-                                                                case 'orange':
-                                                                    return 'bg-amber-500 text-white shadow-sm';
-                                                                case 'green':
-                                                                    return 'bg-emerald-500 text-white ring-2 ring-emerald-300 ring-offset-1';
-                                                                case 'violet':
-                                                                    return 'bg-purple-600 text-white ring-2 ring-purple-300 ring-offset-1';
-                                                                case 'red':
-                                                                    return 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1';
-                                                                default:
-                                                                    return 'bg-slate-200 text-slate-400';
-                                                            }
-                                                        };
-
-                                                        const getSublabelClass = (color: 'orange' | 'green' | 'violet' | 'red' | 'gray') => {
-                                                            switch (color) {
-                                                                case 'orange':
-                                                                    return 'text-amber-600 font-bold';
-                                                                case 'green':
-                                                                    return 'text-emerald-600 font-bold';
-                                                                case 'violet':
-                                                                    return 'text-purple-600 font-bold';
-                                                                case 'red':
-                                                                    return 'text-red-500 font-bold';
-                                                                default:
-                                                                    return 'text-slate-400 font-medium';
-                                                            }
-                                                        };
-
-                                                        const getHangupCircleClass = (color: 'gray' | 'indigo' | 'violet' | 'red') => {
-                                                            switch (color) {
-                                                                case 'indigo':
-                                                                    return 'bg-indigo-600 text-white ring-2 ring-indigo-300 ring-offset-1';
-                                                                case 'violet':
-                                                                    return 'bg-purple-600 text-white ring-2 ring-purple-300 ring-offset-1';
-                                                                case 'red':
-                                                                    return 'bg-red-500 text-white ring-2 ring-red-300 ring-offset-1';
-                                                                default:
-                                                                    return 'bg-slate-200 text-slate-400';
-                                                            }
-                                                        };
-
-                                                        const getHangupSublabelClass = (color: 'gray' | 'indigo' | 'violet' | 'red') => {
-                                                            switch (color) {
-                                                                case 'indigo':
-                                                                    return 'text-indigo-600 font-bold';
-                                                                case 'violet':
-                                                                    return 'text-purple-600 font-bold';
-                                                                case 'red':
-                                                                    return 'text-red-500 font-bold';
-                                                                default:
-                                                                    return 'text-slate-400 font-medium';
-                                                            }
-                                                        };
-
-                                                        const renderSnakeRing = (color: 'orange' | 'green' | 'indigo') => {
-                                                            const stroke = color === 'green' ? '#10b981' : color === 'indigo' ? '#6366f1' : '#f59e0b';
-                                                            const track = color === 'green' ? 'rgba(16, 185, 129, 0.2)' : color === 'indigo' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(245, 158, 11, 0.25)';
-                                                            return (
-                                                                <svg
-                                                                    className="snake-ring-spinner absolute -inset-1 w-9 h-9 pointer-events-none z-0"
-                                                                    viewBox="0 0 36 36"
-                                                                    style={{ animation: 'snakeRingSpin 1.1s linear infinite' }}
-                                                                >
-                                                                    <circle
-                                                                        cx="18"
-                                                                        cy="18"
-                                                                        r="16"
-                                                                        fill="none"
-                                                                        stroke={track}
-                                                                        strokeWidth="1.5"
-                                                                    />
-                                                                    <circle
-                                                                        cx="18"
-                                                                        cy="18"
-                                                                        r="16"
-                                                                        fill="none"
-                                                                        stroke={stroke}
-                                                                        strokeWidth="2.5"
-                                                                        strokeDasharray="28 72"
-                                                                        strokeLinecap="round"
-                                                                    />
-                                                                </svg>
-                                                            );
-                                                        };
-
-                                                        return (
-                                                            <div className="relative pt-1 pb-0.5">
-                                                                {/* Connecting track line between circles */}
-                                                                <div className="absolute top-[17px] left-[12%] right-[12%] h-[2px] bg-slate-200 -z-0" />
-
-                                                                <div className="grid grid-cols-4 gap-1 relative z-10 text-center">
-                                                                    {/* Step 1: Originated */}
-                                                                    <div className="flex flex-col items-center">
-                                                                        <div className="w-7 h-7 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold mb-1 ring-2 ring-emerald-300 ring-offset-1 shadow-none">
-                                                                            <i className="fi flex fi-rr-check text-[10px]"></i>
-                                                                        </div>
-                                                                        <span className="text-[9px] font-bold text-slate-800">Originated</span>
-                                                                        <span className="text-[8px] text-emerald-600 font-semibold">
-                                                                            {isInboundCall ? 'Inbound Call' : 'Ref Issued'}
-                                                                        </span>
-                                                                    </div>
-
-                                                                    {/* Step 2: Customer (Inbound) OR Agent Leg (Outbound) */}
-                                                                    {isInboundCall ? (
-                                                                        <div className="flex flex-col items-center">
-                                                                            <div className="relative w-7 h-7 flex items-center justify-center mb-1">
-                                                                                {customerColor === 'orange' && renderSnakeRing('orange')}
-                                                                                {customerColor === 'green' && customerSublabel === 'Speaking' && renderSnakeRing('green')}
-                                                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(customerColor)}`}>
-                                                                                    <i className="fi flex fi-rr-user text-[10px]"></i>
-                                                                                </div>
-                                                                            </div>
-                                                                            <span className="text-[9px] font-bold text-slate-800">Customer</span>
-                                                                            <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
-                                                                                {customerSublabel}
-                                                                            </span>
-                                                                        </div>
-                                                                    ) : (
-                                                                        <div className="flex flex-col items-center">
-                                                                            <div className="relative w-7 h-7 flex items-center justify-center mb-1">
-                                                                                {agentColor === 'orange' && renderSnakeRing('orange')}
-                                                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(agentColor)}`}>
-                                                                                    <i className="fi flex fi-rr-phone-call text-[10px]"></i>
-                                                                                </div>
-                                                                            </div>
-                                                                            <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
-                                                                            <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
-                                                                                {agentSublabel}
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
-
-                                                                    {/* Step 3: Agent Leg (Inbound) OR Customer (Outbound) */}
-                                                                    {isInboundCall ? (
-                                                                        <div className="flex flex-col items-center">
-                                                                            <div className="relative w-7 h-7 flex items-center justify-center mb-1">
-                                                                                {agentColor === 'orange' && renderSnakeRing('orange')}
-                                                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(agentColor)}`}>
-                                                                                    <i className="fi flex fi-rr-phone-call text-[10px]"></i>
-                                                                                </div>
-                                                                            </div>
-                                                                            <span className="text-[9px] font-bold text-slate-800">Agent Leg</span>
-                                                                            <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(agentColor)}`} title={agentSublabel}>
-                                                                                {agentSublabel}
-                                                                            </span>
-                                                                        </div>
-                                                                    ) : (
-                                                                        <div className="flex flex-col items-center">
-                                                                            <div className="relative w-7 h-7 flex items-center justify-center mb-1">
-                                                                                {customerColor === 'orange' && renderSnakeRing('orange')}
-                                                                                {customerColor === 'green' && customerSublabel === 'Speaking' && renderSnakeRing('green')}
-                                                                                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getCircleClass(customerColor)}`}>
-                                                                                    <i className="fi flex fi-rr-user text-[10px]"></i>
-                                                                                </div>
-                                                                            </div>
-                                                                            <span className="text-[9px] font-bold text-slate-800">Customer</span>
-                                                                            <span className={`text-[8px] truncate max-w-[70px] ${getSublabelClass(customerColor)}`} title={customerSublabel}>
-                                                                                {customerSublabel}
-                                                                            </span>
-                                                                        </div>
-                                                                    )}
-
-                                                                    {/* Step 4: Hangup & Wrapup */}
-                                                                    <div className="flex flex-col items-center">
-                                                                        <div className="relative w-7 h-7 flex items-center justify-center mb-1">
-                                                                            {(hangupSublabel === 'In Call' || hangupSublabel === 'Connecting...') && renderSnakeRing('indigo')}
-                                                                            <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold shadow-none relative z-10 ${getHangupCircleClass(hangupColor)}`}>
-                                                                                <i className="fi flex fi-rr-phone-slash text-[10px]"></i>
-                                                                            </div>
-                                                                        </div>
-                                                                        <span className="text-[9px] font-bold text-slate-800">Hangup</span>
-                                                                        <span className={`text-[8px] truncate max-w-[70px] ${getHangupSublabelClass(hangupColor)}`} title={hangupSublabel}>
-                                                                            {hangupSublabel}
-                                                                        </span>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })()}
-                                                </div>
-                                            )}
-
                                             {/* Smartflo Logs List */}
                                             {isLoadingSmartfloLogs && smartfloLogs.length === 0 ? (
                                                 <div className="h-[280px] flex flex-col items-center justify-center text-center py-10">
