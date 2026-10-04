@@ -30,6 +30,8 @@ export function useSmartfloCallFlow({
   activeCallId = null,
   onCallEndDetected,
 }: UseSmartfloCallFlowParams) {
+  const [activeCallType, setActiveCallType] = useState<'inbound' | 'outbound' | null>(null);
+
   const [flowState, setFlowState] = useState<SmartfloCallFlowState>(() =>
     computeSmartfloFlowState({
       isPlacingCall,
@@ -51,6 +53,13 @@ export function useSmartfloCallFlow({
   const isFetchingRef = useRef(false);
   const callEndTriggeredRef = useRef(false);
   const lastSyncTimestampRef = useRef(0);
+
+  // When CRM places an outbound call, immediately flag activeCallType as outbound
+  useEffect(() => {
+    if (isPlacingCall) {
+      setActiveCallType('outbound');
+    }
+  }, [isPlacingCall]);
 
   // Keep refs in sync with incoming active props
   useEffect(() => {
@@ -77,6 +86,7 @@ export function useSmartfloCallFlow({
     setTrackedRefId(null);
     setTrackedCallId(null);
     setInboundDetected(false);
+    setActiveCallType(null);
     setRawLogs([]);
     setFlowState(
       computeSmartfloFlowState({
@@ -121,7 +131,10 @@ export function useSmartfloCallFlow({
           const logs: any[] = Array.isArray(data.logs) ? data.logs : [];
           setRawLogs(logs);
 
-          const liveCall = data.live_calls_api_result?.matched_live_call || (data.is_live && data.ref_status?.rawPayload) || null;
+          const liveCall =
+            data.live_calls_api_result?.matched_live_call ||
+            (data.is_live && data.ref_status?.rawPayload) ||
+            null;
           const liveCallId = data.active_call_id || liveCall?.call_id || null;
 
           if (liveCallId && liveCallId !== trackedCallIdRef.current) {
@@ -158,14 +171,26 @@ export function useSmartfloCallFlow({
             });
           }
 
+          const rawMatched = (matchedLog?.rawPayload || {}) as any;
+          const rawMatchedCallType = String(rawMatched.call_type || matchedLog?.callType || '').toLowerCase();
+
           const isLiveInbound = Boolean(
+            rawMatchedCallType === 'rynxly_inbound' ||
             data.ref_status?.isInbound ||
-            (liveCall && (String(liveCall.direction || '').includes('inbound') || String(liveCall.call_type || '').includes('inbound'))) ||
-            (matchedLog && (String(matchedLog.direction || '').includes('inbound') || String(matchedLog.callType || '').includes('inbound')))
+            (liveCall &&
+              (String(liveCall.direction || '').includes('inbound') ||
+                String(liveCall.call_type || '').includes('inbound') ||
+                String(liveCall.call_type || '') === 'rynxly_inbound')) ||
+            (matchedLog &&
+              (String(matchedLog.direction || '').includes('inbound') ||
+                String(matchedLog.callType || '').includes('inbound')))
           );
 
           if (isLiveInbound) {
             setInboundDetected(true);
+            setActiveCallType('inbound');
+          } else if (liveCall || isCalling || isPlacingCall || (matchedLog && !isLiveInbound)) {
+            setActiveCallType('outbound');
           }
 
           const computed = computeSmartfloFlowState({
@@ -186,7 +211,8 @@ export function useSmartfloCallFlow({
           if (
             isCalling &&
             !callEndTriggeredRef.current &&
-            (computed.isEnded || (matchedLog && matchedLog.hangupCause && matchedLog.hangupCause !== 'ACTIVE_CALL'))
+            (computed.isEnded ||
+              (matchedLog && matchedLog.hangupCause && matchedLog.hangupCause !== 'ACTIVE_CALL'))
           ) {
             callEndTriggeredRef.current = true;
             if (onCallEndDetected) {
@@ -267,6 +293,9 @@ export function useSmartfloCallFlow({
 
             if (isInbound) {
               setInboundDetected(true);
+              setActiveCallType('inbound');
+            } else {
+              setActiveCallType('outbound');
             }
 
             if (incomingCallId) {
@@ -321,9 +350,11 @@ export function useSmartfloCallFlow({
 
   return {
     flowState,
+    activeCallType,
     rawLogs,
     trackedRefId,
     trackedCallId,
     refreshFlowState,
+    setActiveCallType,
   };
 }

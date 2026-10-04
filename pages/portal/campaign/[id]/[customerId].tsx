@@ -13,7 +13,8 @@ import { logSystemEvent, estimateSize } from "@/lib/monitoring";
 import { showWarning } from "@/lib/dialogUtils";
 import { routeCallingCommand } from "@/lib/callingCommandRouter";
 import { resolveActiveCallingProvider, getCallingProviderDetails, type CallingProviderName } from "@/lib/callingProviderClient";
-import { SmartfloCallFlowCard } from "@/components/campaign/SmartfloCallFlowCard";
+import { SmartfloOutboundFlowCard } from "@/components/campaign/SmartfloOutboundFlowCard";
+import { SmartfloInboundFlowCard } from "@/components/campaign/SmartfloInboundFlowCard";
 import { useSmartfloCallFlow } from "@/hooks/useSmartfloCallFlow";
 
 
@@ -532,6 +533,7 @@ export default function CallingPage() {
 
     const {
         flowState: smartfloFlowState,
+        activeCallType: smartfloActiveCallType,
         refreshFlowState: refreshSmartfloFlowState,
     } = useSmartfloCallFlow({
         phone: customer?.phone_no ? decryptPhone(customer.phone_no) : null,
@@ -5201,9 +5203,15 @@ Campaign: ${campaign?.name || campaignId}
                             {/* ACTIVITY SIDEBAR (Right) */}
                             <div className="md:col-span-4 flex flex-col gap-4">
 
-                                        {/* Smartflo Live Calling Flow Stepper (Card Outside Timeline Box) */}
-                                        <SmartfloCallFlowCard
-                                            isVisible={activeCallingProvider === 'smartflo'}
+                                        {/* Smartflo Outbound Calling Flow Stepper */}
+                                        <SmartfloOutboundFlowCard
+                                            isVisible={activeCallingProvider === 'smartflo' && smartfloActiveCallType === 'outbound'}
+                                            flowState={smartfloFlowState}
+                                        />
+
+                                        {/* Smartflo Inbound Calling Flow Stepper */}
+                                        <SmartfloInboundFlowCard
+                                            isVisible={activeCallingProvider === 'smartflo' && smartfloActiveCallType === 'inbound'}
                                             flowState={smartfloFlowState}
                                         />
 
