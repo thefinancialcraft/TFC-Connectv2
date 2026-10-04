@@ -156,19 +156,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       logStep(`[Webhook-Org:Step 1] 📞 Customer Phone: "${rawCustomerPhone}" -> Clean 10-digit: "${cleanPhone}" | Virtual DID: "${virtualDid}"`);
 
-      let matchedLead: {
-        id: string;
-        customer_id?: string;
-        campaign_id: string;
-        customer_name?: string;
-        assigned_to: string | null;
-        table: 'customers' | 'rejected_leads' | 'closed_deals';
-      } | null = null;
-
       // Parallel Lead Search + Dialer Config in a single Promise.all for <200ms response
-      let custPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
-      let rejPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
-      let closedPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
+      let custPromise: PromiseLike<any> = Promise.resolve({ data: null, error: null });
+      let rejPromise: PromiseLike<any> = Promise.resolve({ data: null, error: null });
+      let closedPromise: PromiseLike<any> = Promise.resolve({ data: null, error: null });
 
       if (cleanPhone || hashes.length > 0) {
         const orConditions: string[] = [];
@@ -328,31 +319,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const targetCampId = matchedLead.campaign_id;
         if (targetCustId && targetCampId) {
           const nowIso = new Date().toISOString();
-          smartfloAdminClient
-            .from('call_sessions')
-            .upsert(
-              {
-                user_id: assignedUserId,
-                campaign_id: targetCampId,
-                customer_id: targetCustId,
-                organization_id: organizationId,
-                status: 'active',
-                is_manual: true,
-                manual_campaign_id: targetCampId,
-                manual_customer_id: targetCustId,
-                manual_status: 'active',
-                is_unassigned: false,
-                call_start_at: nowIso,
-                updated_at: nowIso,
-              },
-              { onConflict: 'user_id,campaign_id' }
-            )
-            .then(() => {
+          void (async () => {
+            try {
+              await smartfloAdminClient!
+                .from('call_sessions')
+                .upsert(
+                  {
+                    user_id: assignedUserId,
+                    campaign_id: targetCampId,
+                    customer_id: targetCustId,
+                    organization_id: organizationId,
+                    status: 'active',
+                    is_manual: true,
+                    manual_campaign_id: targetCampId,
+                    manual_customer_id: targetCustId,
+                    manual_status: 'active',
+                    is_unassigned: false,
+                    call_start_at: nowIso,
+                    updated_at: nowIso,
+                  },
+                  { onConflict: 'user_id,campaign_id' }
+                );
               logStep(`[Webhook-Org:Step 4] ✅ call_sessions upserted successfully.`);
-            })
-            .catch((err) => {
+            } catch (err: any) {
               logStep(`[Webhook-Org:Step 4] ❌ Error upserting call_sessions: ${err?.message}`);
-            });
+            }
+          })();
         }
       }
 
@@ -390,13 +382,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
 
       const targetWebhookId = config.webhook_id || config.integration_id || webhookId;
-      smartfloAdminClient.from('webhook_responses').insert({
-        id: eventRecord.id,
-        webhook_id: targetWebhookId,
-        organization_id: config.organization_id,
-        response: eventRecord,
-        created_at: eventRecord.receivedAt,
-      }).then(() => {}).catch(() => {});
+      void (async () => {
+        try {
+          await smartfloAdminClient!.from('webhook_responses').insert({
+            id: eventRecord.id,
+            webhook_id: targetWebhookId,
+            organization_id: config.organization_id,
+            response: eventRecord,
+            created_at: eventRecord.receivedAt,
+          });
+        } catch (dbErr: any) {
+          console.error('[Smartflo Webhook Org] Error inserting response:', dbErr?.message);
+        }
+      })();
 
       return res.status(200).json(bridgeResponse);
     }

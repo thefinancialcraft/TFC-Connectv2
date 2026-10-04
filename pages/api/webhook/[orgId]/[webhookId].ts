@@ -202,19 +202,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       logStep(`[Webhook-Dialplan:Step 1] 📞 Raw Phone: "${rawCustomerPhone}" -> Clean 10-Digit: "${cleanPhone}" | Virtual DID: "${virtualDid}"`);
 
-      let matchedLead: {
-        id: string;
-        customer_id?: string;
-        campaign_id: string;
-        customer_name?: string;
-        assigned_to: string | null;
-        table: 'customers' | 'rejected_leads' | 'closed_deals';
-      } | null = null;
-
       // Parallel Lead Search + Dialer Config in a single Promise.all for <200ms response
-      let custPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
-      let rejPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
-      let closedPromise = Promise.resolve<{ data: any; error: any }>({ data: null, error: null });
+      let custPromise: PromiseLike<any> = Promise.resolve({ data: null, error: null });
+      let rejPromise: PromiseLike<any> = Promise.resolve({ data: null, error: null });
+      let closedPromise: PromiseLike<any> = Promise.resolve({ data: null, error: null });
 
       if (cleanPhone || hashes.length > 0) {
         const orConditions: string[] = [];
@@ -374,31 +365,32 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const targetCampId = matchedLead.campaign_id;
         if (targetCustId && targetCampId) {
           const nowIso = new Date().toISOString();
-          smartfloAdminClient
-            .from('call_sessions')
-            .upsert(
-              {
-                user_id: assignedUserId,
-                campaign_id: targetCampId,
-                customer_id: targetCustId,
-                organization_id: organizationId,
-                status: 'active',
-                is_manual: true,
-                manual_campaign_id: targetCampId,
-                manual_customer_id: targetCustId,
-                manual_status: 'active',
-                is_unassigned: false,
-                call_start_at: nowIso,
-                updated_at: nowIso,
-              },
-              { onConflict: 'user_id,campaign_id' }
-            )
-            .then(() => {
+          void (async () => {
+            try {
+              await smartfloAdminClient!
+                .from('call_sessions')
+                .upsert(
+                  {
+                    user_id: assignedUserId,
+                    campaign_id: targetCampId,
+                    customer_id: targetCustId,
+                    organization_id: organizationId,
+                    status: 'active',
+                    is_manual: true,
+                    manual_campaign_id: targetCampId,
+                    manual_customer_id: targetCustId,
+                    manual_status: 'active',
+                    is_unassigned: false,
+                    call_start_at: nowIso,
+                    updated_at: nowIso,
+                  },
+                  { onConflict: 'user_id,campaign_id' }
+                );
               logStep(`[Webhook-Dialplan:Step 4] ✅ call_sessions upserted successfully.`);
-            })
-            .catch((err) => {
+            } catch (err: any) {
               logStep(`[Webhook-Dialplan:Step 4] ❌ Error upserting call_sessions: ${err?.message}`);
-            });
+            }
+          })();
         }
       }
 
@@ -462,36 +454,41 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       };
 
       // Save to database
-      smartfloAdminClient.from('webhook_responses').insert({
-        id: eventRecord.id,
-        webhook_id: currentWebhookId,
-        organization_id: organizationId,
-        response: eventRecord,
-        created_at: eventRecord.receivedAt,
-      }).then(() => {}).catch(() => {});
+      void (async () => {
+        try {
+          await smartfloAdminClient!.from('webhook_responses').insert({
+            id: eventRecord.id,
+            webhook_id: currentWebhookId,
+            organization_id: organizationId,
+            response: eventRecord,
+            created_at: eventRecord.receivedAt,
+          });
 
-      // Dual-write to dialer config
-      if (configRes.data?.id) {
-        smartfloAdminClient
-          .from('smartflo_dialer_config')
-          .select('webhook_events')
-          .eq('id', configRes.data.id)
-          .maybeSingle()
-          .then(({ data: curCfg }) => {
+          // Dual-write to dialer config
+          if (configRes.data?.id) {
+            const { data: curCfg } = await smartfloAdminClient!
+              .from('smartflo_dialer_config')
+              .select('webhook_events')
+              .eq('id', configRes.data.id)
+              .maybeSingle();
+
             const existing = Array.isArray(curCfg?.webhook_events) ? curCfg.webhook_events : [];
-            return smartfloAdminClient
+            await smartfloAdminClient!
               .from('smartflo_dialer_config')
               .update({
                 webhook_events: [eventRecord, ...existing].slice(0, 50),
                 updated_at: new Date().toISOString(),
               })
-              .eq('id', configRes.data!.id);
-          })
-          .catch(() => {});
-      }
+              .eq('id', configRes.data.id);
+          }
+        } catch (dbErr: any) {
+          console.error('[Smartflo Webhook] Error persisting response in background:', dbErr?.message);
+        }
+      })();
 
       // Return INSTANT HTTP 200 response to Smartflo PBX (< 200ms)
       return res.status(200).json(bridgeResponse);
+    }
     }
 
     // 4. OUTBOUND / STANDARD HANGUP WEBHOOK FLOW
