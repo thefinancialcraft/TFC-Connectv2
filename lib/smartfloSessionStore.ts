@@ -211,24 +211,34 @@ export const SmartfloSessionStore = {
     const session = all[existingKey];
     const now = Date.now();
 
-    // Append timeline entry if provided
+    // Append timeline entry only if stage or message actually changed (prevent duplicate polling spam)
     if (timelineEvent) {
-      const nextIdx = (session.timeline?.length || 0) + 1;
-      const newEntry: SmartfloTimelineEntry = {
-        idx: nextIdx,
-        timestamp: now,
-        isoTime: new Date(now).toISOString(),
-        stage: timelineEvent.stage,
-        message: timelineEvent.message,
-        data: timelineEvent.data,
-      };
+      const timeline = session.timeline || [];
+      const lastEntry = timeline.length > 0 ? timeline[timeline.length - 1] : null;
 
-      const timeline = [...(session.timeline || []), newEntry];
-      // Keep only up to MAX_TIMELINE_ENTRIES
-      session.timeline =
-        timeline.length > MAX_TIMELINE_ENTRIES
-          ? timeline.slice(timeline.length - MAX_TIMELINE_ENTRIES)
-          : timeline;
+      const isDuplicate = Boolean(
+        lastEntry &&
+          lastEntry.stage === timelineEvent.stage &&
+          lastEntry.message === timelineEvent.message
+      );
+
+      if (!isDuplicate) {
+        const nextIdx = timeline.length + 1;
+        const newEntry: SmartfloTimelineEntry = {
+          idx: nextIdx,
+          timestamp: now,
+          isoTime: new Date(now).toISOString(),
+          stage: timelineEvent.stage,
+          message: timelineEvent.message,
+          data: timelineEvent.data,
+        };
+
+        const updatedTimeline = [...timeline, newEntry];
+        session.timeline =
+          updatedTimeline.length > MAX_TIMELINE_ENTRIES
+            ? updatedTimeline.slice(updatedTimeline.length - MAX_TIMELINE_ENTRIES)
+            : updatedTimeline;
+      }
     }
 
     // Merge updates
@@ -250,23 +260,36 @@ export const SmartfloSessionStore = {
     targetKey?: string | null;
     phone?: string | null;
     customerId?: string | null;
+    direction?: SmartfloSessionDirection;
+    onlyActive?: boolean;
     maxAgeMs?: number;
   }): SmartfloCallSession | null {
-    const { targetKey, phone, maxAgeMs = 300000 } = params; // default 5 min window
+    const { targetKey, phone, direction, onlyActive = false, maxAgeMs = 180000 } = params;
     const all = this.getAllSessions();
     const cleaned = phone ? cleanPhone(phone) : null;
     const now = Date.now();
+
+    const isEligible = (s: SmartfloCallSession) => {
+      if (onlyActive && (s.status === 'ended' || s.status === 'timeout')) {
+        return false;
+      }
+      if (direction && s.direction !== direction) {
+        return false;
+      }
+      return true;
+    };
 
     // 1. Direct key match (ID, Ref, CallId, UUID)
     if (targetKey) {
       for (const k of Object.keys(all)) {
         const s = all[k];
         if (
-          k === targetKey ||
-          s.id === targetKey ||
-          s.ref_id === targetKey ||
-          s.call_id === targetKey ||
-          s.uuid === targetKey
+          (k === targetKey ||
+            s.id === targetKey ||
+            s.ref_id === targetKey ||
+            s.call_id === targetKey ||
+            s.uuid === targetKey) &&
+          isEligible(s)
         ) {
           return s;
         }
@@ -279,7 +302,8 @@ export const SmartfloSessionStore = {
       const active = all[activeId];
       if (
         now - active.updated_at <= maxAgeMs &&
-        (!cleaned || active.phone === cleaned || active.phone.includes(cleaned))
+        (!cleaned || active.phone === cleaned || active.phone.includes(cleaned)) &&
+        isEligible(active)
       ) {
         return active;
       }
@@ -290,7 +314,8 @@ export const SmartfloSessionStore = {
       const candidates = Object.values(all).filter((s) => {
         return (
           (s.phone === cleaned || s.phone.includes(cleaned) || cleaned.includes(s.phone)) &&
-          now - s.updated_at <= maxAgeMs
+          now - s.updated_at <= maxAgeMs &&
+          isEligible(s)
         );
       });
       if (candidates.length > 0) {

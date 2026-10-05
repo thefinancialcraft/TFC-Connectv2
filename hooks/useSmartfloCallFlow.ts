@@ -76,7 +76,9 @@ export function useSmartfloCallFlow({
           targetKey: activeRefId || activeCallId,
           phone,
           customerId,
-          maxAgeMs: 120000,
+          direction: 'outbound',
+          onlyActive: true,
+          maxAgeMs: 60000,
         });
 
         if (!existingSession) {
@@ -130,12 +132,15 @@ export function useSmartfloCallFlow({
     }
   }, [isPlacingCall]);
 
-  // Keep refs in sync with incoming active props
+  // Keep refs in sync with incoming active props and session store
   useEffect(() => {
     if (activeRefId && activeRefId !== trackedRefIdRef.current) {
       trackedRefIdRef.current = activeRefId;
       setTrackedRefId(activeRefId);
       callEndTriggeredRef.current = false;
+      if (currentSessionIdRef.current) {
+        SmartfloSessionStore.updateSession(currentSessionIdRef.current, { ref_id: activeRefId });
+      }
     }
   }, [activeRefId]);
 
@@ -144,6 +149,9 @@ export function useSmartfloCallFlow({
       trackedCallIdRef.current = activeCallId;
       setTrackedCallId(activeCallId);
       callEndTriggeredRef.current = false;
+      if (currentSessionIdRef.current) {
+        SmartfloSessionStore.updateSession(currentSessionIdRef.current, { call_id: activeCallId });
+      }
     }
   }, [activeCallId]);
 
@@ -153,6 +161,8 @@ export function useSmartfloCallFlow({
     trackedCallIdRef.current = null;
     callEndTriggeredRef.current = false;
     callInitiatedTimestampRef.current = 0;
+    currentSessionIdRef.current = null;
+    setActiveSession(null);
     setTrackedRefId(null);
     setTrackedCallId(null);
     setInboundDetected(false);
@@ -453,6 +463,8 @@ export function useSmartfloCallFlow({
                 targetKey: incomingCallId,
                 phone: currentCustPhone,
                 customerId,
+                direction: 'inbound',
+                onlyActive: true,
                 maxAgeMs: 120000,
               });
 

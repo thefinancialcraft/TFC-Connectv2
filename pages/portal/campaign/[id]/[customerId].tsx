@@ -746,19 +746,17 @@ export default function CallingPage() {
                     const callerNum = normalizeNum(raw.caller_id_number || raw.caller_id || resPayload.agentNumber || raw.customer_number || raw.from || '');
                     const destNum = normalizeNum(raw.call_to_number || raw.destination || resPayload.destinationNumber || raw.to || '');
                     const custPhone = customer?.phone_no ? normalizeNum(decryptPhone(customer.phone_no)) : '';
-
                     const incomingCallId = String(raw.call_id || raw.uuid || resPayload.callId || resPayload.refId || '');
-                    
+
                     if (custPhone && (callerNum.includes(custPhone) || custPhone.includes(callerNum) || destNum.includes(custPhone) || custPhone.includes(destNum))) {
                         if (incomingCallId) {
                             activeSmartfloCallIdRef.current = incomingCallId;
                             setLastCheckedCallId(incomingCallId);
                         }
+                        const currentRef = activeSmartfloRefIdRef.current || lastCheckedRefId;
+                        const currentCallId = incomingCallId || activeSmartfloCallIdRef.current || lastCheckedCallId;
+                        fetchSmartfloLogs(currentRef || undefined, currentCallId || undefined);
                     }
-
-                    const currentRef = activeSmartfloRefIdRef.current || lastCheckedRefId;
-                    const currentCallId = incomingCallId || activeSmartfloCallIdRef.current || lastCheckedCallId;
-                    fetchSmartfloLogs(currentRef || undefined, currentCallId || undefined);
                 }
             )
             .subscribe();
