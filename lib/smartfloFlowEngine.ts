@@ -80,18 +80,31 @@ export function computeSmartfloFlowState(params: {
 
   // 2. Compute based on LIVE CALL on Switch
   if (liveCallData) {
-    const statusStr = String(liveCallData.status || liveCallData.call_status || '').toLowerCase();
+    const switchState = String(
+      liveCallData.state ||
+      liveCallData.call_state ||
+      liveCallData.status ||
+      liveCallData.call_status ||
+      ''
+    ).toLowerCase().trim();
+
+    const callTimeRaw = String(liveCallData.call_time || liveCallData.duration || liveCallData.billsec || '0');
     const isAnswered =
-      statusStr.includes('answered') ||
-      statusStr.includes('in_call') ||
-      statusStr.includes('bridge') ||
-      statusStr.includes('connected') ||
-      statusStr.includes('speaking');
+      switchState.includes('answered') ||
+      switchState.includes('in-call') ||
+      switchState.includes('in_call') ||
+      switchState.includes('bridge') ||
+      switchState.includes('connected') ||
+      switchState.includes('speaking') ||
+      Boolean(callTimeRaw && callTimeRaw !== '00:00:00' && callTimeRaw !== '0');
+
     const isRinging =
-      statusStr.includes('ring') ||
-      statusStr.includes('dial') ||
-      statusStr.includes('originate') ||
-      statusStr.includes('progress');
+      !isAnswered && (
+        switchState.includes('ring') ||
+        switchState.includes('dial') ||
+        switchState.includes('originate') ||
+        switchState.includes('progress')
+      );
 
     const dur = Number(liveCallData.duration || liveCallData.billsec || 0);
 

@@ -82,7 +82,7 @@ export function useSmartfloCallFlow({
           String(customerId || '')
         )}&ref_id=${encodeURIComponent(currentRef)}&call_id=${encodeURIComponent(
           currentCallId
-        )}`;
+        )}&call_timestamp=${Date.now()}`;
 
         const res = await fetch(url, {
           headers: { Authorization: `Bearer ${session.access_token}` },
@@ -140,39 +140,72 @@ export function useSmartfloCallFlow({
             hasAgentAnsweredRef.current = true;
           }
 
+          // Fix #1 & #3: Immediate Hangup Detection
+          // If the call was live/connected previously, but liveCall is now gone from switch,
+          // it means hangup occurred. Mark isEnded: true immediately without waiting for CDR!
+          const isHangupOccurred = Boolean(
+            isLiveActiveRef.current && !liveCall && !data.is_live
+          );
+
           const computed = computeSmartfloFlowState({
             direction: detectedDirection,
             isPlacingCall,
             isCalling,
-            isEndingCall,
+            isEndingCall: isEndingCall || isHangupOccurred,
             refId: currentRef || null,
             callId: liveCallId || null,
             liveCallData: liveCall,
             matchedLog,
           });
 
+          // If hangup occurred on switch and CDR hasn't returned yet, ensure computed reflects ended state
+          if (isHangupOccurred && !matchedLog) {
+            computed.isLive = false;
+            computed.isEnded = true;
+            computed.steps.step4 = {
+              title: 'Hangup',
+              sublabel: 'Disconnecting...',
+              color: 'indigo',
+              icon: 'fi-rr-phone-slash',
+              isSpinning: false,
+            };
+          }
+
           setFlowState(computed);
 
-          // Update session store with deduplicated timeline
+          // Update session store with deduplicated timeline & monotonic progression
           const sessionKey = liveCallId || currentRef;
           if (sessionKey) {
-            const currentStage = computed.isEnded
-              ? 'ended'
-              : liveCall
-              ? 'connected'
-              : hasAgentAnsweredRef.current
-              ? 'customer_ringing'
-              : 'agent_ringing';
+            const isCallSpeaking = Boolean(
+              liveCall &&
+                (String(liveCall.state || liveCall.call_state || '').toLowerCase().includes('answer') ||
+                  Boolean(liveCall.call_time && liveCall.call_time !== '00:00:00' && liveCall.call_time !== '0'))
+            );
 
-            const stageMsg = computed.isEnded
-              ? `Call completed. Duration: ${computed.duration}s`
-              : liveCall
-              ? `Customer connected & speaking (${computed.duration}s)`
-              : hasAgentAnsweredRef.current
-              ? `Agent answered. Ringing customer (${cleanedPhone})...`
-              : `Ringing agent...`;
+            // Determine next forward stage
+            let currentStage: 'originated' | 'agent_ringing' | 'customer_ringing' | 'connected' | 'hangup_detected' | 'ended' = 'agent_ringing';
+            let stageMsg = 'Ringing agent...';
 
-            SmartfloSessionStore.updateSession(
+            if (matchedLog || computed.isEnded) {
+              if (matchedLog) {
+                currentStage = 'ended';
+                stageMsg = `Call completed. Duration: ${computed.duration}s`;
+              } else if (isHangupOccurred) {
+                currentStage = 'hangup_detected';
+                stageMsg = 'Hangup detected. Finalizing call details...';
+              } else {
+                currentStage = 'ended';
+                stageMsg = `Call ended. Duration: ${computed.duration}s`;
+              }
+            } else if (isCallSpeaking) {
+              currentStage = 'connected';
+              stageMsg = `Customer connected & speaking (${computed.duration || liveCall?.call_time || 0}s)`;
+            } else if (hasAgentAnsweredRef.current || liveCall) {
+              currentStage = 'customer_ringing';
+              stageMsg = `Agent answered. Ringing customer (${cleanedPhone})...`;
+            }
+
+            const updatedSession = SmartfloSessionStore.updateSession(
               sessionKey,
               {
                 call_id: liveCallId || undefined,
@@ -185,10 +218,19 @@ export function useSmartfloCallFlow({
                 data: liveCall || matchedLog?.rawPayload || null,
               }
             );
+
+            // Fix #4: Apply CDR details (hangup_cause, recording_url, duration) to session_details
+            if (matchedLog && updatedSession) {
+              SmartfloSessionStore.applyCdrToSession(
+                updatedSession,
+                matchedLog.rawPayload || matchedLog
+              );
+              SmartfloSessionStore.saveAllSessions(SmartfloSessionStore.getAllSessions());
+            }
           }
 
           // Call ended detection (only when previously active and now completed)
-          if (computed.isEnded && isCalling && onCallEndDetected) {
+          if ((computed.isEnded || isHangupOccurred) && isCalling && onCallEndDetected) {
             onCallEndDetected(liveCallId || undefined);
           }
         }

@@ -185,7 +185,75 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     if (config?.smartflo_api_token && (config.is_token_valid ?? config.is_validate)) {
       const token = decryptSmartfloToken(config.smartflo_api_token);
 
-      // --- A. Query Realtime Active Calls: GET /v1/live_calls (Live Calls Switch Dashboard) ---
+      // --- A. Query Tata Smartflo CDR API (v1/call/records) with ±10-Minute Window for Ref Lookup ---
+      const callTimeParam = req.query.timestamp || req.query.call_timestamp || req.query.start_time || req.body?.call_timestamp;
+      const refTime = callTimeParam ? new Date(Number(callTimeParam) || String(callTimeParam)) : new Date();
+      const fromDate = formatDateForSmartflo(new Date(refTime.getTime() - 10 * 60 * 1000)); // 10 mins before call
+      const toDate = formatDateForSmartflo(new Date(refTime.getTime() + 10 * 60 * 1000));   // 10 mins after call
+
+      const recordsUrl = new URL('https://api-smartflo.tatateleservices.com/v1/call/records');
+      recordsUrl.searchParams.set('from_date', fromDate);
+      recordsUrl.searchParams.set('to_date', toDate);
+      recordsUrl.searchParams.set('limit', '50');
+
+      console.log(`\n================== [SMARTFLO CDR 10-MIN LOOKUP] ==================`);
+      console.log(`📡 GET ${recordsUrl.toString()}`);
+      console.log(`⏱️ Window: ${fromDate} to ${toDate} | Target Ref: ${targetRefId} | Target Phone: ${targetPhone}`);
+
+      let cdrRecordsRaw: any[] = [];
+      try {
+        const sfRes = await fetch(recordsUrl.toString(), {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: 'application/json',
+          },
+        });
+
+        if (sfRes.ok) {
+          const sfData = await sfRes.json();
+          cdrRecordsRaw = Array.isArray(sfData.data)
+            ? sfData.data
+            : Array.isArray(sfData.records)
+              ? sfData.records
+              : Array.isArray(sfData)
+                ? sfData
+                : [];
+        }
+      } catch (cdrErr) {
+        console.warn('[Smartflo CDR 10-min Window] Exception querying CDR records:', cdrErr);
+      }
+
+      // Lookup call_id by ref_id in CDR records or Webhook events
+      if (targetRefId && !targetCallId) {
+        const cdrLookup = cdrRecordsRaw.find((rec: any) => {
+          const recRef = String(rec.ref_id || rec.custom_identifier || rec.uuid || '');
+          const customIdStr = rec.custom_identifier ? JSON.stringify(rec.custom_identifier) : '';
+          return recRef === targetRefId || customIdStr.includes(targetRefId);
+        });
+
+        const webhookLookup = filteredLogs.find((w: any) => {
+          const raw = (w.rawPayload || {}) as any;
+          const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
+          return (
+            w.refId === targetRefId ||
+            w.callId === targetRefId ||
+            raw.ref_id === targetRefId ||
+            raw.uuid === targetRefId ||
+            customIdStr.includes(targetRefId)
+          );
+        });
+
+        const resolved = cdrLookup || webhookLookup;
+        if (resolved) {
+          const discoveredCallId = String(resolved.call_id || resolved.callId || resolved.id || '');
+          if (discoveredCallId) {
+            targetCallId = discoveredCallId;
+            console.log(`🎯 [CDR 10-min Window] Successfully mapped ref_id: "${targetRefId}" -> call_id: "${targetCallId}"`);
+          }
+        }
+      }
+
+      // --- B. Query Realtime Active Calls: GET /v1/live_calls (Live Calls Switch Dashboard) ---
       try {
         const liveListUrl = 'https://api-smartflo.tatateleservices.com/v1/live_calls';
         console.log(`\n================== [SMARTFLO LIVE CALLS LIST] ==================`);
@@ -240,98 +308,84 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const cDest = cleanPhone(String(c.destination || c.customer_number || c.destination_number || c.call_to_number || c.to || ''));
             const cCaller = cleanPhone(String(c.caller_id_number || c.caller_id || c.from || c.caller || ''));
 
-            if (targetRefId && (cRef === targetRefId || cCallId === targetRefId || rawCustId.includes(targetRefId))) return true;
             if (targetCallId && (cCallId === targetCallId || cRef === targetCallId || rawCustId.includes(targetCallId))) return true;
+            if (targetRefId && (cRef === targetRefId || cCallId === targetRefId || rawCustId.includes(targetRefId))) return true;
             if (targetPhone && ((cDest && (cDest.includes(targetPhone) || targetPhone.includes(cDest))) || (cCaller && (cCaller.includes(targetPhone) || targetPhone.includes(cCaller))))) return true;
             return false;
           });
 
           if (matchedCall) {
-            console.log(`🎯 [Smartflo Live Calls List] Matched active live call:`, matchedCall);
+            console.log(`🎯 [Smartflo Live Calls List] Matched active live call on switch:`, matchedCall);
             liveCallStatusData = matchedCall;
             liveCallsApiResult.matched_live_call = matchedCall;
             if (matchedCall.call_id) {
               targetCallId = String(matchedCall.call_id);
             }
           } else {
-            console.log(`ℹ️ [Smartflo Live Calls List] No active call in list matching ref_id: ${targetRefId || targetCallId}. Call may have ended or not yet bridged.`);
+            console.log(`ℹ️ [Smartflo Live Calls List] No active call in list matching ref_id: ${targetRefId} / call_id: ${targetCallId}`);
           }
         }
       } catch (listErr) {
         console.warn('[Smartflo Live Calls List] Exception querying live calls list:', listErr);
       }
 
-      // --- B. Query Tata Smartflo CDR API (v1/call/records) for completed calls ---
-      const now = new Date();
-      const past24h = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      const fromDate = formatDateForSmartflo(past24h);
-      const toDate = formatDateForSmartflo(now);
+      // Helper to normalize keys (trim trailing spaces)
+      const normalizeCdrRec = (r: any) => {
+        if (!r || typeof r !== 'object') return r;
+        return Object.fromEntries(Object.entries(r).map(([k, v]) => [k.trim(), v]));
+      };
 
-      const recordsUrl = new URL('https://api-smartflo.tatateleservices.com/v1/call/records');
-      recordsUrl.searchParams.set('from_date', fromDate);
-      recordsUrl.searchParams.set('to_date', toDate);
-      recordsUrl.searchParams.set('limit', '40');
+      // Filter and map CDR records
+      const records = cdrRecordsRaw.map(normalizeCdrRec);
+      liveSmartfloRecords = records
+        .filter((rec: any) => {
+          const recRef = String(rec.ref_id || rec.custom_identifier?.ref_id || rec.uuid || '');
+          const recCallId = String(rec.call_id || rec.id || '');
+          const customIdStr = rec.custom_identifier ? JSON.stringify(rec.custom_identifier) : '';
 
-      const sfRes = await fetch(recordsUrl.toString(), {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/json',
-        },
-      });
+          // Fix #2: If targetRefId or targetCallId is provided, ONLY match that exact session.
+          // NEVER match by targetPhone alone to prevent old call CDR from hijacking the active session!
+          if (targetRefId || targetCallId) {
+            if (targetRefId && (recRef === targetRefId || recCallId === targetRefId || customIdStr.includes(targetRefId))) return true;
+            if (targetCallId && (recCallId === targetCallId || recRef === targetCallId || customIdStr.includes(targetCallId))) return true;
+            return false;
+          }
 
-      if (sfRes.ok) {
-        const sfData = await sfRes.json();
-        const records = Array.isArray(sfData.data)
-          ? sfData.data
-          : Array.isArray(sfData.records)
-            ? sfData.records
-            : Array.isArray(sfData)
-              ? sfData
-              : [];
-
-        // Filter and map CDR records
-        liveSmartfloRecords = records
-          .filter((rec: any) => {
-            if (!targetPhone && !targetRefId && !targetCallId) return true;
-            const recRef = String(rec.ref_id || rec.custom_identifier || rec.uuid || '');
-            const recCallId = String(rec.call_id || rec.id || '');
+          if (targetPhone) {
             const recDest = cleanPhone(String(rec.destination || rec.customer_number || rec.destination_number || rec.call_to_number || rec.to || ''));
             const recCaller = cleanPhone(String(rec.caller_id_number || rec.caller_id || rec.agent_number || rec.from || rec.caller || ''));
+            if ((recDest && (recDest.includes(targetPhone) || targetPhone.includes(recDest))) ||
+                (recCaller && (recCaller.includes(targetPhone) || targetPhone.includes(recCaller)))) {
+              return true;
+            }
+          }
+          return !targetPhone && !targetRefId && !targetCallId;
+        })
+        .map((rec: any, idx: number) => {
+          const isRecInbound =
+            String(rec.direction || '').toLowerCase() === 'inbound' ||
+            String(rec.call_type || '').toLowerCase().includes('inbound') ||
+            Boolean(rec.call_to_number && !rec.customer_no_with_prefix);
 
-            if (targetRefId && (recRef === targetRefId || recCallId === targetRefId)) return true;
-            if (targetCallId && (recCallId === targetCallId || recRef === targetCallId)) return true;
-            if (targetPhone && (
-              (recDest && (recDest.includes(targetPhone) || targetPhone.includes(recDest))) ||
-              (recCaller && (recCaller.includes(targetPhone) || targetPhone.includes(recCaller)))
-            )) return true;
-            return false;
-          })
-          .map((rec: any, idx: number) => {
-            const isRecInbound =
-              String(rec.direction || '').toLowerCase() === 'inbound' ||
-              String(rec.call_type || '').toLowerCase().includes('inbound') ||
-              Boolean(rec.call_to_number && !rec.customer_no_with_prefix);
-
-            return {
-              id: rec.call_id || rec.id || `live-${idx}`,
-              receivedAt: rec.created_at || rec.start_time || new Date().toISOString(),
-              callId: String(rec.call_id || rec.id || ''),
-              refId: String(rec.ref_id || rec.custom_identifier || rec.call_id || ''),
-              direction: isRecInbound ? 'inbound' : String(rec.direction || 'outbound'),
-              callType: isRecInbound
-                ? 'Inbound Call'
-                : String(rec.call_type === 'c' ? 'Answered' : rec.call_type === 'm' ? 'Missed' : rec.call_type || 'Call'),
-              agentNumber: String(rec.agent_number || rec.caller_id || ''),
-              destinationNumber: String(rec.destination || rec.customer_number || rec.destination_number || ''),
-              status: rec.status || (rec.call_type === 'c' ? 'answered' : 'missed'),
-              hangupCause: rec.hangup_cause || rec.status || 'NORMAL_CLEARING',
-              duration: Number(rec.outbound_sec ?? rec.outbound_talktime ?? rec.duration ?? rec.billsec ?? rec.talk_duration ?? 0),
-              recordingUrl: rec.recording_url || rec.record_url || null,
-              source: 'smartflo_api',
-              rawPayload: rec,
-            };
-          });
-      }
+          return {
+            id: rec.call_id || rec.id || `live-${idx}`,
+            receivedAt: rec.created_at || rec.start_time || new Date().toISOString(),
+            callId: String(rec.call_id || rec.id || ''),
+            refId: String(rec.ref_id || rec.custom_identifier || rec.call_id || ''),
+            direction: isRecInbound ? 'inbound' : String(rec.direction || 'outbound'),
+            callType: isRecInbound
+              ? 'Inbound Call'
+              : String(rec.call_type === 'c' ? 'Answered' : rec.call_type === 'm' ? 'Missed' : rec.call_type || 'Call'),
+            agentNumber: String(rec.agent_number || rec.caller_id || ''),
+            destinationNumber: String(rec.destination || rec.customer_number || rec.destination_number || ''),
+            status: rec.status || (rec.call_type === 'c' ? 'answered' : 'missed'),
+            hangupCause: rec.hangup_cause_description || rec.hangup_cause || rec.status || 'NORMAL_CLEARING',
+            duration: Number(rec.outbound_sec ?? rec.outbound_talktime ?? rec.duration ?? rec.billsec ?? rec.talk_duration ?? 0),
+            recordingUrl: rec.recording_url || rec.record_url || null,
+            source: 'smartflo_api',
+            rawPayload: rec,
+          };
+        });
     }
   } catch (liveErr) {
     console.warn('[Smartflo Logs API] Smartflo query exception (non-fatal):', liveErr);
