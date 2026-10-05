@@ -16,6 +16,7 @@ import { resolveActiveCallingProvider, getCallingProviderDetails, type CallingPr
 import { SmartfloOutboundFlowCard } from "@/components/campaign/SmartfloOutboundFlowCard";
 import { SmartfloInboundFlowCard } from "@/components/campaign/SmartfloInboundFlowCard";
 import { SmartfloLiveCallModal } from "@/components/campaign/SmartfloLiveCallModal";
+import { SmartfloSessionStore } from "@/lib/smartfloSessionStore";
 import { useSmartfloCallFlow } from "@/hooks/useSmartfloCallFlow";
 
 
@@ -537,6 +538,7 @@ export default function CallingPage() {
         flowState: smartfloFlowState,
         activeCallType: smartfloActiveCallType,
         refreshFlowState: refreshSmartfloFlowState,
+        resetFlowState: resetSmartfloFlowState,
     } = useSmartfloCallFlow({
         phone: customer?.phone_no ? decryptPhone(customer.phone_no) : null,
         customerId: customerId ? String(customerId) : null,
@@ -2085,6 +2087,16 @@ useEffect(() => {
             return;
         }
 
+        // Reset all previous call diagnostics, session state & flow engine for clean new call data
+        resetSmartfloFlowState('outbound');
+        activeSmartfloRefIdRef.current = null;
+        activeSmartfloCallIdRef.current = null;
+        setLastCheckedRefId(null);
+        setLastCheckedCallId(null);
+        setSmartfloLifecycle(null);
+        setSmartfloLogs([]);
+        SmartfloSessionStore.setActiveSessionId(null);
+
         let providerToUse: CallingProviderName = "sim";
         let decryptedPhone = "";
 
@@ -2186,6 +2198,17 @@ useEffect(() => {
                         setLastCheckedCallId(cIdVal);
                         hasSeenCustomerRingingRef.current = false;
                         setSmartfloLifecycle(null);
+
+                        // Initialize fresh isolated session store for this new call
+                        SmartfloSessionStore.createSession({
+                            direction: 'outbound',
+                            phone: decryptedPhone,
+                            customerId: custId,
+                            ref_id: rId,
+                            call_id: cIdVal,
+                            initialPayload: result,
+                        });
+
                         if (rId) {
                             setTimeout(() => {
                                 fetchSmartfloLogs(rId, cIdVal);

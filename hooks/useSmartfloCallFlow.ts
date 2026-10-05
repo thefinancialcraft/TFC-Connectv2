@@ -312,28 +312,37 @@ export function useSmartfloCallFlow({
     }
   }, [isPlacingCall, isCalling, isEndingCall, activeRefId, activeCallId, refreshFlowState]);
 
-  // 4. Reset when customer changes or call is completely cleared
-  useEffect(() => {
+  const resetFlowState = useCallback((direction: CallDirection = 'outbound') => {
     activeCallIdRef.current = null;
     activeRefIdRef.current = null;
     hasAgentAnsweredRef.current = false;
     isLiveActiveRef.current = false;
-    setActiveCallType(null);
+    setActiveCallType(direction);
     setFlowState(
       computeSmartfloFlowState({
-        isPlacingCall: false,
+        direction,
+        isPlacingCall: true,
         isCalling: false,
         isEndingCall: false,
         refId: null,
         callId: null,
+        liveCallData: null,
+        matchedLog: null,
       })
     );
-  }, [customerId]);
+  }, []);
+
+  // 4. Reset when customer changes or call is completely cleared
+  useEffect(() => {
+    resetFlowState('outbound');
+    setActiveCallType(null);
+  }, [customerId, resetFlowState]);
 
   return {
     flowState,
     activeCallType,
     refreshFlowState,
+    resetFlowState,
     setActiveCallType,
   };
 }
