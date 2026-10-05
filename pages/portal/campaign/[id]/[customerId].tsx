@@ -604,120 +604,14 @@ export default function CallingPage() {
             const decrypted = decryptPhone(customer.phone_no);
             const currentRef = refIdOverride || activeSmartfloRefIdRef.current || lastCheckedRefId || '';
             const currentCallId = callIdOverride || activeSmartfloCallIdRef.current || lastCheckedCallId || '';
-            if (currentRef) setLastCheckedRefId(currentRef);
-            if (currentCallId) setLastCheckedCallId(currentCallId);
 
             const url = `/api/calling/smartflo-logs?phone=${encodeURIComponent(decrypted)}&customer_id=${encodeURIComponent(String(customerId || ''))}&ref_id=${encodeURIComponent(currentRef)}&call_id=${encodeURIComponent(currentCallId)}`;
             const res = await fetch(url, {
                 headers: { Authorization: `Bearer ${session.access_token}` },
             });
             const data = await res.json();
-
-            // Print the live_calls API result concisely into the browser console without blowing localStorage
-            console.log('📡 [SMARTFLO LIVE CALLS API RESULT]:', {
-                call_id: data.active_call_id || currentCallId,
-                ref_id: currentRef,
-                is_live: data.is_live,
-                matched_call: data.live_calls_api_result?.matched_live_call,
-                ref_status: data.ref_status,
-            });
-
-            const resolvedCallId = data.active_call_id || data.ref_status?.callId;
-            if (resolvedCallId && resolvedCallId !== currentCallId) {
-                setLastCheckedCallId(resolvedCallId);
-                activeSmartfloCallIdRef.current = resolvedCallId;
-            }
-
-            // If this call was cancelled by user and active_call_id appears (agent picked up), auto-hangup immediately!
-            const isThisCancelled = (currentRef && cancelledRefIdsRef.current.has(currentRef)) || (currentCallId && cancelledRefIdsRef.current.has(currentCallId));
-            if (isThisCancelled && (data.active_call_id || data.is_live)) {
-                const termCallId = data.active_call_id || data.live_calls_api_result?.matched_live_call?.call_id;
-                if (termCallId && !autoHangsSentRef.current.has(termCallId)) {
-                    autoHangsSentRef.current.add(termCallId);
-                    console.log('🛑 [SafetyGuard] Active call detected on switch for a cancelled originate! Instantly hanging up to protect customer:', termCallId);
-                    fetch('/api/calling/smartflo-hangup', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
-                        body: JSON.stringify({ call_id: termCallId }),
-                    });
-                }
-            }
-
             if (data.success && Array.isArray(data.logs)) {
                 setSmartfloLogs(data.logs);
-
-                // If currentRef or currentCallId call has completed in Smartflo logs and CRM UI is still marked active, auto-end CRM active state!
-                if (currentRef || currentCallId) {
-                    const match = data.logs.find((l: any) => {
-                        const raw = (l.rawPayload || {}) as any;
-                        const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
-                        return (
-                            (currentRef && (l.refId === currentRef || l.callId === currentRef || raw.ref_id === currentRef || raw.call_id === currentRef || raw.uuid === currentRef || customIdStr.includes(currentRef))) ||
-                            (currentCallId && (l.callId === currentCallId || l.refId === currentCallId || raw.call_id === currentCallId || raw.ref_id === currentCallId || raw.uuid === currentCallId || customIdStr.includes(currentCallId)))
-                        );
-                    });
-
-                    if (match && isCallingRef.current && (data.ref_status?.isEnded || (match.hangupCause && match.hangupCause !== 'ACTIVE_CALL'))) {
-                        console.log('🤙 [Smartflo-Logs] Webhook event received for completed call, auto-ending CRM active state:', currentRef || currentCallId);
-                        handleEndCallRef.current(true, 'smartflo');
-                    }
-                }
-            }
-            if (data.success && data.ref_status) {
-                setSmartfloLifecycle(prev => {
-                    const newStatus = data.ref_status;
-                    const currentActiveRef = activeSmartfloRefIdRef.current || lastCheckedRefId;
-
-                    // Stale response guard: Ignore responses from older calls if current active ref exists
-                    if (currentActiveRef && newStatus.refId && newStatus.refId !== currentActiveRef && newStatus.callId !== currentActiveRef) {
-                        return prev;
-                    }
-
-                    // Track if we have witnessed the customer's phone ringing (only for outbound Click-to-Call)
-                    if (!newStatus.isInbound && (newStatus.customer.color === 'orange' || (newStatus.customer.sublabel && newStatus.customer.sublabel.toLowerCase().includes('ring')))) {
-                        hasSeenCustomerRingingRef.current = true;
-                    }
-
-                    // In Smartflo Click-to-Call (outbound), when the agent answers Leg 1, the switch initially reports state 'Answered'.
-                    // If the customer has not yet been in the ringing state, hold customer in Ringing Customer...
-                    if (!newStatus.isInbound && newStatus.customer.sublabel === 'Speaking' && !hasSeenCustomerRingingRef.current) {
-                        newStatus.customer.color = 'orange';
-                        newStatus.customer.sublabel = 'Ringing Customer...';
-                    }
-
-                    // Monotonic Call State Protection:
-                    // If the call was ALREADY live or answered (or ending), it can NEVER regress backwards to "Ringing Agent..."!
-                    if (prev && (prev.agentColor === 'green' || prev.isEnded || isEndingCallRef.current)) {
-                        // If backend reports not live and no webhook record yet, the call has just left switch and is completing:
-                        if (!newStatus.isLive && !newStatus.hasRecord) {
-                            return {
-                                ...prev,
-                                hangupColor: prev.hangupColor === 'red' ? 'red' : 'indigo',
-                                hangupSublabel: prev.hangupSublabel === 'Agent Ended' ? 'Agent Ended' : 'Call Ended',
-                                isEnded: true,
-                            };
-                        }
-
-                        // Protect Agent Leg from regressing from Answered to Ringing
-                        if (newStatus.agent.color === 'orange' && prev.agentColor === 'green') {
-                            newStatus.agent.color = 'green';
-                            newStatus.agent.sublabel = 'Answered';
-                        }
-                    }
-
-                    return {
-                        refId: newStatus.refId || newStatus.callId,
-                        agentColor: newStatus.agent.color,
-                        agentSublabel: newStatus.agent.sublabel,
-                        customerColor: newStatus.customer.color,
-                        customerSublabel: newStatus.customer.sublabel,
-                        hangupColor: newStatus.hangup.color,
-                        hangupSublabel: newStatus.hangup.sublabel,
-                        isEnded: Boolean(newStatus.isEnded),
-                        isInbound: Boolean(newStatus.isInbound),
-                        rawPayload: newStatus.rawPayload,
-                    };
-                });
             }
         } catch (err) {
             console.warn('Failed to fetch Smartflo logs:', err);
@@ -725,74 +619,6 @@ export default function CallingPage() {
             setIsLoadingSmartfloLogs(false);
         }
     }, [customer?.phone_no, customerId, lastCheckedRefId, lastCheckedCallId]);
-
-    // 1. Instant Realtime updates when Smartflo posts to webhook_responses
-    useEffect(() => {
-        const channel = supabase
-            .channel('smartflo-realtime-webhook')
-            .on(
-                'postgres_changes',
-                {
-                    event: 'INSERT',
-                    schema: 'public',
-                    table: 'webhook_responses',
-                },
-                (payload) => {
-                    console.log('⚡ [Realtime] New Smartflo webhook received:', payload.new);
-                    const resPayload = (payload.new?.response || {}) as any;
-                    const raw = (resPayload.rawPayload || resPayload) as any;
-                    
-                    const normalizeNum = (val: string) => String(val || '').replace(/[\s\-\(\)\+]/g, '').slice(-10);
-                    const callerNum = normalizeNum(raw.caller_id_number || raw.caller_id || resPayload.agentNumber || raw.customer_number || raw.from || '');
-                    const destNum = normalizeNum(raw.call_to_number || raw.destination || resPayload.destinationNumber || raw.to || '');
-                    const custPhone = customer?.phone_no ? normalizeNum(decryptPhone(customer.phone_no)) : '';
-                    const incomingCallId = String(raw.call_id || raw.uuid || resPayload.callId || resPayload.refId || '');
-
-                    if (custPhone && (callerNum.includes(custPhone) || custPhone.includes(callerNum) || destNum.includes(custPhone) || custPhone.includes(destNum))) {
-                        if (incomingCallId) {
-                            activeSmartfloCallIdRef.current = incomingCallId;
-                            setLastCheckedCallId(incomingCallId);
-                        }
-                        const currentRef = activeSmartfloRefIdRef.current || lastCheckedRefId;
-                        const currentCallId = incomingCallId || activeSmartfloCallIdRef.current || lastCheckedCallId;
-                        fetchSmartfloLogs(currentRef || undefined, currentCallId || undefined);
-                    }
-                }
-            )
-            .subscribe();
-
-        return () => {
-            supabase.removeChannel(channel);
-        };
-    }, [fetchSmartfloLogs, lastCheckedRefId, lastCheckedCallId, customer?.phone_no]);
-
-    // 2. Real-time polling for active Smartflo call status every 1.5s via /v1/live_calls/{call_id}
-    useEffect(() => {
-        const targetRef = lastCheckedRefId || activeSmartfloRefIdRef.current;
-        const targetCallId = lastCheckedCallId || activeSmartfloCallIdRef.current;
-        if (!targetRef && !targetCallId && !isCalling) return;
-
-        // Stop polling ONLY when we have a completed log record for targetRef / targetCallId
-        if (targetRef || targetCallId) {
-            const hasCompletedLog = smartfloLogs.some((l: any) => {
-                const raw = (l.rawPayload || {}) as any;
-                const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
-                const isMatch = (
-                    (targetRef && (l.refId === targetRef || l.callId === targetRef || raw.ref_id === targetRef || raw.call_id === targetRef || raw.uuid === targetRef || customIdStr.includes(targetRef))) ||
-                    (targetCallId && (l.callId === targetCallId || l.refId === targetCallId || raw.call_id === targetCallId || raw.ref_id === targetCallId || raw.uuid === targetCallId || customIdStr.includes(targetCallId)))
-                );
-                return isMatch && l.hangupCause !== 'ACTIVE_CALL' && (l.hangupCause || raw.hangup_cause_description || raw.hangup_cause_key || raw.reason_key || l.status);
-            });
-
-            if (hasCompletedLog) return;
-        }
-
-        const pollTimer = setInterval(() => {
-            fetchSmartfloLogs(targetRef || undefined, targetCallId || undefined);
-        }, 1500);
-
-        return () => clearInterval(pollTimer);
-    }, [lastCheckedRefId, lastCheckedCallId, isCalling, smartfloLogs, fetchSmartfloLogs]);
 
     useEffect(() => {
         setLastCheckedRefId(null);
@@ -2361,7 +2187,7 @@ useEffect(() => {
                         if (rId) {
                             setTimeout(() => {
                                 fetchSmartfloLogs(rId, cIdVal);
-                                refreshSmartfloFlowState(rId, cIdVal);
+                                refreshSmartfloFlowState();
                             }, 500);
                         }
 
