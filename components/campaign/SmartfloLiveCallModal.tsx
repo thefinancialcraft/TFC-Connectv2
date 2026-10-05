@@ -70,6 +70,35 @@ export const SmartfloLiveCallModal: React.FC<SmartfloLiveCallModalProps> = ({
   const isLive = flowState.isLive;
   const isEnded = flowState.isEnded;
 
+  // Complete diagnostic payload that is guaranteed to never be empty
+  const fullDiagnosticPayload = {
+    call_id: flowState.callId || session?.call_id || null,
+    ref_id: flowState.refId || session?.ref_id || null,
+    direction: flowState.direction,
+    is_live_on_switch: isLive,
+    is_call_ended: isEnded,
+    duration_seconds: flowState.duration,
+    stepper_status: flowState.steps,
+    timeline_events_count: timeline.length,
+    timeline_events: timeline,
+    switch_raw_data: Object.keys(rawPayload).length > 0 ? rawPayload : flowState.rawPayload || null,
+    session_details: session
+      ? {
+          status: session.status,
+          phone: session.phone,
+          customer_id: session.customerId,
+          hangup_cause: session.hangupCause,
+          recording_url: session.recordingUrl,
+          created_at: session.created_at ? new Date(session.created_at).toISOString() : null,
+          updated_at: session.updated_at ? new Date(session.updated_at).toISOString() : null,
+        }
+      : null,
+  };
+
+  const jsonToCopy = Object.keys(rawPayload).length > 0 && !('status' in rawPayload && Object.keys(rawPayload).length <= 4)
+    ? { ...rawPayload, _diagnostics: fullDiagnosticPayload }
+    : fullDiagnosticPayload;
+
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
       <div
@@ -373,29 +402,17 @@ export const SmartfloLiveCallModal: React.FC<SmartfloLiveCallModalProps> = ({
                   Full Tata Smartflo API &amp; Webhook Payload
                 </span>
                 <button
-                  onClick={() => copyToClipboard(JSON.stringify(rawPayload, null, 2), 'raw_json')}
-                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+                  onClick={() => copyToClipboard(JSON.stringify(jsonToCopy, null, 2), 'raw_json')}
+                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
                 >
-                  <i className={`fi flex ${copiedKey === 'raw_json' ? 'fi-rr-check' : 'fi-rr-copy'}`}></i>
+                  <i className={`fi flex ${copiedKey === 'raw_json' ? 'fi-rr-check text-emerald-300' : 'fi-rr-copy'}`}></i>
                   {copiedKey === 'raw_json' ? 'Copied!' : 'Copy Full JSON'}
                 </button>
               </div>
 
               <div className="relative rounded-xl overflow-hidden border border-slate-800 shadow-inner bg-slate-950">
                 <pre className="p-4 text-emerald-400 text-xs font-mono overflow-x-auto max-h-[420px] custom-scrollbar">
-                  {Object.keys(rawPayload).length > 0
-                    ? JSON.stringify(rawPayload, null, 2)
-                    : JSON.stringify(
-                        {
-                          status: flowState.isEnded ? 'Call Ended' : 'Awaiting Switch Events',
-                          message: flowState.isEnded
-                            ? 'Call completed. Final CDR / webhook events recorded.'
-                            : 'No raw switch payload captured yet. Polling /v1/live_calls in real-time...',
-                          flowState,
-                        },
-                        null,
-                        2
-                      )}
+                  {JSON.stringify(jsonToCopy, null, 2)}
                 </pre>
               </div>
             </div>

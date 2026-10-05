@@ -422,6 +422,12 @@ export function computeSmartfloFlowState(params: {
             spinColor: 'indigo',
           },
         },
+        rawPayload: liveCallData || matchedLog?.rawPayload || {
+          ref_id: refId,
+          call_id: callId,
+          direction: 'inbound',
+          status: isEndingCall ? 'ending' : 'ringing',
+        },
       };
     } else {
       // Outbound In-Flight
@@ -465,6 +471,12 @@ export function computeSmartfloFlowState(params: {
             color: isEndingCall ? 'red' : 'gray',
             icon: 'fi-rr-phone-slash',
           },
+        },
+        rawPayload: liveCallData || matchedLog?.rawPayload || {
+          ref_id: refId,
+          call_id: callId,
+          direction: 'outbound',
+          status: isPlacingCall ? 'dialing_agent' : 'agent_ringing',
         },
       };
     }
