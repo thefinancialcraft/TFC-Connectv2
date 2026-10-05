@@ -292,7 +292,7 @@ export function useSmartfloCallFlow({
     };
   }, [activeCallingProvider, isCalling, isPlacingCall, activeCallType, refreshFlowState]);
 
-  // 3. Handle CRM UI Outbound Call Trigger
+  // 3. Handle CRM UI Outbound Call Trigger & Disconnect Transition
   useEffect(() => {
     if (isPlacingCall || isCalling) {
       setActiveCallType('outbound');
@@ -306,8 +306,11 @@ export function useSmartfloCallFlow({
           callId: activeCallId,
         })
       );
+    } else if (activeRefId || activeCallId) {
+      // Call transitioned to finished/disconnected -> fetch final CDR/logs and update flow state to isEnded: true
+      refreshFlowState();
     }
-  }, [isPlacingCall, isCalling, isEndingCall, activeRefId, activeCallId]);
+  }, [isPlacingCall, isCalling, isEndingCall, activeRefId, activeCallId, refreshFlowState]);
 
   // 4. Reset when customer changes or call is completely cleared
   useEffect(() => {

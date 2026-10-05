@@ -15,6 +15,7 @@ import { routeCallingCommand } from "@/lib/callingCommandRouter";
 import { resolveActiveCallingProvider, getCallingProviderDetails, type CallingProviderName } from "@/lib/callingProviderClient";
 import { SmartfloOutboundFlowCard } from "@/components/campaign/SmartfloOutboundFlowCard";
 import { SmartfloInboundFlowCard } from "@/components/campaign/SmartfloInboundFlowCard";
+import { SmartfloLiveCallModal } from "@/components/campaign/SmartfloLiveCallModal";
 import { useSmartfloCallFlow } from "@/hooks/useSmartfloCallFlow";
 
 
@@ -47,6 +48,7 @@ export default function CallingPage() {
     const [activeCallingProvider, setActiveCallingProvider] = useState<CallingProviderName | null>(null);
     const [lastCheckedRefId, setLastCheckedRefId] = useState<string | null>(null);
     const [lastCheckedCallId, setLastCheckedCallId] = useState<string | null>(null);
+    const [isSmartfloLiveModalOpen, setIsSmartfloLiveModalOpen] = useState(false);
     const [smartfloLifecycle, setSmartfloLifecycle] = useState<{
         refId: string;
         agentColor: 'orange' | 'green' | 'violet' | 'red' | 'gray';
@@ -5031,12 +5033,22 @@ Campaign: ${campaign?.name || campaignId}
                                         <SmartfloOutboundFlowCard
                                             isVisible={activeCallingProvider === 'smartflo' && smartfloActiveCallType === 'outbound'}
                                             flowState={smartfloFlowState}
+                                            onOpenLogsModal={() => setIsSmartfloLiveModalOpen(true)}
                                         />
 
                                         {/* Smartflo Inbound Calling Flow Stepper */}
                                         <SmartfloInboundFlowCard
                                             isVisible={activeCallingProvider === 'smartflo' && smartfloActiveCallType === 'inbound'}
                                             flowState={smartfloFlowState}
+                                            onOpenLogsModal={() => setIsSmartfloLiveModalOpen(true)}
+                                        />
+
+                                        {/* Smartflo Live Call Diagnostics & Realtime Logs Modal */}
+                                        <SmartfloLiveCallModal
+                                            isOpen={isSmartfloLiveModalOpen}
+                                            onClose={() => setIsSmartfloLiveModalOpen(false)}
+                                            flowState={smartfloFlowState}
+                                            onRefresh={() => refreshSmartfloFlowState()}
                                         />
 
                                         {/* Activity Sidebar / Timeline Container */}

@@ -198,8 +198,8 @@ export function computeSmartfloFlowState(params: {
     }
   }
 
-  // 3. Compute based on COMPLETED CDR or Webhook Log
-  if (matchedLog && !isCalling && !isPlacingCall) {
+  // 3. Compute based on COMPLETED CDR or Webhook Log (when call is no longer active on switch)
+  if (matchedLog && !liveCallData) {
     const raw = (matchedLog.rawPayload || {}) as any;
     const statusStr = String(matchedLog.status || raw.call_status || '').toLowerCase();
     const causeStr = String(

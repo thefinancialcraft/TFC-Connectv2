@@ -4,11 +4,13 @@ import { SmartfloCallFlowState, StepColor } from '@/lib/smartfloFlowEngine';
 interface SmartfloInboundFlowCardProps {
   isVisible: boolean;
   flowState: SmartfloCallFlowState;
+  onOpenLogsModal?: () => void;
 }
 
 export const SmartfloInboundFlowCard: React.FC<SmartfloInboundFlowCardProps> = ({
   isVisible,
   flowState,
+  onOpenLogsModal,
 }) => {
   const { steps } = flowState;
 
@@ -90,11 +92,27 @@ export const SmartfloInboundFlowCard: React.FC<SmartfloInboundFlowCardProps> = (
           <i className="fi flex fi-rr-phone-incoming text-purple-600 text-[10px]"></i>
           Inbound Calling Flow (DID Call)
         </span>
-        {flowState.duration > 0 && (
-          <span className="text-[10px] font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
-            {flowState.duration}s
-          </span>
-        )}
+        <div className="flex items-center gap-1.5">
+          {flowState.duration > 0 && (
+            <span className="text-[10px] font-semibold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200">
+              {flowState.duration}s
+            </span>
+          )}
+          {onOpenLogsModal && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenLogsModal();
+              }}
+              title="Open Live Call API Logs & Diagnostics"
+              className="px-1.5 py-0.5 rounded-md bg-purple-50 hover:bg-purple-100 hover:text-purple-700 text-purple-600 border border-purple-200 transition-all flex items-center gap-1 text-[10px] font-semibold shadow-xs"
+            >
+              <i className="fi flex fi-rr-arrow-up-right-from-square text-[9px]"></i>
+              <span className="text-[9px]">Live Logs</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="relative pt-1 pb-0.5">
