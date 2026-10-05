@@ -211,18 +211,21 @@ export const SmartfloSessionStore = {
     const session = all[existingKey];
     const now = Date.now();
 
-    // Append timeline entry only if stage or message actually changed (prevent duplicate polling spam)
+    // De-duplicated Timeline Logging:
+    // If the stage is the same as the last entry (e.g. polling during ringing/speaking), update in-place.
+    // Only append a brand new timeline entry on a UNIQUE state transition (e.g., originated -> agent_ringing -> agent_answered -> customer_ringing -> connected -> ended).
     if (timelineEvent) {
       const timeline = session.timeline || [];
       const lastEntry = timeline.length > 0 ? timeline[timeline.length - 1] : null;
 
-      const isDuplicate = Boolean(
-        lastEntry &&
-          lastEntry.stage === timelineEvent.stage &&
-          lastEntry.message === timelineEvent.message
-      );
-
-      if (!isDuplicate) {
+      if (lastEntry && lastEntry.stage === timelineEvent.stage) {
+        // Update in-place (latest timestamp, message, data)
+        lastEntry.timestamp = now;
+        lastEntry.isoTime = new Date(now).toISOString();
+        if (timelineEvent.message) lastEntry.message = timelineEvent.message;
+        if (timelineEvent.data !== undefined) lastEntry.data = timelineEvent.data;
+      } else {
+        // Unique state change -> append new entry
         const nextIdx = timeline.length + 1;
         const newEntry: SmartfloTimelineEntry = {
           idx: nextIdx,

@@ -682,28 +682,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       };
     } else {
       // 3. Not live on switch yet and no completed CDR/webhook:
-      // If targetCallId is a real switch ID (contains '.' or differs from targetRefId),
-      // the call was ALREADY active on the switch and has just hung up! It is NOT ringing the agent!
-      const isSwitchCallId = Boolean(
-        targetCallId &&
-        (targetCallId.includes('.') || (targetRefId && targetCallId !== targetRefId))
-      );
-
-      if (isSwitchCallId) {
-        refStatus = {
-          refId: targetRefId || targetCallId,
-          callId: targetCallId || targetRefId,
-          hasRecord: false,
-          isLive: false,
-          isEnded: true,
-          agent: { color: 'green', sublabel: 'Answered' },
-          customer: { color: 'gray', sublabel: 'Ended' },
-          hangup: { color: 'indigo', sublabel: 'Call Ended' },
-          duration: 0,
-          recordingUrl: null,
-        };
-      } else {
-        // Truly a new call where agent phone is ringing
+      // When a call is brand new (outbound C2C or inbound dialplan), it is ringing before bridging.
+      // Do NOT falsely mark isEnded: true just because targetCallId contains a dot or switch has not bridged yet!
+      if (targetRefId || targetCallId) {
         refStatus = {
           refId: targetRefId || targetCallId,
           callId: targetCallId || targetRefId,

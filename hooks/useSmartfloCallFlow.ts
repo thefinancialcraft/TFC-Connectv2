@@ -6,6 +6,7 @@ import {
   cleanPhone,
   CallDirection,
 } from '@/lib/smartfloFlowEngine';
+import { SmartfloSessionStore } from '@/lib/smartfloSessionStore';
 
 interface UseSmartfloCallFlowParams {
   phone?: string | null;
@@ -46,6 +47,8 @@ export function useSmartfloCallFlow({
   const activeCallIdRef = useRef<string | null>(activeCallId);
   const activeRefIdRef = useRef<string | null>(activeRefId);
   const isFetchingRef = useRef(false);
+  const hasAgentAnsweredRef = useRef(false);
+  const isLiveActiveRef = useRef(false);
 
   // Sync refs with props
   useEffect(() => {
@@ -114,7 +117,7 @@ export function useSmartfloCallFlow({
             });
           }
 
-          // Determine call direction
+          // Determine call direction: inbound or outbound
           let detectedDirection: CallDirection =
             targetDirection ||
             (data.ref_status?.isInbound ? 'inbound' : 'outbound');
@@ -131,6 +134,12 @@ export function useSmartfloCallFlow({
           // Show the respective card
           setActiveCallType(detectedDirection);
 
+          // Track whether live call was established
+          if (liveCall || data.is_live) {
+            isLiveActiveRef.current = true;
+            hasAgentAnsweredRef.current = true;
+          }
+
           const computed = computeSmartfloFlowState({
             direction: detectedDirection,
             isPlacingCall,
@@ -144,7 +153,41 @@ export function useSmartfloCallFlow({
 
           setFlowState(computed);
 
-          // If call has ended and was active, notify
+          // Update session store with deduplicated timeline
+          const sessionKey = liveCallId || currentRef;
+          if (sessionKey) {
+            const currentStage = computed.isEnded
+              ? 'ended'
+              : liveCall
+              ? 'connected'
+              : hasAgentAnsweredRef.current
+              ? 'customer_ringing'
+              : 'agent_ringing';
+
+            const stageMsg = computed.isEnded
+              ? `Call completed. Duration: ${computed.duration}s`
+              : liveCall
+              ? `Customer connected & speaking (${computed.duration}s)`
+              : hasAgentAnsweredRef.current
+              ? `Agent answered. Ringing customer (${cleanedPhone})...`
+              : `Ringing agent...`;
+
+            SmartfloSessionStore.updateSession(
+              sessionKey,
+              {
+                call_id: liveCallId || undefined,
+                duration: computed.duration,
+                status: currentStage,
+              },
+              {
+                stage: currentStage,
+                message: stageMsg,
+                data: liveCall || matchedLog?.rawPayload || null,
+              }
+            );
+          }
+
+          // Call ended detection (only when previously active and now completed)
           if (computed.isEnded && isCalling && onCallEndDetected) {
             onCallEndDetected(liveCallId || undefined);
           }
@@ -158,7 +201,7 @@ export function useSmartfloCallFlow({
     [phone, customerId, activeCallingProvider, isPlacingCall, isCalling, isEndingCall, onCallEndDetected]
   );
 
-  // 1. Connect Realtime Webhook directly to Flow Cards
+  // 1. Realtime Webhook Listener for immediate Inbound and Outbound detection
   useEffect(() => {
     if (activeCallingProvider !== 'smartflo') return;
 
@@ -196,7 +239,7 @@ export function useSmartfloCallFlow({
             raw.call_id || raw.uuid || resPayload.callId || resPayload.refId || ''
           );
 
-          // Check if webhook belongs to current customer
+          // Match if webhook belongs to current customer
           if (
             currentCustPhone &&
             (callerNum.includes(currentCustPhone) ||
@@ -219,7 +262,7 @@ export function useSmartfloCallFlow({
               activeCallIdRef.current = incomingCallId;
             }
 
-            // Immediately run API with the call_id to get the latest call status
+            // Immediately query live call state with the detected call_id
             refreshFlowState(incomingCallId || undefined, direction);
           }
         }
@@ -231,7 +274,25 @@ export function useSmartfloCallFlow({
     };
   }, [activeCallingProvider, phone, refreshFlowState]);
 
-  // 2. Handle CRM UI Outbound Call Trigger
+  // 2. Active Polling Interval while call is in progress (or Inbound active)
+  useEffect(() => {
+    if (activeCallingProvider !== 'smartflo') return;
+    if (!isCalling && !isPlacingCall && activeCallType !== 'inbound') return;
+
+    // Initial check
+    refreshFlowState();
+
+    // 1.5s live polling interval to trace agent pickup -> customer ringing -> speaking -> hangup
+    const interval = setInterval(() => {
+      refreshFlowState();
+    }, 1500);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [activeCallingProvider, isCalling, isPlacingCall, activeCallType, refreshFlowState]);
+
+  // 3. Handle CRM UI Outbound Call Trigger
   useEffect(() => {
     if (isPlacingCall || isCalling) {
       setActiveCallType('outbound');
@@ -248,10 +309,12 @@ export function useSmartfloCallFlow({
     }
   }, [isPlacingCall, isCalling, isEndingCall, activeRefId, activeCallId]);
 
-  // 3. Reset when customer changes or call is completely cleared
+  // 4. Reset when customer changes or call is completely cleared
   useEffect(() => {
     activeCallIdRef.current = null;
     activeRefIdRef.current = null;
+    hasAgentAnsweredRef.current = false;
+    isLiveActiveRef.current = false;
     setActiveCallType(null);
     setFlowState(
       computeSmartfloFlowState({
@@ -271,3 +334,4 @@ export function useSmartfloCallFlow({
     setActiveCallType,
   };
 }
+
