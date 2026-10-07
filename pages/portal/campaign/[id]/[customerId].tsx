@@ -51,6 +51,7 @@ export default function CallingPage() {
     const [campaign, setCampaign] = useState<any>(null);
     // === 1. TIMELINE STATES & GHOST BUFFER ===
     const [history, setHistory] = useState<any[]>([]);
+    const [totalAttemptsCount, setTotalAttemptsCount] = useState<number>(0);
     const [hasMoreTimeline, setHasMoreTimeline] = useState(false);
     const [isLoadingInitialTimeline, setIsLoadingInitialTimeline] = useState(false);
     const [isLoadingMoreTimeline, setIsLoadingMoreTimeline] = useState(false);
@@ -648,6 +649,9 @@ export default function CallingPage() {
             setTelemetry(prev => prev ? { ...prev, timelineTime: dur } : null);
             if (result.success && Array.isArray(result.data)) {
                 setHistory(result.data);
+                if (typeof result.totalCount === 'number') {
+                    setTotalAttemptsCount(result.totalCount);
+                }
                 const hasMore = result.hasMore === true && result.data.length === 5;
                 setHasMoreTimeline(hasMore);
                 timelineOffsetRef.current = result.data.length;
@@ -656,6 +660,7 @@ export default function CallingPage() {
                 }
             } else {
                 setHistory([]);
+                setTotalAttemptsCount(0);
                 setHasMoreTimeline(false);
             }
         } catch (e) {
@@ -1711,13 +1716,15 @@ export default function CallingPage() {
         
         // ⚡ INSTANT PRE-FETCH RESTORATION
         const isPrefetched = prefetchedDataRef.current && String(prefetchedDataRef.current.id) === String(idToFetch);
-        let hasPreview = false;
         
         if (isPrefetched) {
             setCustomer(prefetchedDataRef.current.customer);
             setLiveNotes(prefetchedDataRef.current.customer?.live_notes || "");
             if (prefetchedDataRef.current.history) {
                 setHistory(prefetchedDataRef.current.history);
+                if (typeof prefetchedDataRef.current.totalCount === 'number') {
+                    setTotalAttemptsCount(prefetchedDataRef.current.totalCount);
+                }
                 const hasMore = prefetchedDataRef.current.hasMore === true;
                 setHasMoreTimeline(hasMore);
                 timelineOffsetRef.current = prefetchedDataRef.current.history.length;
@@ -1741,41 +1748,12 @@ export default function CallingPage() {
                 leadId: String(idToFetch),
                 measuredAt: `${new Date().toLocaleTimeString()} (Instant Prefetch)`
             });
-        } else if (typeof window !== 'undefined') {
-            // ⚡ INSTANT MANUAL PREVIEW (When opened from Campaign List / Overdue / Upcoming)
-            try {
-                const stored = sessionStorage.getItem(`tfc_lead_preview_${idToFetch}`);
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    if (parsed && (String(parsed.id) === String(idToFetch) || String(parsed.customer_id) === String(idToFetch))) {
-                        hasPreview = true;
-                        setCustomer(parsed);
-                        setLiveNotes(parsed.live_notes || "");
-                        setLoading(false);
-                        setTelemetry({
-                            authTime: 0,
-                            guardTime: 0,
-                            leadTime: 0,
-                            sessionTime: 0,
-                            parallelGroupTime: 0,
-                            managerTime: 0,
-                            timelineTime: 0,
-                            unblockTime: 0,
-                            mobileLogsTime: null,
-                            schedulesTime: null,
-                            smartfloTime: null,
-                            leadId: String(idToFetch),
-                            measuredAt: `${new Date().toLocaleTimeString()} (Instant Table Click)`
-                        });
-                    }
-                }
-            } catch (e) {
-                console.warn('[Preview] sessionStorage read error:', e);
-            }
+        } else {
+            setLoading(true);
         }
         
         // (Note: Schedules & Mobile Logs are lazy loaded on their respective tab clicks)
-        fetchDailyStats();
+        setTimeout(() => void fetchDailyStats(), 150);
         
         const tTotalStart = performance.now();
         let guardDuration = 0;
@@ -1783,9 +1761,6 @@ export default function CallingPage() {
         let sessionDuration = 0;
         
         try {
-            if (!isPrefetched && !hasPreview) {
-                setLoading(true);
-            }
 
             // ⚡ ATOMIC UNIFIED RPC: 1 Single Server Round-Trip (Eliminates multiple network flights to Sydney)
             const tBundle0 = performance.now();
@@ -1886,6 +1861,11 @@ export default function CallingPage() {
 
                 setCustomer(foundCustomer);
                 setLiveNotes(foundCustomer.live_notes || "");
+                if (typeof bundleResult.attempts_count === 'number') {
+                    setTotalAttemptsCount(bundleResult.attempts_count);
+                } else if (foundCustomer.attempt_count) {
+                    setTotalAttemptsCount(foundCustomer.attempt_count);
+                }
                 if (typeof customerId === 'string') {
                     fetchAttachments(String(customerId));
                 }
@@ -2349,19 +2329,29 @@ useEffect(() => {
             setPrefetchStatus('fetching');
             
             const performPrefetch = async (retryCount = 0) => {
+                let timerId: any = null;
                 try {
-                    // Set a timeout of 10 seconds for lead assignment
-                    const timeoutPromise = new Promise((_, rej) => setTimeout(() => rej(new Error("Timeout")), 10000));
+                    // Safe 10s timeout that cleans up immediately upon resolution
+                    const timeoutPromise = new Promise<never>((_, rej) => {
+                        timerId = setTimeout(() => rej(new Error("Prefetch timeout")), 10000);
+                    });
                     
                     const rpcPromise = supabase.rpc('assign_next_lead', {
-                        p_campaign_id: campaignId,
+                        p_campaign_id: String(campaignId),
                         p_user_id: user.uid,
-                        p_exclude_lead_id: customerId 
+                        p_exclude_lead_id: (typeof customerId === 'string' && customerId.length === 36) ? customerId : null
                     });
 
                     const res: any = await Promise.race([rpcPromise, timeoutPromise]);
+                    if (timerId) clearTimeout(timerId);
                     
-                    if (res.data) {
+                    if (res?.error) {
+                        console.warn('[Pre-fetch] assign_next_lead RPC error:', res.error);
+                        setPrefetchStatus('error');
+                        return;
+                    }
+
+                    if (res?.data) {
                         const nextId = res.data;
 
                         // Case 4: Duplicate Check -> Recount if we got the same lead back
@@ -2380,6 +2370,9 @@ useEffect(() => {
                                 id: nextId,
                                 customer: cRes.data,
                                 history: hRes?.success ? hRes.data : [],
+                                totalCount: typeof hRes?.totalCount === 'number'
+                                    ? hRes.totalCount
+                                    : (cRes.data?.attempt_count || (hRes?.data?.length || 0)),
                                 hasMore: hRes?.hasMore === true && hRes?.data?.length === 5
                             };
 
@@ -2409,7 +2402,8 @@ useEffect(() => {
                         setPrefetchStatus('none');
                     }
                 } catch (err: any) {
-                    console.error('[Pre-fetch] Error or Timeout:', err);
+                    if (timerId) clearTimeout(timerId);
+                    console.warn('[Pre-fetch] Background prefetch warning (handled non-blocking):', err?.message || err);
                     setPrefetchStatus('error');
                     // Case 3 fallback: Handled during Save attempt
                 }
@@ -3162,6 +3156,7 @@ useEffect(() => {
                 });
 
             if (logError) throw logError;
+            setTotalAttemptsCount(prev => prev + 1);
 
             // 2. Perform Movement Logic or Update Status
             const isFromRejected = Boolean(customer?._isFromRejectedLeads || customer?.rejected_at);
@@ -3896,7 +3891,7 @@ Campaign: ${campaign?.name || campaignId}
         );
     }
 
-    if (!user) {
+    if (!user || loading || !customer) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-white">
                 <div className="flex flex-col items-center max-w-xs text-center px-6">
@@ -3909,8 +3904,12 @@ Campaign: ${campaign?.name || campaignId}
                         </div>
                     </div>
 
-                    <h2 className="text-lg font-bold text-slate-900 mb-1">Authenticating Session</h2>
-                    <p className="text-xs font-medium text-slate-400 tracking-wide uppercase">Connecting to account...</p>
+                    <h2 className="text-lg font-bold text-slate-900 mb-1">
+                        {!user ? "Authenticating Session" : "Assigning Lead"}
+                    </h2>
+                    <p className="text-xs font-medium text-slate-400 tracking-wide uppercase">
+                        {!user ? "Connecting to account..." : "Syncing your lead data..."}
+                    </p>
                     
                     {/* Minimal Progress indicator */}
                     <div className="mt-6 flex gap-1.5">
@@ -3956,9 +3955,6 @@ Campaign: ${campaign?.name || campaignId}
                 />
                 
                 <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full relative" style={{ backgroundColor: "#f8fafc" }}>
-                    {loading && (
-                        <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 z-[9999] animate-pulse" />
-                    )}
                     {/* Floating New Lead Alert */}
                     {showNewLeadAlert && (
                         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-md animate-in fade-in slide-in-from-top-4 duration-500">
@@ -4010,7 +4006,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 {/* Avatar with Ring (Desktop Only) */}
                                                 <div className="relative hidden sm:block">
                                                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-xl font-bold">
-                                                        {customer?.customer_name?.charAt(0) || (loading ? <span className="w-5 h-5 rounded-full border-2 border-white/50 border-t-white animate-spin"></span> : 'C')}
+                                                        {customer?.customer_name?.charAt(0) || 'C'}
                                                     </div>
                                                     <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-[3px] border-white flex items-center justify-center ${
                                                          customer?.status === 'followup' ? 'bg-amber-400' : 'bg-emerald-500'
@@ -4027,26 +4023,14 @@ Campaign: ${campaign?.name || campaignId}
                                                 <div className="text-center sm:text-left">
                                                     <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
                                                         <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
-                                                            {customer?.customer_name ? (
-                                                                customer.customer_name
-                                                            ) : loading ? (
-                                                                <span className="inline-block h-7 w-48 bg-slate-200 animate-pulse rounded-lg align-middle"></span>
-                                                            ) : (
-                                                                'Anonymous User'
-                                                            )}
+                                                            {customer?.customer_name || 'Anonymous User'}
                                                         </h2>
                                                     </div>
                                                     <div className="flex   items-center justify-center sm:justify-start gap-4 text-slate-500">
                                                         <div className="flex items-center gap-1.5">
                                                             <i className="fi flex  fi-rr-id-badge text-xs opacity-50"></i>
                                                             <span className="text-[10px] font-semibold tracking-wide">
-                                                                {customer?.lead_id ? (
-                                                                    `#${customer.lead_id}`
-                                                                ) : loading ? (
-                                                                    <span className="inline-block h-3 w-16 bg-slate-100 animate-pulse rounded align-middle"></span>
-                                                                ) : (
-                                                                    '#---'
-                                                                )}
+                                                                #{customer?.lead_id || '---'}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -4069,7 +4053,7 @@ Campaign: ${campaign?.name || campaignId}
                                             <div className="order-1 flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
                                                 <i className="fi flex  fi-rr-clock-three text-slate-400 text-[10px]"></i>
                                                 <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
-                                                    {history?.length || 0} Attempts
+                                                    {(totalAttemptsCount > 0 ? totalAttemptsCount : (customer?.attempt_count || history?.length || 0))} Attempts
                                                 </span>
                                             </div>
 
@@ -4459,15 +4443,10 @@ Campaign: ${campaign?.name || campaignId}
                                                             >
                                                                 <i className="fi flex fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"></i>
                                                                 <span className="text-xs font-bold font-heading text-blue-700 group-hover/phone:text-blue-800 transition-colors">
-                                                                    {customer?.phone_no ? (
-                                                                        isPhoneUnmasked 
-                                                                            ? decryptPhone(customer.phone_no) 
-                                                                            : formatMaskedPhone(customer.phone_no)
-                                                                    ) : loading ? (
-                                                                        <span className="inline-block h-3.5 w-24 bg-blue-200/60 animate-pulse rounded align-middle"></span>
-                                                                    ) : (
-                                                                        'N/A'
-                                                                    )}
+                                                                    {isPhoneUnmasked 
+                                                                        ? (customer?.phone_no ? decryptPhone(customer.phone_no) : 'N/A') 
+                                                                        : (formatMaskedPhone(customer?.phone_no) || 'N/A')
+                                                                    }
                                                                 </span>
                                                             <span className={`px-2 ml-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                                                                 (customer?.status || 'Active') !== 'Active'
@@ -4482,18 +4461,19 @@ Campaign: ${campaign?.name || campaignId}
                                                 </div>
                                                 
                                                 {/* Visualizer Spacer (Middle) */}
-                                                <div className="flex mt-4 items-center justify-center min-h-[15px] py-1">
+                                                <div className="flex mt-4 items-center justify-center min-h-[16px] py-1">
                                                     {(isCalling && (isCustomerAnswered || isCustomerRinging)) && (
-                                                        <div className="flex items-center gap-1 h-4">
-                                                            {[...Array(5)].map((_, i) => (
+                                                        <div className="flex items-center gap-1.5 h-4">
+                                                            {[40, 75, 100, 70, 45].map((h, i) => (
                                                                 <div 
                                                                     key={i} 
-                                                                    className={`w-1 rounded-full animate-[bounce_1s_infinite] ${
-                                                                        isCustomerAnswered ? 'bg-white/75' : 'bg-white/60'
+                                                                    className={`w-1 rounded-full origin-center ${
+                                                                        isCustomerAnswered ? 'bg-white/80' : 'bg-white/60'
                                                                     }`} 
                                                                     style={{ 
-                                                                        animationDelay: `${i * 0.12}s`, 
-                                                                        height: `${30 + Math.random() * 70}%` 
+                                                                        height: `${h}%`,
+                                                                        animation: 'gentleWave 2.2s ease-in-out infinite',
+                                                                        animationDelay: `${i * 0.28}s`
                                                                     }} 
                                                                 />
                                                             ))}
@@ -5521,7 +5501,7 @@ Campaign: ${campaign?.name || campaignId}
                                         </div>
                                         <div className="min-w-9 h-9 px-2 shrink-0 rounded-full bg-slate-50 flex items-center justify-center text-[11px] font-bold text-slate-600 border border-slate-200 shadow-sm">
                                             {timelineView === 'timeline'
-                                                ? `${history.length}${hasMoreTimeline ? '+' : ''}`
+                                                ? (totalAttemptsCount > 0 ? `${totalAttemptsCount}` : `${history.length}${hasMoreTimeline ? '+' : ''}`)
                                                 : timelineView === 'call_logs'
                                                 ? `${mobileLogs.length}${hasMoreMobileLogs ? '+' : ''}`
                                                 : timelineView === 'schedules'
@@ -6252,6 +6232,17 @@ Campaign: ${campaign?.name || campaignId}
                 .no-scrollbar {
                     -ms-overflow-style: none;
                     scrollbar-width: none;
+                }
+
+                @keyframes gentleWave {
+                    0%, 100% {
+                        transform: scaleY(0.35);
+                        opacity: 0.45;
+                    }
+                    50% {
+                        transform: scaleY(1);
+                        opacity: 1;
+                    }
                 }
             `}</style>
 

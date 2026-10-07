@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             *,
             agent:agent_id(user_name, employee_id),
             updater:last_updated_by(user_name, employee_id)
-        `)
+        `, { count: 'exact' })
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
 
@@ -42,7 +42,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         query = query.range(offset, offset + limit - 1);
     }
 
-    const { data: historyData, error: historyError } = await query;
+    const { data: historyData, count: totalCount, error: historyError } = await query;
 
     if (historyError) {
       console.error('Error fetching timeline:', historyError);
@@ -52,6 +52,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ 
       success: true, 
       data: historyData || [],
+      totalCount: totalCount ?? (historyData?.length || 0),
       hasMore: limit !== undefined ? ((historyData?.length || 0) === limit) : false
     });
 
@@ -60,3 +61,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 }
+
+
+
+
+
