@@ -1774,7 +1774,10 @@ export default function CallingPage() {
                         campaign: campaign,
                         customer: prefetchedDataRef.current.customer,
                         session: null,
-                        manager: null
+                        manager: null,
+                        attempts_count: typeof prefetchedDataRef.current.totalCount === 'number' 
+                            ? prefetchedDataRef.current.totalCount 
+                            : (prefetchedDataRef.current.customer?.attempt_count || 0)
                     },
                     error: null
                 };
@@ -1863,8 +1866,8 @@ export default function CallingPage() {
                 setLiveNotes(foundCustomer.live_notes || "");
                 if (typeof bundleResult.attempts_count === 'number') {
                     setTotalAttemptsCount(bundleResult.attempts_count);
-                } else if (foundCustomer.attempt_count) {
-                    setTotalAttemptsCount(foundCustomer.attempt_count);
+                } else if (!isPrefetched) {
+                    setTotalAttemptsCount(prev => (prev > 0 ? prev : (foundCustomer.attempt_count || 0)));
                 }
                 if (typeof customerId === 'string') {
                     fetchAttachments(String(customerId));
@@ -2028,6 +2031,8 @@ export default function CallingPage() {
             // 3. Fetch Initial Timeline (Latest 5 notes only with Ghost Buffer)
             if (!isPrefetched) {
                 void fetchInitialTimeline(String(idToFetch));
+            } else {
+                setTimeout(() => void fetchInitialTimeline(String(idToFetch)), 500);
             }
             // (Mobile Logs and Schedules are lazy-loaded on respective tab clicks)
 
@@ -2361,18 +2366,23 @@ useEffect(() => {
                         }
 
                         try {
-                            const [cRes, hRes] = await Promise.all([
+                            const [cRes, hRes, countRes] = await Promise.all([
                                 supabase.from('customers').select('*').eq('id', nextId).limit(1).maybeSingle(),
-                                fetch(`/api/call/history?customerId=${nextId}&limit=5&offset=0`).then(r => r.json()).catch(() => null)
+                                fetch(`/api/call/history?customerId=${nextId}&limit=5&offset=0`).then(r => r.json()).catch(() => null),
+                                supabase.from('call_logs').select('*', { count: 'exact', head: true }).eq('customer_id', nextId)
                             ]);
                             
+                            const exactCount = typeof countRes?.count === 'number'
+                                ? countRes.count
+                                : (typeof hRes?.totalCount === 'number'
+                                    ? hRes.totalCount
+                                    : (cRes.data?.attempt_count || 0));
+
                             prefetchedDataRef.current = {
                                 id: nextId,
                                 customer: cRes.data,
                                 history: hRes?.success ? hRes.data : [],
-                                totalCount: typeof hRes?.totalCount === 'number'
-                                    ? hRes.totalCount
-                                    : (cRes.data?.attempt_count || (hRes?.data?.length || 0)),
+                                totalCount: exactCount,
                                 hasMore: hRes?.hasMore === true && hRes?.data?.length === 5
                             };
 
