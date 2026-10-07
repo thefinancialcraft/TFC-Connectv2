@@ -13,6 +13,7 @@ interface CallSession {
   manual_customer_id?: string;
   manual_campaign_id?: string;
   is_manual?: boolean;
+  staged_next_lead_id?: string | null;
   updated_at: string;
   created_at?: string;
   call_start_at?: string;
@@ -184,6 +185,33 @@ export const SessionProvider: React.FC<{ children: ReactNode }> = ({ children })
       if (error) throw error;
       const latestSessions = data || [];
       setAllSessions(latestSessions);
+
+      // ⚡ MULTI-DEVICE STAGED PREFETCH: Silently cache staged next lead into sessionStorage
+      if (typeof window !== 'undefined') {
+        latestSessions.forEach((s: any) => {
+          const stagedId = s.staged_next_lead_id;
+          if (stagedId) {
+            const cacheKey = `tfc_lead_preview_${stagedId}`;
+            if (!sessionStorage.getItem(cacheKey)) {
+              supabase
+                .from('customers')
+                .select('*')
+                .eq('id', stagedId)
+                .limit(1)
+                .maybeSingle()
+                .then(({ data: cust }) => {
+                  if (cust) {
+                    try {
+                      sessionStorage.setItem(cacheKey, JSON.stringify(cust));
+                      console.log('[Session-Context] ⚡ Multi-device staged lead pre-cached:', stagedId);
+                    } catch (e) {}
+                  }
+                }, () => {});
+            }
+          }
+        });
+      }
+
       handleRedirection(latestSessions);
     } catch (e) {
       console.error("[Session-Context] Fetch error:", e);

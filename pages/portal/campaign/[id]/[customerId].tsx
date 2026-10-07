@@ -1711,6 +1711,8 @@ export default function CallingPage() {
         
         // ⚡ INSTANT PRE-FETCH RESTORATION
         const isPrefetched = prefetchedDataRef.current && String(prefetchedDataRef.current.id) === String(idToFetch);
+        let hasPreview = false;
+        
         if (isPrefetched) {
             setCustomer(prefetchedDataRef.current.customer);
             setLiveNotes(prefetchedDataRef.current.customer?.live_notes || "");
@@ -1739,11 +1741,39 @@ export default function CallingPage() {
                 leadId: String(idToFetch),
                 measuredAt: `${new Date().toLocaleTimeString()} (Instant Prefetch)`
             });
-            // Removed setIsAssigning(false) from here to prevent flicker
+        } else if (typeof window !== 'undefined') {
+            // ⚡ INSTANT MANUAL PREVIEW (When opened from Campaign List / Overdue / Upcoming)
+            try {
+                const stored = sessionStorage.getItem(`tfc_lead_preview_${idToFetch}`);
+                if (stored) {
+                    const parsed = JSON.parse(stored);
+                    if (parsed && (String(parsed.id) === String(idToFetch) || String(parsed.customer_id) === String(idToFetch))) {
+                        hasPreview = true;
+                        setCustomer(parsed);
+                        setLiveNotes(parsed.live_notes || "");
+                        setLoading(false);
+                        setTelemetry({
+                            authTime: 0,
+                            guardTime: 0,
+                            leadTime: 0,
+                            sessionTime: 0,
+                            parallelGroupTime: 0,
+                            managerTime: 0,
+                            timelineTime: 0,
+                            unblockTime: 0,
+                            mobileLogsTime: null,
+                            schedulesTime: null,
+                            smartfloTime: null,
+                            leadId: String(idToFetch),
+                            measuredAt: `${new Date().toLocaleTimeString()} (Instant Table Click)`
+                        });
+                    }
+                }
+            } catch (e) {
+                console.warn('[Preview] sessionStorage read error:', e);
+            }
         }
         
-
-
         // (Note: Schedules & Mobile Logs are lazy loaded on their respective tab clicks)
         fetchDailyStats();
         
@@ -1751,9 +1781,9 @@ export default function CallingPage() {
         let guardDuration = 0;
         let custDuration = 0;
         let sessionDuration = 0;
-
+        
         try {
-            if (!isPrefetched) {
+            if (!isPrefetched && !hasPreview) {
                 setLoading(true);
             }
 
@@ -1784,7 +1814,7 @@ export default function CallingPage() {
             guardDuration = bundleDuration;
             custDuration = bundleDuration;
             sessionDuration = bundleDuration;
-
+            
             // Process Lead Page Bundle
             const bundleErr = bundleRes?.error;
             const bundleResult = bundleRes?.data;
@@ -2352,6 +2382,21 @@ useEffect(() => {
                                 history: hRes?.success ? hRes.data : [],
                                 hasMore: hRes?.hasMore === true && hRes?.data?.length === 5
                             };
+
+                            // ⚡ MULTI-DEVICE STAGING BUFFER: Sync staged_next_lead_id to call_sessions
+                            // Keeps current customer_id (Lead A) unchanged so other devices never flicker!
+                            if (user?.uid && campaignId) {
+                                supabase
+                                    .from('call_sessions')
+                                    .update({
+                                        staged_next_lead_id: String(nextId),
+                                        updated_at: new Date().toISOString()
+                                    })
+                                    .eq('user_id', user.uid)
+                                    .eq('campaign_id', campaignId)
+                                    .then(() => {}, (e: any) => console.warn('[Staged Buffer] Sync warning:', e));
+                            }
+
                             setPrefetchStatus('ready');
                             console.log('⚡ [Pre-fetch] Ready for:', nextId);
                         } catch (e) {
@@ -2379,6 +2424,19 @@ useEffect(() => {
             setPrefetchStatus('idle');
             prefetchPromiseRef.current = null;
             prefetchedDataRef.current = null;
+
+            // Clear staged buffer in database if user resets disposition
+            if (user?.uid && campaignId) {
+                supabase
+                    .from('call_sessions')
+                    .update({
+                        staged_next_lead_id: null,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('user_id', user.uid)
+                    .eq('campaign_id', campaignId)
+                    .then(() => {}, () => {});
+            }
         }
     }, [disposition, user?.uid, campaignId, customerId, prefetchStatus, isManualMode, isInterruption]);
 
@@ -3602,6 +3660,7 @@ Campaign: ${campaign?.name || campaignId}
                             user_id: user.uid,
                             campaign_id: effectiveCampaignId,
                             customer_id: nextLeadId,
+                            staged_next_lead_id: null, // Clear staging buffer since lead is now active
                             organization_id: campaign?.organization_id,
                             status: 'assigned',
                             is_manual: false,
@@ -3837,7 +3896,7 @@ Campaign: ${campaign?.name || campaignId}
         );
     }
 
-    if (loading || !user) {
+    if (!user) {
         return (
             <div className="flex min-h-screen items-center justify-center bg-white">
                 <div className="flex flex-col items-center max-w-xs text-center px-6">
@@ -3850,8 +3909,8 @@ Campaign: ${campaign?.name || campaignId}
                         </div>
                     </div>
 
-                    <h2 className="text-lg font-bold text-slate-900 mb-1">Assigning Lead</h2>
-                    <p className="text-xs font-medium text-slate-400 tracking-wide uppercase">Syncing your lead data...</p>
+                    <h2 className="text-lg font-bold text-slate-900 mb-1">Authenticating Session</h2>
+                    <p className="text-xs font-medium text-slate-400 tracking-wide uppercase">Connecting to account...</p>
                     
                     {/* Minimal Progress indicator */}
                     <div className="mt-6 flex gap-1.5">
@@ -3897,6 +3956,9 @@ Campaign: ${campaign?.name || campaignId}
                 />
                 
                 <main className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full relative" style={{ backgroundColor: "#f8fafc" }}>
+                    {loading && (
+                        <div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 z-[9999] animate-pulse" />
+                    )}
                     {/* Floating New Lead Alert */}
                     {showNewLeadAlert && (
                         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-[100] w-[calc(100%-2rem)] max-w-md animate-in fade-in slide-in-from-top-4 duration-500">
@@ -3948,7 +4010,7 @@ Campaign: ${campaign?.name || campaignId}
                                                 {/* Avatar with Ring (Desktop Only) */}
                                                 <div className="relative hidden sm:block">
                                                     <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-700 flex items-center justify-center text-white text-xl font-bold">
-                                                        {customer?.customer_name?.charAt(0) || 'C'}
+                                                        {customer?.customer_name?.charAt(0) || (loading ? <span className="w-5 h-5 rounded-full border-2 border-white/50 border-t-white animate-spin"></span> : 'C')}
                                                     </div>
                                                     <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-[3px] border-white flex items-center justify-center ${
                                                          customer?.status === 'followup' ? 'bg-amber-400' : 'bg-emerald-500'
@@ -3965,13 +4027,27 @@ Campaign: ${campaign?.name || campaignId}
                                                 <div className="text-center sm:text-left">
                                                     <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
                                                         <h2 className="text-2xl font-bold text-slate-800 tracking-tight">
-                                                            {customer?.customer_name || 'Anonymous User'}
+                                                            {customer?.customer_name ? (
+                                                                customer.customer_name
+                                                            ) : loading ? (
+                                                                <span className="inline-block h-7 w-48 bg-slate-200 animate-pulse rounded-lg align-middle"></span>
+                                                            ) : (
+                                                                'Anonymous User'
+                                                            )}
                                                         </h2>
                                                     </div>
                                                     <div className="flex   items-center justify-center sm:justify-start gap-4 text-slate-500">
                                                         <div className="flex items-center gap-1.5">
                                                             <i className="fi flex  fi-rr-id-badge text-xs opacity-50"></i>
-                                                            <span className="text-[10px] font-semibold tracking-wide">#{customer?.lead_id}</span>
+                                                            <span className="text-[10px] font-semibold tracking-wide">
+                                                                {customer?.lead_id ? (
+                                                                    `#${customer.lead_id}`
+                                                                ) : loading ? (
+                                                                    <span className="inline-block h-3 w-16 bg-slate-100 animate-pulse rounded align-middle"></span>
+                                                                ) : (
+                                                                    '#---'
+                                                                )}
+                                                            </span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -4383,10 +4459,15 @@ Campaign: ${campaign?.name || campaignId}
                                                             >
                                                                 <i className="fi flex fi-rr-phone-call text-xs text-blue-400 group-hover/phone:text-blue-500 transition-colors"></i>
                                                                 <span className="text-xs font-bold font-heading text-blue-700 group-hover/phone:text-blue-800 transition-colors">
-                                                                    {isPhoneUnmasked 
-                                                                        ? (customer?.phone_no ? decryptPhone(customer.phone_no) : 'N/A') 
-                                                                        : (formatMaskedPhone(customer?.phone_no) || 'N/A')
-                                                                    }
+                                                                    {customer?.phone_no ? (
+                                                                        isPhoneUnmasked 
+                                                                            ? decryptPhone(customer.phone_no) 
+                                                                            : formatMaskedPhone(customer.phone_no)
+                                                                    ) : loading ? (
+                                                                        <span className="inline-block h-3.5 w-24 bg-blue-200/60 animate-pulse rounded align-middle"></span>
+                                                                    ) : (
+                                                                        'N/A'
+                                                                    )}
                                                                 </span>
                                                             <span className={`px-2 ml-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
                                                                 (customer?.status || 'Active') !== 'Active'

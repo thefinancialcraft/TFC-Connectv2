@@ -700,6 +700,10 @@ export default function CampaignDetails() {
             if (allSessions && allSessions.length > 0) {
                 const activeSession = allSessions[0];
                 console.log('[Session] Found active session in cross-campaign check, redirecting...', activeSession);
+                try {
+                    const found = leads.find((l: any) => String(l.id) === String(activeSession.customer_id));
+                    if (found) sessionStorage.setItem(`tfc_lead_preview_${activeSession.customer_id}`, JSON.stringify(found));
+                } catch (e) {}
                 router.push(`/portal/campaign/${activeSession.campaign_id}/${activeSession.customer_id}`);
                 return;
             }
@@ -714,6 +718,10 @@ export default function CampaignDetails() {
 
             if (campaignSession && campaignSession.status === 'assigned') {
                 console.log('[Session] Found existing assigned session for this campaign, resuming...', campaignSession);
+                try {
+                    const found = leads.find((l: any) => String(l.id) === String(campaignSession.customer_id));
+                    if (found) sessionStorage.setItem(`tfc_lead_preview_${campaignSession.customer_id}`, JSON.stringify(found));
+                } catch (e) {}
                 router.push(`/portal/campaign/${campaignSession.campaign_id}/${campaignSession.customer_id}`);
                 return;
             }
@@ -745,6 +753,10 @@ export default function CampaignDetails() {
 
             // 3. Redirect to Lead Page
             if (id && leadId) {
+                try {
+                    const found = leads.find((l: any) => String(l.id) === String(leadId));
+                    if (found) sessionStorage.setItem(`tfc_lead_preview_${leadId}`, JSON.stringify(found));
+                } catch (e) {}
                 router.push(`/portal/campaign/${id}/${leadId}`);
             } else {
                 throw new Error("Missing campaign ID or lead ID for redirection");
@@ -1228,6 +1240,10 @@ export default function CampaignDetails() {
                                                          <button 
                                                              onClick={() => {
                                                                  if (id && item.customer_id && user?.uid) {
+                                                                     try {
+                                                                         const previewData = item.customers ? { ...item.customers, id: item.customer_id } : item;
+                                                                         sessionStorage.setItem(`tfc_lead_preview_${item.customer_id}`, JSON.stringify(previewData));
+                                                                     } catch (e) {}
                                                                      startManualLock({ id: "manual-" + Date.now(), user_id: user.uid, campaign_id: String(id), customer_id: item.customer_id, status: "active", created_at: new Date().toISOString(), updated_at: new Date().toISOString() });                                                                      router.push(`/portal/campaign/${id}/${item.customer_id}?isManual=true`);
                                                                  }
                                                              }}
@@ -1293,6 +1309,9 @@ export default function CampaignDetails() {
                                                          <button 
                                                              onClick={() => {
                                                                  if (id && item.id && user?.uid) {
+                                                                     try {
+                                                                         sessionStorage.setItem(`tfc_lead_preview_${item.id}`, JSON.stringify(item));
+                                                                     } catch (e) {}
                                                                      startManualLock({
                                                                          id: 'manual-' + Date.now(),
                                                                          user_id: user.uid,
@@ -1367,6 +1386,9 @@ export default function CampaignDetails() {
                                                          <button 
                                                              onClick={() => {
                                                                  if (id && item.id && user?.uid) {
+                                                                     try {
+                                                                         sessionStorage.setItem(`tfc_lead_preview_${item.id}`, JSON.stringify(item));
+                                                                     } catch (e) {}
                                                                      startManualLock({
                                                                          id: 'manual-' + Date.now(),
                                                                          user_id: user.uid,
@@ -1441,6 +1463,9 @@ export default function CampaignDetails() {
                                                          <button 
                                                              onClick={() => {
                                                                  if (id && item.id && user?.uid) {
+                                                                     try {
+                                                                         sessionStorage.setItem(`tfc_lead_preview_${item.id}`, JSON.stringify(item));
+                                                                     } catch (e) {}
                                                                      startManualLock({
                                                                          id: 'manual-' + Date.now(),
                                                                          user_id: user.uid,
@@ -1612,6 +1637,9 @@ export default function CampaignDetails() {
                                                         key={lead.id} 
                                                         onClick={() => {
                                                             if (id && lead.id && user?.uid) {
+                                                                try {
+                                                                    sessionStorage.setItem(`tfc_lead_preview_${lead.id}`, JSON.stringify(lead));
+                                                                } catch (e) {}
                                                                 startManualLock({
                                                                     id: 'manual-' + Date.now(),
                                                                     user_id: user.uid,
