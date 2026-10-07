@@ -23,9 +23,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Determine which table the customer is in to get context if needed
     // But primarily we just need call_logs which are linked by customer_id
     
+    const limit = req.query.limit ? parseInt(req.query.limit as string) : undefined;
+    const offset = req.query.offset ? parseInt(req.query.offset as string) : 0;
+
     // Fetch call logs with explicit join on user_profiles for agent and updater
     // We select specific fields to avoid leaking sensitive data
-    const { data: historyData, error: historyError } = await supabaseAdmin
+    let query = supabaseAdmin
         .from('call_logs')
         .select(`
             *,
@@ -35,6 +38,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         .eq('customer_id', customerId)
         .order('created_at', { ascending: false });
 
+    if (limit !== undefined && !isNaN(limit)) {
+        query = query.range(offset, offset + limit - 1);
+    }
+
+    const { data: historyData, error: historyError } = await query;
+
     if (historyError) {
       console.error('Error fetching timeline:', historyError);
       return res.status(500).json({ error: historyError.message });
@@ -42,7 +51,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     return res.status(200).json({ 
       success: true, 
-      data: historyData 
+      data: historyData || [],
+      hasMore: limit !== undefined ? ((historyData?.length || 0) === limit) : false
     });
 
   } catch (error: any) {
