@@ -196,6 +196,7 @@ export default function CallingPage() {
     const [isTelemetryOpen, setIsTelemetryOpen] = useState(false);
     const [copiedTelemetry, setCopiedTelemetry] = useState(false);
     const [isReTestingTelemetry, setIsReTestingTelemetry] = useState(false);
+    const showTelemetryHud = Boolean(router.query.hud === 'true' || router.query.debug === 'true');
 
     // Slider State
     const [dragX, setDragX] = useState(0);
@@ -6647,8 +6648,9 @@ Campaign: ${campaign?.name || campaignId}
                 </div>
             )}
 
-            {/* ⚡ FLOATING TELEMETRY & LATENCY BENCHMARK HUD */}
-            <div className="fixed bottom-5 right-5 z-[9999] font-sans antialiased text-left">
+            {/* ⚡ FLOATING TELEMETRY & LATENCY BENCHMARK HUD (Hidden by default; enable via ?hud=true or ?debug=true) */}
+            {showTelemetryHud && (
+                <div className="fixed bottom-5 right-5 z-[9999] font-sans antialiased text-left">
                 {!isTelemetryOpen ? (
                     /* COLLAPSED FLOATING PILL */
                     <button
@@ -6942,6 +6944,7 @@ Campaign: ${campaign?.name || campaignId}
                     </div>
                 )}
             </div>
+            )}
         </div>
     );
 }
