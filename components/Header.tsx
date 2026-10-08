@@ -7,6 +7,7 @@ import { supabase } from "../lib/supabase";
 import { notifyFlutter, sendHeartbeat, requestDeviceInfoFromFlutter } from "../lib/flutterBridge";
 import { showWarning } from "../lib/dialogUtils";
 import { computePhoneHash, formatMaskedPhone, decryptPhone } from "../lib/phoneUtils";
+import { setCachedProviderDetails } from "../lib/callingProviderClient";
 
 interface HeaderProps {
   user?: {
@@ -243,7 +244,20 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
 
         const result = await response.json();
         if (!response.ok) throw new Error(result.message || "Unable to load calling providers");
-        if (!cancelled) setCallingProviderState(result.data as HeaderCallingProviderState);
+        if (!cancelled) {
+          setCallingProviderState(result.data as HeaderCallingProviderState);
+          if (result.data) {
+            setCachedProviderDetails({
+              activeProvider: result.data.active_provider === 'sim' || result.data.active_provider === 'smartflo'
+                ? result.data.active_provider
+                : null,
+              user: result.data.user,
+              organization: result.data.organization,
+              smartfloAgent: result.data.smartflo_agent ?? null,
+              resolution: result.data.resolution,
+            });
+          }
+        }
       } catch (error) {
         if (!cancelled) {
           setCallingProviderState(null);
@@ -737,6 +751,17 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
         ...result.data,
         smartflo_agent: callingProviderState?.smartflo_agent ?? null,
       } as HeaderCallingProviderState);
+      if (result.data) {
+        setCachedProviderDetails({
+          activeProvider: result.data.active_provider === 'sim' || result.data.active_provider === 'smartflo'
+            ? result.data.active_provider
+            : null,
+          user: result.data.user,
+          organization: result.data.organization,
+          smartfloAgent: result.data.smartflo_agent ?? callingProviderState?.smartflo_agent ?? null,
+          resolution: result.data.resolution,
+        });
+      }
       if (user?.uid) {
         window.dispatchEvent(new CustomEvent("calling-provider-updated", {
           detail: { userId: user.uid, state: result.data },

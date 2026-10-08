@@ -13,10 +13,10 @@ import { updateSyncMetaCallStatus, updateSyncMetaCallingStatus } from "@/lib/flu
 import { logSystemEvent, estimateSize } from "@/lib/monitoring";
 import { showWarning } from "@/lib/dialogUtils";
 import { routeCallingCommand } from "@/lib/callingCommandRouter";
-import { resolveActiveCallingProvider, getCallingProviderDetails, type CallingProviderName } from "@/lib/callingProviderClient";
+import { resolveActiveCallingProvider, getCallingProviderDetails, getCachedProviderDetails, type CallingProviderName, type ActiveProviderDetails } from "@/lib/callingProviderClient";
 import { SmartfloOutboundFlowCard } from "@/components/campaign/SmartfloOutboundFlowCard";
 import { SmartfloInboundFlowCard } from "@/components/campaign/SmartfloInboundFlowCard";
-import { SmartfloLiveCallModal } from "@/components/campaign/SmartfloLiveCallModal";
+import { SmartfloLiveCallModal } from   "@/components/campaign/SmartfloLiveCallModal";
 import { SmartfloSessionStore } from "@/lib/smartfloSessionStore";
 import { useSmartfloCallFlow } from "@/hooks/useSmartfloCallFlow";
 
@@ -82,7 +82,9 @@ export default function CallingPage() {
     const [smartfloLogs, setSmartfloLogs] = useState<any[]>([]);
     const [smartfloVisibleCount, setSmartfloVisibleCount] = useState(5);
     const [isLoadingSmartfloLogs, setIsLoadingSmartfloLogs] = useState(false);
-    const [activeCallingProvider, setActiveCallingProvider] = useState<CallingProviderName | null>(null);
+    const [activeCallingProvider, setActiveCallingProvider] = useState<CallingProviderName | null>(() => getCachedProviderDetails()?.activeProvider ?? null);
+    const [callingProviderDetails, setCallingProviderDetails] = useState<ActiveProviderDetails | null>(() => getCachedProviderDetails());
+    const cachedProviderDetailsRef = useRef<ActiveProviderDetails | null>(getCachedProviderDetails());
     const [lastCheckedRefId, setLastCheckedRefId] = useState<string | null>(null);
     const [lastCheckedCallId, setLastCheckedCallId] = useState<string | null>(null);
     const [isSmartfloLiveModalOpen, setIsSmartfloLiveModalOpen] = useState(false);
@@ -496,7 +498,7 @@ export default function CallingPage() {
             if (!isFromBridge) {
                 console.log('🤙 [EndCall] Notifying Flutter to disconnect...');
                 try {
-                    await routeCallingCommand('call_disconnect', decryptedPhone, providerForCall ?? undefined);
+                    await routeCallingCommand('call_disconnect', decryptedPhone, providerForCall ?? cachedProviderDetailsRef.current?.activeProvider ?? undefined);
                 } catch (providerError) {
                     console.warn('🤙 [EndCall] Provider routing failed; skipping native disconnect.', providerError);
                 }
@@ -1068,34 +1070,45 @@ export default function CallingPage() {
     useEffect(() => {
         let isMounted = true;
 
-        const loadProvider = async () => {
+        const loadProvider = async (force = false) => {
             try {
-                const p = await resolveActiveCallingProvider();
+                const details = await getCallingProviderDetails(force);
                 if (isMounted) {
-                    setActiveCallingProvider(p);
+                    cachedProviderDetailsRef.current = details;
+                    setCallingProviderDetails(details);
+                    setActiveCallingProvider(details.activeProvider);
                 }
             } catch {
                 // Ignore silent load errors
             }
         };
 
-        void loadProvider();
+        void loadProvider(false);
 
         const handleCallingProviderUpdated = (event: Event) => {
             const detail = (event as CustomEvent<{ userId?: string; state?: any }>).detail;
             if (detail?.userId && user?.uid && detail.userId !== user.uid) return;
 
-            if (detail?.state?.active_provider) {
-                const p = detail.state.active_provider;
-                if (p === 'sim' || p === 'smartflo') {
-                    setActiveCallingProvider(p);
-                    if (p !== 'smartflo' && timelineView === 'smartflo_logs') {
-                        setTimelineView('timeline');
-                    }
-                    return;
+            if (detail?.state) {
+                const state = detail.state;
+                const details: ActiveProviderDetails = {
+                    activeProvider: state.active_provider === 'sim' || state.active_provider === 'smartflo'
+                        ? state.active_provider
+                        : null,
+                    user: state.user,
+                    organization: state.organization,
+                    smartfloAgent: state.smartflo_agent ?? null,
+                    resolution: state.resolution,
+                };
+                cachedProviderDetailsRef.current = details;
+                setCallingProviderDetails(details);
+                setActiveCallingProvider(details.activeProvider);
+                if (details.activeProvider !== 'smartflo' && timelineView === 'smartflo_logs') {
+                    setTimelineView('timeline');
                 }
+                return;
             }
-            void loadProvider();
+            void loadProvider(true);
         };
 
         window.addEventListener('calling-provider-updated', handleCallingProviderUpdated);
@@ -1135,7 +1148,7 @@ export default function CallingPage() {
             let eventProvider = activeCallProviderRef.current;
             if (!eventProvider) {
                 try {
-                    eventProvider = await resolveActiveCallingProvider();
+                    eventProvider = cachedProviderDetailsRef.current?.activeProvider || await resolveActiveCallingProvider();
                 } catch (providerError) {
                     console.warn('📬 [Bridge] Unable to verify provider; ignoring native call event.', providerError);
                     return;
@@ -2489,7 +2502,14 @@ useEffect(() => {
 
         if (customer?.phone_no) {
             try {
-                const providerDetails = await getCallingProviderDetails();
+                // Read from pre-fetched cached provider details — avoid network fetch on every call!
+                let providerDetails = cachedProviderDetailsRef.current || getCachedProviderDetails();
+                if (!providerDetails) {
+                    providerDetails = await getCallingProviderDetails();
+                    cachedProviderDetailsRef.current = providerDetails;
+                    setCallingProviderDetails(providerDetails);
+                    setActiveCallingProvider(providerDetails.activeProvider);
+                }
 
                 // If user selected smartflo in-use but it is not mapped
                 if (providerDetails.user?.smartflo?.in_use && !providerDetails.user?.smartflo?.is_mapped) {
@@ -2503,7 +2523,15 @@ useEffect(() => {
                     return;
                 }
 
-                const activeProvider = providerDetails.activeProvider;
+                // SIM check: active provider is SIM or user's in_use is SIM with organization enabled
+                const isSimInUse = providerDetails.activeProvider === 'sim' ||
+                    (Boolean(providerDetails.user?.sim?.in_use) && Boolean(providerDetails.organization?.sim?.enable));
+
+                let activeProvider = providerDetails.activeProvider;
+                if (!activeProvider && isSimInUse) {
+                    activeProvider = 'sim';
+                }
+
                 if (!activeProvider) {
                     isPlacingCallRef.current = false;
                     isApiUpdatingRef.current = false;
