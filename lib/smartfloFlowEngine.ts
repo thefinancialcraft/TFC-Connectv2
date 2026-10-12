@@ -160,7 +160,11 @@ export function computeSmartfloFlowState(params: {
         rawPayload: liveCallData,
       };
     } else {
-      // Outbound Live
+      // Outbound Live (Click-to-Call)
+      const hasBridged = String(liveCallData.destination || '').includes(',');
+      const isSpeaking = (hasBridged && switchState.includes('answer')) || switchState.includes('in-call') || switchState.includes('speaking');
+      const isCustRinging = switchState.includes('ring') || switchState.includes('dial');
+
       const agentStep: FlowStepState = {
         title: 'Agent Leg',
         sublabel: 'Answered',
@@ -170,11 +174,11 @@ export function computeSmartfloFlowState(params: {
 
       const customerStep: FlowStepState = {
         title: 'Customer',
-        sublabel: isAnswered ? 'Speaking' : isRinging ? 'Ringing Customer...' : 'Waiting',
-        color: isAnswered ? 'green' : 'orange',
+        sublabel: isSpeaking ? 'Speaking' : isCustRinging ? 'Ringing Customer...' : 'Dialing Customer...',
+        color: isSpeaking ? 'green' : 'orange',
         icon: 'fi-rr-user',
-        isSpinning: true,
-        spinColor: isAnswered ? 'green' : 'orange',
+        isSpinning: !isSpeaking,
+        spinColor: 'orange',
       };
 
       const hangupStep: FlowStepState = {

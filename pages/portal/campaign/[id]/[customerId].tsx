@@ -465,6 +465,9 @@ export default function CallingPage() {
 
         activeCallProviderRef.current = null;
         activeSmartfloRefIdRef.current = null;
+        activeSmartfloCallIdRef.current = null;
+        setLastCheckedRefId(null);
+        setLastCheckedCallId(null);
         
         // If a SIM call never reached 'connected' status, force duration to 0
         if (providerForCall === 'sim' && localCallingStatus !== 'connected') {
@@ -592,6 +595,11 @@ export default function CallingPage() {
         handleEndCallRef.current = handleEndCall;
     }, [handleEndCall]);
 
+    const handleSmartfloCallEnd = useCallback((termCallId?: string) => {
+        console.log('🤙 [Smartflo-Flow] Webhook/CDR confirmed call completion:', termCallId);
+        handleEndCallRef.current(true, 'smartflo');
+    }, []);
+
     const {
         flowState: smartfloFlowState,
         activeCallType: smartfloActiveCallType,
@@ -606,10 +614,7 @@ export default function CallingPage() {
         isEndingCall,
         activeRefId: activeSmartfloRefIdRef.current || lastCheckedRefId,
         activeCallId: activeSmartfloCallIdRef.current || lastCheckedCallId,
-        onCallEndDetected: (termCallId) => {
-            console.log('🤙 [Smartflo-Flow] Webhook/CDR confirmed call completion:', termCallId);
-            handleEndCall(true, 'smartflo');
-        },
+        onCallEndDetected: handleSmartfloCallEnd,
     });
 
     const cancelledRefIdsRef = useRef<Set<string>>(new Set());
@@ -1395,7 +1400,12 @@ export default function CallingPage() {
     const isAgentAnswered = Boolean(
         isCalling && (
             isSmartfloCall
-                ? (smartfloLifecycle?.agentColor === 'green')
+                ? (
+                    smartfloFlowState?.direction === 'inbound'
+                        ? (smartfloFlowState?.steps?.step3?.color === 'green' || smartfloFlowState?.steps?.step3?.sublabel === 'Answered')
+                        : (smartfloFlowState?.steps?.step2?.color === 'green' || smartfloFlowState?.steps?.step2?.sublabel === 'Answered') ||
+                    smartfloLifecycle?.agentColor === 'green'
+                  )
                 : (localCallingStatus === 'connected' || !isPlacingCall)
         )
     );
@@ -1403,13 +1413,28 @@ export default function CallingPage() {
     const isCustomerAnswered = Boolean(
         isCalling && isAgentAnswered && (
             isSmartfloCall
-                ? (smartfloLifecycle?.customerColor === 'green' || smartfloLifecycle?.customerSublabel === 'Speaking' || smartfloLifecycle?.customerSublabel === 'Connected')
+                ? (
+                    smartfloFlowState?.direction === 'inbound'
+                        ? (smartfloFlowState?.steps?.step2?.color === 'green' || smartfloFlowState?.steps?.step2?.sublabel === 'Connected')
+                        : (smartfloFlowState?.steps?.step3?.color === 'green' || smartfloFlowState?.steps?.step3?.sublabel === 'Speaking' || smartfloFlowState?.steps?.step3?.sublabel === 'Connected') ||
+                    smartfloLifecycle?.customerColor === 'green' ||
+                    smartfloLifecycle?.customerSublabel === 'Speaking' ||
+                    smartfloLifecycle?.customerSublabel === 'Connected'
+                  )
                 : (localCallingStatus === 'connected')
         )
     );
 
     const isCustomerRinging = Boolean(
-        isCalling && isAgentAnswered && !isCustomerAnswered
+        isCalling && isAgentAnswered && !isCustomerAnswered && (
+            isSmartfloCall
+                ? (
+                    smartfloFlowState?.direction === 'inbound'
+                        ? (smartfloFlowState?.steps?.step3?.sublabel?.toLowerCase().includes('ring') || smartfloFlowState?.steps?.step3?.color === 'orange')
+                        : (smartfloFlowState?.steps?.step3?.sublabel?.toLowerCase().includes('ring') || smartfloFlowState?.steps?.step3?.sublabel?.toLowerCase().includes('dial') || smartfloFlowState?.steps?.step3?.color === 'orange')
+                  )
+                : true
+        )
     );
 
     const isWaitingForAgent = isPlacingCall || (isCalling && !isAgentAnswered);
@@ -2569,6 +2594,10 @@ useEffect(() => {
 
             // --- Smartflo Click-to-Call Originate ---
             if (providerToUse === "smartflo") {
+                activeSmartfloRefIdRef.current = null;
+                activeSmartfloCallIdRef.current = null;
+                setLastCheckedRefId(null);
+                setLastCheckedCallId(null);
                 try {
                     const { data: { session: authSession } } = await supabase.auth.getSession();
                     if (!authSession) {
@@ -2605,8 +2634,8 @@ useEffect(() => {
                     }
 
                     if (result.ref_id || result.call_id || result.success) {
-                        const rId = result.ref_id || result.call_id;
-                        const cIdVal = result.call_id || result.ref_id;
+                        const rId = result.ref_id || null;
+                        const cIdVal = result.call_id || null;
                         activeSmartfloRefIdRef.current = rId;
                         activeSmartfloCallIdRef.current = cIdVal;
                         setLastCheckedRefId(rId);

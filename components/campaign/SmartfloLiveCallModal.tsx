@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SmartfloCallFlowState } from '@/lib/smartfloFlowEngine';
-import { SmartfloSessionStore, SmartfloCallSession } from '@/lib/smartfloSessionStore';
+import { SmartfloSessionStore, SmartfloCallSession, SmartfloRawEventEntry } from '@/lib/smartfloSessionStore';
 
 interface SmartfloLiveCallModalProps {
   isOpen: boolean;
@@ -18,6 +18,7 @@ export const SmartfloLiveCallModal: React.FC<SmartfloLiveCallModalProps> = ({
   const [activeTab, setActiveTab] = useState<'timeline' | 'details' | 'raw'>('timeline');
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const [session, setSession] = useState<SmartfloCallSession | null>(null);
+  const [selectedEventId, setSelectedEventId] = useState<number | 'all'>('all');
 
   const activeKey = flowState.callId || flowState.refId;
 
@@ -54,8 +55,6 @@ export const SmartfloLiveCallModal: React.FC<SmartfloLiveCallModalProps> = ({
     };
   }, [isOpen, activeKey]);
 
-  if (!isOpen) return null;
-
   const copyToClipboard = (text: string, label: string) => {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -65,6 +64,45 @@ export const SmartfloLiveCallModal: React.FC<SmartfloLiveCallModalProps> = ({
 
   const rawPayload = flowState.rawPayload || session?.rawPayload || {};
   const timeline = session?.timeline && session.timeline.length > 0 ? session.timeline : [];
+
+  // Extract all recorded raw event snapshots (ensuring every event payload is preserved across events)
+  const rawEventsList: SmartfloRawEventEntry[] = React.useMemo(() => {
+    if (session?.rawEventHistory && session.rawEventHistory.length > 0) {
+      return session.rawEventHistory;
+    }
+    // Fallback: extract from session timeline if rawEventHistory not yet populated
+    if (timeline && timeline.length > 0) {
+      const derived: SmartfloRawEventEntry[] = [];
+      let c = 1;
+      for (const t of timeline) {
+        if (t.data) {
+          derived.push({
+            idx: c++,
+            stage: t.stage,
+            source: 'timeline_event',
+            timestamp: t.timestamp,
+            isoTime: t.isoTime,
+            payload: t.data,
+          });
+        }
+      }
+      if (derived.length > 0) return derived;
+    }
+    // Final fallback: single payload
+    if (rawPayload && Object.keys(rawPayload).length > 0) {
+      return [
+        {
+          idx: 1,
+          stage: flowState.direction === 'inbound' ? 'connected' : 'originated',
+          source: 'current_payload',
+          timestamp: Date.now(),
+          isoTime: new Date().toISOString(),
+          payload: rawPayload,
+        },
+      ];
+    }
+    return [];
+  }, [session?.rawEventHistory, timeline, rawPayload, flowState.direction]);
 
   const isInbound = flowState.direction === 'inbound';
   const isLive = flowState.isLive;
@@ -81,6 +119,8 @@ export const SmartfloLiveCallModal: React.FC<SmartfloLiveCallModalProps> = ({
     stepper_status: flowState.steps,
     timeline_events_count: timeline.length,
     timeline_events: timeline,
+    raw_events_count: rawEventsList.length,
+    raw_events_history: rawEventsList,
     switch_raw_data: Object.keys(rawPayload).length > 0 ? rawPayload : flowState.rawPayload || null,
     session_details: session
       ? {
@@ -98,6 +138,8 @@ export const SmartfloLiveCallModal: React.FC<SmartfloLiveCallModalProps> = ({
   const jsonToCopy = Object.keys(rawPayload).length > 0 && !('status' in rawPayload && Object.keys(rawPayload).length <= 4)
     ? { ...rawPayload, _diagnostics: fullDiagnosticPayload }
     : fullDiagnosticPayload;
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6 bg-slate-900/60 backdrop-blur-sm animate-fadeIn">
@@ -395,28 +437,147 @@ export const SmartfloLiveCallModal: React.FC<SmartfloLiveCallModalProps> = ({
           )}
 
           {/* TAB 3: Raw Live API Payload (A-to-Z JSON) */}
-          {activeTab === 'raw' && (
-            <div className="space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-slate-500">
-                  Full Tata Smartflo API &amp; Webhook Payload
-                </span>
-                <button
-                  onClick={() => copyToClipboard(JSON.stringify(jsonToCopy, null, 2), 'raw_json')}
-                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
-                >
-                  <i className={`fi flex ${copiedKey === 'raw_json' ? 'fi-rr-check text-emerald-300' : 'fi-rr-copy'}`}></i>
-                  {copiedKey === 'raw_json' ? 'Copied!' : 'Copy Full JSON'}
-                </button>
-              </div>
+          {activeTab === 'raw' && (() => {
+            const currentDisplayedEvent =
+              selectedEventId === 'all'
+                ? null
+                : rawEventsList.find((e) => e.idx === selectedEventId) ||
+                  rawEventsList[rawEventsList.length - 1];
 
-              <div className="relative rounded-xl overflow-hidden border border-slate-800 shadow-inner bg-slate-950">
-                <pre className="p-4 text-emerald-400 text-xs font-mono overflow-x-auto max-h-[420px] custom-scrollbar">
-                  {JSON.stringify(jsonToCopy, null, 2)}
-                </pre>
+            return (
+              <div className="space-y-4">
+                {/* Event Selector Pill Bar */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 bg-slate-100 dark:bg-slate-800/80 p-2.5 rounded-xl border border-slate-200 dark:border-slate-700">
+                  <div className="flex items-center gap-1.5 overflow-x-auto custom-scrollbar pb-1 sm:pb-0">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 whitespace-nowrap pl-1 pr-1">
+                      Events ({rawEventsList.length}):
+                    </span>
+                    <button
+                      onClick={() => setSelectedEventId('all')}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all whitespace-nowrap flex items-center gap-1 ${
+                        selectedEventId === 'all'
+                          ? 'bg-indigo-600 text-white shadow-sm'
+                          : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                      }`}
+                    >
+                      <i className="fi flex fi-rr-list text-[10px]"></i>
+                      All Events ({rawEventsList.length})
+                    </button>
+                    {rawEventsList.map((ev) => (
+                      <button
+                        key={ev.idx}
+                        onClick={() => setSelectedEventId(ev.idx)}
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all whitespace-nowrap flex items-center gap-1 ${
+                          selectedEventId === ev.idx
+                            ? 'bg-indigo-600 text-white shadow-sm font-bold'
+                            : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+                        }`}
+                      >
+                        <span className="opacity-70 font-mono">#{ev.idx}</span>
+                        <span className="capitalize">{ev.stage.replace(/_/g, ' ')}</span>
+                        <span className="text-[10px] opacity-60 font-mono">
+                          {new Date(ev.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      onClick={() => {
+                        const dataToCopy =
+                          selectedEventId === 'all'
+                            ? {
+                                total_events_captured: rawEventsList.length,
+                                events_history: rawEventsList,
+                                _diagnostics: fullDiagnosticPayload,
+                              }
+                            : currentDisplayedEvent?.payload || jsonToCopy;
+                        copyToClipboard(JSON.stringify(dataToCopy, null, 2), 'raw_json');
+                      }}
+                      className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm cursor-pointer whitespace-nowrap"
+                    >
+                      <i className={`fi flex ${copiedKey === 'raw_json' ? 'fi-rr-check text-emerald-300' : 'fi-rr-copy'}`}></i>
+                      {copiedKey === 'raw_json'
+                        ? 'Copied!'
+                        : selectedEventId === 'all'
+                        ? 'Copy All Events JSON'
+                        : `Copy Event #${selectedEventId} JSON`}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Content Area */}
+                {selectedEventId === 'all' ? (
+                  <div className="space-y-3">
+                    {rawEventsList.length === 0 ? (
+                      <div className="p-8 text-center text-slate-400 bg-white dark:bg-slate-800/40 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <p className="text-sm font-medium">Awaiting incoming event payloads...</p>
+                      </div>
+                    ) : (
+                      rawEventsList.map((ev) => (
+                        <div key={ev.idx} className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shadow-inner">
+                          <div className="bg-slate-900 px-4 py-2 border-b border-slate-800 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-mono font-bold text-indigo-400">
+                                Event #{ev.idx}
+                              </span>
+                              <span className="text-[11px] font-semibold text-slate-300 capitalize bg-slate-800 px-2 py-0.5 rounded">
+                                {ev.stage.replace(/_/g, ' ')}
+                              </span>
+                              <span className="text-[10px] text-slate-500 font-mono">
+                                {new Date(ev.timestamp).toLocaleTimeString()} ({ev.isoTime})
+                              </span>
+                            </div>
+                            <button
+                              onClick={() => copyToClipboard(JSON.stringify(ev.payload, null, 2), `ev_${ev.idx}`)}
+                              className="text-slate-400 hover:text-white text-xs flex items-center gap-1 px-2 py-0.5 rounded hover:bg-slate-800"
+                            >
+                              <i className={`fi flex ${copiedKey === `ev_${ev.idx}` ? 'fi-rr-check text-emerald-400' : 'fi-rr-copy'}`}></i>
+                              <span className="text-[11px]">{copiedKey === `ev_${ev.idx}` ? 'Copied' : 'Copy'}</span>
+                            </button>
+                          </div>
+                          <pre className="p-4 text-emerald-400 text-xs font-mono overflow-x-auto max-h-[300px] custom-scrollbar">
+                            {JSON.stringify(ev.payload, null, 2)}
+                          </pre>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                ) : (
+                  <div className="rounded-xl overflow-hidden border border-slate-800 bg-slate-950 shadow-inner">
+                    {currentDisplayedEvent ? (
+                      <>
+                        <div className="bg-slate-900 px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-mono font-bold text-indigo-400">
+                              Event #{currentDisplayedEvent.idx}
+                            </span>
+                            <span className="text-[11px] font-semibold text-slate-300 capitalize bg-slate-800 px-2 py-0.5 rounded">
+                              {currentDisplayedEvent.stage.replace(/_/g, ' ')}
+                            </span>
+                            <span className="text-[10px] text-slate-500 font-mono">
+                              {new Date(currentDisplayedEvent.timestamp).toLocaleTimeString()} ({currentDisplayedEvent.isoTime})
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-slate-400 font-mono">
+                            Source: {currentDisplayedEvent.source || 'switch'}
+                          </span>
+                        </div>
+                        <pre className="p-4 text-emerald-400 text-xs font-mono overflow-x-auto max-h-[420px] custom-scrollbar">
+                          {JSON.stringify(currentDisplayedEvent.payload, null, 2)}
+                        </pre>
+                      </>
+                    ) : (
+                      <div className="p-8 text-center text-slate-400">
+                        No payload available for this event.
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            </div>
-          )}
+            );
+          })()}
         </div>
 
         {/* Modal Footer */}

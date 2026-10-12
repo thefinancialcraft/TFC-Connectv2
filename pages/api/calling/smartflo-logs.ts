@@ -111,29 +111,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   // Filter events matching customer phone, ref_id, call_id, or customer_id
   let filteredLogs = formattedEvents.filter((item) => {
-    if (targetRefId || targetCallId) {
+    if (targetRefId) {
       const raw = (item.rawPayload || {}) as any;
       const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
-      if (
-        (targetRefId && (
-          item.refId === targetRefId ||
-          item.callId === targetRefId ||
-          raw.ref_id === targetRefId ||
-          raw.call_id === targetRefId ||
-          raw.uuid === targetRefId ||
-          customIdStr.includes(targetRefId)
-        )) ||
-        (targetCallId && (
-          item.callId === targetCallId ||
-          item.refId === targetCallId ||
-          raw.call_id === targetCallId ||
-          raw.ref_id === targetCallId ||
-          raw.uuid === targetCallId ||
-          customIdStr.includes(targetCallId)
-        ))
-      ) {
-        return true;
-      }
+      return (
+        item.refId === targetRefId ||
+        item.callId === targetRefId ||
+        raw.ref_id === targetRefId ||
+        raw.call_id === targetRefId ||
+        raw.uuid === targetRefId ||
+        customIdStr.includes(targetRefId)
+      );
+    }
+
+    if (targetCallId) {
+      const raw = (item.rawPayload || {}) as any;
+      const customIdStr = raw.custom_identifier ? JSON.stringify(raw.custom_identifier) : '';
+      return (
+        item.callId === targetCallId ||
+        item.refId === targetCallId ||
+        raw.call_id === targetCallId ||
+        raw.ref_id === targetCallId ||
+        raw.uuid === targetCallId ||
+        customIdStr.includes(targetCallId)
+      );
     }
 
     if (targetPhone) {
@@ -308,8 +309,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const cDest = cleanPhone(String(c.destination || c.customer_number || c.destination_number || c.call_to_number || c.to || ''));
             const cCaller = cleanPhone(String(c.caller_id_number || c.caller_id || c.from || c.caller || ''));
 
-            if (targetCallId && (cCallId === targetCallId || cRef === targetCallId || rawCustId.includes(targetCallId))) return true;
-            if (targetRefId && (cRef === targetRefId || cCallId === targetRefId || rawCustId.includes(targetRefId))) return true;
+            if (targetRefId) {
+              return cRef === targetRefId || cCallId === targetRefId || rawCustId.includes(targetRefId);
+            }
+            if (targetCallId) {
+              return cCallId === targetCallId || cRef === targetCallId || rawCustId.includes(targetCallId);
+            }
             if (targetPhone && ((cDest && (cDest.includes(targetPhone) || targetPhone.includes(cDest))) || (cCaller && (cCaller.includes(targetPhone) || targetPhone.includes(cCaller))))) return true;
             return false;
           });
@@ -345,10 +350,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
           // Fix #2: If targetRefId or targetCallId is provided, ONLY match that exact session.
           // NEVER match by targetPhone alone to prevent old call CDR from hijacking the active session!
-          if (targetRefId || targetCallId) {
-            if (targetRefId && (recRef === targetRefId || recCallId === targetRefId || customIdStr.includes(targetRefId))) return true;
-            if (targetCallId && (recCallId === targetCallId || recRef === targetCallId || customIdStr.includes(targetCallId))) return true;
-            return false;
+          if (targetRefId) {
+            return recRef === targetRefId || recCallId === targetRefId || customIdStr.includes(targetRefId);
+          }
+          if (targetCallId) {
+            return recCallId === targetCallId || recRef === targetCallId || customIdStr.includes(targetCallId);
           }
 
           if (targetPhone) {
@@ -489,11 +495,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         ? callTimeParts[0] * 60 + callTimeParts[1]
         : Number(callTimeRaw) || 0;
 
+    const hasBridged = String(liveCallStatusData.destination || '').includes(',');
+
     const isLiveCallBothAnswered =
       switchState === 'in-call' ||
       switchState === 'connected' ||
       switchState === 'bridge' ||
-      (switchState === 'answered' && callTimeSec > 5) ||
+      (switchState === 'answered' && (hasBridged || !isClickToCall)) ||
       customerStatusStr.includes('speak') ||
       agentStatusStr.includes('speak');
 
@@ -631,7 +639,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         });
 
     if (matched) {
-      if (!targetCallId && matched.callId) {
+      if (!targetCallId && matched.callId && (targetRefId || Boolean(liveCallStatusData))) {
         targetCallId = String(matched.callId);
       }
       const raw = (matched.rawPayload || {}) as any;

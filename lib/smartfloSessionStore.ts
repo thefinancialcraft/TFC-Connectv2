@@ -64,6 +64,20 @@ export function applyCdrToSession(session: SmartfloCallSession, rawCdr: any): vo
   if (cdr.call_id && !session.call_id) {
     session.call_id = String(cdr.call_id);
   }
+
+  // Store raw CDR in rawEventHistory without overwriting previous events
+  if (!session.rawEventHistory) {
+    session.rawEventHistory = [];
+  }
+  const now = Date.now();
+  session.rawEventHistory.push({
+    idx: session.rawEventHistory.length + 1,
+    stage: 'cdr_completed',
+    source: 'tata_cdr_api',
+    timestamp: now,
+    isoTime: new Date(now).toISOString(),
+    payload: rawCdr,
+  });
 }
 
 export interface SmartfloTimelineEntry {
@@ -73,6 +87,15 @@ export interface SmartfloTimelineEntry {
   stage: SmartfloSessionStatus | string;
   message: string;
   data?: any;
+}
+
+export interface SmartfloRawEventEntry {
+  idx: number;
+  stage: string;
+  source?: string;
+  timestamp: number;
+  isoTime: string;
+  payload: any;
 }
 
 export interface SmartfloCallSession {
@@ -94,6 +117,7 @@ export interface SmartfloCallSession {
   hangupCause: string | null;
   recordingUrl: string | null;
   rawPayload: any | null;
+  rawEventHistory?: SmartfloRawEventEntry[];
   timeline: SmartfloTimelineEntry[];
   created_at: number;
   updated_at: number;
@@ -213,6 +237,15 @@ export const SmartfloSessionStore = {
       data: params.initialPayload || null,
     };
 
+    const initialRawEvent: SmartfloRawEventEntry = {
+      idx: 1,
+      stage: params.direction === 'inbound' ? 'connected' : 'originated',
+      source: 'originate_api',
+      timestamp: now,
+      isoTime: new Date(now).toISOString(),
+      payload: params.initialPayload || null,
+    };
+
     const session: SmartfloCallSession = {
       id: sessionId,
       ref_id: params.ref_id || null,
@@ -232,6 +265,7 @@ export const SmartfloSessionStore = {
       hangupCause: null,
       recordingUrl: null,
       rawPayload: params.initialPayload || null,
+      rawEventHistory: params.initialPayload ? [initialRawEvent] : [],
       timeline: [initialEntry],
       created_at: now,
       updated_at: now,
@@ -322,6 +356,26 @@ export const SmartfloSessionStore = {
           updatedTimeline.length > MAX_TIMELINE_ENTRIES
             ? updatedTimeline.slice(updatedTimeline.length - MAX_TIMELINE_ENTRIES)
             : updatedTimeline;
+      }
+    }
+
+    // Persist each distinct event's raw payload in rawEventHistory without overwriting past events
+    if (timelineEvent && timelineEvent.data) {
+      if (!session.rawEventHistory) {
+        session.rawEventHistory = [];
+      }
+      const lastRaw = session.rawEventHistory[session.rawEventHistory.length - 1];
+      const lastPayloadStr = lastRaw ? JSON.stringify(lastRaw.payload) : '';
+      const currentPayloadStr = JSON.stringify(timelineEvent.data);
+      if (lastPayloadStr !== currentPayloadStr) {
+        session.rawEventHistory.push({
+          idx: session.rawEventHistory.length + 1,
+          stage: timelineEvent.stage,
+          source: 'switch_or_webhook',
+          timestamp: now,
+          isoTime: new Date(now).toISOString(),
+          payload: timelineEvent.data,
+        });
       }
     }
 

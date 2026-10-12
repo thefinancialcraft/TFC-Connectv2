@@ -6,7 +6,7 @@ import {
   cleanPhone,
   CallDirection,
 } from '@/lib/smartfloFlowEngine';
-import { SmartfloSessionStore } from '@/lib/smartfloSessionStore';
+import { SmartfloSessionStore, type SmartfloSessionStatus } from '@/lib/smartfloSessionStore';
 
 interface UseSmartfloCallFlowParams {
   phone?: string | null;
@@ -52,11 +52,18 @@ export function useSmartfloCallFlow({
 
   // Sync refs with props
   useEffect(() => {
-    if (activeRefId) activeRefIdRef.current = activeRefId;
-  }, [activeRefId]);
+    if (activeRefId && activeRefId !== activeRefIdRef.current) {
+      activeCallIdRef.current = activeCallId || null;
+      hasAgentAnsweredRef.current = false;
+      isLiveActiveRef.current = false;
+    }
+    activeRefIdRef.current = activeRefId || null;
+  }, [activeRefId, activeCallId]);
 
   useEffect(() => {
-    if (activeCallId) activeCallIdRef.current = activeCallId;
+    if (activeCallId) {
+      activeCallIdRef.current = activeCallId;
+    }
   }, [activeCallId]);
 
   // Core function to query Smartflo API for latest call state using call_id / ref_id
@@ -119,16 +126,20 @@ export function useSmartfloCallFlow({
 
           // Determine call direction: inbound or outbound
           let detectedDirection: CallDirection =
-            targetDirection ||
-            (data.ref_status?.isInbound ? 'inbound' : 'outbound');
+            isPlacingCall || isCalling
+              ? 'outbound'
+              : targetDirection ||
+                (data.ref_status?.isInbound ? 'inbound' : 'outbound');
 
-          if (liveCall) {
-            const d = String(liveCall.direction || liveCall.call_type || '').toLowerCase();
-            if (d.includes('inbound') || d === 'rynxly_inbound') detectedDirection = 'inbound';
-          } else if (matchedLog) {
-            const raw = (matchedLog.rawPayload || {}) as any;
-            const ct = String(raw.call_type || matchedLog.callType || '').toLowerCase();
-            if (ct === 'rynxly_inbound' || ct.includes('inbound')) detectedDirection = 'inbound';
+          if (!isPlacingCall && !isCalling) {
+            if (liveCall) {
+              const d = String(liveCall.direction || liveCall.call_type || '').toLowerCase();
+              if (d.includes('inbound') || d === 'rynxly_inbound') detectedDirection = 'inbound';
+            } else if (matchedLog) {
+              const raw = (matchedLog.rawPayload || {}) as any;
+              const ct = String(raw.call_type || matchedLog.callType || '').toLowerCase();
+              if (ct === 'rynxly_inbound' || ct.includes('inbound')) detectedDirection = 'inbound';
+            }
           }
 
           // Show the respective card
@@ -183,26 +194,37 @@ export function useSmartfloCallFlow({
             );
 
             // Determine next forward stage
-            let currentStage: 'originated' | 'agent_ringing' | 'customer_ringing' | 'connected' | 'hangup_detected' | 'ended' = 'agent_ringing';
+            let currentStage: SmartfloSessionStatus = 'agent_ringing';
             let stageMsg = 'Ringing agent...';
 
-            if (matchedLog || computed.isEnded) {
-              if (matchedLog) {
-                currentStage = 'ended';
-                stageMsg = `Call completed. Duration: ${computed.duration}s`;
-              } else if (isHangupOccurred) {
+            if (liveCall) {
+              const switchState = String(liveCall.state || liveCall.call_state || '').toLowerCase();
+              const isAnswered = switchState.includes('answer');
+              const isRinging = switchState.includes('ring') || switchState.includes('dial');
+              const hasBridged = String(liveCall.destination || '').includes(',');
+              const isOutbound = detectedDirection === 'outbound';
+
+              if (isAnswered && (hasBridged || (!isOutbound && isCallSpeaking))) {
+                currentStage = 'connected';
+                stageMsg = `Customer connected & speaking (${computed.duration || liveCall?.call_time || 0}s)`;
+              } else if (isRinging) {
+                currentStage = 'customer_ringing';
+                stageMsg = `Agent answered. Ringing customer (${cleanedPhone})...`;
+              } else if (isAnswered) {
+                currentStage = 'agent_answered';
+                stageMsg = `Agent answered. Dialing customer (${cleanedPhone})...`;
+              } else {
+                currentStage = 'agent_ringing';
+                stageMsg = `Ringing agent...`;
+              }
+            } else if (matchedLog || computed.isEnded || isHangupOccurred) {
+              if (isHangupOccurred && !matchedLog) {
                 currentStage = 'hangup_detected';
                 stageMsg = 'Hangup detected. Finalizing call details...';
               } else {
                 currentStage = 'ended';
-                stageMsg = `Call ended. Duration: ${computed.duration}s`;
+                stageMsg = `Call completed. Duration: ${computed.duration}s`;
               }
-            } else if (isCallSpeaking) {
-              currentStage = 'connected';
-              stageMsg = `Customer connected & speaking (${computed.duration || liveCall?.call_time || 0}s)`;
-            } else if (hasAgentAnsweredRef.current || liveCall) {
-              currentStage = 'customer_ringing';
-              stageMsg = `Agent answered. Ringing customer (${cleanedPhone})...`;
             }
 
             const updatedSession = SmartfloSessionStore.updateSession(
@@ -229,8 +251,14 @@ export function useSmartfloCallFlow({
             }
           }
 
-          // Call ended detection (only when previously active and now completed)
-          if ((computed.isEnded || isHangupOccurred) && isCalling && onCallEndDetected) {
+          // Call ended detection: ONLY when the call was previously active on switch/answered, OR when the matched CDR explicitly belongs to this exact currentRef
+          const isCallEndedForThisSession = Boolean(
+            (isLiveActiveRef.current || hasAgentAnsweredRef.current)
+              ? (computed.isEnded || isHangupOccurred)
+              : (matchedLog && currentRef && (matchedLog.refId === currentRef || (matchedLog.rawPayload as any)?.ref_id === currentRef) && computed.isEnded)
+          );
+
+          if (isCallEndedForThisSession && isCalling && onCallEndDetected) {
             onCallEndDetected(liveCallId || undefined);
           }
         }
@@ -338,16 +366,19 @@ export function useSmartfloCallFlow({
   useEffect(() => {
     if (isPlacingCall || isCalling) {
       setActiveCallType('outbound');
-      setFlowState(
-        computeSmartfloFlowState({
-          direction: 'outbound',
-          isPlacingCall,
-          isCalling,
-          isEndingCall,
-          refId: activeRefId,
-          callId: activeCallId,
-        })
-      );
+      // If we already received live updates from switch or agent answered, DO NOT reset flowState back to ringing agent fallback!
+      if (!isLiveActiveRef.current && !hasAgentAnsweredRef.current) {
+        setFlowState(
+          computeSmartfloFlowState({
+            direction: 'outbound',
+            isPlacingCall,
+            isCalling,
+            isEndingCall,
+            refId: activeRefId,
+            callId: activeCallId,
+          })
+        );
+      }
     } else if (activeRefId || activeCallId) {
       // Call transitioned to finished/disconnected -> fetch final CDR/logs and update flow state to isEnded: true
       refreshFlowState();
