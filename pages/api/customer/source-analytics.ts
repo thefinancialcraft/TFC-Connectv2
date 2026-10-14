@@ -162,6 +162,28 @@ export default async function handler(
       }
     }
 
+    // 4b. Also fetch any inactive leads under this source_id
+    fromRange = 0;
+    hasMore = true;
+    while (hasMore) {
+      const { data: inactBatch, error: inactError } = await supabaseAdmin
+        .from('inactive_leads')
+        .select('id, customer_name, phone_no, status, disposition, attempt_count, assigned_to, created_at, next_called_at, last_attempt_at, campaign_id')
+        .eq('source_id', sourceId)
+        .eq('organization_id', profile.organization_id)
+        .range(fromRange, fromRange + BATCH_SIZE - 1);
+
+      if (!inactError && inactBatch && inactBatch.length > 0) {
+        customers = customers.concat(inactBatch);
+        fromRange += BATCH_SIZE;
+        if (inactBatch.length < BATCH_SIZE) {
+          hasMore = false;
+        }
+      } else {
+        hasMore = false;
+      }
+    }
+
     // Fetch user profiles to map assigned_to to names in memory (since no foreign key constraint exists on assigned_to)
     const { data: profilesList } = await supabaseAdmin
       .from('user_profiles')

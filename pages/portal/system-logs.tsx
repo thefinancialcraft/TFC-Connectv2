@@ -25,6 +25,7 @@ interface LeadCounts {
   active_count: number;
   rejected_count: number;
   closed_count: number;
+  inactive_count: number;
 }
 
 export default function SystemLogs() {
@@ -95,7 +96,8 @@ export default function SystemLogs() {
             source_id: row.source_id,
             active_count: parseInt(row.active_count) || 0,
             rejected_count: parseInt(row.rejected_count) || 0,
-            closed_count: parseInt(row.closed_count) || 0
+            closed_count: parseInt(row.closed_count) || 0,
+            inactive_count: parseInt(row.inactive_count) || 0
           };
         });
         setCounts(countsMap);
@@ -110,21 +112,24 @@ export default function SystemLogs() {
 
   const handleDeleteLeads = async (sourceId: string) => {
     const confirmation = window.confirm(
-      `Are you sure you want to delete all leads associated with Source ID "${sourceId}"?\n\nThis will permanently delete these leads from Active CRM, Rejected leads, Closed deals, and delete this log entry. This action cannot be undone.`
+      `Are you sure you want to deactivate all active leads for Source ID "${sourceId}"?\n\nActive leads will be moved from customers to Inactive Leads and isolated from the live CRM. The system log record will be preserved.\n\nDo you want to proceed?`
     );
     if (!confirmation) return;
 
     try {
+      setLoading(true);
       const { error: deleteError } = await supabase.rpc("delete_leads_by_source_id", {
         p_source_id: sourceId
       });
       if (deleteError) throw deleteError;
 
-      alert(`Successfully deleted all records associated with Source ID "${sourceId}".`);
-      fetchLogs(); // Reload logs
+      alert(`Successfully moved active leads for Source ID "${sourceId}" to Inactive Leads.`);
+      await fetchLogs(); // Reload logs and updated counts
     } catch (err: any) {
-      console.error("Error deleting leads:", err);
-      alert(err.message || "Failed to delete leads.");
+      console.error("Error moving leads to inactive:", err);
+      alert(err.message || "Failed to move leads to inactive.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -561,6 +566,9 @@ export default function SystemLogs() {
                           Active CRM
                         </th>
                         <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">
+                          Removed Leads
+                        </th>
+                        <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">
                           Rejected
                         </th>
                         <th className="px-4 py-4 text-[10px] font-medium text-gray-400 uppercase tracking-widest text-center">
@@ -573,7 +581,7 @@ export default function SystemLogs() {
                     </thead>
                     <tbody className="divide-y divide-gray-50">
                       {paginatedLogs.map((log) => {
-                        const sCounts = counts[log.source_id] || { active_count: 0, rejected_count: 0, closed_count: 0 };
+                        const sCounts = counts[log.source_id] || { active_count: 0, rejected_count: 0, closed_count: 0, inactive_count: 0 };
                         return (
                           <tr 
                             key={log.id} 
@@ -613,6 +621,9 @@ export default function SystemLogs() {
                             <td className="px-4 py-4 text-center text-indigo-600 font-bold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
                               {sCounts.active_count}
                             </td>
+                            <td className="px-4 py-4 text-center text-rose-600 font-bold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                              {sCounts.inactive_count}
+                            </td>
                             <td className="px-4 py-4 text-center text-amber-600 font-bold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
                               {sCounts.rejected_count}
                             </td>
@@ -622,8 +633,17 @@ export default function SystemLogs() {
                             <td className="px-4 py-4 text-right">
                               <button
                                 onClick={() => handleDeleteLeads(log.source_id)}
-                                className="w-8 h-8 rounded-lg bg-red-50 hover:bg-red-100 text-red-600 transition-colors flex items-center justify-center ml-auto"
-                                title="Delete all leads associated with this Source ID"
+                                disabled={sCounts.active_count === 0}
+                                className={`w-8 h-8 rounded-lg transition-colors flex items-center justify-center ml-auto ${
+                                  sCounts.active_count === 0
+                                    ? "bg-gray-100 text-gray-300 cursor-not-allowed"
+                                    : "bg-red-50 hover:bg-red-100 text-red-600 cursor-pointer"
+                                }`}
+                                title={
+                                  sCounts.active_count === 0
+                                    ? "All active leads have already been moved to Inactive Leads"
+                                    : "Move active leads to Inactive Leads"
+                                }
                               >
                                 <i className="fi fi-rr-trash flex text-sm"></i>
                               </button>
