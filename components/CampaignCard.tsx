@@ -1,5 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/router';
+import { supabase } from '@/lib/supabase';
+import PixelDisintegrate from './PixelDisintegrate';
 
 export interface Campaign {
     id: string;
@@ -25,56 +27,100 @@ interface CampaignCardProps {
     campaign: Campaign;
     onEdit?: (campaign: Campaign) => void;
     onDelete?: (id: string) => void;
+    onStatusChange?: (id: string, newStatus: string) => Promise<void> | void;
     isEditVisible?: boolean;
     isDeleteVisible?: boolean;
+    isToggleVisible?: boolean;
+    isExiting?: boolean;
+    onExitComplete?: (id: string) => void;
 }
 
-const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete, isEditVisible = true, isDeleteVisible = true }) => {
+const CampaignCard: React.FC<CampaignCardProps> = ({ 
+    campaign, 
+    onEdit, 
+    onDelete, 
+    onStatusChange,
+    isEditVisible = true, 
+    isDeleteVisible = true,
+    isToggleVisible = true,
+    isExiting = false,
+    onExitComplete
+}) => {
     const router = useRouter();
+    const [isToggling, setIsToggling] = useState(false);
+    const [optimisticStatus, setOptimisticStatus] = useState<string | null>(null);
+
+    // Sync optimisticStatus when campaign.status updates
+    React.useEffect(() => {
+        setOptimisticStatus(null);
+    }, [campaign.status]);
+
+    const currentStatus = optimisticStatus ?? campaign.status;
+    const isActive = currentStatus?.toLowerCase() === 'active';
+    const isDisintegrating = isExiting;
 
     const handleCardClick = () => {
         router.push(`/campaign/${campaign.id}`);
     };
 
-    const getStatusColor = (status: string | null) => {
-        switch (status) {
-            case 'active':
-                return 'bg-green-100 text-green-700 border-green-200';
-            case 'inactive':
-                return 'bg-orange-100 text-orange-700 border-orange-200';
-            case 'completed':
-            case 'finished':
-                return 'bg-blue-100 text-blue-700 border-blue-200';
-            default:
-                return 'bg-gray-100 text-gray-700 border-gray-200';
-        }
-    };
+    const handleToggleStatus = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (!isEditVisible || isToggling || isDisintegrating) return;
 
-    const getStatusDotColor = (status: string | null) => {
-        switch (status) {
-            case 'active':
-                return 'bg-green-500';
-            case 'inactive':
-                return 'bg-orange-500';
-            case 'completed':
-            case 'finished':
-                return 'bg-blue-500';
-            default:
-                return 'bg-gray-500';
+        const newStatus = isActive ? 'inactive' : 'active';
+        // Immediately flip the button state so the toggle animation is visible
+        setOptimisticStatus(newStatus);
+        setIsToggling(true);
+
+        try {
+            if (onStatusChange) {
+                await onStatusChange(campaign.id, newStatus);
+            } else {
+                const { error } = await supabase
+                    .from('campaigns')
+                    .update({ status: newStatus })
+                    .eq('id', campaign.id);
+                if (error) throw error;
+            }
+        } catch (err: any) {
+            console.error("Error toggling campaign status:", err);
+            // Revert state on error
+            setOptimisticStatus(null);
+        } finally {
+            setIsToggling(false);
         }
     };
 
     return (
         <div
-            onClick={handleCardClick}
-            className="group relative bg-white rounded-2xl p-5 shadow-sm border border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden cursor-pointer"
+            onClick={isDisintegrating ? undefined : handleCardClick}
+            className={`group relative bg-white rounded-2xl p-5 shadow-sm border border-gray-100 overflow-hidden cursor-pointer ${
+                isDisintegrating 
+                    ? "pointer-events-none" 
+                    : "transition-all duration-300 hover:shadow-xl hover:-translate-y-1"
+            }`}
+            style={isDisintegrating ? {
+                opacity: 0,
+                transform: 'scale(0.92) translateY(-6px)',
+                filter: 'blur(3px) brightness(1.15)',
+                transition: 'opacity 650ms ease-out 100ms, transform 650ms cubic-bezier(0.2, 0.8, 0.2, 1) 100ms, filter 650ms ease-out 100ms'
+            } : undefined}
         >
+            {/* Pixel Disintegration Canvas Overlay */}
+            <PixelDisintegrate
+                active={isDisintegrating}
+                duration={700}
+                onComplete={() => {
+                    if (onExitComplete) onExitComplete(campaign.id);
+                }}
+            />
+
             {/* Decorative background gradient */}
             <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gray-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
             <div className="relative z-10">
                 <div className="mb-0">
-                    <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-start justify-between mb-2 gap-2">
                         <h3
                             className="text-lg font-bold text-gray-800 truncate pr-2 flex-1"
                             title={campaign.name || 'Untitled Campaign'}
@@ -82,12 +128,40 @@ const CampaignCard: React.FC<CampaignCardProps> = ({ campaign, onEdit, onDelete,
                         >
                             {campaign.name || 'Untitled Campaign'}
                         </h3>
-                        <div
-                            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(campaign.status)}`}
-                        >
-                            <span className={`w-1.5 h-1.5 rounded-full ${getStatusDotColor(campaign.status)}`}></span>
-                            <span className="capitalize">{campaign.status || 'Unknown'}</span>
-                        </div>
+                        {isToggleVisible && (
+                            <div 
+                                onClick={(e) => e.stopPropagation()} 
+                                className="flex items-center shrink-0 z-20"
+                            >
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    aria-checked={isActive}
+                                    disabled={!isEditVisible || isToggling || isDisintegrating}
+                                    onClick={handleToggleStatus}
+                                    title={!isEditVisible ? "Permission required to change status" : (isActive ? "Active (Click to set Inactive)" : "Inactive (Click to set Active)")}
+                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer items-center focus:outline-none ${
+                                        (!isEditVisible || isToggling || isDisintegrating) ? "opacity-80 cursor-not-allowed" : "hover:opacity-95"
+                                    }`}
+                                >
+                                    {/* Slim Background Track */}
+                                    <span 
+                                        aria-hidden="true"
+                                        className={`w-[32px] h-1.5 rounded-full transition-colors duration-300 ease-in-out ${
+                                            isActive ? "bg-emerald-500" : "bg-gray-300"
+                                        }`}
+                                    />
+                                    
+                                    {/* Untouched Toggle Switch Knob */}
+                                    <span 
+                                        aria-hidden="true"
+                                        className={`pointer-events-none absolute left-0 inline-block h-4 w-4 transform rounded-full bg-white border border-gray-200/90 transition-transform duration-300 ease-in-out ${
+                                            isActive ? "translate-x-5 border-emerald-500/20" : "translate-x-0"
+                                        }`} 
+                                    />
+                                </button>
+                            </div>
+                        )}
                     </div>
                     <p
                         className="text-xs text-gray-400 line-clamp-2 min-h-[2.5em]"

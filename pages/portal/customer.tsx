@@ -628,7 +628,36 @@ export default function Customer() {
       };
       const attemptCountArray = getAttemptCountArray(filters.attemptCount);
 
-      // 1. Fetch Shared Team Members for TL (Re-use in all sub-queries)
+      // 1. Strictly fetch Active Campaigns first so only customers from active campaigns are loaded
+      let activeCampsQuery = supabase
+        .from('campaigns')
+        .select('id')
+        .eq('status', 'active');
+
+      if (user?.isClient && user.organization_id) {
+        activeCampsQuery = activeCampsQuery.eq('organization_id', user.organization_id);
+      }
+
+      const { data: activeCampsData, error: activeCampsError } = await activeCampsQuery;
+      if (activeCampsError) {
+        console.error("Error fetching active campaigns in customer page:", activeCampsError);
+      }
+
+      const activeCampaignIds = (activeCampsData || []).map((c: any) => c.id).filter(Boolean);
+
+      // If no active campaigns exist, clear all customer stats and return early
+      if (activeCampaignIds.length === 0) {
+        setAllCustomers([]);
+        setTotalCustomers(0);
+        setPendingFollowUps(0);
+        setOverdueFollowUps(0);
+        setUpcomingFollowUps(0);
+        setFreshCustomersCount(0);
+        setLoadingCustomers(false);
+        return;
+      }
+
+      // 2. Fetch Shared Team Members for TL (Re-use in all sub-queries)
       let sharedTeamMemberIds: string[] = [];
       if (user?.isClient && user.designation === 'team_leader') {
          const { data: teamData } = await supabase
@@ -655,8 +684,11 @@ export default function Customer() {
          sharedTeamMemberIds = [...new Set(sharedTeamMemberIds)];
       }
 
-      // 2. Helper function to apply user filters consistently
+      // 3. Helper function to apply user filters consistently
       const applyUserFilters = (q: any) => {
+          // Mandatory: Only show customers from active campaigns
+          q = q.in('campaign_id', activeCampaignIds);
+
           if (user?.isClient && (user.designation === 'agent' || !user.designation)) {
               if (user.organization_id) q = q.eq('organization_id', user.organization_id);
               if (user.uid) q = q.eq(activeSource === 'live' ? 'assigned_to' : 'agent_id', user.uid);
@@ -1027,7 +1059,7 @@ export default function Customer() {
   const fetchFilterMetadata = async () => {
     try {
       let orgQuery = supabase.from("organizations").select("id, company_name").order("company_name");
-      let campQuery = supabase.from("campaigns").select("id, name, organization_id, users").order("name");
+      let campQuery = supabase.from("campaigns").select("id, name, organization_id, users").eq("status", "active").order("name");
       let agentQuery = supabase.from("user_profiles").select("id, user_id, user_name, organization_id").order("user_name");
 
       if (user?.isClient) {

@@ -242,11 +242,17 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
           }
         }
 
-        const result = await response.json();
-        if (!response.ok) throw new Error(result.message || "Unable to load calling providers");
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          if (!cancelled) {
+            setCallingProviderState(null);
+          }
+          return;
+        }
+
         if (!cancelled) {
-          setCallingProviderState(result.data as HeaderCallingProviderState);
-          if (result.data) {
+          if (result.data?.user && result.data?.organization) {
+            setCallingProviderState(result.data as HeaderCallingProviderState);
             setCachedProviderDetails({
               activeProvider: result.data.active_provider === 'sim' || result.data.active_provider === 'smartflo'
                 ? result.data.active_provider
@@ -256,12 +262,14 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
               smartfloAgent: result.data.smartflo_agent ?? null,
               resolution: result.data.resolution,
             });
+          } else {
+            setCallingProviderState(null);
+            setCachedProviderDetails(null);
           }
         }
       } catch (error) {
         if (!cancelled) {
           setCallingProviderState(null);
-          console.error("Unable to load calling provider state:", error);
         }
       }
     };
@@ -803,11 +811,16 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
         }
       }
 
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.message || "Unable to refresh calling provider status.");
 
-      setCallingProviderState(result.data as HeaderCallingProviderState);
-      setShowProviderMenu(true);
+      if (result.data?.user && result.data?.organization) {
+        setCallingProviderState(result.data as HeaderCallingProviderState);
+        setShowProviderMenu(true);
+      } else {
+        setCallingProviderState(null);
+        setShowProviderMenu(false);
+      }
     } catch (error) {
       showWarning(error instanceof Error ? error.message : "Unable to refresh calling provider status.", "Calling Provider");
     } finally {
@@ -816,15 +829,17 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
   };
 
   const renderCallingProviderControls = () => {
-    if (!callingProviderState) return null;
+    if (!callingProviderState || !callingProviderState.user || !callingProviderState.organization) return null;
 
     const activeProvider = callingProviderState.active_provider ||
-      (callingProviderState.user.smartflo.in_use ? "smartflo" : "sim");
+      (callingProviderState.user?.smartflo?.in_use ? "smartflo" : "sim");
     const ActiveIcon = activeProvider === "sim" ? Smartphone : Headphones;
     const activeLabel = activeProvider === "sim" ? "SIM Based" : "Tata Smartflo";
-    const activeProviderEnabled = callingProviderState.organization[activeProvider].enable &&
-      callingProviderState.user[activeProvider].enable;
-    const mappedSmartfloAgent = callingProviderState.user.smartflo.is_mapped
+    const activeProviderEnabled = Boolean(
+      callingProviderState.organization?.[activeProvider]?.enable &&
+      callingProviderState.user?.[activeProvider]?.enable
+    );
+    const mappedSmartfloAgent = callingProviderState.user?.smartflo?.is_mapped
       ? callingProviderState.smartflo_agent
       : null;
     const mappedAgentName = mappedSmartfloAgent?.agentName || 'Mapped agent';
@@ -873,16 +888,16 @@ function HeaderComponent({ user, onLogout, hideSidebar = false, isStatic = false
         {showProviderMenu && (
           <div role="menu" aria-label="Calling provider" className="absolute right-0 top-full z-[60] mt-2 w-56 overflow-hidden rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
             {(["sim", "smartflo"] as const).map((provider) => {
-              const isSmartfloUnmapped = provider === "smartflo" && !callingProviderState.user.smartflo?.is_mapped;
-              const providerEnabled = (callingProviderState.organization[provider].enable && callingProviderState.user[provider].enable) || isSmartfloUnmapped;
+              const isSmartfloUnmapped = provider === "smartflo" && !callingProviderState.user?.smartflo?.is_mapped;
+              const providerEnabled = (callingProviderState.organization?.[provider]?.enable && callingProviderState.user?.[provider]?.enable) || isSmartfloUnmapped;
               const isActive = callingProviderState.active_provider === provider;
               const label = provider === "sim" ? "SIM Based" : "Tata Smartflo";
               const Icon = provider === "sim" ? Smartphone : Headphones;
-              const unavailableReason = !callingProviderState.organization[provider].enable
+              const unavailableReason = !callingProviderState.organization?.[provider]?.enable
                 ? "Disabled for organization"
                 : isSmartfloUnmapped
                   ? "Config required"
-                  : !callingProviderState.user[provider].enable
+                  : !callingProviderState.user?.[provider]?.enable
                     ? "Disabled for user"
                     : isActive
                       ? "Currently selected"

@@ -61,7 +61,10 @@ export default async function handler(
     try {
       const state = await getCallingProviderState(authenticatedUser.id);
       if (!state) {
-        return res.status(404).json({ success: false, message: 'Calling provider settings not found' });
+        return res.status(200).json({
+          success: true,
+          data: null,
+        });
       }
 
       const resolution = resolveCallingProviderFromState(state);

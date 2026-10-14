@@ -26,31 +26,36 @@ export default function TeamManagementModal({
   const [organizationId, setOrganizationId] = useState("");
   const [selectedMembers, setSelectedMembers] = useState<string[]>([]);
   const [isActive, setIsActive] = useState(true);
+  const [memberSearchQuery, setMemberSearchQuery] = useState("");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  const isOrgLocked = Boolean(user?.isClient && user?.organization_id);
 
   useEffect(() => {
     if (team) {
       setName(team.name || "");
       setLeaderId(team.leader_id || "");
-      setOrganizationId(team.organization_id || "");
+      setOrganizationId(team.organization_id || user?.organization_id || "");
       setSelectedMembers(team.members || []);
       setIsActive(team.is_active ?? true);
     } else {
       setName("");
       setLeaderId("");
-      setOrganizationId("");
+      setOrganizationId(user?.organization_id || "");
       setSelectedMembers([]);
       setIsActive(true);
     }
+    setMemberSearchQuery("");
     setError("");
-  }, [team, isOpen]);
+  }, [team, isOpen, user?.organization_id]);
 
   if (!isOpen) return null;
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !leaderId || !organizationId) {
+    const effectiveOrgId = (isOrgLocked ? user?.organization_id : organizationId) || organizationId;
+    if (!name || !leaderId || !effectiveOrgId) {
       setError("Please fill in all required fields.");
       return;
     }
@@ -62,7 +67,7 @@ export default function TeamManagementModal({
       const teamData = {
         name,
         leader_id: leaderId,
-        organization_id: organizationId,
+        organization_id: effectiveOrgId,
         members: selectedMembers,
         is_active: isActive,
       };
@@ -137,9 +142,33 @@ export default function TeamManagementModal({
         {/* Body */}
         <form onSubmit={handleSave} className="flex-1 overflow-y-auto p-6 space-y-6">
           {(() => {
+            const effectiveOrgId = (isOrgLocked ? user?.organization_id : organizationId) || organizationId;
             const filteredUsers = users
-              .filter((u) => !organizationId || u.organization_id === organizationId)
+              .filter((u) => !effectiveOrgId || u.organization_id === effectiveOrgId)
               .sort((a, b) => (a.user_name || "").localeCompare(b.user_name || ""));
+
+            const cleanSearch = memberSearchQuery.toLowerCase().trim();
+            const displayedMembers = filteredUsers.filter((u) => {
+              if (!cleanSearch) return true;
+              return (
+                (u.user_name && u.user_name.toLowerCase().includes(cleanSearch)) ||
+                (u.email && u.email.toLowerCase().includes(cleanSearch))
+              );
+            });
+
+            const areAllDisplayedSelected =
+              displayedMembers.length > 0 &&
+              displayedMembers.every((m) => selectedMembers.includes(m.uid));
+
+            const handleToggleSelectAll = () => {
+              if (areAllDisplayedSelected) {
+                const displayedIds = new Set(displayedMembers.map((m) => m.uid));
+                setSelectedMembers(selectedMembers.filter((id) => !displayedIds.has(id)));
+              } else {
+                const newSelection = new Set([...selectedMembers, ...displayedMembers.map((m) => m.uid)]);
+                setSelectedMembers(Array.from(newSelection));
+              }
+            };
             
             return (
               <>
@@ -159,29 +188,52 @@ export default function TeamManagementModal({
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="e.g. Alpha Sales Force"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-500 focus:border-transparent outline-none transition-all text-sm bg-gray-50/50"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-700 focus:border-[#4b33e8] outline-none transition-all text-sm bg-gray-50/50"
                 required
               />
             </div>
 
             {/* Organization Select */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider px-1">Organization *</label>
-              <select
-                value={organizationId}
-                onChange={(e) => {
-                  setOrganizationId(e.target.value);
-                  setLeaderId("");
-                  setSelectedMembers([]);
-                }}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-500 focus:border-transparent outline-none transition-all text-sm bg-gray-50/50"
-                required
-              >
-                <option value="">Select Organization</option>
-                {organizations.map((org) => (
-                  <option key={org.id} value={org.id}>{org.company_name}</option>
-                ))}
-              </select>
+              <div className="flex items-center justify-between px-1">
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Organization *</label>
+                {isOrgLocked && (
+                  <span className="text-[10px] font-semibold text-gray-400 flex items-center gap-1">
+                      </span>
+                )}
+              </div>
+              <div className="relative">
+                <select
+                  value={effectiveOrgId}
+                  disabled={isOrgLocked}
+                  onChange={(e) => {
+                    setOrganizationId(e.target.value);
+                    setLeaderId("");
+                    setSelectedMembers([]);
+                  }}
+                  className={`w-full px-4 py-3 rounded-xl border border-gray-200 text-sm outline-none transition-all ${
+                    isOrgLocked
+                      ? "bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200 appearance-none"
+                      : "bg-gray-50/50 text-gray-700 focus:border-[#4b33e8] focus:bg-white"
+                  }`}
+                  required
+                >
+                  {!isOrgLocked && <option value="">Select Organization</option>}
+                  {isOrgLocked && effectiveOrgId && !organizations.some((org) => org.id === effectiveOrgId) && (
+                    <option value={effectiveOrgId}>Current Organization</option>
+                  )}
+                  {organizations
+                    .filter((org) => !isOrgLocked || org.id === user?.organization_id)
+                    .map((org) => (
+                      <option key={org.id} value={org.id}>{org.company_name}</option>
+                    ))}
+                </select>
+                {isOrgLocked && (
+                  <div className="absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400 flex items-center">
+                    <i className="fi flex fi-rr-lock text-sm"></i>
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Leader Select */}
@@ -190,7 +242,7 @@ export default function TeamManagementModal({
               <select
                 value={leaderId}
                 onChange={(e) => setLeaderId(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-500 focus:border-transparent outline-none transition-all text-sm bg-gray-50/50"
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 text-gray-700 focus:border-[#4b33e8] outline-none transition-all text-sm bg-gray-50/50"
                 required
               >
                 <option value="">Select Leader</option>
@@ -203,21 +255,78 @@ export default function TeamManagementModal({
 
           {/* Members Selection */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between px-1">
-              <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Members</label>
-              <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
-                {selectedMembers.length} Selected
-              </span>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
+              <div className="flex items-center gap-2">
+                <label className="text-xs font-bold text-gray-700 uppercase tracking-wider">Members</label>
+                <span className="text-[10px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-full">
+                  {selectedMembers.length} Selected
+                </span>
+                {cleanSearch && (
+                  <span className="text-[10px] text-gray-400 font-medium">
+                    ({displayedMembers.length} of {filteredUsers.length} shown)
+                  </span>
+                )}
+              </div>
+              
+              {filteredUsers.length > 0 && (
+                <button
+                  type="button"
+                  onClick={handleToggleSelectAll}
+                  className="text-xs font-semibold text-[#4b33e8] hover:text-[#3824c7] transition-colors flex items-center gap-1.5 self-start sm:self-auto cursor-pointer"
+                >
+                  <i className={`fi ${areAllDisplayedSelected ? "fi-rr-cross-circle" : "fi-rr-check-circle"} text-xs flex`}></i>
+                  {areAllDisplayedSelected 
+                    ? (cleanSearch ? "Deselect Filtered" : "Deselect All") 
+                    : (cleanSearch ? "Select Filtered" : "Select All")}
+                </button>
+              )}
             </div>
+
+            {/* Member Search Bar */}
+            {filteredUsers.length > 0 && (
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                  <i className="fi fi-rr-search text-xs flex"></i>
+                </div>
+                <input
+                  type="text"
+                  value={memberSearchQuery}
+                  onChange={(e) => setMemberSearchQuery(e.target.value)}
+                  placeholder="Search members by name or email..."
+                  className="w-full pl-8 pr-8 py-2 rounded-lg border border-gray-200 text-xs text-gray-700 bg-gray-50/50 focus:bg-white focus:border-[#4b33e8] outline-none transition-all placeholder:text-gray-400"
+                />
+                {memberSearchQuery && (
+                  <button
+                    type="button"
+                    onClick={() => setMemberSearchQuery("")}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    <i className="fi fi-rr-cross-small text-sm flex"></i>
+                  </button>
+                )}
+              </div>
+            )}
             
             <div className="border border-gray-100 rounded-xl overflow-hidden">
                <div className="max-h-60 overflow-y-auto bg-gray-50/30">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 p-2">
                     {filteredUsers.length === 0 ? (
-                      <div className="col-span-2 text-center py-4 text-xs text-gray-400">
-                        {organizationId ? 'No users found in this organization' : 'Select an organization to view members'}
+                      <div className="col-span-2 text-center py-6 text-xs text-gray-400">
+                        {effectiveOrgId ? 'No users found in this organization' : 'Select an organization to view members'}
                       </div>
-                    ) : filteredUsers.map((member) => (
+                    ) : displayedMembers.length === 0 ? (
+                      <div className="col-span-2 text-center py-6 text-xs text-gray-400 flex flex-col items-center gap-1.5">
+                        <i className="fi fi-rr-search text-base text-gray-300"></i>
+                        <span>No members matching "{memberSearchQuery}"</span>
+                        <button
+                          type="button"
+                          onClick={() => setMemberSearchQuery("")}
+                          className="text-[#4b33e8] hover:underline font-semibold text-[11px] mt-0.5 cursor-pointer"
+                        >
+                          Clear search filter
+                        </button>
+                      </div>
+                    ) : displayedMembers.map((member) => (
                       <div 
                         key={member.uid}
                         onClick={() => toggleMember(member.uid)}
@@ -228,7 +337,7 @@ export default function TeamManagementModal({
                         }`}
                       >
                         <div className={`w-4 h-4 rounded border flex items-center justify-center transition-all ${
-                           selectedMembers.includes(member.uid) 
+                            selectedMembers.includes(member.uid) 
                             ? 'bg-[#4b33e8] border-[#4b33e8]' 
                             : 'bg-white border-gray-300'
                         }`}>

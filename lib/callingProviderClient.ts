@@ -100,7 +100,15 @@ export async function getCallingProviderDetails(forceRefresh = false): Promise<A
 
       const result = await response.json().catch(() => ({}));
       if (!response.ok) {
-        throw new Error(result.message || 'Unable to verify the active calling provider.');
+        const fallbackDetails: ActiveProviderDetails = {
+          activeProvider: null,
+          user: null,
+          organization: null,
+          smartfloAgent: null,
+          resolution: { provider: null, allowed: false, reason: result.message || 'calling_provider_not_configured' },
+        };
+        cachedProviderDetails = fallbackDetails;
+        return fallbackDetails;
       }
 
       const details: ActiveProviderDetails = {

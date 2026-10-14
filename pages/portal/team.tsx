@@ -66,14 +66,22 @@ export default function Team() {
     depsAbortControllerRef.current = new AbortController();
 
     try {
-      const [usersRes, orgsRes] = await Promise.all([
-        supabase.from('user_profiles')
-          .select('user_id, user_name, email, profile_pic_url, organization_id')
-          .abortSignal(depsAbortControllerRef.current.signal),
-        supabase.from('organizations')
-          .select('id, company_name')
-          .abortSignal(depsAbortControllerRef.current.signal)
-      ]);
+      let usersQuery = supabase
+        .from('user_profiles')
+        .select('user_id, user_name, email, profile_pic_url, organization_id')
+        .abortSignal(depsAbortControllerRef.current.signal);
+
+      let orgsQuery = supabase
+        .from('organizations')
+        .select('id, company_name')
+        .abortSignal(depsAbortControllerRef.current.signal);
+
+      if (user?.isClient === true && user?.organization_id) {
+        usersQuery = usersQuery.eq('organization_id', user.organization_id);
+        orgsQuery = orgsQuery.eq('id', user.organization_id);
+      }
+
+      const [usersRes, orgsRes] = await Promise.all([usersQuery, orgsQuery]);
 
       if (usersRes.data) {
         setAllUsers(usersRes.data.map((u: any) => ({ ...u, uid: u.user_id })));
@@ -86,7 +94,7 @@ export default function Team() {
         console.error("Error fetching dependencies:", err);
       }
     }
-  }, [allUsers.length, organizations.length]);
+  }, [allUsers.length, organizations.length, user?.isClient, user?.organization_id]);
 
   const fetchTeams = useCallback(async (isBackground = false) => {
       if (teamsAbortControllerRef.current) {

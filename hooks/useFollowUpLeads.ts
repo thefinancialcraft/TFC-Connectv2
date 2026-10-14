@@ -54,10 +54,36 @@ export function useFollowUpLeads() {
 
       const now = new Date();
 
-      // Fetch customers first (Joins disabled due to missing FKs on campaign_id/assigned_to)
+      // 1. Strictly fetch only ACTIVE campaigns
+      let activeCampsQuery = supabase
+        .from('campaigns')
+        .select('id, name')
+        .eq('status', 'active');
+
+      if (user.isClient && user.organization_id) {
+        activeCampsQuery = activeCampsQuery.eq('organization_id', user.organization_id);
+      }
+
+      const { data: activeCampaignsData, error: activeCampsError } = await activeCampsQuery.abortSignal(abortControllerRef.current.signal);
+      if (activeCampsError) {
+        if (activeCampsError.name === 'AbortError') return;
+        throw activeCampsError;
+      }
+
+      const activeCampaignIds = (activeCampaignsData || []).map((c: any) => c.id).filter(Boolean);
+
+      // If no active campaigns exist, return empty leads immediately
+      if (activeCampaignIds.length === 0) {
+        setLeads([]);
+        if (!isBackground) setLoading(false);
+        return;
+      }
+
+      // 2. Fetch customers strictly belonging to ACTIVE campaigns
       let query = supabase
         .from('customers')
         .select('*')
+        .in('campaign_id', activeCampaignIds)
         .in('disposition', ['Callback', 'Call Back', 'Follow Up', 'FollowUp'])
         .order('next_called_at', { ascending: true })
         .abortSignal(abortControllerRef.current.signal);
@@ -122,22 +148,23 @@ export function useFollowUpLeads() {
 
       if (customerData) {
         // Parallel fetch related data (Manual Join Pattern)
-        const campaignIds = [...new Set(customerData.map(c => c.campaign_id).filter(Boolean))];
         const orgIds = [...new Set(customerData.map(c => c.organization_id).filter(Boolean))];
         const userIds = [...new Set(customerData.map(c => c.assigned_to).filter(Boolean))];
 
-        const [campaignsResult, orgsResult, usersResult] = await Promise.all([
-          campaignIds.length > 0 ? supabase.from('campaigns').select('id, name').in('id', campaignIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({ data: [] }),
+        const [orgsResult, usersResult] = await Promise.all([
           orgIds.length > 0 ? supabase.from('organizations').select('id, company_name').in('id', orgIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({ data: [] }),
           userIds.length > 0 ? supabase.from('user_profiles').select('user_id, user_name, employee_id').in('user_id', userIds).abortSignal(abortControllerRef.current.signal) : Promise.resolve({ data: [] })
         ]);
 
-        // Create Lookup Maps
-        const campaignMap = Object.fromEntries(campaignsResult.data?.map((c: any) => [c.id, c.name]) || []);
+        // Create Lookup Maps and in-memory active campaign validation
+        const activeCampaignSet = new Set(activeCampaignIds);
+        const validCustomerData = customerData.filter((c: any) => c.campaign_id && activeCampaignSet.has(c.campaign_id));
+
+        const campaignMap = Object.fromEntries((activeCampaignsData || []).map((c: any) => [c.id, c.name]));
         const orgMap = Object.fromEntries(orgsResult.data?.map((o: any) => [o.id, o.company_name]) || []);
         const userMap = Object.fromEntries(usersResult.data?.map((u: any) => [u.user_id, { name: u.user_name, employee_id: u.employee_id }]) || []);
 
-        const enrichedLeads = customerData.map((lead: any) => {
+        const enrichedLeads = validCustomerData.map((lead: any) => {
           let isOverdue = false;
           let isUpcoming = false;
           

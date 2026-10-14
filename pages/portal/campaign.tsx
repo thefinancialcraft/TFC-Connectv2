@@ -46,54 +46,57 @@
 		const [showAddCampaignModal, setShowAddCampaignModal] = useState(false);
 		const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
 		const [searchQuery, setSearchQuery] = useState("");
+		const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("active");
+		const [exitingCardIds, setExitingCardIds] = useState<string[]>([]);
 		// Campaign creation state moved to AddCampaignModal component
 		const [users, setUsers] = useState<any[]>([]);
 		const [loadingUsers, setLoadingUsers] = useState(false);
 
 
 
+		const isCeo = useMemo(() => {
+			if (!mounted || !user) return false;
+			const normalizedDesignation = (user.designation || "").toLowerCase().trim();
+			return !user.isClient || normalizedDesignation === 'ceo' || user.role === 'superadmin';
+		}, [user, mounted]);
+
 		const permissionFlags = useMemo(() => {
 			if (!mounted || !user) return {
 				isCreateCampaginButtonVisible: false,
 				isCampaginEditButtonVisible: false,
 				isCampaginDeleteButtonVisible: false,
+				isToggleStatusVisible: false,
 			};
 
-			// Level 1: Client Agent
-			if (user.isClient && (user.designation === 'agent' || !user.designation)) {
-				return {
-					isCreateCampaginButtonVisible: false,
-					isCampaginEditButtonVisible: false,
-					isCampaginDeleteButtonVisible: false,
-				};
-			}
+			const normalizedDesignation = (user.designation || "").toLowerCase().trim();
+			const isUserCeo = !user.isClient || normalizedDesignation === 'ceo' || user.role === 'superadmin';
 
-			// Level 2: Team Leader
-			if (user.isClient && user.designation === 'team_leader') {
-				return {
-					isCreateCampaginButtonVisible: false,
-					isCampaginEditButtonVisible: false,
-					isCampaginDeleteButtonVisible: false,
-				};
-			}
-
-			// Level 3: Client Admin (CEO/Developer/Manager)
-			if (user.isClient && ['ceo', 'developer', 'manager'].includes(user.designation?.toLowerCase() || '')) {
+			// Level 3 & Level 4: CEO has full control including toggle status
+			if (isUserCeo) {
 				return {
 					isCreateCampaginButtonVisible: true,
 					isCampaginEditButtonVisible: true,
 					isCampaginDeleteButtonVisible: true,
+					isToggleStatusVisible: true,
 				};
 			}
 
+			// Level 3: Developer / Manager (can edit/create, but cannot toggle status)
+			if (user.isClient && ['developer', 'manager'].includes(normalizedDesignation)) {
+				return {
+					isCreateCampaginButtonVisible: true,
+					isCampaginEditButtonVisible: true,
+					isCampaginDeleteButtonVisible: false,
+					isToggleStatusVisible: false,
+				};
+			}
 
-
-			// Level 4: Internal Staff (Global Admin)
-			// !isClient implies internal staff
+			// Level 1: Client Agent & Level 2: Team Leader
 			return {
-				isCreateCampaginButtonVisible: true,
-				isCampaginEditButtonVisible: true,
-				isCampaginDeleteButtonVisible: true,
+				isCreateCampaginButtonVisible: false,
+				isCampaginEditButtonVisible: false,
+				isCampaginDeleteButtonVisible: false,
+				isToggleStatusVisible: false,
 			};
 		}, [user, mounted]);
 
@@ -181,6 +184,12 @@
 					}
 				}
 
+				// Strict enforcement: Non-CEO users can ONLY see active campaigns!
+				if (!isCeo) {
+					console.log("🔒 [Campaign] Restricting query to ACTIVE campaigns only for non-CEO user.");
+					query = query.eq('status', 'active');
+				}
+
 				const { data: campaignData, error: campaignError } = await query;
 				
 				if (campaignError) {
@@ -203,6 +212,7 @@
 					if (allOrgCamps && allOrgCamps.length > 0) {
 						// 🕵️ Manual Match as Fallback
 						const manualMatches = allOrgCamps.filter(camp => {
+							if (!isCeo && camp.status !== 'active') return false;
 							const userList = Array.isArray(camp.users) ? camp.users : [];
 							return userList.some((u: any) => (u.user_id || u.id) === user.uid);
 						});
@@ -359,11 +369,112 @@
 			}
 		};
 
-		const filtered = campaigns.filter(c => 
-			searchQuery === "" || 
-			(c.name && c.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-			(c.status && c.status.toLowerCase().includes(searchQuery.toLowerCase()))
+		const handleToggleCampaignStatus = async (id: string, newStatus: string) => {
+			const originalCampaign = campaigns.find(c => c.id === id);
+			const originalStatus = originalCampaign?.status || null;
+
+			// If the campaign will leave the currently filtered list (e.g. Active -> Inactive)
+			const willLeaveFilter = 
+				(statusFilter === "active" && newStatus !== "active") ||
+				(statusFilter === "inactive" && newStatus !== "inactive");
+
+			if (willLeaveFilter) {
+				// Mark as exiting so CampaignCard triggers the pixel disintegration animation
+				setExitingCardIds(prev => prev.includes(id) ? prev : [...prev, id]);
+
+				// Background database update
+				const updatePromise = supabase
+					.from("campaigns")
+					.update({ status: newStatus })
+					.eq("id", id);
+
+				// Wait 700ms for pixel disintegration animation to complete before removing from state
+				setTimeout(async () => {
+					try {
+						const { error } = await updatePromise;
+						if (error) {
+							// Revert on error
+							setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: originalStatus } : c));
+							setExitingCardIds(prev => prev.filter(cardId => cardId !== id));
+							throw error;
+						}
+
+						// Finalize status update in campaigns and clean up exiting state
+						setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c));
+						setExitingCardIds(prev => prev.filter(cardId => cardId !== id));
+
+						logSystemEvent({
+							event_type: 'WRITE',
+							description: `Toggled Campaign status to ${newStatus}: ${originalCampaign?.name || id}`,
+							metadata: { campaign_id: id, status: newStatus },
+							user_name: user?.displayName || 'Admin',
+							organization_id: user?.organization_id || undefined
+						});
+					} catch (e: any) {
+						console.error("Error toggling campaign status:", e);
+						alert("Error updating campaign status: " + (e.message || "Unknown error"));
+					}
+				}, 700);
+			} else {
+				// Normal in-place toggle if viewing "all"
+				setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: newStatus } : c));
+
+				try {
+					const { error } = await supabase
+						.from("campaigns")
+						.update({ status: newStatus })
+						.eq("id", id);
+
+					if (error) {
+						setCampaigns(prev => prev.map(c => c.id === id ? { ...c, status: originalStatus } : c));
+						throw error;
+					}
+
+					logSystemEvent({
+						event_type: 'WRITE',
+						description: `Toggled Campaign status to ${newStatus}: ${originalCampaign?.name || id}`,
+						metadata: { campaign_id: id, status: newStatus },
+						user_name: user?.displayName || 'Admin',
+						organization_id: user?.organization_id || undefined
+					});
+				} catch (e: any) {
+					console.error("Error toggling campaign status:", e);
+					alert("Error updating campaign status: " + (e.message || "Unknown error"));
+				}
+			}
+		};
+
+		const activeCount = useMemo(() => 
+			campaigns.filter(c => c.status === 'active' && !exitingCardIds.includes(c.id)).length, 
+			[campaigns, exitingCardIds]
 		);
+		const inactiveCount = useMemo(() => 
+			!isCeo ? 0 : campaigns.filter(c => c.status === 'inactive' || exitingCardIds.includes(c.id)).length, 
+			[campaigns, exitingCardIds, isCeo]
+		);
+
+		const filtered = useMemo(() => {
+			return campaigns.filter(c => {
+				// Non-CEO users can ONLY see active campaigns
+				if (!isCeo && c.status !== 'active') return false;
+
+				// Keep cards that are actively playing their pixel disintegration animation
+				if (exitingCardIds.includes(c.id)) return true;
+
+				// Status Filter (for CEO)
+				if (statusFilter === "active" && c.status !== "active") return false;
+				if (statusFilter === "inactive" && c.status !== "inactive") return false;
+
+				// Search Query Filter
+				if (!searchQuery.trim()) return true;
+				const q = searchQuery.toLowerCase().trim();
+				return (
+					(c.name && c.name.toLowerCase().includes(q)) ||
+					(c.status && c.status.toLowerCase().includes(q)) ||
+					(c.organizations?.company_name && c.organizations.company_name.toLowerCase().includes(q))
+				);
+			});
+		}, [campaigns, statusFilter, searchQuery, exitingCardIds, isCeo]);
 
 
 		return (
@@ -379,7 +490,7 @@
 
 								</div>
 
-								<div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+								<div className={`grid grid-cols-2 sm:grid-cols-2 ${isCeo ? "lg:grid-cols-4" : "lg:grid-cols-3"} gap-4 sm:gap-5`}>
 									<div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-30 sm:h-38" style={{ backgroundColor: "white" }}>
 										<div className="absolute inset-0" style={{ backgroundColor: "radial-gradient(circle at top right, rgba(75, 51, 232, 0.12), transparent 60%)" }} />
 										<div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-purple-200/20 blur-2xl" />
@@ -392,7 +503,7 @@
 											</div>
 											<div className="mt-auto">
 												<p className="text-3xl sm:text-4xl font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>{campaigns.length}</p>
-												<p className="text-xs sm:text-sm mt-1" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>All campaigns</p>
+												<p className="text-xs sm:text-sm mt-1" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>{isCeo ? "All campaigns" : "Active campaigns"}</p>
 											</div>
 										</div>
 									</div>
@@ -414,22 +525,24 @@
 										</div>
 									</div>
 
-									<div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-30 sm:h-38" style={{ backgroundColor: "white" }}>
-										<div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(249, 115, 22, 0.12), transparent 60%)" }} />
-										<div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-orange-200/20 blur-2xl" />
-										<div className="absolute -right-2 -bottom-2">
-											<i className="fi flex fi-rr-pause text-5xl" style={{ color: "#f97316", opacity: 0.15 }}></i>
-										</div>
-										<div className="relative flex flex-col h-full z-10">
-											<div className="flex items-start justify-between mb-auto">
-												<p className="text-xs sm:text-sm font-medium" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>Inactive</p>
+									{isCeo && (
+										<div className="relative overflow-hidden rounded-2xl p-4 sm:p-5 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-30 sm:h-38" style={{ backgroundColor: "white" }}>
+											<div className="absolute inset-0" style={{ background: "radial-gradient(circle at top right, rgba(249, 115, 22, 0.12), transparent 60%)" }} />
+											<div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-orange-200/20 blur-2xl" />
+											<div className="absolute -right-2 -bottom-2">
+												<i className="fi flex fi-rr-pause text-5xl" style={{ color: "#f97316", opacity: 0.15 }}></i>
 											</div>
-											<div className="mt-auto">
-												<p className="text-3xl sm:text-4xl font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>{campaigns.filter(c => c.status === 'inactive').length}</p>
-												<p className="text-xs sm:text-sm mt-1" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>Inactive campaigns</p>
+											<div className="relative flex flex-col h-full z-10">
+												<div className="flex items-start justify-between mb-auto">
+													<p className="text-xs sm:text-sm font-medium" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>Inactive</p>
+												</div>
+												<div className="mt-auto">
+													<p className="text-3xl sm:text-4xl font-semibold" style={{ color: "#263238", fontFamily: "'Poppins', sans-serif" }}>{campaigns.filter(c => c.status === 'inactive').length}</p>
+													<p className="text-xs sm:text-sm mt-1" style={{ color: "#787E9D", fontFamily: "'Roboto', sans-serif" }}>Inactive campaigns</p>
+												</div>
 											</div>
 										</div>
-									</div>
+									)}
 
 									<div className="relative overflow-hidden rounded-2xl pt-4 sm:pt-5 px-4 sm:px-5 pb-0 transition-all duration-200 flex flex-col hover:shadow-lg hover:scale-105 h-30 sm:h-38" style={{ backgroundColor: "#4b33e8", color: 'white' }}>
 										<div className="absolute inset-0" style={{ background: "linear-gradient(135deg, #4b33e8 0%, #6366f1 100%)" }} />
@@ -492,43 +605,93 @@
 								</div>
 
 								<div className="mt-8 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
-									<div className="flex flex-col lg:flex-row lg:items-center gap-3 w-full lg:w-auto">
-										<div className="w-full lg:w-auto">
-											<div className="relative w-full min-w-[180px] sm:min-w-[220px]">
-												<input
-													placeholder="Search campaigns..."
-													className="pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-sm focus:outline-none w-full sm:w-64 placeholder:text-gray-400"
-													type="text"
-													value={searchQuery}
-													onChange={(e) => setSearchQuery(e.target.value)}
-													style={{ fontFamily: "'Roboto', sans-serif" }}
-												/>
-												<i className="fi flex fi-rr-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm"></i>
-											</div>
-										</div>
-										<div className="flex flex-wrap lg:flex-nowrap items-center gap-2 sm:gap-3 justify-start lg:justify-end w-full lg:w-auto">
-											<button
-												type="button"
-												className="inline-flex items-center justify-center gap-2 px-3 h-[42px] w-[42px] sm:w-auto rounded-xl border border-gray-300 bg-white text-xs sm:text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-												style={{ fontFamily: "'Poppins', sans-serif" }}
-											>
-												<i className="fi flex fi-rr-filter text-xs sm:text-sm"></i>
-												<span className="hidden xs:inline">Filters</span>
-											</button>
-											{permissionFlags.isCreateCampaginButtonVisible && (
+									<div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full lg:w-auto">
+										{/* Search Input */}
+										<div className="relative w-full sm:w-64">
+											<input
+												placeholder="Search campaigns..."
+												className="pl-10 pr-10 py-2.5 bg-gray-50 border border-gray-200 text-gray-700 rounded-xl text-sm focus:outline-none w-full placeholder:text-gray-400"
+												type="text"
+												value={searchQuery}
+												onChange={(e) => setSearchQuery(e.target.value)}
+												style={{ fontFamily: "'Roboto', sans-serif" }}
+											/>
+											<i className="fi flex fi-rr-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 text-xs sm:text-sm"></i>
+											{searchQuery && (
 												<button
-													onClick={() => {
-														setShowAddCampaignModal(true);
-														fetchUsers();
-													}}
-													className="px-6 h-[42px] text-white font-semibold rounded-xl transition-colors text-sm flex items-center justify-center gap-2 hover:opacity-90"
-													style={{ fontFamily: "'Poppins', sans-serif", backgroundColor: "#4b33e8" }}
+													type="button"
+													onClick={() => setSearchQuery("")}
+													className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
 												>
-													<i className="fi flex fi-rr-plus text-base"></i>
-													<span className="hidden sm:inline">Add Campaign</span>
+													<i className="fi flex fi-rr-cross-small text-sm"></i>
 												</button>
 											)}
 										</div>
+
+										{/* Active & Inactive Filter Toggles (Visible ONLY to CEO) */}
+										{isCeo && (
+											<div className="inline-flex p-1 bg-gray-100/90 rounded-xl border border-gray-200/80 items-center shrink-0">
+												<button
+													type="button"
+													onClick={() => setStatusFilter("all")}
+													className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ease-in-out border ${
+														statusFilter === "all"
+															? "bg-white text-gray-800 border-gray-200/80"
+															: "text-gray-500 hover:text-gray-800 border-transparent"
+													}`}
+												>
+													All ({campaigns.length})
+												</button>
+												<button
+													type="button"
+													onClick={() => setStatusFilter("active")}
+													className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ease-in-out flex items-center gap-1.5 border ${
+														statusFilter === "active"
+															? "bg-white text-emerald-700 border-emerald-200"
+															: "text-gray-500 hover:text-emerald-700 border-transparent"
+													}`}
+												>
+													<span className={`w-2 h-2 rounded-full transition-colors duration-300 ${statusFilter === "active" ? "bg-emerald-500" : "bg-emerald-400/60"}`}></span>
+													Active ({activeCount})
+												</button>
+												<button
+													type="button"
+													onClick={() => setStatusFilter("inactive")}
+													className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ease-in-out flex items-center gap-1.5 border ${
+														statusFilter === "inactive"
+															? "bg-white text-gray-700 border-gray-200"
+															: "text-gray-500 hover:text-gray-700 border-transparent"
+													}`}
+												>
+													<span className={`w-2 h-2 rounded-full transition-colors duration-300 ${statusFilter === "inactive" ? "bg-gray-500" : "bg-gray-300"}`}></span>
+													Inactive ({inactiveCount})
+												</button>
+											</div>
+										)}
+									</div>
+
+									<div className="flex flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3 justify-start sm:justify-end w-full lg:w-auto">
+										<button
+											type="button"
+											className="inline-flex items-center justify-center gap-2 px-3 h-[42px] w-[42px] sm:w-auto rounded-xl border border-gray-300 bg-white text-xs sm:text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+											style={{ fontFamily: "'Poppins', sans-serif" }}
+										>
+											<i className="fi flex fi-rr-filter text-xs sm:text-sm"></i>
+											<span className="hidden xs:inline">Filters</span>
+										</button>
+										{permissionFlags.isCreateCampaginButtonVisible && (
+											<button
+												onClick={() => {
+													setShowAddCampaignModal(true);
+													fetchUsers();
+												}}
+												className="px-6 h-[42px] text-white font-semibold rounded-xl transition-colors text-sm flex items-center justify-center gap-2 hover:opacity-90"
+												style={{ fontFamily: "'Poppins', sans-serif", backgroundColor: "#4b33e8" }}
+											>
+												<i className="fi flex fi-rr-plus text-base"></i>
+												<span className="hidden sm:inline">Add Campaign</span>
+											</button>
+										)}
 									</div>
 								</div>
 
@@ -536,16 +699,48 @@
 									{loadingCampaigns ? (
 										<div className="col-span-full text-center py-8">Loading campaigns...</div>
 									) : filtered.length === 0 ? (
-										<div className="col-span-full text-center py-8 text-gray-500">No campaigns found.</div>
+										<div className="col-span-full text-center py-12 bg-white rounded-2xl border border-dashed border-gray-200">
+											<i className="fi flex fi-rr-box-open text-3xl text-gray-300 mx-auto mb-2"></i>
+											<p className="text-gray-600 font-medium text-sm">
+												{statusFilter !== "all" 
+													? `No ${statusFilter} campaigns found.`
+													: searchQuery 
+														? `No campaigns matching "${searchQuery}"`
+														: "No campaigns found."}
+											</p>
+											{(statusFilter !== "all" || searchQuery) && (
+												<div className="flex items-center justify-center gap-2 mt-3">
+													{searchQuery && (
+														<button
+															type="button"
+															onClick={() => setSearchQuery("")}
+															className="px-3 py-1 bg-gray-100 text-gray-700 rounded-lg text-xs font-semibold hover:bg-gray-200 transition-colors"
+														>
+															Clear search
+														</button>
+													)}
+													<button
+														type="button"
+														onClick={() => { setStatusFilter("all"); setSearchQuery(""); }}
+														className="px-3 py-1 bg-indigo-50 text-[#4b33e8] rounded-lg text-xs font-semibold hover:bg-indigo-100 transition-colors"
+													>
+														Show all campaigns
+													</button>
+												</div>
+											)}
+										</div>
 									) : (
 										filtered.map((c) => (
 											<CampaignCard
 												key={c.id}
 												campaign={c}
+												isExiting={exitingCardIds.includes(c.id)}
 												onEdit={handleEditCampaign}
 												onDelete={handleDeleteCampaign}
+												onStatusChange={handleToggleCampaignStatus}
 												isEditVisible={permissionFlags.isCampaginEditButtonVisible}
 												isDeleteVisible={permissionFlags.isCampaginDeleteButtonVisible}
+												isToggleVisible={isCeo}
 											/>
 										)))}
 								</div>

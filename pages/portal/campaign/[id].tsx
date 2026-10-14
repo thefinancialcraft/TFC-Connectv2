@@ -163,6 +163,15 @@ export default function CampaignDetails() {
             const campaignData = cRows ? cRows[0] : null;
 
             if (campaignError) throw campaignError;
+
+            if (campaignData) {
+                const isCeo = !user?.isClient || (user?.designation || '').toLowerCase().trim() === 'ceo' || user?.role === 'superadmin';
+                if (!isCeo && campaignData.status !== 'active') {
+                    router.push("/portal/campaign");
+                    return;
+                }
+            }
+
             setCampaign(campaignData);
 
             const now = new Date().toISOString();
