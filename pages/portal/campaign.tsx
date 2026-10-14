@@ -628,43 +628,67 @@
 											)}
 										</div>
 
-										{/* Active & Inactive Filter Toggles (Visible ONLY to CEO) */}
+										{/* 3 Rounded Filter Buttons: All, Active, Inactive (Visible ONLY to CEO) */}
 										{isCeo && (
-											<div className="inline-flex p-1 bg-gray-100/90 rounded-xl border border-gray-200/80 items-center shrink-0">
+											<div className="flex items-center gap-2 shrink-0 select-none">
+												{/* All Button */}
 												<button
 													type="button"
 													onClick={() => setStatusFilter("all")}
-													className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ease-in-out border ${
+													className={`h-[34px] px-5 rounded-full text-xs font-semibold transition-all duration-300 ease-in-out flex items-center gap-2 border active:scale-95 cursor-pointer shadow-none ${
 														statusFilter === "all"
-															? "bg-white text-gray-800 border-gray-200/80"
-															: "text-gray-500 hover:text-gray-800 border-transparent"
+															? "bg-[#4b33e8] text-white border-[#4b33e8] opacity-100 scale-100"
+															: "bg-white text-gray-600 border-gray-300 opacity-40 hover:opacity-80 hover:bg-gray-50/80 hover:border-gray-400 scale-[0.98]"
 													}`}
 												>
-													All ({campaigns.length})
+													<span>All</span>
+													<span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full transition-colors duration-300 ${
+														statusFilter === "all"
+															? "bg-white/20 text-white"
+															: "bg-gray-100 text-gray-500"
+													}`}>
+														{campaigns.length}
+													</span>
 												</button>
+
+												{/* Active Button */}
 												<button
 													type="button"
 													onClick={() => setStatusFilter("active")}
-													className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ease-in-out flex items-center gap-1.5 border ${
+													className={`h-[34px] px-5 rounded-full text-xs font-semibold transition-all duration-300 ease-in-out flex items-center gap-2 border active:scale-95 cursor-pointer shadow-none ${
 														statusFilter === "active"
-															? "bg-white text-emerald-700 border-emerald-200"
-															: "text-gray-500 hover:text-emerald-700 border-transparent"
+															? "bg-[#4b33e8] text-white border-[#4b33e8] opacity-100 scale-100"
+															: "bg-white text-gray-600 border-gray-300 opacity-40 hover:opacity-80 hover:bg-gray-50/80 hover:border-gray-400 scale-[0.98]"
 													}`}
 												>
-													<span className={`w-2 h-2 rounded-full transition-colors duration-300 ${statusFilter === "active" ? "bg-emerald-500" : "bg-emerald-400/60"}`}></span>
-													Active ({activeCount})
+													<span>Active</span>
+													<span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full transition-colors duration-300 ${
+														statusFilter === "active"
+															? "bg-white/20 text-white"
+															: "bg-gray-100 text-gray-500"
+													}`}>
+														{activeCount}
+													</span>
 												</button>
+
+												{/* Inactive Button */}
 												<button
 													type="button"
 													onClick={() => setStatusFilter("inactive")}
-													className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all duration-300 ease-in-out flex items-center gap-1.5 border ${
+													className={`h-[34px] px-5 rounded-full text-xs font-semibold transition-all duration-300 ease-in-out flex items-center gap-2 border active:scale-95 cursor-pointer shadow-none ${
 														statusFilter === "inactive"
-															? "bg-white text-gray-700 border-gray-200"
-															: "text-gray-500 hover:text-gray-700 border-transparent"
+															? "bg-[#4b33e8] text-white border-[#4b33e8] opacity-100 scale-100"
+															: "bg-white text-gray-600 border-gray-300 opacity-40 hover:opacity-80 hover:bg-gray-50/80 hover:border-gray-400 scale-[0.98]"
 													}`}
 												>
-													<span className={`w-2 h-2 rounded-full transition-colors duration-300 ${statusFilter === "inactive" ? "bg-gray-500" : "bg-gray-300"}`}></span>
-													Inactive ({inactiveCount})
+													<span>Inactive</span>
+													<span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-full transition-colors duration-300 ${
+														statusFilter === "inactive"
+															? "bg-white/20 text-white"
+															: "bg-gray-100 text-gray-500"
+													}`}>
+														{inactiveCount}
+													</span>
 												</button>
 											</div>
 										)}
