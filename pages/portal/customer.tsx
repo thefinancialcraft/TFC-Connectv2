@@ -572,6 +572,98 @@ export default function Customer() {
     disposition: ""
   });
 
+  // Effective Organization for Bulk Actions (falls back to client's org, active filter, or selected customer's org)
+  const effectiveBulkOrgId = useMemo(() => {
+    if (user?.isClient && user.organization_id) {
+      return user.organization_id;
+    }
+    if (bulkUpdates.organization_id) {
+      return bulkUpdates.organization_id;
+    }
+    if (filters.organization) {
+      return filters.organization;
+    }
+    if (selectedCustomers.size > 0 && allCustomers.length > 0) {
+      const selectedList = allCustomers.filter(c => selectedCustomers.has(c.id));
+      if (selectedList.length > 0 && selectedList[0].organization_id) {
+        const firstOrg = selectedList[0].organization_id;
+        const allSame = selectedList.every(c => c.organization_id === firstOrg);
+        if (allSame) return firstOrg;
+      }
+    }
+    return "";
+  }, [user?.isClient, user?.organization_id, bulkUpdates.organization_id, filters.organization, selectedCustomers, allCustomers]);
+
+  // Available campaigns for bulk update based on effective organization
+  const availableBulkCampaigns = useMemo(() => {
+    if (effectiveBulkOrgId) {
+      return filterStats.campaigns.filter(camp => camp.organization_id === effectiveBulkOrgId);
+    }
+    return filterStats.campaigns;
+  }, [filterStats.campaigns, effectiveBulkOrgId]);
+
+  // Available agents for bulk update based on effective organization and selected campaign
+  const availableBulkAgents = useMemo(() => {
+    if (bulkUpdates.campaign_id) {
+      const selectedCampaign = filterStats.campaigns.find(c => c.id === bulkUpdates.campaign_id);
+      const campaignUserIds = selectedCampaign?.users?.map((u: any) => u.user_id) || [];
+      if (campaignUserIds.length > 0) {
+        return filterStats.agents.filter(agent => {
+          const orgMatch = !effectiveBulkOrgId || agent.organization_id === effectiveBulkOrgId;
+          const campMatch = campaignUserIds.includes(agent.user_id);
+          return orgMatch && campMatch;
+        });
+      }
+    }
+
+    if (effectiveBulkOrgId) {
+      return filterStats.agents.filter(agent => agent.organization_id === effectiveBulkOrgId);
+    }
+    return filterStats.agents;
+  }, [filterStats.agents, filterStats.campaigns, effectiveBulkOrgId, bulkUpdates.campaign_id]);
+
+  // Check if any actual field has been chosen to update
+  const hasBulkChanges = useMemo(() => {
+    const hasOrgChange = !user?.isClient && Boolean(bulkUpdates.organization_id);
+    const hasCampChange = Boolean(bulkUpdates.campaign_id);
+    const hasAgentChange = Boolean(bulkUpdates.assigned_to);
+    const hasDispChange = Boolean(bulkUpdates.disposition);
+    return hasOrgChange || hasCampChange || hasAgentChange || hasDispChange;
+  }, [user?.isClient, bulkUpdates]);
+
+  const handleOpenBulkModal = () => {
+    const defaultOrg = user?.isClient && user.organization_id 
+      ? user.organization_id 
+      : (filters.organization || "");
+    
+    setBulkUpdates({
+      organization_id: defaultOrg,
+      campaign_id: "",
+      assigned_to: "",
+      disposition: ""
+    });
+
+    if (filterStats.campaigns.length === 0 || filterStats.agents.length === 0) {
+      fetchFilterMetadata();
+    }
+
+    setShowBulkActionModal(true);
+  };
+
+  const handleCloseBulkModal = () => {
+    setShowBulkActionModal(false);
+    const defaultOrg = user?.isClient && user.organization_id 
+      ? user.organization_id 
+      : (filters.organization || "");
+    setBulkUpdates({
+      organization_id: defaultOrg,
+      campaign_id: "",
+      assigned_to: "",
+      disposition: ""
+    });
+  };
+
+
 
 
 
@@ -1041,6 +1133,8 @@ export default function Customer() {
       if (allCustomers.length === 0) {
         setCurrentPage(1);
         fetchCustomers(1);
+      }
+      if (filterStats.campaigns.length === 0 || filterStats.organizations.length === 0) {
         fetchFilterMetadata();
       }
       setSelectedCustomers(new Set());
@@ -1053,7 +1147,7 @@ export default function Customer() {
         setBulkUpdates(prev => ({ ...prev, organization_id: user.organization_id || "" }));
       }
     }
-  }, [user?.uid, userLoaded, mounted]); // Dependency on user?.uid is more stable than the whole user object
+  }, [user?.uid, user?.organization_id, userLoaded, mounted]); // Include organization_id so client filters populate immediately
 
 
   const fetchFilterMetadata = async () => {
@@ -1184,8 +1278,11 @@ export default function Customer() {
       });
       
       setShowBulkActionModal(false);
+      const defaultOrg = user?.isClient && user.organization_id 
+        ? user.organization_id 
+        : (filters.organization || "");
       setBulkUpdates({
-        organization_id: "",
+        organization_id: defaultOrg,
         campaign_id: "",
         assigned_to: "",
         disposition: ""
@@ -2520,7 +2617,7 @@ export default function Customer() {
                           {dataSource !== 'rejected' && (
                             <>
                               <button
-                                onClick={() => setShowBulkActionModal(true)}
+                                onClick={handleOpenBulkModal}
                                 className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
                                 title="Bulk Actions"
                               >
@@ -3982,7 +4079,7 @@ export default function Customer() {
                 </span>
               </div>
               <button 
-                onClick={() => setShowBulkActionModal(false)}
+                onClick={handleCloseBulkModal}
                 className="text-gray-400 hover:text-gray-600 p-1"
               >
                 <i className="fi fi-rr-cross-small text-xl leading-none"></i>
@@ -3996,12 +4093,20 @@ export default function Customer() {
                   <div className="space-y-1.5">
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Organization</label>
                     <select
-                      value={bulkUpdates.organization_id || (user?.isClient ? (user.organization_id || "") : "")}
+                      value={bulkUpdates.organization_id || effectiveBulkOrgId}
                       disabled={user?.isClient}
-                      onChange={(e) => setBulkUpdates(prev => ({ ...prev, organization_id: e.target.value }))}
+                      onChange={(e) => {
+                        const newOrg = e.target.value;
+                        setBulkUpdates(prev => ({ 
+                          ...prev, 
+                          organization_id: newOrg,
+                          campaign_id: "",
+                          assigned_to: ""
+                        }));
+                      }}
                       className={`w-full h-9 px-3 border border-gray-200 rounded text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans ${user?.isClient ? 'bg-gray-50 cursor-not-allowed text-gray-500' : 'bg-white text-gray-700'}`}
                     >
-                      <option value="">No Change</option>
+                      {!user?.isClient && <option value="">No Change</option>}
                       {filterStats.organizations.map(org => (
                         <option key={org.id} value={org.id}>{org.company_name}</option>
                       ))}
@@ -4015,13 +4120,11 @@ export default function Customer() {
                     <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest pl-0.5">Campaign</label>
                     <select
                       value={bulkUpdates.campaign_id}
-                      onChange={(e) => setBulkUpdates(prev => ({ ...prev, campaign_id: e.target.value }))}
+                      onChange={(e) => setBulkUpdates(prev => ({ ...prev, campaign_id: e.target.value, assigned_to: "" }))}
                       className="w-full h-9 px-3 bg-white border border-gray-200 rounded text-[11px] font-medium text-gray-700 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all font-sans"
                     >
                       <option value="">No Change</option>
-                      {filterStats.campaigns
-                        .filter(camp => bulkUpdates.organization_id && camp.organization_id === bulkUpdates.organization_id)
-                        .map(camp => (
+                      {availableBulkCampaigns.map(camp => (
                         <option key={camp.id} value={camp.id}>{camp.name}</option>
                       ))}
                     </select>
@@ -4041,9 +4144,7 @@ export default function Customer() {
                     >
                       <option value="">No Change</option>
                       <option value="unassigned">Unassigned (Clear Agent)</option>
-                      {filterStats.agents
-                        .filter(a => bulkUpdates.organization_id && a.organization_id === bulkUpdates.organization_id)
-                        .map(agent => (
+                      {availableBulkAgents.map(agent => (
                         <option key={agent.id} value={agent.user_id || agent.id}>{agent.user_name}</option>
                       ))}
                     </select>
@@ -4088,18 +4189,22 @@ export default function Customer() {
 
             <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-white rounded-b-lg">
               <button
-                onClick={() => setShowBulkActionModal(false)}
+                onClick={handleCloseBulkModal}
                 className="px-4 py-1.5 border border-gray-200 text-gray-600 rounded hover:bg-gray-50 font-semibold transition-all"
               >
                 Cancel
               </button>
               <button
-                disabled={isUpdatingBulk || !Object.entries(bulkUpdates).some(([k,v]) => v !== "")}
+                disabled={isUpdatingBulk || !hasBulkChanges}
                 onClick={() => {
                    const cleanUpdates: any = {};
-                   if (bulkUpdates.organization_id) cleanUpdates.organization_id = bulkUpdates.organization_id;
+                   if (!user?.isClient && bulkUpdates.organization_id) {
+                     cleanUpdates.organization_id = bulkUpdates.organization_id;
+                   }
                    if (bulkUpdates.campaign_id) cleanUpdates.campaign_id = bulkUpdates.campaign_id;
-                   if (bulkUpdates.assigned_to) cleanUpdates.assigned_to = (bulkUpdates.assigned_to === "unassigned" ? null : bulkUpdates.assigned_to);
+                   if (bulkUpdates.assigned_to) {
+                     cleanUpdates.assigned_to = (bulkUpdates.assigned_to === "unassigned" ? null : bulkUpdates.assigned_to);
+                   }
                    if (bulkUpdates.disposition) cleanUpdates.disposition = bulkUpdates.disposition;
                    handleBulkUpdate(cleanUpdates);
                 }}
