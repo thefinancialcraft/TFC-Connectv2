@@ -15,6 +15,9 @@ interface SystemLog {
   organization_id: string | null;
   campaign_id: string | null;
   created_by: string | null;
+  workflow_id?: string | null;
+  is_workflow_source?: boolean;
+  workflow_type?: string | null;
   campaigns?: { name: string } | null;
   organizations?: { company_name: string } | null;
 }
@@ -26,6 +29,7 @@ interface LeadCounts {
   rejected_count: number;
   closed_count: number;
   inactive_count: number;
+  staged_pending_count?: number;
 }
 
 export default function SystemLogs() {
@@ -85,10 +89,16 @@ export default function SystemLogs() {
       // Fetch dynamic lead counts for the unique source IDs
       const uniqueSourceIds = Array.from(new Set(fetchedLogs.map(l => l.source_id).filter(Boolean)));
       if (uniqueSourceIds.length > 0) {
-        const { data: countsData, error: countsError } = await supabase
-          .rpc("get_lead_counts_by_sources", { p_source_ids: uniqueSourceIds });
-        
-        if (countsError) throw countsError;
+        // Attempt v2 with staged_pending_count, fallback to standard RPC
+        let countsData: any = null;
+        const resV2 = await supabase.rpc("get_lead_counts_by_sources_v2", { p_source_ids: uniqueSourceIds });
+        if (!resV2.error && resV2.data) {
+          countsData = resV2.data;
+        } else {
+          const resV1 = await supabase.rpc("get_lead_counts_by_sources", { p_source_ids: uniqueSourceIds });
+          if (resV1.error) throw resV1.error;
+          countsData = resV1.data;
+        }
 
         const countsMap: Record<string, LeadCounts> = {};
         (countsData || []).forEach((row: any) => {
@@ -97,7 +107,8 @@ export default function SystemLogs() {
             active_count: parseInt(row.active_count) || 0,
             rejected_count: parseInt(row.rejected_count) || 0,
             closed_count: parseInt(row.closed_count) || 0,
-            inactive_count: parseInt(row.inactive_count) || 0
+            inactive_count: parseInt(row.inactive_count) || 0,
+            staged_pending_count: parseInt(row.staged_pending_count) || 0,
           };
         });
         setCounts(countsMap);
@@ -591,15 +602,25 @@ export default function SystemLogs() {
                               {formatDisplayDate(log.created_at)}
                             </td>
                             <td className="px-4 py-4">
-                              <Link
-                                href={`/portal/system-logs/${log.source_id}`}
-                                className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 hover:underline break-all max-w-xs block cursor-pointer"
-                                style={{
-                                  fontFamily: "'Poppins', sans-serif",
-                                }}
-                              >
-                                {log.source_name}
-                              </Link>
+                              <div className="flex flex-col">
+                                {(log.is_workflow_source || log.workflow_id || log.source_id.startsWith("SRC-LP-")) && (
+                                  <div className="flex items-center gap-1.5 mb-1">
+                                    <span className="inline-flex items-center gap-1 text-[9px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-[#4b33e8]/10 to-[#7962ff]/10 text-[#4b33e8] border border-[#4b33e8]/20">
+                                      <i className="fi flex fi-rr-rocket-lunch text-[8px]"></i>
+                                      LeadPilot
+                                    </span>
+                                  </div>
+                                )}
+                                <Link
+                                  href={`/portal/system-logs/${log.source_id}`}
+                                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 hover:underline break-all max-w-xs block cursor-pointer"
+                                  style={{
+                                    fontFamily: "'Poppins', sans-serif",
+                                  }}
+                                >
+                                  {log.source_name}
+                                </Link>
+                              </div>
                             </td>
                             <td className="px-4 py-4 text-xs font-semibold text-gray-600" style={{ fontFamily: "'Roboto', sans-serif" }}>
                               <span className="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-lg border border-slate-200 font-mono text-[10px]">
@@ -619,7 +640,12 @@ export default function SystemLogs() {
                               {log.duplicate_leads}
                             </td>
                             <td className="px-4 py-4 text-center text-indigo-600 font-bold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
-                              {sCounts.active_count}
+                              <div>{sCounts.active_count}</div>
+                              {Boolean(sCounts.staged_pending_count && sCounts.staged_pending_count > 0) && (
+                                <span className="text-[10px] text-gray-400 block font-normal">
+                                  ({sCounts.staged_pending_count} pending)
+                                </span>
+                              )}
                             </td>
                             <td className="px-4 py-4 text-center text-rose-600 font-bold text-sm" style={{ fontFamily: "'Poppins', sans-serif" }}>
                               {sCounts.inactive_count}
@@ -631,22 +657,33 @@ export default function SystemLogs() {
                               {sCounts.closed_count}
                             </td>
                             <td className="px-4 py-4 text-right">
-                              <button
-                                onClick={() => handleDeleteLeads(log.source_id)}
-                                disabled={sCounts.active_count === 0}
-                                className={`w-8 h-8 rounded-lg transition-colors flex items-center justify-center ml-auto ${
-                                  sCounts.active_count === 0
-                                    ? "bg-gray-100 text-gray-300 cursor-not-allowed"
-                                    : "bg-red-50 hover:bg-red-100 text-red-600 cursor-pointer"
-                                }`}
-                                title={
-                                  sCounts.active_count === 0
-                                    ? "All active leads have already been moved to Inactive Leads"
-                                    : "Move active leads to Inactive Leads"
-                                }
-                              >
-                                <i className="fi fi-rr-trash flex text-sm"></i>
-                              </button>
+                              <div className="flex items-center justify-end gap-1.5">
+                                {(log.is_workflow_source || log.workflow_id || log.source_id.startsWith("SRC-LP-")) && (
+                                  <Link
+                                    href={log.workflow_id ? `/workflow/pilotlead/${log.workflow_id}` : '/workflow/pilotlead'}
+                                    className="w-8 h-8 rounded-lg bg-indigo-50 hover:bg-indigo-100 text-[#4b33e8] flex items-center justify-center transition-colors"
+                                    title="Manage in LeadPilot Workflow"
+                                  >
+                                    <i className="fi flex fi-rr-rocket-lunch text-xs"></i>
+                                  </Link>
+                                )}
+                                <button
+                                  onClick={() => handleDeleteLeads(log.source_id)}
+                                  disabled={sCounts.active_count === 0}
+                                  className={`w-8 h-8 rounded-lg transition-colors flex items-center justify-center ${
+                                    sCounts.active_count === 0
+                                      ? "bg-gray-100 text-gray-300 cursor-not-allowed"
+                                      : "bg-red-50 hover:bg-red-100 text-red-600 cursor-pointer"
+                                  }`}
+                                  title={
+                                    sCounts.active_count === 0
+                                      ? "All active leads have already been moved to Inactive Leads"
+                                      : "Move active leads to Inactive Leads"
+                                  }
+                                >
+                                  <i className="fi fi-rr-trash flex text-sm"></i>
+                                </button>
+                              </div>
                             </td>
                           </tr>
                         );

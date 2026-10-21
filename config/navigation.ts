@@ -62,6 +62,12 @@ export const NAV_ITEMS: NavItemType[] = [
     adminOnly: true,
   },
   {
+    name: "Workflow",
+    path: "/workflow",
+    icon: "fi-rr-branching",
+    adminOnly: false,
+  },
+  {
     name: "System Logs",
     path: "/system-logs",
     icon: "fi-rr-list",

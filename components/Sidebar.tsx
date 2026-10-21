@@ -118,15 +118,25 @@ const Sidebar = memo(function Sidebar({
 
     const isInternalStaff = currentUser.isClient === false;
     const designation = currentUser.designation?.toLowerCase() || '';
+    const currentRole = (userRole || (currentUser as any).role || '').toLowerCase();
     const isAdminState = isAdmin || isInternalStaff;
 
     const filtered = NAV_ITEMS.filter(item => {
       const level = getUserDashboardLevel({
-        role: userRole,
+        role: currentRole,
         designation: designation,
         isClient: currentUser.isClient,
         employeeId: currentUser.employeeId
       });
+
+      // Special Visibility for Workflow (Strictly Level 1 and Level 2 only)
+      if (item.path === '/workflow') {
+        const isLevel1 = level === DashboardLevel.LEVEL_1_ADMIN || 
+                         (!currentUser.isClient && (currentRole === 'superadmin' || currentRole === 'super_admin' || designation === 'ceo' || isSuperAdmin));
+        const isLevel2 = level === DashboardLevel.LEVEL_2_CLIENT_CEO || 
+                         (currentUser.isClient === true && designation === 'ceo');
+        return Boolean(isLevel1 || isLevel2);
+      }
 
       // Special Visibility for Call Sessions (Now for Levels 1, 2, and 3)
       if (item.path === '/call-sessions') {
@@ -140,7 +150,7 @@ const Sidebar = memo(function Sidebar({
       if (item.path === '/system-logs') {
         const isClientCEO = currentUser.isClient === true && designation === 'ceo';
         const isDeveloper = designation === 'developer';
-        const isInternalAdmin = currentUser.isClient === false && (userRole === 'admin' || userRole === 'super_admin' || isSuperAdmin === true);
+        const isInternalAdmin = currentUser.isClient === false && (currentRole === 'admin' || currentRole === 'super_admin' || isSuperAdmin === true);
         return isClientCEO || isDeveloper || isInternalAdmin;
       }
 
@@ -174,7 +184,7 @@ const Sidebar = memo(function Sidebar({
     });
 
     return filtered;
-  }, [isAdmin, user, cachedUser, mounted]);
+  }, [isAdmin, user, cachedUser, mounted, userRole, isSuperAdmin]);
 
   // Effect to sync calculated nav items back to cache
   useEffect(() => {

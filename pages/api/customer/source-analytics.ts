@@ -65,7 +65,7 @@ export default async function handler(
   }
 
   const token = authHeader.split('Bearer ')[1];
-  const { sourceId } = req.query;
+  const { sourceId, batch: batchFilterParam } = req.query;
 
   if (!sourceId || typeof sourceId !== 'string') {
     return res.status(400).json({ success: false, error: 'Source ID is required' });
@@ -109,6 +109,77 @@ export default async function handler(
       return res.status(404).json({ success: false, error: 'Source file not found or unauthorized access: ' + (logError?.message || '') });
     }
 
+    // 3b. Inspect if this source is linked to a LeadPilot workflow
+    const isLeadPilot = Boolean(
+      systemLog.is_workflow_source ||
+      systemLog.workflow_id ||
+      sourceId.startsWith('SRC-LP-')
+    );
+
+    let workflowData: any = null;
+    let availableBatches: any[] = [];
+
+    if (isLeadPilot) {
+      let wfQuery = supabaseAdmin.from('leadpilot').select('*');
+      if (systemLog.workflow_id) {
+        wfQuery = wfQuery.eq('id', systemLog.workflow_id);
+      } else {
+        wfQuery = wfQuery.eq('source_id', sourceId);
+      }
+      const { data: wf } = await wfQuery.maybeSingle();
+      if (wf) {
+        workflowData = wf;
+        const { data: logsList } = await supabaseAdmin
+          .from('pilotlead_log')
+          .select('*')
+          .eq('pilotlead_id', wf.id)
+          .order('batch_number', { ascending: true });
+
+        // Query summary of all leads in this source by batch_number to build comparative matrix
+        const { data: batchLeads } = await supabaseAdmin
+          .from('customers')
+          .select('batch_number, status, disposition, attempt_count')
+          .eq('source_id', sourceId)
+          .eq('organization_id', profile.organization_id);
+
+        const batchStatsMap = new Map<number, { count: number; contacted: number; won: number; totalDials: number }>();
+        (batchLeads || []).forEach((c: any) => {
+          const bNum = c.batch_number;
+          if (bNum === null || bNum === undefined) return;
+          if (!batchStatsMap.has(bNum)) {
+            batchStatsMap.set(bNum, { count: 0, contacted: 0, won: 0, totalDials: 0 });
+          }
+          const stat = batchStatsMap.get(bNum)!;
+          stat.count++;
+          if ((c.attempt_count || 0) > 0) stat.contacted++;
+          if (c.status === 'closed') stat.won++;
+          stat.totalDials += (c.attempt_count || 0);
+        });
+
+        availableBatches = (logsList || []).map((l: any) => {
+          const stat = batchStatsMap.get(l.batch_number) || { count: l.leads_succeeded, contacted: 0, won: 0, totalDials: 0 };
+          const leadCount = stat.count || l.leads_succeeded || 0;
+          const contactedPct = leadCount > 0 ? ((stat.contacted / leadCount) * 100).toFixed(1) : '0.0';
+          const wonPct = leadCount > 0 ? ((stat.won / leadCount) * 100).toFixed(1) : '0.0';
+          const avgDials = leadCount > 0 ? (stat.totalDials / leadCount).toFixed(1) : '0.0';
+
+          return {
+            batchNumber: l.batch_number,
+            scheduledTime: l.scheduled_time,
+            executedAt: l.executed_at,
+            leadsAttempted: l.leads_attempted,
+            leadsSucceeded: l.leads_succeeded,
+            leadsFailed: l.leads_failed,
+            status: l.status,
+            leadCount,
+            contactedPct,
+            wonPct,
+            avgDials,
+          };
+        });
+      }
+    }
+
     let campaignName = 'N/A';
     if (systemLog.campaign_id) {
       const { data: campaign } = await supabaseAdmin
@@ -140,12 +211,17 @@ export default async function handler(
     let hasMore = true;
 
     while (hasMore) {
-      const { data: batch, error: custError } = await supabaseAdmin
+      let custQuery = supabaseAdmin
         .from('customers')
-        .select('id, customer_name, phone_no, status, disposition, attempt_count, assigned_to, created_at, next_called_at, last_attempt_at, campaign_id')
+        .select('id, customer_name, phone_no, status, disposition, attempt_count, assigned_to, created_at, next_called_at, last_attempt_at, campaign_id, batch_number, pilotlead_id, batch_executed_at')
         .eq('source_id', sourceId)
-        .eq('organization_id', profile.organization_id)
-        .range(fromRange, fromRange + BATCH_SIZE - 1);
+        .eq('organization_id', profile.organization_id);
+
+      if (batchFilterParam && batchFilterParam !== 'all') {
+        custQuery = custQuery.eq('batch_number', parseInt(batchFilterParam as string));
+      }
+
+      const { data: batch, error: custError } = await custQuery.range(fromRange, fromRange + BATCH_SIZE - 1);
 
       if (custError) {
         return res.status(500).json({ success: false, error: 'Failed to fetch leads data: ' + custError.message });
@@ -166,12 +242,17 @@ export default async function handler(
     fromRange = 0;
     hasMore = true;
     while (hasMore) {
-      const { data: inactBatch, error: inactError } = await supabaseAdmin
+      let inactQuery = supabaseAdmin
         .from('inactive_leads')
-        .select('id, customer_name, phone_no, status, disposition, attempt_count, assigned_to, created_at, next_called_at, last_attempt_at, campaign_id')
+        .select('id, customer_name, phone_no, status, disposition, attempt_count, assigned_to, created_at, next_called_at, last_attempt_at, campaign_id, batch_number, pilotlead_id, batch_executed_at')
         .eq('source_id', sourceId)
-        .eq('organization_id', profile.organization_id)
-        .range(fromRange, fromRange + BATCH_SIZE - 1);
+        .eq('organization_id', profile.organization_id);
+
+      if (batchFilterParam && batchFilterParam !== 'all') {
+        inactQuery = inactQuery.eq('batch_number', parseInt(batchFilterParam as string));
+      }
+
+      const { data: inactBatch, error: inactError } = await inactQuery.range(fromRange, fromRange + BATCH_SIZE - 1);
 
       if (!inactError && inactBatch && inactBatch.length > 0) {
         customers = customers.concat(inactBatch);
@@ -705,6 +786,7 @@ export default async function handler(
         riskScore,
         riskLevel,
         riskColor,
+        batchNumber: (c as any).batch_number || null,
       };
     });
 
@@ -770,7 +852,11 @@ export default async function handler(
       topRejectedLeads,
       callbackLossLeads,
       top10ActiveFatigueLeads,
-      leads: allProcessedLeads
+      leads: allProcessedLeads,
+      isLeadPilot,
+      workflow: workflowData,
+      availableBatches,
+      selectedBatch: batchFilterParam || 'all'
     };
 
     return res.status(200).json({ success: true, data: responseData });

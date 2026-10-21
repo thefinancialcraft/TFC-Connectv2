@@ -5,6 +5,7 @@ import Head from 'next/head';
 import Link from 'next/link';
 import { useUser } from '@/components/AppLayout';
 import { supabase } from '@/lib/supabase';
+import CustomSelect from '@/components/workflow/pilotlead/CustomSelect';
 import {
   ResponsiveContainer,
   AreaChart,
@@ -81,7 +82,8 @@ export default function SourceLogsDetail() {
   const { sourceId } = router.query;
   const { user } = useUser();
 
-  const [activeTab, setActiveTab] = useState<'overview' | 'churnability' | 'leads' | 'agents' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'churnability' | 'leads' | 'agents' | 'analytics' | 'batches'>('overview');
+  const [selectedBatch, setSelectedBatch] = useState<string>('all');
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [isFilterUpdating, setIsFilterUpdating] = useState(false);
@@ -120,7 +122,8 @@ export default function SourceLogsDetail() {
         return;
       }
 
-      const res = await fetch(`/api/customer/source-analytics?sourceId=${sourceId}&timeRange=${overviewTimeRange}`, {
+      const batchParam = selectedBatch && selectedBatch !== 'all' ? `&batch=${selectedBatch}` : '';
+      const res = await fetch(`/api/customer/source-analytics?sourceId=${sourceId}&timeRange=${overviewTimeRange}${batchParam}`, {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -143,7 +146,7 @@ export default function SourceLogsDetail() {
     if (sourceId) {
       fetchAnalytics();
     }
-  }, [sourceId, overviewTimeRange]);
+  }, [sourceId, overviewTimeRange, selectedBatch]);
 
   // Handle Export CSV
   const handleExportCSV = () => {
@@ -303,6 +306,71 @@ export default function SourceLogsDetail() {
             </Link>
           </div>
 
+          {/* LeadPilot Automated Workflow Banner */}
+          {data?.isLeadPilot && (
+            <div className="mb-4 bg-gradient-to-r from-indigo-50/70 via-purple-50/60 to-pink-50/50 border border-indigo-200 rounded-2xl p-4 sm:p-5 shadow-none">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div className="flex items-start sm:items-center gap-3.5">
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 text-white flex items-center justify-center shadow-none shrink-0">
+                    <i className="fi fi-rr-paper-plane text-lg"></i>
+                  </div>
+                  <div>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-xs font-bold uppercase tracking-wider text-indigo-700 bg-white/80 px-2 py-0.5 rounded border border-indigo-200">
+                        LeadPilot Automated Workflow Source
+                      </span>
+                      {data.workflow?.status && (
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          data.workflow.status === 'active' ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' :
+                          data.workflow.status === 'completed' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                          'bg-amber-100 text-amber-700 border border-amber-200'
+                        }`}>
+                          {data.workflow.status.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-gray-600 mt-1">
+                      Batch distribution active • <strong className="text-gray-900">{data.availableBatches?.length || 0} batches</strong> executed so far
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {/* Batch Selector Filter */}
+                  <div className="w-56 sm:w-64">
+                    <CustomSelect
+                      value={selectedBatch}
+                      onChange={(val) => {
+                        setSelectedBatch(val);
+                        setCurrentPage(1);
+                      }}
+                      options={[
+                        { value: 'all', label: '⚡ All Batches (Cumulative)', badge: `${data.availableBatches?.length || 0} Batches` },
+                        ...(data.availableBatches?.map((b: any) => ({
+                          value: b.batchNumber.toString(),
+                          label: `Batch #${b.batchNumber} • ${new Date(b.executedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+                          badge: `${b.leadCount} leads`,
+                          icon: 'fi-rr-layers',
+                        })) || []),
+                      ]}
+                      size="sm"
+                    />
+                  </div>
+
+                  {data.workflow?.id && (
+                    <Link
+                      href={`/portal/workflow/pilotlead/${data.workflow.id}`}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg shadow-none transition-all cursor-pointer"
+                    >
+                      <i className="fi fi-rr-settings-sliders text-xs"></i>
+                      <span>Manage Workflow</span>
+                    </Link>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-5 rounded-xl border border-gray-200">
             <div>
               <div className="flex items-center gap-3 mb-1">
@@ -390,10 +458,10 @@ export default function SourceLogsDetail() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="border-b border-gray-200 mb-6 flex gap-6 text-sm font-medium">
+        <div className="border-b border-gray-200 mb-6 flex gap-6 text-sm font-medium overflow-x-auto">
           <button
             onClick={() => setActiveTab('overview')}
-            className={`pb-3 transition-colors relative ${
+            className={`pb-3 transition-colors relative whitespace-nowrap ${
               activeTab === 'overview'
                 ? 'text-[#4b33e8] border-b-2 border-[#4b33e8] font-semibold'
                 : 'text-gray-500 hover:text-gray-800'
@@ -401,9 +469,21 @@ export default function SourceLogsDetail() {
           >
             Overview
           </button>
+          {data?.isLeadPilot && (
+            <button
+              onClick={() => setActiveTab('batches')}
+              className={`pb-3 transition-colors relative whitespace-nowrap flex items-center gap-1.5 ${
+                activeTab === 'batches'
+                  ? 'text-[#4b33e8] border-b-2 border-[#4b33e8] font-semibold'
+                  : 'text-gray-500 hover:text-gray-800'
+              }`}
+            >
+              <i className="fi fi-rr-layers text-xs"></i> Batch Matrix ({data.availableBatches?.length || 0})
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('churnability')}
-            className={`pb-3 transition-colors relative ${
+            className={`pb-3 transition-colors relative whitespace-nowrap ${
               activeTab === 'churnability'
                 ? 'text-[#4b33e8] border-b-2 border-[#4b33e8] font-semibold'
                 : 'text-gray-500 hover:text-gray-800'
@@ -413,7 +493,7 @@ export default function SourceLogsDetail() {
           </button>
           <button
             onClick={() => setActiveTab('leads')}
-            className={`pb-3 transition-colors relative ${
+            className={`pb-3 transition-colors relative whitespace-nowrap ${
               activeTab === 'leads'
                 ? 'text-[#4b33e8] border-b-2 border-[#4b33e8] font-semibold'
                 : 'text-gray-500 hover:text-gray-800'
@@ -423,7 +503,7 @@ export default function SourceLogsDetail() {
           </button>
           <button
             onClick={() => setActiveTab('agents')}
-            className={`pb-3 transition-colors relative ${
+            className={`pb-3 transition-colors relative whitespace-nowrap ${
               activeTab === 'agents'
                 ? 'text-[#4b33e8] border-b-2 border-[#4b33e8] font-semibold'
                 : 'text-gray-500 hover:text-gray-800'
@@ -433,7 +513,7 @@ export default function SourceLogsDetail() {
           </button>
           <button
             onClick={() => setActiveTab('analytics')}
-            className={`pb-3 transition-colors relative ${
+            className={`pb-3 transition-colors relative whitespace-nowrap ${
               activeTab === 'analytics'
                 ? 'text-[#4b33e8] border-b-2 border-[#4b33e8] font-semibold'
                 : 'text-gray-500 hover:text-gray-800'
@@ -812,6 +892,119 @@ export default function SourceLogsDetail() {
           </div>
         </div>
       )}
+
+        {/* TAB: BATCH COMPARATIVE MATRIX */}
+        {activeTab === 'batches' && data?.isLeadPilot && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-xl border border-gray-200 p-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5 pb-4 border-b border-gray-100">
+                <div>
+                  <h3 className="text-sm font-bold text-gray-800 flex items-center gap-2">
+                    <i className="fi fi-rr-chart-network text-indigo-600"></i> Cross-Batch Comparative Matrix
+                  </h3>
+                  <p className="text-xs text-gray-500 mt-0.5">
+                    Side-by-side performance comparison across all scheduled LeadPilot batches
+                  </p>
+                </div>
+                {selectedBatch !== 'all' && (
+                  <button
+                    onClick={() => setSelectedBatch('all')}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-semibold hover:bg-indigo-100 transition-colors"
+                  >
+                    <i className="fi fi-rr-cross-small text-xs"></i> Reset Filter (Currently viewing Batch #{selectedBatch})
+                  </button>
+                )}
+              </div>
+
+              {(!data.availableBatches || data.availableBatches.length === 0) ? (
+                <div className="text-center py-12 text-gray-400 text-xs">
+                  No batches have executed yet for this LeadPilot workflow.
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-gray-200 text-gray-500 font-semibold uppercase text-[10px] bg-gray-50/60">
+                        <th className="py-3 px-4">Batch Number</th>
+                        <th className="py-3 px-4">Scheduled / Executed Time</th>
+                        <th className="py-3 px-4 text-center">Status</th>
+                        <th className="py-3 px-4 text-center">Leads Released</th>
+                        <th className="py-3 px-4 text-center">Contacted %</th>
+                        <th className="py-3 px-4 text-center">Deals Won %</th>
+                        <th className="py-3 px-4 text-center">Avg Dials / Lead</th>
+                        <th className="py-3 px-4 text-right">Action</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-100">
+                      {data.availableBatches.map((batch: any) => {
+                        const isCurrentSelected = selectedBatch === batch.batchNumber?.toString();
+                        return (
+                          <tr
+                            key={batch.batchNumber}
+                            className={`transition-colors ${isCurrentSelected ? 'bg-indigo-50/60' : 'hover:bg-gray-50'}`}
+                          >
+                            <td className="py-3.5 px-4 font-bold text-gray-900 flex items-center gap-2">
+                              <span className="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center font-mono font-bold text-xs">
+                                #{batch.batchNumber}
+                              </span>
+                              <span>Batch {batch.batchNumber}</span>
+                            </td>
+                            <td className="py-3.5 px-4 font-mono text-gray-600">
+                              <div>{new Date(batch.executedAt).toLocaleDateString()}</div>
+                              <div className="text-[10px] text-gray-400">
+                                {new Date(batch.executedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} (Slot: {batch.scheduledTime})
+                              </div>
+                            </td>
+                            <td className="py-3.5 px-4 text-center">
+                              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                batch.status === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                                batch.status === 'partial' ? 'bg-amber-50 text-amber-700 border border-amber-200' :
+                                'bg-rose-50 text-rose-700 border border-rose-200'
+                              }`}>
+                                {batch.status}
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-center font-bold text-gray-900">
+                              {batch.leadCount ?? batch.leadsSucceeded}
+                            </td>
+                            <td className="py-3.5 px-4 text-center">
+                              <span className="font-semibold text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
+                                {batch.contactedPct}%
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-center">
+                              <span className="font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-100">
+                                {batch.wonPct}%
+                              </span>
+                            </td>
+                            <td className="py-3.5 px-4 text-center font-mono text-gray-700">
+                              {batch.avgDials}
+                            </td>
+                            <td className="py-3.5 px-4 text-right">
+                              <button
+                                onClick={() => {
+                                  setSelectedBatch(isCurrentSelected ? 'all' : batch.batchNumber.toString());
+                                  setActiveTab('overview');
+                                }}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                                  isCurrentSelected
+                                    ? 'bg-indigo-600 text-white shadow-sm'
+                                    : 'bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200'
+                                }`}
+                              >
+                                {isCurrentSelected ? 'Filtering Batch' : 'Filter Batch'}
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* TAB: CHURNABILITY ANALYTICS */}
         {activeTab === 'churnability' && (
@@ -1324,6 +1517,7 @@ export default function SourceLogsDetail() {
                   <thead>
                     <tr className="border-b border-gray-200 text-gray-500 font-semibold uppercase text-[10px] bg-gray-50/50">
                       <th className="py-3 px-4">Customer Name</th>
+                      {data?.isLeadPilot && <th className="py-3 px-4 text-center">Batch #</th>}
                       <th className="py-3 px-4">Phone Number</th>
                       <th className="py-3 px-4">Assigned Agent</th>
                       <th className="py-3 px-4 text-center">Call Attempts</th>
@@ -1338,6 +1532,13 @@ export default function SourceLogsDetail() {
                         <td className="py-3 px-4 font-semibold text-gray-800">
                           {lead.customerName || 'N/A'}
                         </td>
+                        {data?.isLeadPilot && (
+                          <td className="py-3 px-4 text-center">
+                            <span className="font-mono text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded">
+                              #{lead.batchNumber || '—'}
+                            </span>
+                          </td>
+                        )}
                         <td className="py-3 px-4 font-mono text-gray-600">
                           {lead.phoneNo}
                         </td>
