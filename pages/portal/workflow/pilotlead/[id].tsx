@@ -120,7 +120,7 @@ export default function WorkflowDashboardPage() {
     try {
       const { data, error } = await supabase
         .from('leadpilot')
-        .select('*, campaigns(name)')
+        .select('*, campaigns(name), organizations(id, company_name)')
         .eq('id', wfId)
         .single();
       if (error) throw error;
@@ -330,6 +330,12 @@ export default function WorkflowDashboardPage() {
                 LeadPilot
               </Link>
               <span>/</span>
+              {workflow.organizations?.company_name && (
+                <>
+                  <span className="text-purple-600 font-semibold">{workflow.organizations.company_name}</span>
+                  <span>/</span>
+                </>
+              )}
               <span className="text-gray-600 font-bold">{workflow.name}</span>
             </div>
 
@@ -363,6 +369,13 @@ export default function WorkflowDashboardPage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-3 text-xs text-[#787E9D] pt-0.5">
+              {/* Organization Pill */}
+              {workflow.organizations?.company_name && (
+                <div className="flex items-center gap-1.5 font-semibold bg-purple-50 text-purple-700 border border-purple-200 px-2.5 py-1 rounded-lg">
+                  <i className="fi flex fi-rr-building text-xs text-purple-600"></i>
+                  <span>{workflow.organizations.company_name}</span>
+                </div>
+              )}
               <div className="flex items-center gap-1.5 font-mono bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg">
                 <span className="text-gray-400">Source:</span>
                 <span className="font-bold text-[#4b33e8]">{workflow.source_id}</span>
@@ -876,6 +889,12 @@ export default function WorkflowDashboardPage() {
                   <span className="text-gray-500">Target Campaign:</span>
                   <span className="font-bold text-[#4b33e8]">{workflow.campaigns?.name}</span>
                 </div>
+                {workflow.organizations?.company_name && (
+                  <div className="flex justify-between py-1 border-b border-gray-200/60">
+                    <span className="text-gray-500">Organization:</span>
+                    <span className="font-bold text-purple-700">{workflow.organizations.company_name}</span>
+                  </div>
+                )}
                 <div className="flex justify-between py-1">
                   <span className="text-gray-500">Saved Column Mapping:</span>
                   <span className="font-mono text-[10px] text-gray-600">

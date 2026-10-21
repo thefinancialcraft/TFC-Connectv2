@@ -16,11 +16,18 @@ interface Campaign {
   users?: any[];
 }
 
+export interface OrganizationOption {
+  id: string;
+  company_name: string;
+}
+
 interface CreateWorkflowWizardModalProps {
   show: boolean;
   onClose: () => void;
   onSuccess: (newWorkflowId: string) => void;
   organizationId: string;
+  isL1User?: boolean;
+  organizations?: OrganizationOption[];
 }
 
 const WEEKDAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
@@ -30,7 +37,19 @@ export default function CreateWorkflowWizardModal({
   onClose,
   onSuccess,
   organizationId,
+  isL1User = false,
+  organizations = [],
 }: CreateWorkflowWizardModalProps) {
+  const [activeOrgId, setActiveOrgId] = useState<string>(organizationId || '');
+
+  useEffect(() => {
+    if (organizationId) {
+      setActiveOrgId(organizationId);
+    } else if (organizations && organizations.length > 0) {
+      setActiveOrgId(organizations[0].id);
+    }
+  }, [organizationId, organizations]);
+
   const [step, setStep] = useState<number>(1);
   const [submitting, setSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -66,13 +85,14 @@ export default function CreateWorkflowWizardModal({
 
   // Load campaigns on mount
   useEffect(() => {
-    if (show && organizationId) {
-      fetchActiveCampaigns();
+    const targetOrg = activeOrgId || organizationId;
+    if (show && targetOrg) {
+      fetchActiveCampaigns(targetOrg);
       setStep(1);
       setErrorMessage('');
       setSuccessMessage('');
     }
-  }, [show, organizationId]);
+  }, [show, activeOrgId, organizationId]);
 
   // Adjust batchTimes array when batchesPerDay changes
   useEffect(() => {
@@ -110,22 +130,29 @@ export default function CreateWorkflowWizardModal({
       setAvailableAgents(agents);
       setSelectedAgentIds(agents.map((a) => a.id));
     } else {
-      fetchOrgAgents();
+      fetchOrgAgents(activeOrgId || organizationId);
     }
-  }, [selectedCampaignId, campaigns]);
+  }, [selectedCampaignId, campaigns, activeOrgId, organizationId]);
 
-  const fetchActiveCampaigns = async () => {
+  const fetchActiveCampaigns = async (orgIdOverride?: string) => {
+    const targetOrg = orgIdOverride || activeOrgId || organizationId;
+    if (!targetOrg) return;
     setLoadingCampaigns(true);
     try {
       const { data, error } = await supabase
         .from('campaigns')
         .select('id, name, status, users')
-        .eq('organization_id', organizationId)
+        .eq('organization_id', targetOrg)
         .eq('status', 'active');
       if (error) throw error;
       setCampaigns(data || []);
-      if (data && data.length > 0 && !selectedCampaignId) {
-        setSelectedCampaignId(data[0].id);
+      if (data && data.length > 0) {
+        setSelectedCampaignId((prev) => {
+          const stillValid = data.some((c) => c.id === prev);
+          return stillValid ? prev : data[0].id;
+        });
+      } else {
+        setSelectedCampaignId('');
       }
     } catch (err: any) {
       console.error('Failed to fetch campaigns:', err);
@@ -134,12 +161,14 @@ export default function CreateWorkflowWizardModal({
     }
   };
 
-  const fetchOrgAgents = async () => {
+  const fetchOrgAgents = async (orgIdOverride?: string) => {
+    const targetOrg = orgIdOverride || activeOrgId || organizationId;
+    if (!targetOrg) return;
     try {
       const { data } = await supabase
         .from('user_profiles')
         .select('user_id, user_name, role')
-        .eq('organization_id', organizationId);
+        .eq('organization_id', targetOrg);
       if (data) {
         const agents: Agent[] = data.map((u) => ({
           id: u.user_id,
@@ -209,6 +238,13 @@ export default function CreateWorkflowWizardModal({
     setSuccessMessage('Configuring workflow...');
 
     try {
+      const targetOrg = activeOrgId || organizationId;
+      if (!targetOrg) {
+        setErrorMessage('Please select a target organization.');
+        setSubmitting(false);
+        return;
+      }
+
       const { data: { user: authUser } } = await supabase.auth.getUser();
 
       // 1. Generate Master Source ID
@@ -240,7 +276,7 @@ export default function CreateWorkflowWizardModal({
       const { data: newWf, error: wfError } = await supabase
         .from('leadpilot')
         .insert({
-          organization_id: organizationId,
+          organization_id: targetOrg,
           campaign_id: selectedCampaignId,
           name: workflowName.trim(),
           source_id: masterSourceId,
@@ -276,7 +312,7 @@ export default function CreateWorkflowWizardModal({
         total_leads: 0,
         duplicate_leads: 0,
         campaign_id: selectedCampaignId,
-        organization_id: organizationId,
+        organization_id: targetOrg,
         workflow_id: newWf.id,
         is_workflow_source: true,
         workflow_type: 'bulk_upload',
@@ -355,6 +391,34 @@ export default function CreateWorkflowWizardModal({
           {/* STEP 1: Basic Info & Campaign */}
           {step === 1 && (
             <div className="space-y-4">
+              {/* Organization Picker for Level 1 Superadmin/Internal Team */}
+              {isL1User && organizations && organizations.length > 0 && (
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Target Organization <span className="text-rose-500">*</span>
+                  </label>
+                  <CustomSelect
+                    value={activeOrgId}
+                    onChange={(val) => {
+                      setActiveOrgId(val);
+                      setSelectedCampaignId('');
+                      fetchActiveCampaigns(val);
+                    }}
+                    options={organizations.map((org) => ({
+                      value: org.id,
+                      label: org.company_name,
+                      icon: 'fi-rr-building',
+                    }))}
+                    placeholder="Select Target Organization..."
+                    searchable={organizations.length > 4}
+                    size="sm"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    Select which organization this workflow is configured for.
+                  </p>
+                </div>
+              )}
+
               <div>
                 <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">
                   Workflow Name <span className="text-rose-500">*</span>

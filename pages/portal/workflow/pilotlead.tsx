@@ -7,6 +7,7 @@ import { getUserDashboardLevel, DashboardLevel } from '@/lib/dashboardUtils';
 import { supabase } from '@/lib/supabase';
 import CreateWorkflowWizardModal from '@/components/workflow/pilotlead/CreateWorkflowWizardModal';
 import AppendLeadsModal from '@/components/workflow/pilotlead/AppendLeadsModal';
+import CustomSelect from '@/components/workflow/pilotlead/CustomSelect';
 
 interface LeadPilotWorkflow {
   id: string;
@@ -31,6 +32,7 @@ interface LeadPilotWorkflow {
   column_mapping?: any;
   created_at: string;
   campaigns?: { name: string } | null;
+  organizations?: { id: string; company_name: string } | null;
 }
 
 export default function PilotLeadListPage() {
@@ -42,21 +44,51 @@ export default function PilotLeadListPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
 
+  // Organizations filter state for Level 1 user
+  const [organizations, setOrganizations] = useState<{ id: string; company_name: string }[]>([]);
+  const [selectedOrgFilter, setSelectedOrgFilter] = useState<string>('all');
+
   // Modals state
   const [showCreateWizard, setShowCreateWizard] = useState(false);
   const [appendWorkflow, setAppendWorkflow] = useState<LeadPilotWorkflow | null>(null);
 
   // Authorization check (Level 1 and Level 2 only)
-  const isAuthorized = useMemo(() => {
+  const isL1 = useMemo(() => {
     if (!user) return false;
     const level = getUserDashboardLevel(user);
     const role = (user.role || '').toLowerCase().trim();
     const designation = (user.designation || '').toLowerCase().trim();
-
-    const isL1 = level === DashboardLevel.LEVEL_1_ADMIN || (!user.isClient && (role === 'superadmin' || role === 'super_admin' || designation === 'ceo'));
-    const isL2 = level === DashboardLevel.LEVEL_2_CLIENT_CEO || (user.isClient === true && designation === 'ceo');
-    return isL1 || isL2;
+    return level === DashboardLevel.LEVEL_1_ADMIN || (!user.isClient && (role === 'superadmin' || role === 'super_admin' || designation === 'ceo'));
   }, [user]);
+
+  const isL2 = useMemo(() => {
+    if (!user) return false;
+    const level = getUserDashboardLevel(user);
+    const designation = (user.designation || '').toLowerCase().trim();
+    return level === DashboardLevel.LEVEL_2_CLIENT_CEO || (user.isClient === true && designation === 'ceo');
+  }, [user]);
+
+  const isAuthorized = isL1 || isL2;
+
+  // Load organizations if Level 1
+  useEffect(() => {
+    if (isL1) {
+      fetchOrganizations();
+    }
+  }, [isL1]);
+
+  const fetchOrganizations = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('organizations')
+        .select('id, company_name')
+        .order('company_name', { ascending: true });
+      if (error) throw error;
+      setOrganizations(data || []);
+    } catch (e) {
+      console.error('Failed to load organizations:', e);
+    }
+  };
 
   useEffect(() => {
     if (mounted && !authLoading) {
@@ -70,7 +102,7 @@ export default function PilotLeadListPage() {
       }
       fetchWorkflows();
     }
-  }, [mounted, authLoading, user, isAuthorized]);
+  }, [mounted, authLoading, user, isAuthorized, selectedOrgFilter]);
 
   const fetchWorkflows = async () => {
     if (!user) return;
@@ -78,10 +110,16 @@ export default function PilotLeadListPage() {
     try {
       let query = supabase
         .from('leadpilot')
-        .select('*, campaigns(name)')
+        .select('*, campaigns(name), organizations(id, company_name)')
         .order('created_at', { ascending: false });
 
-      if (user.isClient && user.organization_id) {
+      if (isL1) {
+        // Level 1 users can view all organizations or filter by specific organization
+        if (selectedOrgFilter !== 'all') {
+          query = query.eq('organization_id', selectedOrgFilter);
+        }
+      } else if (user.isClient && user.organization_id) {
+        // Client users (Level 2+) only see their own organization
         query = query.eq('organization_id', user.organization_id);
       }
 
@@ -185,7 +223,8 @@ export default function PilotLeadListPage() {
       const matchesSearch =
         w.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         w.source_id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (w.campaigns?.name || '').toLowerCase().includes(searchQuery.toLowerCase());
+        (w.campaigns?.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (w.organizations?.company_name || '').toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesStatus =
         statusFilter === 'all'
@@ -309,19 +348,41 @@ export default function PilotLeadListPage() {
         </div>
 
         {/* Toolbar: Search & Filter */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-100 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="relative w-full sm:w-80">
-            <i className="fi flex fi-rr-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
-            <input
-              type="text"
-              placeholder="Search workflow or campaign..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-gray-50 border border-gray-200 text-xs text-black font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-[#4b33e8]/10 transition-all"
-            />
+        <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-none flex flex-col md:flex-row items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3 w-full md:w-auto flex-1">
+            <div className="relative w-full sm:w-72">
+              <i className="fi flex fi-rr-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+              <input
+                type="text"
+                placeholder="Search workflow, campaign, org..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-black font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-[#4b33e8]/10 transition-all"
+              />
+            </div>
+
+            {/* Level 1: Organization Filter Dropdown */}
+            {isL1 && (
+              <div className="w-full sm:w-56">
+                <CustomSelect
+                  value={selectedOrgFilter}
+                  onChange={(val) => setSelectedOrgFilter(val)}
+                  options={[
+                    { value: 'all', label: '🏢 All Organizations', badge: `${workflows.length}` },
+                    ...organizations.map((org) => ({
+                      value: org.id,
+                      label: org.company_name,
+                      icon: 'fi-rr-building',
+                    })),
+                  ]}
+                  size="sm"
+                  placeholder="Filter by Organization"
+                />
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:inline">
               Status:
             </span>
@@ -332,7 +393,7 @@ export default function PilotLeadListPage() {
                   onClick={() => setStatusFilter(tab)}
                   className={`flex-1 sm:flex-none px-3 py-1 rounded-lg font-bold capitalize transition-all ${
                     statusFilter === tab
-                      ? 'bg-white text-[#4b33e8] shadow-xs'
+                      ? 'bg-white text-[#4b33e8] shadow-none'
                       : 'text-gray-500 hover:text-gray-900'
                   }`}
                 >
@@ -344,7 +405,7 @@ export default function PilotLeadListPage() {
         </div>
 
         {/* Workflows Table */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-xs overflow-hidden">
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-none overflow-hidden">
           {loading ? (
             <div className="py-20 flex flex-col items-center justify-center">
               <div className="w-8 h-8 border-3 border-[#4b33e8] border-t-transparent rounded-full animate-spin mb-3"></div>
@@ -357,13 +418,13 @@ export default function PilotLeadListPage() {
               </div>
               <h3 className="text-base font-bold text-gray-700">No LeadPilot Workflows Found</h3>
               <p className="text-xs text-gray-400 max-w-sm mx-auto mt-1 mb-5">
-                {searchQuery || statusFilter !== 'all'
+                {searchQuery || statusFilter !== 'all' || selectedOrgFilter !== 'all'
                   ? 'No workflows match the applied filter criteria.'
                   : 'Start by creating your first scheduled bulk upload workflow to distribute leads into campaigns.'}
               </p>
               <button
                 onClick={() => setShowCreateWizard(true)}
-                className="px-5 py-2.5 rounded-xl bg-[#4b33e8] text-white text-xs font-bold uppercase tracking-wider shadow-md shadow-[#4b33e8]/20"
+                className="px-5 py-2.5 rounded-xl bg-[#4b33e8] hover:bg-[#3d28d0] text-white text-xs font-bold uppercase tracking-wider shadow-none cursor-pointer"
               >
                 + Create Bulk Upload
               </button>
@@ -374,6 +435,7 @@ export default function PilotLeadListPage() {
                 <thead>
                   <tr className="border-b border-gray-100 bg-gray-50/60 text-[11px] font-bold text-gray-400 uppercase tracking-wider">
                     <th className="py-3.5 px-5">Workflow & Campaign</th>
+                    {isL1 && <th className="py-3.5 px-5">Organization</th>}
                     <th className="py-3.5 px-5">Progress</th>
                     <th className="py-3.5 px-5">Schedule</th>
                     <th className="py-3.5 px-5">Next Execution (IST)</th>
@@ -399,7 +461,7 @@ export default function PilotLeadListPage() {
                             >
                               {wf.name}
                             </Link>
-                            <div className="flex items-center gap-2 mt-1">
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
                               <span className="font-mono text-[10px] bg-gray-100 text-gray-600 px-1.5 py-0.5 rounded">
                                 {wf.source_id}
                               </span>
@@ -415,6 +477,16 @@ export default function PilotLeadListPage() {
                             </div>
                           </div>
                         </td>
+
+                        {/* Organization (for Level 1 user) */}
+                        {isL1 && (
+                          <td className="py-4 px-5">
+                            <div className="flex items-center gap-1.5 font-semibold text-xs text-purple-700 bg-purple-50 border border-purple-200 px-2.5 py-1 rounded-lg w-fit">
+                              <i className="fi flex fi-rr-building text-[11px] text-purple-600"></i>
+                              <span>{wf.organizations?.company_name || '—'}</span>
+                            </div>
+                          </td>
+                        )}
 
                         {/* Progress */}
                         <td className="py-4 px-5 min-w-[170px]">
@@ -544,10 +616,15 @@ export default function PilotLeadListPage() {
       </div>
 
       {/* 4-Step Creation Wizard Modal */}
-      {user?.organization_id && (
+      {showCreateWizard && (
         <CreateWorkflowWizardModal
           show={showCreateWizard}
-          organizationId={user.organization_id}
+          organizationId={
+            user?.organization_id ||
+            (selectedOrgFilter !== 'all' ? selectedOrgFilter : organizations[0]?.id || '')
+          }
+          isL1User={isL1}
+          organizations={organizations}
           onClose={() => setShowCreateWizard(false)}
           onSuccess={(newId) => {
             setShowCreateWizard(false);

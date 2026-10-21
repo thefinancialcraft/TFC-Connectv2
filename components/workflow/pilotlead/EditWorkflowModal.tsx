@@ -342,6 +342,18 @@ export default function EditWorkflowModal({
           {/* TAB 1: General & Campaign */}
           {activeEditTab === "general" && (
             <div className="space-y-4">
+              {workflow?.organizations?.company_name && (
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    Organization
+                  </label>
+                  <div className="w-full px-3.5 py-2 rounded-lg border border-purple-200 text-xs text-purple-700 font-semibold bg-purple-50/70 flex items-center gap-1.5">
+                    <i className="fi flex fi-rr-building text-xs text-purple-600"></i>
+                    <span>{workflow.organizations.company_name}</span>
+                  </div>
+                </div>
+              )}
+
               <div>
                 <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">
                   Workflow Name <span className="text-rose-500">*</span>
