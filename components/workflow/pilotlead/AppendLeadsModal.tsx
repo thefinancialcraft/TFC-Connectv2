@@ -799,7 +799,7 @@ export default function AppendLeadsModal({
       let nextExec = workflow.next_execution_at;
       let newStatus = workflow.status;
 
-      if (workflow.status === "completed" || !nextExec) {
+      if (workflow.status === "completed" || workflow.status === "paused" || !nextExec) {
         const { data: recomputedNext } = await supabase.rpc(
           "calculate_leadpilot_next_execution",
           {

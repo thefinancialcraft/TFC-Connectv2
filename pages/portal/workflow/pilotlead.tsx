@@ -135,6 +135,10 @@ export default function PilotLeadListPage() {
 
   const handleToggleStatus = async (wf: LeadPilotWorkflow) => {
     const isCurrentlyActive = wf.status === 'scheduled' || wf.status === 'running';
+    if (!isCurrentlyActive && (wf.pending_leads || 0) === 0) {
+      alert("No pending leads remaining in this workflow. Please upload more leads to resume.");
+      return;
+    }
     const newStatus = isCurrentlyActive ? 'paused' : 'scheduled';
 
     try {
@@ -243,7 +247,8 @@ export default function PilotLeadListPage() {
     const activeWfs = workflows.filter((w) => w.status === 'scheduled' || w.status === 'running').length;
     const totalIngested = workflows.reduce((acc, w) => acc + (w.uploaded_leads || 0), 0);
     const totalPending = workflows.reduce((acc, w) => acc + (w.pending_leads || 0), 0);
-    return { totalWfs, activeWfs, totalIngested, totalPending };
+    const totalBatches = workflows.reduce((acc, w) => acc + (w.completed_batches || 0), 0);
+    return { totalWfs, activeWfs, totalIngested, totalPending, totalBatches };
   }, [workflows]);
 
   if (!mounted || authLoading) {
@@ -258,7 +263,7 @@ export default function PilotLeadListPage() {
   return (
     <>
       <Head>
-        <title>LeadPilot Workflows | TFC Connect</title>
+        <title>LeadPilot | TFC Connect</title>
       </Head>
 
       <div className="container mx-auto px-4 sm:px-6 py-6 md:py-8 space-y-6 max-w-[1400px]">
@@ -273,33 +278,30 @@ export default function PilotLeadListPage() {
               <span className="text-[#4b33e8]">LeadPilot</span>
             </div>
             <h1
-              className="text-2xl sm:text-3xl font-bold text-[#263238] flex items-center gap-3"
+              className="text-2xl sm:text-3xl font-bold text-[#263238]"
               style={{ fontFamily: "'Poppins', sans-serif" }}
             >
-              <span>LeadPilot Scheduled Uploads</span>
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-[#4b33e8]/10 text-[#4b33e8]">
-                {metrics.activeWfs} Active
-              </span>
+              LeadPilot
             </h1>
             <p className="text-xs sm:text-sm text-[#787E9D] mt-1">
-              Automated, micro-batch lead distribution scheduled across active campaigns.
+              Automated lead distribution across campaigns.
             </p>
           </div>
 
           <div className="flex items-center gap-3">
             <button
               onClick={() => setShowCreateWizard(true)}
-              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#4b33e8] to-[#7962ff] hover:opacity-95 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-[#4b33e8]/20 flex items-center gap-2"
+              className="px-4 py-2.5 rounded-xl bg-[#4b33e8] hover:bg-[#3d28d0] text-white text-xs font-bold uppercase tracking-wider transition-all shadow-none flex items-center gap-2 cursor-pointer"
             >
               <i className="fi flex fi-rr-plus text-xs"></i>
-              <span>Add Bulk Upload</span>
+              <span>Create Bulk Upload</span>
             </button>
           </div>
         </div>
 
         {/* Metric Summary Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-none">
             <div className="flex items-center justify-between text-gray-400 mb-2">
               <span className="text-xs font-bold uppercase tracking-wider">Total Workflows</span>
               <div className="w-8 h-8 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500">
@@ -310,7 +312,7 @@ export default function PilotLeadListPage() {
             <p className="text-[11px] text-gray-400 mt-0.5">{metrics.activeWfs} currently scheduled</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-none">
             <div className="flex items-center justify-between text-emerald-500 mb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Live Ingested</span>
               <div className="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
@@ -321,7 +323,7 @@ export default function PilotLeadListPage() {
             <p className="text-[11px] text-gray-400 mt-0.5">Promoted to live campaigns</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-none">
             <div className="flex items-center justify-between text-[#4b33e8] mb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Pending Staged</span>
               <div className="w-8 h-8 rounded-lg bg-[#4b33e8]/10 flex items-center justify-center text-[#4b33e8]">
@@ -332,23 +334,20 @@ export default function PilotLeadListPage() {
             <p className="text-[11px] text-gray-400 mt-0.5">Queued for upcoming batches</p>
           </div>
 
-          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-xs">
+          <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-none">
             <div className="flex items-center justify-between text-amber-500 mb-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Background Engine</span>
+              <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Batches Executed</span>
               <div className="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
-                <i className="fi flex fi-rr-settings text-sm"></i>
+                <i className="fi flex fi-rr-layers text-sm"></i>
               </div>
             </div>
-            <div className="text-base font-black text-gray-800 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              pg_cron 1-Min
-            </div>
-            <p className="text-[11px] text-gray-400 mt-0.5">100% Autonomous Backend</p>
+            <div className="text-2xl font-black text-amber-600">{metrics.totalBatches.toLocaleString()}</div>
+            <p className="text-[11px] text-gray-400 mt-0.5">Micro-batches completed</p>
           </div>
         </div>
 
         {/* Toolbar: Search & Filter */}
-        <div className="bg-white rounded-2xl p-4 border border-gray-200 shadow-none flex flex-col md:flex-row items-center justify-between gap-3">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-3 w-full md:w-auto flex-1">
             <div className="relative w-full sm:w-72">
               <i className="fi flex fi-rr-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
@@ -357,7 +356,7 @@ export default function PilotLeadListPage() {
                 placeholder="Search workflow, campaign, org..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-9 pr-4 py-2 rounded-xl bg-gray-50 border border-gray-200 text-xs text-black font-medium placeholder:text-gray-400 outline-none focus:bg-white focus:border-[#4b33e8] focus:ring-4 focus:ring-[#4b33e8]/10 transition-all"
+                className="w-full pl-9 pr-4 py-2 rounded-xl bg-white border border-gray-200 text-xs text-black font-medium placeholder:text-gray-400 outline-none focus:border-[#4b33e8] focus:ring-4 focus:ring-[#4b33e8]/10 transition-all shadow-none"
               />
             </div>
 
@@ -386,14 +385,14 @@ export default function PilotLeadListPage() {
             <span className="text-xs font-bold text-gray-400 uppercase tracking-wider hidden sm:inline">
               Status:
             </span>
-            <div className="flex rounded-xl bg-gray-100 p-1 w-full sm:w-auto text-xs">
+            <div className="flex rounded-xl bg-white border border-gray-200 p-1 w-full sm:w-auto text-xs shadow-none">
               {['all', 'active', 'paused', 'completed'].map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setStatusFilter(tab)}
                   className={`flex-1 sm:flex-none px-3 py-1 rounded-lg font-bold capitalize transition-all ${
                     statusFilter === tab
-                      ? 'bg-white text-[#4b33e8] shadow-none'
+                      ? 'bg-[#4b33e8]/10 text-[#4b33e8]'
                       : 'text-gray-500 hover:text-gray-900'
                   }`}
                 >
