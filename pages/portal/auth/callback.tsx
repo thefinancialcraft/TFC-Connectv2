@@ -59,6 +59,9 @@ export default function AuthCallback() {
             const data = await response.json();
 
             if (data.success && data.redirect) {
+              if (data.redirect.includes('unregistered=true')) {
+                await supabase.auth.signOut();
+              }
               router.push(data.redirect);
               return;
             } else if (data.error) {
@@ -86,6 +89,32 @@ export default function AuthCallback() {
             return;
           }
 
+          // Verify if user is registered in user_profiles
+          const { data: profile } = await supabase
+            .from('user_profiles')
+            .select('id, user_id, email')
+            .or(`user_id.eq.${user.id},email.ilike.${user.email}`)
+            .maybeSingle();
+
+          if (!profile) {
+            // Delete unregistered user from auth.users
+            try {
+              await fetch('/api/auth/cleanup-unregistered-user', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${accessToken}`,
+                },
+                body: JSON.stringify({ userId: user.id, email: user.email }),
+              });
+            } catch (e) {
+              console.error('Error cleaning up unregistered user in callback:', e);
+            }
+            await supabase.auth.signOut();
+            router.push(`/login?unregistered=true&email=${encodeURIComponent(user.email || '')}`);
+            return;
+          }
+
           // Success - redirect to dashboard
           router.push('/dashboard');
         } else {
@@ -103,6 +132,32 @@ export default function AuthCallback() {
               }, 3000);
               return;
             }
+
+            // Verify if user is registered in user_profiles
+            const { data: profile } = await supabase
+              .from('user_profiles')
+              .select('id, user_id, email')
+              .or(`user_id.eq.${session.user.id},email.ilike.${session.user.email}`)
+              .maybeSingle();
+
+            if (!profile) {
+              try {
+                await fetch('/api/auth/cleanup-unregistered-user', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`,
+                  },
+                  body: JSON.stringify({ userId: session.user.id, email: session.user.email }),
+                });
+              } catch (e) {
+                console.error('Error cleaning up unregistered user in session callback:', e);
+              }
+              await supabase.auth.signOut();
+              router.push(`/login?unregistered=true&email=${encodeURIComponent(session.user.email || '')}`);
+              return;
+            }
+
             // User is already authenticated and email confirmed, redirect to dashboard
             router.push('/dashboard');
           } else {

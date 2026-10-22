@@ -6,6 +6,7 @@ import LoginFormEmailId from "../../components/loginFormEmailId";
 import SocialLoginButtons from "../../components/SocialLoginButtons";
 import HeroSection from "../../components/HeroSection";
 import ErrorNotification from "../../components/ErrorNotification";
+import NoActiveAccountModal from "../../components/NoActiveAccountModal";
 import { supabase } from "../../lib/supabase";
 import { logSystemEvent } from "../../lib/monitoring";
 import { notifyActivationToFlutter } from "../../lib/flutterBridge";
@@ -17,10 +18,58 @@ export default function Login() {
   const [showForgotPasswordForm, setShowForgotPasswordForm] = useState(false);
   const [error, setError] = useState("");
   const [checkingSession, setCheckingSession] = useState(true);
+  const [showNoAccountModal, setShowNoAccountModal] = useState(false);
+  const [unregisteredEmail, setUnregisteredEmail] = useState("");
 
   useEffect(() => {
-    if (router.isReady && router.query.error) {
-      setError(decodeURIComponent(router.query.error as string));
+    if (!router.isReady) return;
+
+    // Check if redirected with unregistered flag
+    if (router.query.unregistered === "true") {
+      setShowNoAccountModal(true);
+      if (router.query.email) {
+        setUnregisteredEmail(router.query.email as string);
+      }
+      setCheckingSession(false);
+      router.replace(router.pathname, undefined, { shallow: true });
+      return;
+    }
+
+    // Check URL hash for OAuth redirect errors (Supabase passes errors in hash fragment)
+    if (typeof window !== "undefined" && window.location.hash) {
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const errorParam = hashParams.get("error") || hashParams.get("error_code");
+      const errorDesc = hashParams.get("error_description") || "";
+      if (errorParam) {
+        console.warn("OAuth hash error detected:", errorParam, errorDesc);
+        window.history.replaceState(null, "", window.location.pathname);
+        if (
+          errorDesc.includes("NO_ACTIVE_ACCOUNT") ||
+          errorDesc.includes("UNREGISTERED") ||
+          errorDesc.includes("Database error") ||
+          errorParam.includes("access_denied")
+        ) {
+          setShowNoAccountModal(true);
+          setCheckingSession(false);
+          return;
+        } else {
+          setError(decodeURIComponent(errorDesc.replace(/\+/g, " ") || errorParam));
+        }
+      }
+    }
+
+    if (router.query.error) {
+      const errStr = decodeURIComponent(router.query.error as string);
+      if (
+        errStr.includes("NO_ACTIVE_ACCOUNT") ||
+        errStr.includes("UNREGISTERED") ||
+        errStr.includes("Database error")
+      ) {
+        setShowNoAccountModal(true);
+        setCheckingSession(false);
+      } else {
+        setError(errStr);
+      }
       // Remove query parameter from URL after showing error to keep URL clean
       router.replace(router.pathname, undefined, { shallow: true });
     }
@@ -49,10 +98,11 @@ export default function Login() {
             setTimeout(() => reject(new Error("Database Timeout")), 8000)
           );
 
+          // Check by user_id OR by email (in case account was pre-registered or created via email)
           const profilePromise = supabase
             .from('user_profiles')
-            .select('profile_complete, approval_status, status')
-            .eq('user_id', session.user.id)
+            .select('id, user_id, email, profile_complete, approval_status, status, expire_at')
+            .or(`user_id.eq.${session.user.id},email.ilike.${session.user.email}`)
             .maybeSingle();
 
           try {
@@ -60,6 +110,15 @@ export default function Login() {
             const profile = result?.data || result; // Handle both RPC and Select response formats
 
             if (profile && isMounted) {
+              // If user logged in with OAuth and user_id was different, link user_id
+              if (profile.user_id !== session.user.id) {
+                console.log("🔗 Linking Google OAuth user_id with existing profile");
+                await supabase
+                  .from('user_profiles')
+                  .update({ user_id: session.user.id })
+                  .eq('id', profile.id);
+              }
+
               if (profile.profile_complete === false) {
                 console.log("🚀 [Login] Profile incomplete, notifying activation and redirecting...");
                 notifyActivationToFlutter();
@@ -101,9 +160,34 @@ export default function Login() {
 
               router.push(redirectPath);
             } else if (isMounted) {
-              // Session exists but no profile found - likely a stale or broken session
-              console.error("❌ [Login] Session exists but profile missing. Signing out.");
+              // Session exists but no profile found in user_profiles -> UNREGISTERED USER
+              console.warn("🚫 [Login] Unregistered user detected via session. Deleting auth user & showing notice modal.");
+              const userEmail = session.user?.email || "";
+              const userId = session.user?.id;
+
+              // 1. Delete user from auth.users via backend admin API so no auth entry is retained
+              try {
+                await fetch('/api/auth/cleanup-unregistered-user', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${session.access_token}`
+                  },
+                  body: JSON.stringify({ userId, email: userEmail })
+                });
+              } catch (cleanupErr) {
+                console.error("Failed to delete unregistered auth user:", cleanupErr);
+              }
+
+              // 2. Sign out & clear all session cache
               await supabase.auth.signOut();
+              if (typeof window !== 'undefined') {
+                sessionStorage.removeItem('active_user_profile');
+                localStorage.removeItem('cached_user_profile');
+              }
+
+              setUnregisteredEmail(userEmail);
+              setShowNoAccountModal(true);
               setCheckingSession(false);
             }
           } catch (fetchErr) {
@@ -227,6 +311,13 @@ export default function Login() {
           </div>
         </div>
       </div>
+
+      {/* No Active Account Modal Popup */}
+      <NoActiveAccountModal
+        isOpen={showNoAccountModal}
+        onClose={() => setShowNoAccountModal(false)}
+        email={unregisteredEmail}
+      />
     </div>
   );
 }

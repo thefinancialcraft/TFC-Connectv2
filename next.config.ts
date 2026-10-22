@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       // App Routes (Masking /portal)
+      { source: '/auth/callback', destination: '/portal/auth/callback' },
+      { source: '/dashboard/auth/callback', destination: '/portal/auth/callback' },
+      { source: '/auth/:path*', destination: '/portal/auth/:path*' },
       { source: '/login', destination: '/portal/login' },
       { source: '/signup', destination: '/portal/signup' },
       { source: '/signup-success', destination: '/portal/signup-success' },

@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { supabase } from '../../../lib/supabase';
+import { supabase, supabaseAdmin } from '../../../lib/supabase';
 
 type Data = {
   success?: boolean;
@@ -45,6 +45,28 @@ export default async function handler(
         return res.status(403).json({ 
           error: 'Email verification required',
           redirect: '/login'
+        });
+      }
+
+      // Verify if user exists in user_profiles
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('id, user_id, email')
+        .or(`user_id.eq.${user.id},email.ilike.${user.email}`)
+        .maybeSingle();
+
+      if (!profile) {
+        // User is not registered in user_profiles! Purge from auth.users
+        if (supabaseAdmin) {
+          try {
+            await supabaseAdmin.auth.admin.deleteUser(user.id);
+          } catch (delErr) {
+            console.error('Error deleting unregistered auth user in api callback:', delErr);
+          }
+        }
+        return res.status(200).json({
+          success: true,
+          redirect: `/login?unregistered=true&email=${encodeURIComponent(user.email || '')}`
         });
       }
 

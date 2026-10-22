@@ -36,7 +36,7 @@ export default function SocialLoginButtons({ formType, onToggleForm }: SocialLog
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/login?oauth_callback=google`,
           skipBrowserRedirect: isMobile,
           queryParams: {
             access_type: 'offline',
