@@ -10,13 +10,77 @@ type ResponseData = {
   expiryDate?: string;
 };
 
-// Helper to generate a clean org prefix from company name
-function generateOrgCode(name: string): string {
-  const clean = name.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-  if (clean.length >= 3) {
-    return clean.substring(0, 4);
+// Helper to extract 4 alphabets from company name
+function extractOrgPrefix(name: string): string {
+  if (!name) return 'ORGA';
+  const clean = name.toUpperCase().replace(/[^A-Z]/g, '');
+  if (clean.length === 0) return 'ORGA';
+  if (clean.length <= 4) return (clean + 'ORGA').substring(0, 4);
+
+  const words = name
+    .toUpperCase()
+    .split(/\s+/)
+    .map((w) => w.replace(/[^A-Z]/g, ''))
+    .filter((w) => w.length > 0);
+
+  if (words.length >= 4) {
+    return (words[0][0] + words[1][0] + words[2][0] + words[3][0]);
+  } else if (words.length === 2 && words[0].length >= 2 && words[1].length >= 2) {
+    return (words[0].substring(0, 2) + words[1].substring(0, 2));
+  } else if (words.length === 3 && words[0].length >= 2) {
+    return (words[0].substring(0, 2) + words[1][0] + words[2][0]);
   }
-  return (clean + 'NXI').substring(0, 3);
+
+  // Single word: e.g. "NEXUS" -> 'N' + consonants 'X', 'S' + vowel 'U' -> 'NXUS'
+  const first = clean[0];
+  const rest = clean.slice(1);
+  const consonants = rest.replace(/[AEIOU]/g, '');
+  const vowels = rest.replace(/[^AEIOU]/g, '');
+  const result = (first + consonants + vowels).substring(0, 4);
+  return result.length === 4 ? result : clean.substring(0, 4);
+}
+
+// Generate unique org code with conflict resolution (e.g. NXUS, then NXUS/A1, NXUS/A2, etc.)
+async function resolveUniqueOrgCode(client: any, basePrefix: string): Promise<string> {
+  const cleanBase = basePrefix.toUpperCase().replace(/[^A-Z0-9]/g, '').substring(0, 4);
+
+  // 1. Check if cleanBase itself is free
+  const { data: baseMatch } = await client
+    .from('organizations')
+    .select('id')
+    .eq('org_code', cleanBase)
+    .maybeSingle();
+
+  if (!baseMatch) {
+    return cleanBase;
+  }
+
+  // 2. Base prefix already exists! Find all variants starting with cleanBase/
+  const { data: existingVariants } = await client
+    .from('organizations')
+    .select('org_code')
+    .ilike('org_code', `${cleanBase}/%`);
+
+  const existingCodes = new Set<string>();
+  if (existingVariants) {
+    existingVariants.forEach((v: any) => {
+      if (v.org_code) existingCodes.add(String(v.org_code).toUpperCase());
+    });
+  }
+
+  // Suffix sequence: A1..A9, B1..B9 ... Z1..Z9
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  for (let a = 0; a < alphabet.length; a++) {
+    const letter = alphabet[a];
+    for (let num = 1; num <= 9; num++) {
+      const candidate = `${cleanBase}/${letter}${num}`;
+      if (!existingCodes.has(candidate)) {
+        return candidate;
+      }
+    }
+  }
+
+  return `${cleanBase}/${Date.now().toString().slice(-3)}`;
 }
 
 export default async function handler(
@@ -90,20 +154,9 @@ export default async function handler(
       }
     }
 
-    // 3. Compute Org Code and ensure uniqueness
-    let targetOrgCode = (org_code ? String(org_code).trim().toUpperCase() : generateOrgCode(company_name)).substring(0, 5);
-    
-    // Check if org_code already exists
-    const { data: existingOrgCode } = await client
-      .from('organizations')
-      .select('id, org_code')
-      .eq('org_code', targetOrgCode)
-      .maybeSingle();
-
-    if (existingOrgCode) {
-      const randomSuffix = Math.floor(10 + Math.random() * 90);
-      targetOrgCode = `${targetOrgCode.substring(0, 3)}${randomSuffix}`;
-    }
+    // 3. Compute Org Code and ensure uniqueness with conflict resolution (e.g. NXUS, then NXUS/A1)
+    const baseCode = (org_code ? String(org_code).trim().toUpperCase() : extractOrgPrefix(company_name)).substring(0, 4);
+    const targetOrgCode = await resolveUniqueOrgCode(client, baseCode);
 
     // 4. Calculate Expiry (+10 Days exact)
     const now = new Date();

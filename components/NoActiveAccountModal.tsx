@@ -108,12 +108,41 @@ export default function NoActiveAccountModal({
     }, 200);
   };
 
+  // Helper to extract 4 alphabets from company name
+  const extractOrgPrefix = (name: string): string => {
+    if (!name) return '';
+    const clean = name.toUpperCase().replace(/[^A-Z]/g, '');
+    if (clean.length === 0) return '';
+    if (clean.length <= 4) return clean;
+
+    const words = name
+      .toUpperCase()
+      .split(/\s+/)
+      .map((w) => w.replace(/[^A-Z]/g, ''))
+      .filter((w) => w.length > 0);
+
+    if (words.length >= 4) {
+      return (words[0][0] + words[1][0] + words[2][0] + words[3][0]);
+    } else if (words.length === 2 && words[0].length >= 2 && words[1].length >= 2) {
+      return (words[0].substring(0, 2) + words[1].substring(0, 2));
+    } else if (words.length === 3 && words[0].length >= 2) {
+      return (words[0].substring(0, 2) + words[1][0] + words[2][0]);
+    }
+
+    const first = clean[0];
+    const rest = clean.slice(1);
+    const consonants = rest.replace(/[AEIOU]/g, '');
+    const vowels = rest.replace(/[^AEIOU]/g, '');
+    const result = (first + consonants + vowels).substring(0, 4);
+    return result.length === 4 ? result : clean.substring(0, 4);
+  };
+
   // Auto-generate org prefix as company name is typed
   const handleCompanyNameChange = (val: string) => {
     setOrgCompanyName(val);
-    const clean = val.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
-    if (clean.length > 0) {
-      setOrgCode(clean.substring(0, 4));
+    const generated = extractOrgPrefix(val);
+    if (generated) {
+      setOrgCode(generated);
     }
   };
 
@@ -394,11 +423,11 @@ export default function NoActiveAccountModal({
                     <label className="text-[11px] font-semibold text-gray-600 block">Org Prefix *</label>
                     <input
                       required
-                      maxLength={5}
+                      maxLength={10}
                       type="text"
-                      placeholder="NXI"
+                      placeholder="NXUS"
                       value={orgCode}
-                      onChange={(e) => setOrgCode(e.target.value.toUpperCase().substring(0, 5))}
+                      onChange={(e) => setOrgCode(e.target.value.toUpperCase().replace(/[^A-Z0-9\/]/g, '').substring(0, 8))}
                       className="w-full px-3 py-2 rounded-xl border border-gray-200 focus:border-[#4b33e8] focus:ring-1 focus:ring-[#4b33e8] outline-none text-xs text-gray-800 text-center uppercase tracking-widest font-bold placeholder:text-gray-400 transition"
                     />
                   </div>
