@@ -24,6 +24,15 @@ export default function AuthCallback() {
         // Check for errors in URL
         if (errorParam) {
           const errorMsg = errorDescription || errorParam;
+          if (
+            errorMsg.includes("NO_ACTIVE_ACCOUNT") ||
+            errorMsg.includes("UNREGISTERED") ||
+            errorMsg.includes("Database error") ||
+            errorParam.includes("access_denied")
+          ) {
+            router.push('/login?unregistered=true');
+            return;
+          }
           showError(errorMsg, 'Authentication Error');
           setError(errorMsg);
           setLoading(false);
