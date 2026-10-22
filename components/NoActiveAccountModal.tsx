@@ -320,11 +320,10 @@ export default function NoActiveAccountModal({
                   setErrorMessage(null);
                   setView('signup');
                 }}
-                className="w-full py-2.5 px-4 rounded-xl text-white font-medium text-sm transition hover:opacity-90 active:scale-[0.99] shadow-sm flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 rounded-xl text-white font-medium text-sm transition hover:opacity-90 active:scale-[0.99] shadow-sm text-center"
                 style={{ backgroundColor: '#4b33e8' }}
               >
-                <span>Create New Account</span>
-                <span className="text-[10px] bg-white/20 px-1.5 py-0.5 rounded font-semibold">10D Trial</span>
+                Create New Account
               </button>
 
               <button
@@ -342,36 +341,30 @@ export default function NoActiveAccountModal({
         )}
 
         {/* ------------------------------------------------------------- */}
-        {/* VIEW 2: Create Organization (10-Day Free Trial / Level 2 User) */}
+        {/* VIEW 2: Create Organization (10-Day Free Trial Account) */}
         {/* ------------------------------------------------------------- */}
         {view === 'signup' && (
           <div className="p-6 pt-1 max-h-[85vh] overflow-y-auto">
             <div className="text-left mb-3">
-              <h3 className="text-lg font-bold text-[#263238]">Start 10-Day Free Trial</h3>
+              <h3 className="text-lg font-bold text-[#263238]">Create Account</h3>
               <p
                 className="text-xs text-gray-500 mt-0.5"
                 style={{ fontFamily: "'Roboto', sans-serif" }}
               >
-                Create your organization workspace with full Level 2 Super Admin access.
+                Set up your organization workspace to get started.
               </p>
             </div>
 
             {/* Trial Notice Badge */}
-            <div className="p-3 mb-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 flex items-start gap-2.5 text-left">
-              <div className="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 text-xs font-bold shadow-sm">
-                10D
+            <div className="p-3 mb-4 rounded-xl bg-amber-50/80 border border-amber-200/70 flex items-center gap-2.5 text-left">
+              <div className="w-7 h-7 rounded-lg bg-amber-500/15 text-amber-600 flex items-center justify-center shrink-0">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
-              <div className="flex-1">
-                <div className="text-xs font-bold text-amber-900 flex items-center justify-between">
-                  <span>⚡ Trial Account (Super Admin)</span>
-                  <span className="text-[10px] bg-amber-200/70 text-amber-900 px-1.5 py-0.2 rounded font-semibold">
-                    Level 2
-                  </span>
-                </div>
-                <p className="text-[11px] text-amber-800/90 leading-tight mt-0.5">
-                  Full Level 2 CEO access to manage your organization, team, and campaigns. Expires in 10 days ({expiryString}).
-                </p>
-              </div>
+              <p className="text-xs text-amber-900 font-medium leading-relaxed">
+                This is a trial/demo account. Expires in 10 days ({expiryString}).
+              </p>
             </div>
 
             <form onSubmit={handleTrialSignupSubmit} className="space-y-4">
@@ -451,13 +444,13 @@ export default function NoActiveAccountModal({
                 </div>
               </div>
 
-              {/* SECTION B: Super Admin (Owner) Details */}
+              {/* SECTION B: Account Details */}
               <div className="space-y-2.5 pt-1">
                 <div className="text-[11px] font-bold text-gray-400 uppercase tracking-wider flex items-center gap-1.5 pb-1 border-b border-gray-100">
                   <svg className="w-3.5 h-3.5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
-                  <span>Super Admin Account (Owner)</span>
+                  <span>Account Details</span>
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -540,10 +533,10 @@ export default function NoActiveAccountModal({
                 {loading ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    <span>Setting up 10-Day Trial Workspace...</span>
+                    <span>Setting up Workspace...</span>
                   </>
                 ) : (
-                  <span>Create Organization & Start 10-Day Trial</span>
+                  <span>Create Account & Start Trial</span>
                 )}
               </button>
             </form>
