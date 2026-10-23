@@ -3625,7 +3625,15 @@ export default function SmartfloDialerConfiguration({ onBack }: SmartfloDialerCo
       const result = await response.json();
       if (response.ok) {
         setSmartfloAgents((agents) =>
-          agents.map((a) => (a.agentId === agentId ? { ...a, userId: result.userId } : a))
+          agents.map((a) => {
+            if (a.agentId === agentId) {
+              return { ...a, userId: result.userId };
+            }
+            if (result.userId && a.userId === result.userId) {
+              return { ...a, userId: null };
+            }
+            return a;
+          })
         );
         for (const affectedUserId of new Set(
           [previousUserId, result.userId].filter((id): id is string => Boolean(id))
@@ -3706,11 +3714,22 @@ export default function SmartfloDialerConfiguration({ onBack }: SmartfloDialerCo
     setTestCallMessage('');
     setTestCallDetails(null);
 
+    const effectiveCallerId =
+      callerId.trim() ||
+      (selectedAgentNumbers.length ? callerIdDrafts[selectedAgentNumbers[0]]?.trim() || '' : '');
+
     try {
       const {
         data: { session },
       } = await supabase.auth.getSession();
       if (!session) throw new Error('Please sign in again to test Click to Call.');
+
+      console.log('%c📞 [Smartflo Test Call - Initiating]', 'color: #4b33e8; font-weight: bold; font-size: 13px;', {
+        destination_number: destination.trim(),
+        effective_caller_id_did: effectiveCallerId,
+        shared_caller_id: callerId,
+        selected_agents: selectedAgentNumbers,
+      });
 
       const response = await fetch('/api/smartflo/test-call', {
         method: 'POST',
@@ -3723,7 +3742,21 @@ export default function SmartfloDialerConfiguration({ onBack }: SmartfloDialerCo
         }),
       });
       const result = await response.json();
+
+      console.log('%c📞 [Smartflo Test Call - Response Details]', 'color: #0284c7; font-weight: bold; font-size: 13px;', {
+        http_status: response.status,
+        passed_did_caller_id: result.caller_id || effectiveCallerId,
+        sent_request_payload: result.request_payload,
+        api_response: result,
+      });
+
       if (!response.ok || result.success !== true) {
+        console.error('%c❌ [Smartflo Test Call Rejected by Smartflo]', 'color: #ef4444; font-weight: bold; font-size: 13px;', {
+          error_message: result.error || 'Smartflo could not queue the test call.',
+          did_passed_to_smartflo: result.caller_id || effectiveCallerId,
+          request_body_sent: result.request_payload,
+          smartflo_data: result.data,
+        });
         throw new Error(result.error || 'Smartflo could not queue the test call.');
       }
 

@@ -387,20 +387,42 @@ function UserProfilePage() {
     }, [userId, router, router.isReady, mounted, userMounted, currentUser, isInternalOrCeo, authLoading]);
 
   useEffect(() => {
-    const handleCallingProviderUpdated = (event: Event) => {
+    const handleCallingProviderUpdated = async (event: Event) => {
       const detail = (event as CustomEvent<{
         userId?: string;
         state?: AgentCallingProviderState;
       }>).detail;
 
-      if (!detail?.state || detail.userId !== userDetail?.user_id) return;
-      setAgentProviderState(detail.state);
-      setAgentProviderError("");
+      if (!userDetail?.user_id) return;
+      if (detail?.userId && detail.userId !== userDetail.user_id && detail.userId !== userId) return;
+
+      if (detail?.state) {
+        setAgentProviderState(detail.state);
+        setAgentProviderError("");
+        return;
+      }
+
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const res = await fetch(
+            `/api/calling/provider/agent?targetUserId=${encodeURIComponent(userDetail.user_id)}`,
+            { headers: { Authorization: `Bearer ${session.access_token}` } }
+          );
+          const json = await res.json();
+          if (res.ok && json.data) {
+            setAgentProviderState(json.data);
+            setAgentProviderError("");
+          }
+        }
+      } catch (err) {
+        console.error("Error refreshing calling provider state:", err);
+      }
     };
 
     window.addEventListener("calling-provider-updated", handleCallingProviderUpdated);
     return () => window.removeEventListener("calling-provider-updated", handleCallingProviderUpdated);
-  }, [userDetail?.user_id]);
+  }, [userDetail?.user_id, userId]);
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return 'N/A';
@@ -1203,9 +1225,7 @@ function UserProfilePage() {
                                               onClick={() => {
                                                 if (provider === "smartflo") {
                                                   if (!providerConfig.enable || !(providerConfig as any).is_mapped) {
-                                                    setAssignSmartfloError("");
-                                                    setSelectedSmartfloAgentId((providerConfig as any).agent_id || "");
-                                                    setShowSmartfloDidModal(true);
+                                                    router.push("/settings?tab=integrations&category=admin&app=smartflo-dialer");
                                                   } else {
                                                     void handleAgentProviderChange(provider, "enable", false);
                                                   }
@@ -1229,13 +1249,12 @@ function UserProfilePage() {
                                               <button
                                                 type="button"
                                                 onClick={() => {
-                                                  setAssignSmartfloError("");
-                                                  setSelectedSmartfloAgentId((providerConfig as any).agent_id || "");
-                                                  setShowSmartfloDidModal(true);
+                                                  router.push("/settings?tab=integrations&category=admin&app=smartflo-dialer");
                                                 }}
-                                                className="text-[#4b33e8] hover:text-[#3d27cf] font-semibold text-[10px] underline ml-2"
+                                                className="text-[#4b33e8] hover:text-[#3d27cf] font-semibold text-[10px] underline ml-2 shrink-0"
+                                                title="Manage agent mapping in Settings"
                                               >
-                                                {(providerConfig as any).agent_id ? "Change" : "Assign"}
+                                                {(providerConfig as any).agent_id ? "Change in Settings" : "Map in Settings"}
                                               </button>
                                             </div>
                                           )}

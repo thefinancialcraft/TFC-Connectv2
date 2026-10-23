@@ -2605,6 +2605,13 @@ useEffect(() => {
                     }
 
                     const isManualEvent = Boolean(isManualMode || isManualUrl);
+                    console.log('%c📞 [Calling Page - Initiating Outbound Call]', 'color: #4b33e8; font-weight: bold; font-size: 13px;', {
+                        destination_number: decryptedPhone,
+                        campaign_id: cId,
+                        customer_id: custId,
+                        is_manual: isManualEvent,
+                    });
+
                     const response = await fetch("/api/calling/smartflo-call", {
                         method: "POST",
                         headers: {
@@ -2629,7 +2636,20 @@ useEffect(() => {
                     });
 
                     const result = await response.json();
+                    console.log('%c📞 [Calling Page - Smartflo Call Response]', 'color: #0284c7; font-weight: bold; font-size: 13px;', {
+                        http_status: response.status,
+                        passed_did_caller_id: result.caller_id,
+                        sent_request_payload: result.request_payload,
+                        api_response: result,
+                    });
+
                     if (!response.ok || !result.success) {
+                        console.error('%c❌ [Calling Page - Smartflo Call Rejected]', 'color: #ef4444; font-weight: bold; font-size: 13px;', {
+                            error_message: result.message || result.error,
+                            did_passed: result.caller_id,
+                            request_payload: result.request_payload,
+                            raw_data: result.data,
+                        });
                         throw new Error(result.message || result.error || "Smartflo call initiation failed.");
                     }
 

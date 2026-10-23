@@ -1,0 +1,6282 @@
+[
+  {
+    "customer_name": "Abhijeet Patil",
+    "phone_no": "9922421893",
+    "customer_details": {
+      "LAST NAME": "Patil",
+      "EMAIL": "abhijeet.hpatil9@gmail.com",
+      "DOB": "6/9/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "56502",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "29/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ankit Gupta",
+    "phone_no": "9799353179",
+    "customer_details": {
+      "LAST NAME": "Gupta",
+      "EMAIL": "GUPTAANKITGUPTA555@GMAIL.COM",
+      "DOB": "2/13/1991",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22084",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jagannath Patra",
+    "phone_no": "9438786123",
+    "customer_details": {
+      "LAST NAME": "Patra",
+      "EMAIL": "Jagapatra@gmail.com",
+      "DOB": "10/26/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26980",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sreebhagya K",
+    "phone_no": "9947135457",
+    "customer_details": {
+      "LAST NAME": "K",
+      "EMAIL": "sreebhagya.kk57@gmail.com",
+      "DOB": "1/1/1964",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "30683",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Meenaben Kahar",
+    "phone_no": "7405481004",
+    "customer_details": {
+      "LAST NAME": "Kahar",
+      "EMAIL": "laxmikahar92@gmail.com",
+      "DOB": "3/6/1966",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "47985",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rupesh Kurane",
+    "phone_no": "9664768763",
+    "customer_details": {
+      "LAST NAME": "Kurane",
+      "EMAIL": "rupeshkurne@Gmail.com",
+      "DOB": "8/30/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24890",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ripple Jitubhai Jariwala",
+    "phone_no": "9825221667",
+    "customer_details": {
+      "LAST NAME": "Jitubhai Jariwala",
+      "EMAIL": "ripple.jariwala@gmail.com",
+      "DOB": "3/6/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33990",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shivapriya Srinivasan",
+    "phone_no": "9740098386",
+    "customer_details": {
+      "LAST NAME": "Srinivasan",
+      "EMAIL": "Shivapriya.srinivasan@Gmail.com",
+      "DOB": "4/17/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26153",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "DHIRUBHAI ZALA",
+    "phone_no": "9662166875",
+    "customer_details": {
+      "LAST NAME": "ZALA",
+      "EMAIL": "zaladhirubhai1990abc@gmail.com",
+      "DOB": "6/30/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "36207",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Amit Dhama",
+    "phone_no": "9555686162",
+    "customer_details": {
+      "LAST NAME": "Dhama",
+      "EMAIL": "Golddelhi@gmail.com",
+      "DOB": "1/7/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31379",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Bhavesh Dhakar",
+    "phone_no": "7400112081",
+    "customer_details": {
+      "LAST NAME": "Dhakar",
+      "EMAIL": "Dhakarbhavesh9@gmail.com",
+      "DOB": "7/24/1991",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31501",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "NK MUTHURAMALINGAM",
+    "phone_no": "9444827077",
+    "customer_details": {
+      "LAST NAME": "MUTHURAMALINGAM",
+      "EMAIL": "nkmuthuramalingam64@gmail.com",
+      "DOB": "5/18/1964",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "51011",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SHANKARAIAH S",
+    "phone_no": "7416433393",
+    "customer_details": {
+      "LAST NAME": "S",
+      "EMAIL": "shankar.shanku4@gmail.com",
+      "DOB": "6/10/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30323",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Kulwinder Singh",
+    "phone_no": "9888272378",
+    "customer_details": {
+      "LAST NAME": "Singh",
+      "EMAIL": "Ksbanipal1989@Gmail.com",
+      "DOB": "10/22/1989",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23011",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Pritam Singh",
+    "phone_no": "9599058058",
+    "customer_details": {
+      "LAST NAME": "Singh",
+      "EMAIL": "pritam4565@gmail.com",
+      "DOB": "4/12/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "34529",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Yogesh Andani",
+    "phone_no": "9907333445",
+    "customer_details": {
+      "LAST NAME": "Andani",
+      "EMAIL": "Email-yogeshandani@gmail.com",
+      "DOB": "5/7/1996",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "41777",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "DEVINDER .",
+    "phone_no": "9958358258",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "ddixit2009@gmail.com",
+      "DOB": "5/10/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31849",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Manju Sharma",
+    "phone_no": "9990430457",
+    "customer_details": {
+      "LAST NAME": "Sharma",
+      "EMAIL": "sanjaysharma00128@yahoo.com",
+      "DOB": "3/10/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30865",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Turlapati Phanikrishnasridhar",
+    "phone_no": "9440028190",
+    "customer_details": {
+      "LAST NAME": "Phanikrishnasridhar",
+      "EMAIL": "VIJAYADIESELSERVICESGUNTUR@GMAIL.COM",
+      "DOB": "8/23/1975",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35186",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Kaushal Kumar Sharma .",
+    "phone_no": "9090818115",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "kaushal966@gmail.com",
+      "DOB": "1/28/1995",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35990",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Manoj Kumar",
+    "phone_no": "9718739169",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "manu.ms2551@gmail.com",
+      "DOB": "4/19/1998",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "42998",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Dharmaraj",
+    "phone_no": "8503081535",
+    "customer_details": {
+      "EMAIL": "RAJJPR6@GMAIL.COM",
+      "DOB": "6/16/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "64417",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sunil B MISHRA",
+    "phone_no": "8879308881",
+    "customer_details": {
+      "LAST NAME": "B MISHRA",
+      "EMAIL": "gitapandeyca@gmail.com",
+      "DOB": "7/12/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30865",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Pranav Kumar",
+    "phone_no": "9931490490",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "pranav06kumar@gmail.com",
+      "DOB": "10/2/1974",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "66032",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Malkapuri Singh",
+    "phone_no": "9398125117",
+    "customer_details": {
+      "LAST NAME": "Singh",
+      "EMAIL": "drajsingh406@Gmail.com",
+      "DOB": "7/23/2000",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26130",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ritesh Sharma",
+    "phone_no": "7568706409",
+    "customer_details": {
+      "LAST NAME": "Sharma",
+      "EMAIL": "Ritesh35sharma@gmail.com",
+      "DOB": "9/17/1995",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "20946",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "VIJAY SINGH",
+    "phone_no": "8368486975",
+    "customer_details": {
+      "LAST NAME": "SINGH",
+      "EMAIL": "vishalsingh697586@gmail.com",
+      "DOB": "7/25/1973",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "36705",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "NAUSHEEN SULTANA",
+    "phone_no": "6303314249",
+    "customer_details": {
+      "LAST NAME": "SULTANA",
+      "EMAIL": "NAUSHEENSULTANA87@Gmail.com",
+      "DOB": "9/18/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27536",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sunil Rakhecha",
+    "phone_no": "9983329009",
+    "customer_details": {
+      "LAST NAME": "Rakhecha",
+      "EMAIL": "Sunil.rakhecha@Gmail.com",
+      "DOB": "11/26/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25427",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Md Ahmed",
+    "phone_no": "9439165669",
+    "customer_details": {
+      "LAST NAME": "Ahmed",
+      "EMAIL": "mdsaifahmed@outlook.com",
+      "DOB": "4/22/1990",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "37090",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Debashish Kar",
+    "phone_no": "9804163395",
+    "customer_details": {
+      "LAST NAME": "Kar",
+      "EMAIL": "DEBASIS6DK@GMAIL.COM",
+      "DOB": "1/17/1961",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "34479",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mayank Dixit",
+    "phone_no": "9450347699",
+    "customer_details": {
+      "LAST NAME": "Dixit",
+      "EMAIL": "mayankmahesh06@gmail.com",
+      "DOB": "8/7/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26158",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sunny Phulphagar",
+    "phone_no": "9922788911",
+    "customer_details": {
+      "LAST NAME": "Phulphagar",
+      "EMAIL": "sunnyphulphagar@gmail.com",
+      "DOB": "8/4/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28052",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rajesh RAMCHANDRA GUPTA",
+    "phone_no": "9637311132",
+    "customer_details": {
+      "LAST NAME": "RAMCHANDRA GUPTA",
+      "EMAIL": "rajeshgupta9922123@gmail.com",
+      "DOB": "7/9/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "20851",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ojaswi Shankar",
+    "phone_no": "9119414424",
+    "customer_details": {
+      "LAST NAME": "Shankar",
+      "EMAIL": "ojaswi.shankar@gmail.com",
+      "DOB": "4/1/1998",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33253",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Deepa Prabhu",
+    "phone_no": "9448002517",
+    "customer_details": {
+      "LAST NAME": "Prabhu",
+      "EMAIL": "manjushreevivekpai@Gmail.com",
+      "DOB": "5/22/1972",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "28591",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "DAUDA KUMAR",
+    "phone_no": "9849696098",
+    "customer_details": {
+      "LAST NAME": "KUMAR",
+      "EMAIL": "shirishkumard14@gmail.com",
+      "DOB": "6/14/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23433",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "VRAJ PATEL",
+    "phone_no": "8200533213",
+    "customer_details": {
+      "LAST NAME": "PATEL",
+      "EMAIL": "Parimal.900@gmail.com",
+      "DOB": "8/31/2002",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "46156",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Reena VADAKKETHALAKKAL",
+    "phone_no": "9947454648",
+    "customer_details": {
+      "LAST NAME": "VADAKKETHALAKKAL",
+      "EMAIL": "davidkottayil@gmail.com",
+      "DOB": "5/31/1971",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31123",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Venkata rao Uppu",
+    "phone_no": "9640243304",
+    "customer_details": {
+      "LAST NAME": "Uppu",
+      "EMAIL": "vanjohn892@gmail.com",
+      "DOB": "8/12/1990",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "55898",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mukesh Kumar",
+    "phone_no": "9650408103",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "MUKESH.RAI677@GMAIL.COM",
+      "DOB": "12/2/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23523",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "PANKAJ UPADHYAY",
+    "phone_no": "9577749495",
+    "customer_details": {
+      "LAST NAME": "UPADHYAY",
+      "EMAIL": "pankup0906@gmail.com",
+      "DOB": "6/9/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "32745",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "KALPANA PATIL",
+    "phone_no": "8308075553",
+    "customer_details": {
+      "LAST NAME": "PATIL",
+      "EMAIL": "krishna2996@gmail.com",
+      "DOB": "1/1/1975",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "20514",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Pratiksha Bare",
+    "phone_no": "8652584229",
+    "customer_details": {
+      "LAST NAME": "Bare",
+      "EMAIL": "barepranit18@gmail.com",
+      "DOB": "9/17/2001",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "42870",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Arif Dhanani",
+    "phone_no": "8433603763",
+    "customer_details": {
+      "LAST NAME": "Dhanani",
+      "EMAIL": "dhanani_arif@yahoo.com",
+      "DOB": "7/23/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "19276",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rahul Gangal",
+    "phone_no": "9887740015",
+    "customer_details": {
+      "LAST NAME": "Gangal",
+      "EMAIL": "Rahulgangal29@gmail.com",
+      "DOB": "12/12/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30673",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sanjeev Kumar",
+    "phone_no": "9882373455",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "SKGAUTAM5693@GMAIL.COM",
+      "DOB": "1/1/1955",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "59128",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Prabha Agarwal",
+    "phone_no": "9219210494",
+    "customer_details": {
+      "LAST NAME": "Agarwal",
+      "EMAIL": "tanmay.agarwal2006@gmail.com",
+      "DOB": "8/12/1967",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33531",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jayantibhai LALJIBHAI GOLANI",
+    "phone_no": "9913529763",
+    "customer_details": {
+      "LAST NAME": "LALJIBHAI GOLANI",
+      "EMAIL": "bhavnajavia177@gmail.com",
+      "DOB": "4/1/1974",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "45619",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Krishnan S",
+    "phone_no": "9388862164",
+    "customer_details": {
+      "LAST NAME": "S",
+      "EMAIL": "KRISHNANUSHA123@GMAIL.COM",
+      "DOB": "2/24/1960",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "51635",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "KALYAN .",
+    "phone_no": "9340182449",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "Chandel87jb@Gmail.com",
+      "DOB": "8/1/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25541",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "RAKESH KONDBATTUNWAR",
+    "phone_no": "9764742343",
+    "customer_details": {
+      "LAST NAME": "KONDBATTUNWAR",
+      "EMAIL": "rk75785@gmail.com",
+      "DOB": "7/8/1988",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23481",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Anisha Kavrani",
+    "phone_no": "7383209034",
+    "customer_details": {
+      "LAST NAME": "Kavrani",
+      "EMAIL": "sushilakaurani@gmail.com",
+      "DOB": "1/10/1984",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26567",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Damodar Agrawal",
+    "phone_no": "7059977651",
+    "customer_details": {
+      "LAST NAME": "Agrawal",
+      "EMAIL": "avinash70599@Gmail.com",
+      "DOB": "8/13/1969",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35437",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Prabina KUMAR GIRI",
+    "phone_no": "9437704966",
+    "customer_details": {
+      "LAST NAME": "KUMAR GIRI",
+      "EMAIL": "pkgdova@gmail.com",
+      "DOB": "5/21/1971",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "23840",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Bhaveshbhai Bhakhar",
+    "phone_no": "9904182033",
+    "customer_details": {
+      "LAST NAME": "Bhakhar",
+      "EMAIL": "BHAVESHBHAKHAR0210@Gmail.com",
+      "DOB": "8/11/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22254",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Vishnu Garg",
+    "phone_no": "9417895329",
+    "customer_details": {
+      "LAST NAME": "Garg",
+      "EMAIL": "V.garg94@gmail.com",
+      "DOB": "6/8/1994",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27359",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Litesh Agrawal",
+    "phone_no": "9921662617",
+    "customer_details": {
+      "LAST NAME": "Agrawal",
+      "EMAIL": "liteshagrawal1@Gmail.com",
+      "DOB": "12/11/1997",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31451",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jayashree D",
+    "phone_no": "9962094381",
+    "customer_details": {
+      "LAST NAME": "D",
+      "EMAIL": "vaidyasrikrishna.d@gmail.com",
+      "DOB": "12/31/1960",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "75751",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Bharatkumar Patel",
+    "phone_no": "9409445121",
+    "customer_details": {
+      "LAST NAME": "Patel",
+      "EMAIL": "bharatkumarpatel90@yahoo.com",
+      "DOB": "9/18/1972",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "40528",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sandeep Kumar",
+    "phone_no": "7696131898",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "sandeepgoyalfzr@gmail.com",
+      "DOB": "7/14/1994",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35366",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Suraj RAMESHBHAI JADHAV",
+    "phone_no": "9923065260",
+    "customer_details": {
+      "LAST NAME": "RAMESHBHAI JADHAV",
+      "EMAIL": "SHRAJJADHAVMADDU@GMAIL.COM",
+      "DOB": "2/11/1985",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33291",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ketalkumar Tapiawala",
+    "phone_no": "9879536546",
+    "customer_details": {
+      "LAST NAME": "Tapiawala",
+      "EMAIL": "KTAPIAWALA@GMAIL.COM",
+      "DOB": "3/30/1974",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "34296",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Vishwas Shetty",
+    "phone_no": "7756093330",
+    "customer_details": {
+      "LAST NAME": "Shetty",
+      "EMAIL": "VISHWASSHETTY1995@Gmail.com",
+      "DOB": "7/31/1995",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31501",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Cheran DEEP THOTA",
+    "phone_no": "9840037742",
+    "customer_details": {
+      "LAST NAME": "DEEP THOTA",
+      "EMAIL": "THOTACHERAN@GMAIL.COM",
+      "DOB": "1/16/1989",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31572",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jeevan VAMSIDHAR THOTA",
+    "phone_no": "9677037742",
+    "customer_details": {
+      "LAST NAME": "VAMSIDHAR THOTA",
+      "EMAIL": "THOTAVAMSI@GMAIL.COM",
+      "DOB": "9/29/1978",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "45544",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ganesh H S",
+    "phone_no": "9449271514",
+    "customer_details": {
+      "LAST NAME": "H S",
+      "EMAIL": "seetharama.lakshminarayana.gan@gmail.com",
+      "DOB": "5/20/1958",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "47356",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Lalit Sharma",
+    "phone_no": "9414710825",
+    "customer_details": {
+      "LAST NAME": "Sharma",
+      "EMAIL": "Charulsharma97@gmail.com",
+      "DOB": "2/1/1976",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31123",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Usha Sivannair",
+    "phone_no": "7012015639",
+    "customer_details": {
+      "LAST NAME": "Sivannair",
+      "EMAIL": "usha2551964@gmail.com",
+      "DOB": "5/25/1964",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "27200",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Abhijit Saha",
+    "phone_no": "8280244770",
+    "customer_details": {
+      "LAST NAME": "Saha",
+      "EMAIL": "ABHIJITSAHA65@GMAIL.COM",
+      "DOB": "3/20/1965",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "40682",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Manoop M",
+    "phone_no": "9048460576",
+    "customer_details": {
+      "LAST NAME": "M",
+      "EMAIL": "manomadhav06@gmail.com",
+      "DOB": "2/13/1981",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "32966",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Pankajkumar Patel",
+    "phone_no": "9427519463",
+    "customer_details": {
+      "LAST NAME": "Patel",
+      "EMAIL": "capital.electrical01@gmail.com",
+      "DOB": "10/12/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24269",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Indira Patel",
+    "phone_no": "9265352860",
+    "customer_details": {
+      "LAST NAME": "Patel",
+      "EMAIL": "patel1685@yahoo.in",
+      "DOB": "6/15/1960",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "27557",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Krushna Bagarti",
+    "phone_no": "7750058441",
+    "customer_details": {
+      "LAST NAME": "Bagarti",
+      "EMAIL": "krushnachandrabagarti26@gmail.com",
+      "DOB": "10/14/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "19947",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "N Manjunath",
+    "phone_no": "9886115252",
+    "customer_details": {
+      "LAST NAME": "Manjunath",
+      "EMAIL": "nandi.manju@gmail.com",
+      "DOB": "5/3/1983",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "130621",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 3
+  },
+  {
+    "customer_name": "Harmin Patel",
+    "phone_no": "9898817014",
+    "customer_details": {
+      "LAST NAME": "Patel",
+      "EMAIL": "hpatel.harmin@Gmail.com",
+      "DOB": "7/22/1990",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "26632",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Prakash Kumar R .",
+    "phone_no": "9426841602",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "prakasramachandran@gmail.com",
+      "DOB": "5/25/1978",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33990",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sudarshan Patil",
+    "phone_no": "9987854145",
+    "customer_details": {
+      "LAST NAME": "Patil",
+      "EMAIL": "Piu16022019@gmail.com",
+      "DOB": "11/27/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "20621",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Prashant Vadodariya",
+    "phone_no": "9574109393",
+    "customer_details": {
+      "LAST NAME": "Vadodariya",
+      "EMAIL": "patelprashant2442@gmail.con",
+      "DOB": "6/28/1993",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "20961",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "MASARLA SRINIVASULU",
+    "phone_no": "9652795272",
+    "customer_details": {
+      "LAST NAME": "SRINIVASULU",
+      "EMAIL": "m.srinivas625@Gmail.com",
+      "DOB": "4/19/1989",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31379",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Kapil Vijay Kuldhariya",
+    "phone_no": "7507059901",
+    "customer_details": {
+      "LAST NAME": "Vijay Kuldhariya",
+      "EMAIL": "Kapil.kuldhariya@Gmail.com",
+      "DOB": "1/9/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23011",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Boyanapalli Venkatasudharamesh",
+    "phone_no": "8500869121",
+    "customer_details": {
+      "LAST NAME": "Venkatasudharamesh",
+      "EMAIL": "rameshnice111@gmail.com",
+      "DOB": "4/12/1980",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "36705",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sudhakar Pandey",
+    "phone_no": "8286100260",
+    "customer_details": {
+      "LAST NAME": "Pandey",
+      "EMAIL": "pandeysudhakar007@gmail.com",
+      "DOB": "8/28/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "19807",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Vikram Tomer",
+    "phone_no": "7566994228",
+    "customer_details": {
+      "LAST NAME": "Tomer",
+      "EMAIL": "hhvikram@gmail.com",
+      "DOB": "9/14/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25961",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "CHETAN BARI",
+    "phone_no": "8482836351",
+    "customer_details": {
+      "LAST NAME": "BARI",
+      "EMAIL": "gurukrupa3047@Gmail.com",
+      "DOB": "7/23/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23376",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "DINESH KUMAR",
+    "phone_no": "9983806718",
+    "customer_details": {
+      "LAST NAME": "KUMAR",
+      "EMAIL": "deeneshsoni3452@gmail.com",
+      "DOB": "7/8/1989",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23011",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rohit Kothawade",
+    "phone_no": "8149614043",
+    "customer_details": {
+      "LAST NAME": "Kothawade",
+      "EMAIL": "KROHIT1111@GMAIL.COM",
+      "DOB": "9/15/1988",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31379",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mr PRANAM",
+    "phone_no": "7406086093",
+    "customer_details": {
+      "LAST NAME": "PRANAM",
+      "EMAIL": "chinnupranam69100@gmail.com",
+      "DOB": "11/1/2000",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "34930",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "VEGI SRINIVASARAO",
+    "phone_no": "9110341194",
+    "customer_details": {
+      "LAST NAME": "SRINIVASARAO",
+      "EMAIL": "vegisrinu5@gmail.com",
+      "DOB": "8/30/1970",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "40423",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Turlapati SitaVenkataHariKrishnaMohan",
+    "phone_no": "8099328999",
+    "customer_details": {
+      "LAST NAME": "SitaVenkataHariKrishnaMohan",
+      "EMAIL": "tsvhkmohan@Gmail.com",
+      "DOB": "1/23/1970",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "45593",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Kalpana Ahire",
+    "phone_no": "9860641298",
+    "customer_details": {
+      "LAST NAME": "Ahire",
+      "EMAIL": "ahire.mayur@gmail.com",
+      "DOB": "5/20/1963",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "30270",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "BIYAS SAHA",
+    "phone_no": "8116219248",
+    "customer_details": {
+      "LAST NAME": "SAHA",
+      "EMAIL": "biyassaha14@gmail.com",
+      "DOB": "7/20/1996",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "39149",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "NARENDER KUMAR",
+    "phone_no": "9871155807",
+    "customer_details": {
+      "LAST NAME": "KUMAR",
+      "EMAIL": "VIVEK.9876SHARMA@Gmail.com",
+      "DOB": "4/12/1971",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "41876",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shyam Agarwal",
+    "phone_no": "9051410800",
+    "customer_details": {
+      "LAST NAME": "Agarwal",
+      "EMAIL": "TUDYOG7@GMAIL.COM",
+      "DOB": "6/25/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27536",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Papiya Basak",
+    "phone_no": "9831202123",
+    "customer_details": {
+      "LAST NAME": "Basak",
+      "EMAIL": "papiyabasak.16@gmail.com",
+      "DOB": "1/10/1982",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "35437",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Akshay Khot",
+    "phone_no": "9969580940",
+    "customer_details": {
+      "LAST NAME": "Khot",
+      "EMAIL": "akhot174@gmail.com",
+      "DOB": "4/14/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "52293",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "PIYUSH RANA",
+    "phone_no": "9638314257",
+    "customer_details": {
+      "LAST NAME": "RANA",
+      "EMAIL": "yugpatil2605@gmail.com",
+      "DOB": "10/17/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31853",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Anil Kumar Sharma .",
+    "phone_no": "9460926232",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "anilgksharma@gmail.com",
+      "DOB": "7/1/1993",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "43371",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "NITESH GHODKE",
+    "phone_no": "9009955427",
+    "customer_details": {
+      "LAST NAME": "GHODKE",
+      "EMAIL": "niteshghodkey@gmail.com",
+      "DOB": "3/23/1992",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "39013",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Uttam Singhal",
+    "phone_no": "9810190044",
+    "customer_details": {
+      "LAST NAME": "Singhal",
+      "EMAIL": "Utttamsinghal@gmail.com",
+      "DOB": "7/1/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30865",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shikha Madan",
+    "phone_no": "9373027670",
+    "customer_details": {
+      "LAST NAME": "Madan",
+      "EMAIL": "shikharajeshmadan@gmail.com",
+      "DOB": "4/4/1986",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33917",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "BIBHUTI SAHOO",
+    "phone_no": "7873615858",
+    "customer_details": {
+      "LAST NAME": "SAHOO",
+      "EMAIL": "bibhutis207@gmail.com",
+      "DOB": "7/2/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22939",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SEELAM DEEP",
+    "phone_no": "8317667310",
+    "customer_details": {
+      "LAST NAME": "DEEP",
+      "EMAIL": "saideep5b4@gmail.com",
+      "DOB": "5/1/1998",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "40320",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Vishal Patil",
+    "phone_no": "9373898900",
+    "customer_details": {
+      "LAST NAME": "Patil",
+      "EMAIL": "vishalpatil93738989@Gmail.com",
+      "DOB": "8/2/1999",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "18531",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Naveenkumar K",
+    "phone_no": "9686546034",
+    "customer_details": {
+      "LAST NAME": "K",
+      "EMAIL": "naveenkk24@gmail.com",
+      "DOB": "2/24/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26481",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shanmugam Muthan",
+    "phone_no": "9884281595",
+    "customer_details": {
+      "LAST NAME": "Muthan",
+      "EMAIL": "shan2micro@Gmail.com",
+      "DOB": "9/22/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30219",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Pradeep Vyas",
+    "phone_no": "9828083477",
+    "customer_details": {
+      "LAST NAME": "Vyas",
+      "EMAIL": "Prem12345raj@gmail.com",
+      "DOB": "11/17/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27119",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sandeep Kumar",
+    "phone_no": "9050812001",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "Sandeep.siwach3111@Gmail.com",
+      "DOB": "11/10/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "61243",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "ULHAS KINI",
+    "phone_no": "9845390021",
+    "customer_details": {
+      "LAST NAME": "KINI",
+      "EMAIL": "ULHASKINI@GMAIL.COM",
+      "DOB": "9/12/1961",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "36074",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "CHIRAG TRAMBADIYA",
+    "phone_no": "9428242764",
+    "customer_details": {
+      "LAST NAME": "TRAMBADIYA",
+      "EMAIL": "trambadiyachirag@gmail.com",
+      "DOB": "1/14/1989",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "34460",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sanjeev Awasthi",
+    "phone_no": "9044443788",
+    "customer_details": {
+      "LAST NAME": "Awasthi",
+      "EMAIL": "sanjeevawashti9044@gmail.com",
+      "DOB": "8/28/1995",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31349",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Inderpreet Kaur",
+    "phone_no": "7703939618",
+    "customer_details": {
+      "LAST NAME": "Kaur",
+      "EMAIL": "Kiko.nippun@outlook.com",
+      "DOB": "8/19/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27256",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rupesh MOHITE",
+    "phone_no": "9561816496",
+    "customer_details": {
+      "LAST NAME": "MOHITE",
+      "EMAIL": "RUPESHMOHITE6496@GMAIL.COM",
+      "DOB": "11/26/1989",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31849",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ravi Sharma",
+    "phone_no": "8982568173",
+    "customer_details": {
+      "LAST NAME": "Sharma",
+      "EMAIL": "arvindsngh1991@Gmail.com",
+      "DOB": "3/22/1991",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "24226",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "BHAGAT SINGH",
+    "phone_no": "8930232324",
+    "customer_details": {
+      "LAST NAME": "SINGH",
+      "EMAIL": "ravihemlata1994@Gmail.com",
+      "DOB": "4/5/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31849",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Neha Jha",
+    "phone_no": "9811372366",
+    "customer_details": {
+      "LAST NAME": "Jha",
+      "EMAIL": "Sohanjha1111@Gmail.com",
+      "DOB": "4/1/1999",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "37176",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mr Jaibhagwan",
+    "phone_no": "9811022564",
+    "customer_details": {
+      "LAST NAME": "Jaibhagwan",
+      "EMAIL": "JAYLOHIYA5800@GMAIL.COM",
+      "DOB": "7/27/1991",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27656",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mayur Patel",
+    "phone_no": "9537199090",
+    "customer_details": {
+      "LAST NAME": "Patel",
+      "EMAIL": "MAYUR@ELVEE.IN",
+      "DOB": "9/16/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "55976",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "S Andal",
+    "phone_no": "8681920925",
+    "customer_details": {
+      "LAST NAME": "Andal",
+      "EMAIL": "s.srika2011@gmail.com",
+      "DOB": "5/5/1967",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "27352",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SAVANKUMAR VARMA",
+    "phone_no": "9601540064",
+    "customer_details": {
+      "LAST NAME": "VARMA",
+      "EMAIL": "OTPRAJSHREE@GMAIL.COM",
+      "DOB": "10/2/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25360",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SIDDHARTH PANDEY",
+    "phone_no": "7905822082",
+    "customer_details": {
+      "LAST NAME": "PANDEY",
+      "EMAIL": "sidd0289@icloud.com",
+      "DOB": "7/20/1989",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28048",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Bommannan V",
+    "phone_no": "9500887165",
+    "customer_details": {
+      "LAST NAME": "V",
+      "EMAIL": "bommannanvijayakumar@gmail.com",
+      "DOB": "11/5/1994",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "56863",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sanju Kumari",
+    "phone_no": "9835501684",
+    "customer_details": {
+      "LAST NAME": "Kumari",
+      "EMAIL": "aryanvinay7979@gmail.com",
+      "DOB": "9/12/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "21277",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "ARVIND KUMAR",
+    "phone_no": "9311451471",
+    "customer_details": {
+      "LAST NAME": "KUMAR",
+      "EMAIL": "arvind79670@gmail.com",
+      "DOB": "8/6/1971",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "27029",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Dipak RAMDAS NATHE",
+    "phone_no": "9921348563",
+    "customer_details": {
+      "LAST NAME": "RAMDAS NATHE",
+      "EMAIL": "deepaknathe123@gmail.com",
+      "DOB": "1/25/1991",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "19336",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Pranesh Babu",
+    "phone_no": "9500994596",
+    "customer_details": {
+      "LAST NAME": "Babu",
+      "EMAIL": "praneshb92@gmail.com",
+      "DOB": "2/12/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "29314",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Birjesh Kumar",
+    "phone_no": "9315223399",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "BIRJESHTYAGI72@GMAIL.COM",
+      "DOB": "8/12/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33990",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Madan Singh",
+    "phone_no": "9911324516",
+    "customer_details": {
+      "LAST NAME": "Singh",
+      "EMAIL": "madanshing@gmail.com",
+      "DOB": "9/9/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37090",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "KISHAN CHAND",
+    "phone_no": "7988042302",
+    "customer_details": {
+      "LAST NAME": "CHAND",
+      "EMAIL": "manishbhardwaj88169@gmail.com",
+      "DOB": "3/14/1973",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35435",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Tapan Kumar",
+    "phone_no": "9643808276",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "kumar.tapan@hotmail.com",
+      "DOB": "8/22/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "40258",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sujata Deo",
+    "phone_no": "9527855582",
+    "customer_details": {
+      "LAST NAME": "Deo",
+      "EMAIL": "DEOSUJATA72@GMAIL.COM",
+      "DOB": "12/10/1972",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "20946",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "DNYANESHWAR MANIK JADHAV .",
+    "phone_no": "9422935311",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "DMJADHAV311@GMAIL.COM",
+      "DOB": "4/22/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25071",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "NEMI CHAND",
+    "phone_no": "9664415036",
+    "customer_details": {
+      "LAST NAME": "CHAND",
+      "EMAIL": "dheerajkumawat469632@gmail.com",
+      "DOB": "1/1/1966",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35720",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "ANMOL ADWANI",
+    "phone_no": "9907433033",
+    "customer_details": {
+      "LAST NAME": "ADWANI",
+      "EMAIL": "ANMOLADWANI2002@GMAIL.COM",
+      "DOB": "2/20/1998",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "41713",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rishabh Jain",
+    "phone_no": "9999423610",
+    "customer_details": {
+      "LAST NAME": "Jain",
+      "EMAIL": "rishabhj63@gmail.com",
+      "DOB": "8/24/1994",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "37090",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Midlaj P",
+    "phone_no": "8330804776",
+    "customer_details": {
+      "LAST NAME": "P",
+      "EMAIL": "midlajrp497@gmail.com",
+      "DOB": "5/4/2002",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "49684",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Nikita Biyani",
+    "phone_no": "8095944592",
+    "customer_details": {
+      "LAST NAME": "Biyani",
+      "EMAIL": "biyaninikki@gmail.com",
+      "DOB": "12/18/1992",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "39316",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SACHIN PATIL",
+    "phone_no": "9834384840",
+    "customer_details": {
+      "LAST NAME": "PATIL",
+      "EMAIL": "patilsachinr90@gmail.com",
+      "DOB": "4/24/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "20337",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Bhagwat Kumar",
+    "phone_no": "9570945715",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "kumar.bhagwat83@gmail.com",
+      "DOB": "8/24/1991",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "41836",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Prakash Agarwal",
+    "phone_no": "9910310976",
+    "customer_details": {
+      "LAST NAME": "Agarwal",
+      "EMAIL": "P_AGARWAL29@YAHOO.CO.IN",
+      "DOB": "1/1/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30636",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SONU GOND",
+    "phone_no": "8318005955",
+    "customer_details": {
+      "LAST NAME": "GOND",
+      "EMAIL": "tech.sonu1990@gmail.com",
+      "DOB": "7/12/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "36827",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "ASHWANI JAISWAL",
+    "phone_no": "8009333912",
+    "customer_details": {
+      "LAST NAME": "JAISWAL",
+      "EMAIL": "jaiswalashwani3@gmail.com",
+      "DOB": "8/15/1994",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "44276",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sandeep Padmanabhuni",
+    "phone_no": "9246437040",
+    "customer_details": {
+      "LAST NAME": "Padmanabhuni",
+      "EMAIL": "sandeep887.psk@gmail.com",
+      "DOB": "10/10/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22469",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SHAMCIYA NARGHEES",
+    "phone_no": "7034926129",
+    "customer_details": {
+      "LAST NAME": "NARGHEES",
+      "EMAIL": "shamciya@icloud.com",
+      "DOB": "7/26/1993",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33990",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Bhabani SHANKAR DASH",
+    "phone_no": "9439271143",
+    "customer_details": {
+      "LAST NAME": "SHANKAR DASH",
+      "EMAIL": "bshankar.dash@gmail.com",
+      "DOB": "8/12/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22101",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rajveer Dhayal",
+    "phone_no": "9928434395",
+    "customer_details": {
+      "LAST NAME": "Dhayal",
+      "EMAIL": "Rajveerdhayal12@Gmail.com",
+      "DOB": "6/10/1974",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "34804",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Anshu Mittal",
+    "phone_no": "9478555091",
+    "customer_details": {
+      "LAST NAME": "Mittal",
+      "EMAIL": "mittal_anshu@live.com",
+      "DOB": "7/15/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31108",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Lakhwinder Singh",
+    "phone_no": "9781164786",
+    "customer_details": {
+      "LAST NAME": "Singh",
+      "EMAIL": "lakhwinder64786@gmail.com",
+      "DOB": "4/6/1989",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27431",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ganesh Uttamrao Pardeshi",
+    "phone_no": "9158007631",
+    "customer_details": {
+      "LAST NAME": "Uttamrao Pardeshi",
+      "EMAIL": "Ganeshuk87@rediffmail.com",
+      "DOB": "9/16/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22802",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ragupathy Mohan",
+    "phone_no": "9843351110",
+    "customer_details": {
+      "LAST NAME": "Mohan",
+      "EMAIL": "RAGU.RHR@GMAIL.COM",
+      "DOB": "2/20/1984",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "20006",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Purnanava Roy",
+    "phone_no": "8296108976",
+    "customer_details": {
+      "LAST NAME": "Roy",
+      "EMAIL": "ROY.PurnANAVA@GMAIL.COM",
+      "DOB": "8/13/1991",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "25148",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Puja KUMARI MOHANTY",
+    "phone_no": "8763754983",
+    "customer_details": {
+      "LAST NAME": "KUMARI MOHANTY",
+      "EMAIL": "mohnthy.deepak685@gmail.com",
+      "DOB": "5/17/1998",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22417",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Nibedita Mohanty",
+    "phone_no": "9937695081",
+    "customer_details": {
+      "LAST NAME": "Mohanty",
+      "EMAIL": "nibedita.mohanty1985@gmail.com",
+      "DOB": "7/1/1985",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "40306",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Reenaben Bhut",
+    "phone_no": "7046214159",
+    "customer_details": {
+      "LAST NAME": "Bhut",
+      "EMAIL": "1982reenabhut@gmail.com",
+      "DOB": "11/20/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "65823",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shailendrakumar RADHESHYAM GUPTA",
+    "phone_no": "9979348446",
+    "customer_details": {
+      "LAST NAME": "RADHESHYAM GUPTA",
+      "EMAIL": "Skg23aquq@gmail.com",
+      "DOB": "1/10/1966",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "36488",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Suri BABU KATADA",
+    "phone_no": "8105208002",
+    "customer_details": {
+      "LAST NAME": "BABU KATADA",
+      "EMAIL": "suribabukatada@gmail.com",
+      "DOB": "10/6/1972",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37482",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Pinteshkumar Shah",
+    "phone_no": "9998059074",
+    "customer_details": {
+      "LAST NAME": "Shah",
+      "EMAIL": "SHAHPINTESH267@GMAIL.COM",
+      "DOB": "7/26/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "32146",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rajesh SHARMA",
+    "phone_no": "9564945632",
+    "customer_details": {
+      "LAST NAME": "SHARMA",
+      "EMAIL": "SSRAJESHBHAI@GMAIL.COM",
+      "DOB": "2/2/1972",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35116",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Pooja Kumari",
+    "phone_no": "9536608608",
+    "customer_details": {
+      "LAST NAME": "Kumari",
+      "EMAIL": "RAHULCHOUDHARY78@GMAIL.COM",
+      "DOB": "1/1/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "38922",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shashi Kumar",
+    "phone_no": "9608014650",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "Aryanthehero147@Gmail.com",
+      "DOB": "12/21/1978",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "42870",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 4
+  },
+  {
+    "customer_name": "Sreedhanya Sudheer",
+    "phone_no": "9449464056",
+    "customer_details": {
+      "LAST NAME": "Sudheer",
+      "EMAIL": "sreedhanyasudeer@gmail.com",
+      "DOB": "5/23/1996",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "68304",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Srujan Gone",
+    "phone_no": "9133471111",
+    "customer_details": {
+      "LAST NAME": "Gone",
+      "EMAIL": "suju814@gmail.com",
+      "DOB": "4/21/1990",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "50273",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ranjan Kumar",
+    "phone_no": "8171959170",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "ranjan1saraswat@gmail.com",
+      "DOB": "9/20/1987",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "44835",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 7
+  },
+  {
+    "customer_name": "Priyanka Verma",
+    "phone_no": "8882220092",
+    "customer_details": {
+      "LAST NAME": "Verma",
+      "EMAIL": "verma.priyanka7710@gmail.com",
+      "DOB": "11/10/1993",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "35870",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Meenesh Rajpurohit",
+    "phone_no": "8562818999",
+    "customer_details": {
+      "LAST NAME": "Rajpurohit",
+      "EMAIL": "Meeneshrajpurohit@gmail.com",
+      "DOB": "12/1/1993",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "35719",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Bikram Rai",
+    "phone_no": "9679912356",
+    "customer_details": {
+      "LAST NAME": "Rai",
+      "EMAIL": "RAIBIKRAM@Gmail.com",
+      "DOB": "9/4/1978",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "82272",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rishav Jain",
+    "phone_no": "9435146166",
+    "customer_details": {
+      "LAST NAME": "Jain",
+      "EMAIL": "rarsupply@gmail.com",
+      "DOB": "12/22/1988",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "50873",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Usha Rao PR",
+    "phone_no": "9972013361",
+    "customer_details": {
+      "LAST NAME": "Rao PR",
+      "EMAIL": "chandra.usha@gmail.com",
+      "DOB": "1/13/1953",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "66032",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Umesh .",
+    "phone_no": "9289697224",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "Umeshkhandelwal883@gmail.com",
+      "DOB": "7/13/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37478",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SANJAYKUMAR UDATEWAR",
+    "phone_no": "9175121237",
+    "customer_details": {
+      "LAST NAME": "UDATEWAR",
+      "EMAIL": "sanjayudatewar85@Gmail.com",
+      "DOB": "3/15/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "34876",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Laxmi malik",
+    "phone_no": "7827100899",
+    "customer_details": {
+      "LAST NAME": "malik",
+      "EMAIL": "lmn09393@gmail.com",
+      "DOB": "6/14/1991",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "41836",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Veena Goswami",
+    "phone_no": "7042728275",
+    "customer_details": {
+      "LAST NAME": "Goswami",
+      "EMAIL": "deepakgoswami036@gmail.com",
+      "DOB": "10/25/1970",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "32899",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Avinash Anand Pawar",
+    "phone_no": "8208127100",
+    "customer_details": {
+      "LAST NAME": "Pawar",
+      "EMAIL": "avinashpawar14022000@gmail.com",
+      "DOB": "2/14/2000",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "39040",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Umesh kumar Kushwaha",
+    "phone_no": "7081192333",
+    "customer_details": {
+      "LAST NAME": "kumar Kushwaha",
+      "EMAIL": "asravikushwaha11@gmail.com",
+      "DOB": "7/24/1971",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "40166",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Janardan Ramchandra Sawant",
+    "phone_no": "9619093472",
+    "customer_details": {
+      "LAST NAME": "Ramchandra Sawant",
+      "EMAIL": "jsawant1974@Gmail.com",
+      "DOB": "4/5/1974",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33990",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "ROSHAN SHARMA",
+    "phone_no": "9899740705",
+    "customer_details": {
+      "LAST NAME": "SHARMA",
+      "EMAIL": "Roshansharama1989@Gmail.com",
+      "DOB": "3/4/1989",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "29223",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sanjaykumar Mishra",
+    "phone_no": "9702660666",
+    "customer_details": {
+      "LAST NAME": "Mishra",
+      "EMAIL": "mishra.sanjay666@gmail.com",
+      "DOB": "5/30/1991",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "32761",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sahil Khan",
+    "phone_no": "9643665052",
+    "customer_details": {
+      "LAST NAME": "Khan",
+      "EMAIL": "Samekhan_008@yahoo.co.in",
+      "DOB": "9/25/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "29643",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ankesh Kumar",
+    "phone_no": "9721356427",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "ANKESHKUMARVERMA3@GMAIL.COM",
+      "DOB": "6/22/1995",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "64257",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Varsha GIRISH TOTE",
+    "phone_no": "9422143966",
+    "customer_details": {
+      "LAST NAME": "GIRISH TOTE",
+      "EMAIL": "VARSHATOTE28@GMAIL.COM",
+      "DOB": "11/28/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23437",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "LAXMEENARAYAN YADUWANSHI",
+    "phone_no": "9926143344",
+    "customer_details": {
+      "LAST NAME": "YADUWANSHI",
+      "EMAIL": "anjurakesh2585@Gmail.com",
+      "DOB": "6/25/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "58872",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Savita Deshpande",
+    "phone_no": "8308247105",
+    "customer_details": {
+      "LAST NAME": "Deshpande",
+      "EMAIL": "savitadeshpande1071@Gmail.com",
+      "DOB": "2/10/1971",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "21416",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jayendra Chandan",
+    "phone_no": "7992263175",
+    "customer_details": {
+      "LAST NAME": "Chandan",
+      "EMAIL": "jayendra008@gmail.com",
+      "DOB": "2/8/1984",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "20010",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Rajendrabhai Kodala",
+    "phone_no": "9974404502",
+    "customer_details": {
+      "LAST NAME": "Kodala",
+      "EMAIL": "rajendrakodala09@Gmail.com",
+      "DOB": "7/9/1973",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "48719",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "TUSHAR CHAVAN",
+    "phone_no": "8446790019",
+    "customer_details": {
+      "LAST NAME": "CHAVAN",
+      "EMAIL": "CHAVAN.TUSHAR11@GMAIL.COM",
+      "DOB": "11/17/1989",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23011",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Akhilesh Raghuvanshi",
+    "phone_no": "9893437303",
+    "customer_details": {
+      "LAST NAME": "Raghuvanshi",
+      "EMAIL": "RAGHUVANSHI1301@Gmail.com",
+      "DOB": "10/16/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23570",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sairam V",
+    "phone_no": "9944973001",
+    "customer_details": {
+      "LAST NAME": "V",
+      "EMAIL": "srisaiconsultantscbe@gmail.com",
+      "DOB": "4/17/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35725",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shibu",
+    "phone_no": "7899122939",
+    "customer_details": {
+      "EMAIL": "dhronaconstructions@gmail.com",
+      "DOB": "4/2/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "40048",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Prasad VASANT SHAUCHE",
+    "phone_no": "9890313273",
+    "customer_details": {
+      "LAST NAME": "VASANT SHAUCHE",
+      "EMAIL": "prasadvshauche@gmail.com",
+      "DOB": "12/1/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "51711",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rajendra SINGH GURJAR",
+    "phone_no": "9887868601",
+    "customer_details": {
+      "LAST NAME": "SINGH GURJAR",
+      "EMAIL": "rajendrabhajak@Gmail.com",
+      "DOB": "1/15/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "34427",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Afrida Khatoon",
+    "phone_no": "9810566215",
+    "customer_details": {
+      "LAST NAME": "Khatoon",
+      "EMAIL": "ayaanhashmi030291@gmail.com",
+      "DOB": "1/1/1999",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "32398",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Prabakar Ramamurthy",
+    "phone_no": "8939733527",
+    "customer_details": {
+      "LAST NAME": "Ramamurthy",
+      "EMAIL": "mail2praba@aol.com",
+      "DOB": "6/10/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "21886",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sivarapu SUNITHA DEVI",
+    "phone_no": "8184913678",
+    "customer_details": {
+      "LAST NAME": "SUNITHA DEVI",
+      "EMAIL": "mamathasivarapu@gmail.com",
+      "DOB": "5/25/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26249",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jibon KRISHNA ROY",
+    "phone_no": "8474863894",
+    "customer_details": {
+      "LAST NAME": "KRISHNA ROY",
+      "EMAIL": "roy1966jibon@gmail.com",
+      "DOB": "7/12/1966",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "56008",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Prashant Pandey",
+    "phone_no": "9451906964",
+    "customer_details": {
+      "LAST NAME": "Pandey",
+      "EMAIL": "snehpandeyon@Gmail.com",
+      "DOB": "8/10/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22259",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sandipkumar J Patel",
+    "phone_no": "9924543902",
+    "customer_details": {
+      "LAST NAME": "J Patel",
+      "EMAIL": "sandip652@Gmail.com",
+      "DOB": "7/29/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22791",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shyamveer Singh",
+    "phone_no": "9310869146",
+    "customer_details": {
+      "LAST NAME": "Singh",
+      "EMAIL": "shyamveernager1@gmail.com",
+      "DOB": "6/12/1984",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24798",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jayachandran C",
+    "phone_no": "9629185823",
+    "customer_details": {
+      "LAST NAME": "C",
+      "EMAIL": "jayachandran2863@gmail.com",
+      "DOB": "9/28/1963",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "36538",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Alka Bangar",
+    "phone_no": "9463658550",
+    "customer_details": {
+      "LAST NAME": "Bangar",
+      "EMAIL": "DR.ALKABANGAR@GMAIL.COM",
+      "DOB": "3/31/1991",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "34460",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Rohit malavade",
+    "phone_no": "7020508499",
+    "customer_details": {
+      "LAST NAME": "malavade",
+      "EMAIL": "rohtml@gmail.com",
+      "DOB": "11/9/1989",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22349",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Suresh Sharma",
+    "phone_no": "9462016632",
+    "customer_details": {
+      "LAST NAME": "Sharma",
+      "EMAIL": "Suresh261089@Gmail.com",
+      "DOB": "7/10/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24756",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Manoj Chauhan",
+    "phone_no": "8469874316",
+    "customer_details": {
+      "LAST NAME": "Chauhan",
+      "EMAIL": "rinkal.rajput89@gmail.com",
+      "DOB": "6/5/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "18754",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Gourav Kumar",
+    "phone_no": "9876611076",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "GVERMA7616@Yahoo.com",
+      "DOB": "11/19/1985",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "74492",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Reshma Sarsar",
+    "phone_no": "9921783783",
+    "customer_details": {
+      "LAST NAME": "Sarsar",
+      "EMAIL": "meetreshu@hotmail.com",
+      "DOB": "7/27/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "42998",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ashish Awasthi",
+    "phone_no": "9936486440",
+    "customer_details": {
+      "LAST NAME": "Awasthi",
+      "EMAIL": "ashishawasthi3@Gmail.com",
+      "DOB": "7/1/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25071",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Poonam Loomba",
+    "phone_no": "9811558654",
+    "customer_details": {
+      "LAST NAME": "Loomba",
+      "EMAIL": "DRPOONAM68@GMAIL.COM",
+      "DOB": "3/24/1968",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "58804",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sugumaran Veerasamy",
+    "phone_no": "9943794970",
+    "customer_details": {
+      "LAST NAME": "Veerasamy",
+      "EMAIL": "sugumaranaero@gmail.com",
+      "DOB": "6/6/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37090",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sukhdeep Singh Kang",
+    "phone_no": "9814358307",
+    "customer_details": {
+      "LAST NAME": "Singh Kang",
+      "EMAIL": "sukhdeepkang9900@gmail.com",
+      "DOB": "12/8/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27371",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Aradhana Raghuvanshi",
+    "phone_no": "8839523301",
+    "customer_details": {
+      "LAST NAME": "Raghuvanshi",
+      "EMAIL": "Aditiraghuvanshi071@Gmail.com",
+      "DOB": "12/28/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "20008",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 4
+  },
+  {
+    "customer_name": "MOHIT KUMAR",
+    "phone_no": "8447260348",
+    "customer_details": {
+      "LAST NAME": "KUMAR",
+      "EMAIL": "mohit45023@gmail.com",
+      "DOB": "6/1/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "29251",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Susanta Ghosh",
+    "phone_no": "9330189630",
+    "customer_details": {
+      "LAST NAME": "Ghosh",
+      "EMAIL": "Subhroghoshtms@Gmail.com",
+      "DOB": "3/29/1962",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "36074",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ashish Gupta",
+    "phone_no": "9799534950",
+    "customer_details": {
+      "LAST NAME": "Gupta",
+      "EMAIL": "gaashish2201@gmail.com",
+      "DOB": "7/5/1997",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33990",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Netaji Nakhate",
+    "phone_no": "9767153036",
+    "customer_details": {
+      "LAST NAME": "Nakhate",
+      "EMAIL": "netajinakhate@gmail.com",
+      "DOB": "6/1/1972",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37348",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "MEHAK .",
+    "phone_no": "9996880565",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "MEHAKGUPTA057@GMAIL.COM",
+      "DOB": "12/20/1998",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31335",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mohammad Mubharak",
+    "phone_no": "7040796040",
+    "customer_details": {
+      "LAST NAME": "Mubharak",
+      "EMAIL": "mubharakmohammad59@gmail.com",
+      "DOB": "8/20/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "40906",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "MANISH VERMA",
+    "phone_no": "9999980076",
+    "customer_details": {
+      "LAST NAME": "VERMA",
+      "EMAIL": "Manishverma00076@gmail.com",
+      "DOB": "7/31/1992",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "28579",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Hari Sriraman",
+    "phone_no": "7550008438",
+    "customer_details": {
+      "LAST NAME": "Sriraman",
+      "EMAIL": "harips12@gmail.com",
+      "DOB": "7/12/1985",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "51711",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "KAMAL CHANDELA",
+    "phone_no": "9319216047",
+    "customer_details": {
+      "LAST NAME": "CHANDELA",
+      "EMAIL": "KAMALCHANDELA2@GMAIL.COM",
+      "DOB": "2/21/1997",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24067",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "KALPNA DHAR",
+    "phone_no": "9717680230",
+    "customer_details": {
+      "LAST NAME": "DHAR",
+      "EMAIL": "KALPNA.SHARMA2703@GMAIL.COM",
+      "DOB": "3/27/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "41836",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Preethi Nair",
+    "phone_no": "9712929183",
+    "customer_details": {
+      "LAST NAME": "Nair",
+      "EMAIL": "preethinair29@Gmail.com",
+      "DOB": "1/29/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "20685",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "JEEVAN LAL",
+    "phone_no": "7607630401",
+    "customer_details": {
+      "LAST NAME": "LAL",
+      "EMAIL": "laljeevan040@Gmail.com",
+      "DOB": "1/12/1972",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33291",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Girishbhai SORATHIYA",
+    "phone_no": "9824894532",
+    "customer_details": {
+      "LAST NAME": "SORATHIYA",
+      "EMAIL": "SDFASARA@GMAIL.COM",
+      "DOB": "6/15/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37090",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Eligeti Satheesh",
+    "phone_no": "8897322590",
+    "customer_details": {
+      "LAST NAME": "Satheesh",
+      "EMAIL": "eligetisathish@Gmail.com",
+      "DOB": "11/19/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25071",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sabu Mathew",
+    "phone_no": "8547164682",
+    "customer_details": {
+      "LAST NAME": "Mathew",
+      "EMAIL": "SAB_PANACEA@HOTMAIL.COM",
+      "DOB": "5/30/1975",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "36827",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Nilu Goyal",
+    "phone_no": "8285859699",
+    "customer_details": {
+      "LAST NAME": "Goyal",
+      "EMAIL": "nilu.gaur900@gmail.com",
+      "DOB": "12/12/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24532",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ramesh Janemalani",
+    "phone_no": "9510853201",
+    "customer_details": {
+      "LAST NAME": "Janemalani",
+      "EMAIL": "Aakashsolanki051@Gmail.com",
+      "DOB": "4/6/1973",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "32821",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SUNIL DOLIA",
+    "phone_no": "9898700469",
+    "customer_details": {
+      "LAST NAME": "DOLIA",
+      "EMAIL": "Sunil_5979@yahoo.co.in",
+      "DOB": "9/5/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31335",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "RAVI KUMAR",
+    "phone_no": "8340682537",
+    "customer_details": {
+      "LAST NAME": "KUMAR",
+      "EMAIL": "ravikumarashu716@gmail.com",
+      "DOB": "3/21/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "50873",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "JITESH PANCHAL",
+    "phone_no": "9819073993",
+    "customer_details": {
+      "LAST NAME": "PANCHAL",
+      "EMAIL": "jitesh.panchal@gmail.com",
+      "DOB": "1/24/1982",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31768",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Bharat Chhajed",
+    "phone_no": "7016581399",
+    "customer_details": {
+      "LAST NAME": "Chhajed",
+      "EMAIL": "IMBHARATC@GMAIL.COM",
+      "DOB": "9/26/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31379",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Machindra Kurhade",
+    "phone_no": "9082235942",
+    "customer_details": {
+      "LAST NAME": "Kurhade",
+      "EMAIL": "machindrakurhade1972@gmail.com",
+      "DOB": "6/1/1972",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "36905",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sumit jalan",
+    "phone_no": "9352112462",
+    "customer_details": {
+      "LAST NAME": "jalan",
+      "EMAIL": "amitjalan26@Gmail.com",
+      "DOB": "2/2/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27333",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Dr S",
+    "phone_no": "9042688901",
+    "customer_details": {
+      "LAST NAME": "S",
+      "EMAIL": "drvikky1995@gmail.com",
+      "DOB": "6/26/1995",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "35656",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mahesh Godse",
+    "phone_no": "7506753310",
+    "customer_details": {
+      "LAST NAME": "Godse",
+      "EMAIL": "maheshgodse1986@gmail.com",
+      "DOB": "8/10/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28753",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rhea Menon",
+    "phone_no": "9371025199",
+    "customer_details": {
+      "LAST NAME": "Menon",
+      "EMAIL": "Sangeetha@empoweredindia.com",
+      "DOB": "1/10/1995",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "40582",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Yogesh Thakkar",
+    "phone_no": "8320276118",
+    "customer_details": {
+      "LAST NAME": "Thakkar",
+      "EMAIL": "ythakkar234@gmail.com",
+      "DOB": "12/2/1959",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "41713",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sukalpa Ghosh",
+    "phone_no": "7003209706",
+    "customer_details": {
+      "LAST NAME": "Ghosh",
+      "EMAIL": "sukalpaghosh744@gmail.com",
+      "DOB": "12/21/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24510",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "JAYDEV THUMAR",
+    "phone_no": "9537775517",
+    "customer_details": {
+      "LAST NAME": "THUMAR",
+      "EMAIL": "jaydevthumar01@gmail.com",
+      "DOB": "11/16/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28109",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "RUPESH KUMAR",
+    "phone_no": "8877993041",
+    "customer_details": {
+      "LAST NAME": "KUMAR",
+      "EMAIL": "rupeshashika@Gmail.com",
+      "DOB": "7/2/1972",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35656",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Vinod Takalkar",
+    "phone_no": "9850704432",
+    "customer_details": {
+      "LAST NAME": "Takalkar",
+      "EMAIL": "VINODTAKALKAR807@GMAIL.COM",
+      "DOB": "6/5/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26020",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sanjay kolekar",
+    "phone_no": "9767608467",
+    "customer_details": {
+      "LAST NAME": "kolekar",
+      "EMAIL": "sahilkolekar4577@gmail.com",
+      "DOB": "3/1/1975",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "34030",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rajesh Rahul",
+    "phone_no": "8712773075",
+    "customer_details": {
+      "LAST NAME": "Rahul",
+      "EMAIL": "rahulrajesh.rock@gmail.com",
+      "DOB": "1/14/1998",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "32082",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rishabh Mehta",
+    "phone_no": "9425320105",
+    "customer_details": {
+      "LAST NAME": "Mehta",
+      "EMAIL": "rajesh@bengroup.co.in",
+      "DOB": "1/19/1995",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24244",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sathyamurthy C",
+    "phone_no": "9840434028",
+    "customer_details": {
+      "LAST NAME": "C",
+      "EMAIL": "SARTHYAMURTHY.C@LISMAIL.IN",
+      "DOB": "7/26/1965",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31600",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "HARDIK DESAI",
+    "phone_no": "6355425906",
+    "customer_details": {
+      "LAST NAME": "DESAI",
+      "EMAIL": "ARPITAPANCHOLI12345@GMAIL.COM",
+      "DOB": "12/4/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "32319",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sourav Ganguly",
+    "phone_no": "8939722412",
+    "customer_details": {
+      "LAST NAME": "Ganguly",
+      "EMAIL": "sganguly96@gmail.com",
+      "DOB": "12/24/1987",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33899",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SOHAN SINGH",
+    "phone_no": "7988430768",
+    "customer_details": {
+      "LAST NAME": "SINGH",
+      "EMAIL": "SOHAN4459@GMAIL.COM",
+      "DOB": "2/4/1991",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "32272",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Praveen LOONCHAND KANKARIYA",
+    "phone_no": "9925237200",
+    "customer_details": {
+      "LAST NAME": "LOONCHAND KANKARIYA",
+      "EMAIL": "praveenkankariya@gmail.com",
+      "DOB": "10/17/1976",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "52636",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mathankumar P",
+    "phone_no": "8056302497",
+    "customer_details": {
+      "LAST NAME": "P",
+      "EMAIL": "Mathansparkerz@gmail.com",
+      "DOB": "9/16/1993",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24055",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shubham Verma",
+    "phone_no": "8826282970",
+    "customer_details": {
+      "LAST NAME": "Verma",
+      "EMAIL": "vermajitendra58@gmail.com",
+      "DOB": "3/17/1998",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "38448",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SANJAY BARIYA",
+    "phone_no": "9377103483",
+    "customer_details": {
+      "LAST NAME": "BARIYA",
+      "EMAIL": "shreenathjitraders1976@gmail.com",
+      "DOB": "5/20/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28670",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Subodh Kumar",
+    "phone_no": "9864367665",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "ca.subodh@gmail.com",
+      "DOB": "2/28/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28171",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Geeta Sharma",
+    "phone_no": "7404374126",
+    "customer_details": {
+      "LAST NAME": "Sharma",
+      "EMAIL": "snishu646@Gmail.com",
+      "DOB": "4/3/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27589",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Prateek Soin",
+    "phone_no": "9521136688",
+    "customer_details": {
+      "LAST NAME": "Soin",
+      "EMAIL": "prateek.soin@gmail.com",
+      "DOB": "9/13/1992",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31991",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jaspal Singh",
+    "phone_no": "9811237100",
+    "customer_details": {
+      "LAST NAME": "Singh",
+      "EMAIL": "SUKHAMKOHLI25@Gmail.com",
+      "DOB": "9/23/1967",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "41836",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Pankaj Agarwal",
+    "phone_no": "9829167444",
+    "customer_details": {
+      "LAST NAME": "Agarwal",
+      "EMAIL": "pankaj.agarwal1@Gmail.Com",
+      "DOB": "5/1/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28905",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "FAKHRUDDIN VASANWALA",
+    "phone_no": "9427611383",
+    "customer_details": {
+      "LAST NAME": "VASANWALA",
+      "EMAIL": "fakhruddin.197810@gmail.com",
+      "DOB": "10/21/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33330",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "M SUBRAMANI",
+    "phone_no": "8050936828",
+    "customer_details": {
+      "LAST NAME": "SUBRAMANI",
+      "EMAIL": "suryasubramani45@Gmail.com",
+      "DOB": "11/14/1977",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "39457",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Lalit Kumar",
+    "phone_no": "7073211798",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "LALIT70732@Gmail.com",
+      "DOB": "12/21/1996",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "38094",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "JITESHBHAI CHHETA",
+    "phone_no": "9727749649",
+    "customer_details": {
+      "LAST NAME": "CHHETA",
+      "EMAIL": "Jiteshchheta3545@Gmail.com",
+      "DOB": "12/7/1979",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "34460",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sahanas Hoque",
+    "phone_no": "9678651015",
+    "customer_details": {
+      "LAST NAME": "Hoque",
+      "EMAIL": "MINTUHQ46@GMAIL.COM",
+      "DOB": "8/25/1999",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33990",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Hemant Patel",
+    "phone_no": "9425959171",
+    "customer_details": {
+      "LAST NAME": "Patel",
+      "EMAIL": "PKLPATEL@GMAIL.COM",
+      "DOB": "1/28/1975",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "38448",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mohit Dev",
+    "phone_no": "9967792941",
+    "customer_details": {
+      "LAST NAME": "Dev",
+      "EMAIL": "lohit.dev@gmail.com",
+      "DOB": "12/30/1996",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "43089",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Supriya Dhepe",
+    "phone_no": "8879232652",
+    "customer_details": {
+      "LAST NAME": "Dhepe",
+      "EMAIL": "SUPRIYADHEPE143@GMAIL.COM",
+      "DOB": "6/4/1997",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33291",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jayant Soni",
+    "phone_no": "9461688888",
+    "customer_details": {
+      "LAST NAME": "Soni",
+      "EMAIL": "jkbs.soni@Gmail.com",
+      "DOB": "12/14/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33253",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rushikesh Joshi",
+    "phone_no": "7020682849",
+    "customer_details": {
+      "LAST NAME": "Joshi",
+      "EMAIL": "RUSHIKESH326@GMAIL.COM",
+      "DOB": "2/18/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23011",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Nilang SANJAY BORE",
+    "phone_no": "9820329908",
+    "customer_details": {
+      "LAST NAME": "SANJAY BORE",
+      "EMAIL": "BORENILANG@GMAIL.COM",
+      "DOB": "6/6/2001",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "36905",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Panthangi Laxmipathi",
+    "phone_no": "9177424545",
+    "customer_details": {
+      "LAST NAME": "Laxmipathi",
+      "EMAIL": "LGOUD001@Gmail.com",
+      "DOB": "3/10/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28052",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Nitesh Paradkar",
+    "phone_no": "9773189500",
+    "customer_details": {
+      "LAST NAME": "Paradkar",
+      "EMAIL": "niteshparadkar10@gmail.com",
+      "DOB": "7/10/1992",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31981",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "25/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "PRAVIN CHANDRABHAN WANI",
+    "phone_no": "9503875306",
+    "customer_details": {
+      "LAST NAME": "CHANDRABHAN WANI",
+      "EMAIL": "ADV.PRAVINWANI@GMAIL.COM",
+      "DOB": "5/14/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23011",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "PRAHLAD SINGH",
+    "phone_no": "9991085625",
+    "customer_details": {
+      "LAST NAME": "SINGH",
+      "EMAIL": "prahladsingh5625@gmail.com",
+      "DOB": "12/8/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30156",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sanivarapu Reddy",
+    "phone_no": "8332974756",
+    "customer_details": {
+      "LAST NAME": "Reddy",
+      "EMAIL": "breddy002@gmail.com",
+      "DOB": "7/4/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "21840",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "MR TAURO",
+    "phone_no": "8105572368",
+    "customer_details": {
+      "LAST NAME": "TAURO",
+      "EMAIL": "wilfred74@gmail.com",
+      "DOB": "10/10/1974",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35656",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Himanshu Singh",
+    "phone_no": "7760811007",
+    "customer_details": {
+      "LAST NAME": "Singh",
+      "EMAIL": "hemu2529@gmail.com",
+      "DOB": "11/25/1977",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22448",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Jain KUMAR",
+    "phone_no": "9137354603",
+    "customer_details": {
+      "LAST NAME": "KUMAR",
+      "EMAIL": "hiteshmjain0@gmail.com",
+      "DOB": "5/30/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24890",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shirish LOHANA",
+    "phone_no": "9822589803",
+    "customer_details": {
+      "LAST NAME": "LOHANA",
+      "EMAIL": "LOHANASHIRISH@GMAIL.COM",
+      "DOB": "10/3/1960",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "46347",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Jasmin PATEL",
+    "phone_no": "7874888322",
+    "customer_details": {
+      "LAST NAME": "PATEL",
+      "EMAIL": "PATELJG355@GMAIL.COM",
+      "DOB": "12/17/1993",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "34460",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Krishna Madhavi",
+    "phone_no": "9819917677",
+    "customer_details": {
+      "LAST NAME": "Madhavi",
+      "EMAIL": "Madhavipranay247@Gmail.com",
+      "DOB": "6/12/1970",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33061",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rameshkumar Pal",
+    "phone_no": "9004162648",
+    "customer_details": {
+      "LAST NAME": "Pal",
+      "EMAIL": "palr62993@gmail.com",
+      "DOB": "5/12/1987",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26250",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "GANESH SABE",
+    "phone_no": "9860535350",
+    "customer_details": {
+      "LAST NAME": "SABE",
+      "EMAIL": "ganesh.sabe@gmail.com",
+      "DOB": "9/11/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25541",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SHAMI M",
+    "phone_no": "8848401835",
+    "customer_details": {
+      "LAST NAME": "M",
+      "EMAIL": "shamisagar6@gmail.com",
+      "DOB": "12/29/1975",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "19132",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Abhijeet Bajpai",
+    "phone_no": "8871044556",
+    "customer_details": {
+      "LAST NAME": "Bajpai",
+      "EMAIL": "abhijeet.bajpai01@gmail.com",
+      "DOB": "6/1/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "40084",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "YOGESHKUMAR CHAUHAN",
+    "phone_no": "9426635582",
+    "customer_details": {
+      "LAST NAME": "CHAUHAN",
+      "EMAIL": "ync9555@gmail.com",
+      "DOB": "11/23/1965",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "64417",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rakesh Arora",
+    "phone_no": "8283841547",
+    "customer_details": {
+      "LAST NAME": "Arora",
+      "EMAIL": "rakeshrubydr@gmail.com",
+      "DOB": "1/1/1955",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "65823",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mr Mandeep",
+    "phone_no": "8600518162",
+    "customer_details": {
+      "LAST NAME": "Mandeep",
+      "EMAIL": "hmandeepyadav@gmail.com",
+      "DOB": "1/20/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "29223",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ravi Shyam",
+    "phone_no": "8160264412",
+    "customer_details": {
+      "LAST NAME": "Shyam",
+      "EMAIL": "ravis30698@gmail.com",
+      "DOB": "6/30/1998",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "37066",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Abhishek Gupta",
+    "phone_no": "9315498021",
+    "customer_details": {
+      "LAST NAME": "Gupta",
+      "EMAIL": "ABHI.GUPTA76509@GMAIL.COM",
+      "DOB": "12/11/1993",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31349",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Amol Ahir",
+    "phone_no": "9860363359",
+    "customer_details": {
+      "LAST NAME": "Ahir",
+      "EMAIL": "AMOLAHIR303@GMAIL.COM",
+      "DOB": "6/3/1984",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "36074",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "SUDHIR INGALE",
+    "phone_no": "9881723120",
+    "customer_details": {
+      "LAST NAME": "INGALE",
+      "EMAIL": "SVINGALE07@Gmail.com",
+      "DOB": "5/13/1966",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37787",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Basant Jain",
+    "phone_no": "9137558410",
+    "customer_details": {
+      "LAST NAME": "Jain",
+      "EMAIL": "VASANTJAIN643@GMAIL.COM",
+      "DOB": "6/4/1984",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "52293",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Hiteshkumar Jirawala",
+    "phone_no": "9898263498",
+    "customer_details": {
+      "LAST NAME": "Jirawala",
+      "EMAIL": "drjirawala@Gmail.com",
+      "DOB": "10/24/1978",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37176",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "GAURANGBHAI SHAH",
+    "phone_no": "9664609661",
+    "customer_details": {
+      "LAST NAME": "SHAH",
+      "EMAIL": "jatinpatel.sokhda@gmail.com",
+      "DOB": "10/5/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23371",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "ANIL WAGHERE",
+    "phone_no": "9822399989",
+    "customer_details": {
+      "LAST NAME": "WAGHERE",
+      "EMAIL": "anilwaghere12345@gmail.com",
+      "DOB": "6/1/1966",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "43590",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Narayandas Chhabadiya",
+    "phone_no": "8085334444",
+    "customer_details": {
+      "LAST NAME": "Chhabadiya",
+      "EMAIL": "Mohanchhabariya0056@gmail.com",
+      "DOB": "6/1/1956",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "61243",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Ruchi Gupta",
+    "phone_no": "8851040500",
+    "customer_details": {
+      "LAST NAME": "Gupta",
+      "EMAIL": "RUCHIGUPTA698@GMAIL.COM",
+      "DOB": "9/27/1982",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "18525",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Devika G",
+    "phone_no": "8590800245",
+    "customer_details": {
+      "LAST NAME": "G",
+      "EMAIL": "devika131192@gmail.com",
+      "DOB": "11/13/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24509",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Suraj Gupta",
+    "phone_no": "8233692695",
+    "customer_details": {
+      "LAST NAME": "Gupta",
+      "EMAIL": "guptasuraj25041995@gmail.com",
+      "DOB": "4/25/1995",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "47332",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Arun Magar",
+    "phone_no": "9371148990",
+    "customer_details": {
+      "LAST NAME": "Magar",
+      "EMAIL": "arunmagar1230@gmail.com",
+      "DOB": "8/6/1975",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "37289",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "RAVINDRA KESHARIYA",
+    "phone_no": "9826216012",
+    "customer_details": {
+      "LAST NAME": "KESHARIYA",
+      "EMAIL": "hemantvema2711@gmail.com",
+      "DOB": "9/5/1972",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35656",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SANDEEP BADHAN",
+    "phone_no": "9855675173",
+    "customer_details": {
+      "LAST NAME": "BADHAN",
+      "EMAIL": "Sandeepbadhan75173@gmail.com",
+      "DOB": "7/21/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25541",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Rajendra PRATAP SURYAVANSHI",
+    "phone_no": "9920354394",
+    "customer_details": {
+      "LAST NAME": "PRATAP SURYAVANSHI",
+      "EMAIL": "rasika_suryavanshi@rediffmail.com",
+      "DOB": "1/26/1965",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "54476",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Vishal Bhawel",
+    "phone_no": "6260011078",
+    "customer_details": {
+      "LAST NAME": "Bhawel",
+      "EMAIL": "bhawelvishal935@gmail.com",
+      "DOB": "7/26/2003",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "39025",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "SURAMPUDI CHALLARAO",
+    "phone_no": "9480942952",
+    "customer_details": {
+      "LAST NAME": "CHALLARAO",
+      "EMAIL": "challarao.sv@gmail.com",
+      "DOB": "2/18/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23144",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Hitendra Chauhan",
+    "phone_no": "8527474848",
+    "customer_details": {
+      "LAST NAME": "Chauhan",
+      "EMAIL": "HITENDRA.CHAUHAN@GMAIL.COM",
+      "DOB": "7/23/1972",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "39040",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Geethu .",
+    "phone_no": "9947312832",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "GEETHUJAYAJITH428@GMAIL.COM",
+      "DOB": "5/23/1992",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30377",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Anil Atasniya",
+    "phone_no": "9826032424",
+    "customer_details": {
+      "LAST NAME": "Atasniya",
+      "EMAIL": "SHIVANGIATASNIA24@GMAIL.COM",
+      "DOB": "9/9/1966",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "37090",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Shreya Shinde",
+    "phone_no": "7058771268",
+    "customer_details": {
+      "LAST NAME": "Shinde",
+      "EMAIL": "SANKETSHINDE6294@GMAIL.COM",
+      "DOB": "11/9/1996",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31114",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Gini Kurian",
+    "phone_no": "9048384512",
+    "customer_details": {
+      "LAST NAME": "Kurian",
+      "EMAIL": "kuriandavid69@gmail.com",
+      "DOB": "12/12/1975",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "19742",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Praphulla Shankar Gaikwad",
+    "phone_no": "9922351352",
+    "customer_details": {
+      "LAST NAME": "Shankar Gaikwad",
+      "EMAIL": "Praphulla.gaikwad@gmail.com",
+      "DOB": "7/20/1975",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "26095",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Nivin Joseph",
+    "phone_no": "9846538011",
+    "customer_details": {
+      "LAST NAME": "Joseph",
+      "EMAIL": "nivinjosephks@gmail.com",
+      "DOB": "5/30/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "19981",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Hariharasekaran R",
+    "phone_no": "7904078814",
+    "customer_details": {
+      "LAST NAME": "R",
+      "EMAIL": "IRONCOREMFE@GMAIL.COM",
+      "DOB": "1/24/1991",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "41836",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Mahesh Saini",
+    "phone_no": "9826041777",
+    "customer_details": {
+      "LAST NAME": "Saini",
+      "EMAIL": "SSSAINI26@GMAIL.COM",
+      "DOB": "6/21/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "29383",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Laxmi Kant",
+    "phone_no": "9813070003",
+    "customer_details": {
+      "LAST NAME": "Kant",
+      "EMAIL": "laxmikant.2003@gmail.com",
+      "DOB": "5/26/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "33990",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Manish Sharma",
+    "phone_no": "8384037633",
+    "customer_details": {
+      "LAST NAME": "Sharma",
+      "EMAIL": "krystalajaysharma@gmail.com",
+      "DOB": "2/13/1998",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "58804",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Tarun Dawra",
+    "phone_no": "9999559570",
+    "customer_details": {
+      "LAST NAME": "Dawra",
+      "EMAIL": "tarundawra@yahoo.com",
+      "DOB": "5/15/1995",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27683",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "29/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Vikas Singhania",
+    "phone_no": "9501423610",
+    "customer_details": {
+      "LAST NAME": "Singhania",
+      "EMAIL": "Vikas_singhania@Yahoo.com",
+      "DOB": "6/2/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22023",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 2
+  },
+  {
+    "customer_name": "Kavita Ashok Patil",
+    "phone_no": "7263846521",
+    "customer_details": {
+      "LAST NAME": "Ashok Patil",
+      "EMAIL": "dangalpatil36@Gmail.com",
+      "DOB": "8/28/1990",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "36538",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Abhilash Jose",
+    "phone_no": "7034829113",
+    "customer_details": {
+      "LAST NAME": "Jose",
+      "EMAIL": "Shaijaabhilash@gmail.com",
+      "DOB": "5/25/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "32966",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Mahendra Patil",
+    "phone_no": "8275702571",
+    "customer_details": {
+      "LAST NAME": "Patil",
+      "EMAIL": "Hiteshpatil1960@Gmail.com",
+      "DOB": "6/26/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23132",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "K Vijayaragavalu",
+    "phone_no": "9994325258",
+    "customer_details": {
+      "LAST NAME": "Vijayaragavalu",
+      "EMAIL": "vijayaraagav@Gmail.com",
+      "DOB": "10/2/1979",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "37407",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Patan Khan",
+    "phone_no": "9703102060",
+    "customer_details": {
+      "LAST NAME": "Khan",
+      "EMAIL": "Firoz1020khan@Gmail.com",
+      "DOB": "1/1/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "23011",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "VINOD SHARMA",
+    "phone_no": "9871444507",
+    "customer_details": {
+      "LAST NAME": "SHARMA",
+      "EMAIL": "sharma.vinodkr23@gmail.com",
+      "DOB": "9/19/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "39316",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "NARENDRA MORE",
+    "phone_no": "9926811590",
+    "customer_details": {
+      "LAST NAME": "MORE",
+      "EMAIL": "MORENARENDRA83@GMAIL.COM",
+      "DOB": "1/12/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25541",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "Sanjay Prasad",
+    "phone_no": "9447937413",
+    "customer_details": {
+      "LAST NAME": "Prasad",
+      "EMAIL": "rajprasad194@gmail.com",
+      "DOB": "11/23/1996",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "41836",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Naseer Ahamed",
+    "phone_no": "9448683187",
+    "customer_details": {
+      "LAST NAME": "Ahamed",
+      "EMAIL": "naseerahamedsgr@gmail.com",
+      "DOB": "5/2/1969",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "32821",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "SHYAM .",
+    "phone_no": "9711241252",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "shyamrwt474@Gmail.com",
+      "DOB": "3/23/1997",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "32899",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "19/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Jigneshkumar Shah",
+    "phone_no": "9998746274",
+    "customer_details": {
+      "LAST NAME": "Shah",
+      "EMAIL": "JIGNESHSHAH65@GMAIL.COM",
+      "DOB": "7/20/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "30912",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Ravi Bansal",
+    "phone_no": "9982480804",
+    "customer_details": {
+      "LAST NAME": "Bansal",
+      "EMAIL": "ravibansal.mca@gmail.com",
+      "DOB": "10/22/1985",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "33259",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Pratik Kumar Sahoo",
+    "phone_no": "7008310334",
+    "customer_details": {
+      "LAST NAME": "Kumar Sahoo",
+      "EMAIL": "foodtalky@gmail.com",
+      "DOB": "1/5/2000",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "39263",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Varun M",
+    "phone_no": "9514841000",
+    "customer_details": {
+      "LAST NAME": "M",
+      "EMAIL": "mail2varunmohan@Yahoo.com",
+      "DOB": "9/17/1984",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "22023",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "20/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Mohammad ALTAF GOURI",
+    "phone_no": "8094522952",
+    "customer_details": {
+      "LAST NAME": "ALTAF GOURI",
+      "EMAIL": "Mayank10oct.Mb@Gmail.com",
+      "DOB": "4/16/1988",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27014",
+      "INSURED COUNT": "6",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Manoj C",
+    "phone_no": "8220009096",
+    "customer_details": {
+      "LAST NAME": "C",
+      "EMAIL": "ceramiccoatcars2014@gmail.com",
+      "DOB": "4/26/1980",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28501",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "CHANUBARA BEGUM",
+    "phone_no": "9310348436",
+    "customer_details": {
+      "LAST NAME": "BEGUM",
+      "EMAIL": "Kaliapk520@Gmail.com",
+      "DOB": "3/1/1991",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "44276",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Basant Pandey",
+    "phone_no": "8368285906",
+    "customer_details": {
+      "LAST NAME": "Pandey",
+      "EMAIL": "basant88pandey26@gmail.com",
+      "DOB": "4/28/1991",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "35977",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "SAMI KASIVISWANADHAM",
+    "phone_no": "9000150290",
+    "customer_details": {
+      "LAST NAME": "KASIVISWANADHAM",
+      "EMAIL": "samikasi04@gmail.com",
+      "DOB": "5/4/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27653",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Dipak Bhogre",
+    "phone_no": "9879265808",
+    "customer_details": {
+      "LAST NAME": "Bhogre",
+      "EMAIL": "deepakbhogre@gmail.com",
+      "DOB": "8/15/1984",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "27502",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "SHAILESH SRIVASTAVA",
+    "phone_no": "9839326835",
+    "customer_details": {
+      "LAST NAME": "SRIVASTAVA",
+      "EMAIL": "SHAILESHSRIVASTAVA321@GMAIL.COM",
+      "DOB": "11/28/1978",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "25963",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "22/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Naveen Kumar",
+    "phone_no": "8130650343",
+    "customer_details": {
+      "LAST NAME": "Kumar",
+      "EMAIL": "Sharma.naveen055@gmail.com",
+      "DOB": "4/4/1985",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31379",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "21/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Kailash Narain",
+    "phone_no": "8368492405",
+    "customer_details": {
+      "LAST NAME": "Narain",
+      "EMAIL": "kapil9868k.a@gmail.com",
+      "DOB": "1/1/1964",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "56842",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "KAMLESH MUDALIAR",
+    "phone_no": "7990076645",
+    "customer_details": {
+      "LAST NAME": "MUDALIAR",
+      "EMAIL": "mudaliarkamlesh007@Gmail.com",
+      "DOB": "6/7/1999",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "37289",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "23/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "M .",
+    "phone_no": "8778591092",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "purusothamangowtham@gmail.com",
+      "DOB": "6/15/1991",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "31379",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "JIGNESH BHATT",
+    "phone_no": "8160609188",
+    "customer_details": {
+      "LAST NAME": "BHATT",
+      "EMAIL": "JIGNESHVBHATT9@Gmail.com",
+      "DOB": "8/10/1976",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "34435",
+      "INSURED COUNT": "4",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "AVADHESHTHUMBER .",
+    "phone_no": "9737093536",
+    "customer_details": {
+      "LAST NAME": ".",
+      "EMAIL": "AVADHESH.THUMBER@GMAIL.COM",
+      "DOB": "2/14/1997",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "24067",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "24/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "SABITHA SAJU",
+    "phone_no": "9035966351",
+    "customer_details": {
+      "LAST NAME": "SAJU",
+      "EMAIL": "sabitha.chacko09@Gmail.com",
+      "DOB": "4/9/1986",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "28999",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "26/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Pranavi Chauhan",
+    "phone_no": "9548955268",
+    "customer_details": {
+      "LAST NAME": "Chauhan",
+      "EMAIL": "Pranavisingh14@gmail.com",
+      "DOB": "2/14/1998",
+      "Type": "Individual",
+      "Tenure": "1",
+      "Premium": "26191",
+      "INSURED COUNT": "2",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "27/11/2026",
+    "attempt_count": 1
+  },
+  {
+    "customer_name": "ramesh jain",
+    "phone_no": "8288880767",
+    "customer_details": {
+      "LAST NAME": "jain",
+      "EMAIL": "rksons1999@gmail.com",
+      "DOB": "2/14/1963",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "56502",
+      "INSURED COUNT": "3",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Nidhi Jain",
+    "phone_no": "9811676442",
+    "customer_details": {
+      "LAST NAME": "Jain",
+      "EMAIL": "aniljain.3006@gmail.com",
+      "DOB": "1/1/1983",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "29347",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Ranjit B",
+    "phone_no": "9916991550",
+    "customer_details": {
+      "LAST NAME": "B",
+      "EMAIL": "ranjitkumar9916@gmail.com",
+      "DOB": "4/1/1991",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "35435",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "28/11/2026",
+    "attempt_count": 0
+  },
+  {
+    "customer_name": "Gaurav Bhardwaj",
+    "phone_no": "8814800980",
+    "customer_details": {
+      "LAST NAME": "Bhardwaj",
+      "EMAIL": "BHARDWAJ_GAURAV@REDIFFMAIL.COM",
+      "DOB": "3/26/1981",
+      "Type": "Family Floater",
+      "Tenure": "1",
+      "Premium": "31379",
+      "INSURED COUNT": "5",
+      "Company": "BIRLA",
+      "Product pitch": "CARE",
+      "source": "NR"
+    },
+    "expiry_date": "29/11/2026",
+    "attempt_count": 0
+  }
+]

@@ -6,7 +6,7 @@ import LoginFormEmailId from "../../components/loginFormEmailId";
 import SocialLoginButtons from "../../components/SocialLoginButtons";
 import HeroSection from "../../components/HeroSection";
 import ErrorNotification from "../../components/ErrorNotification";
-import NoActiveAccountModal from "../../components/NoActiveAccountModal";
+import NoActiveAccountModal from "@/components/NoActiveAccountModal";
 import { supabase } from "../../lib/supabase";
 import { logSystemEvent } from "../../lib/monitoring";
 import { notifyActivationToFlutter } from "../../lib/flutterBridge";

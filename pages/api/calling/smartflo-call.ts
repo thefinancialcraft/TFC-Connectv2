@@ -32,6 +32,8 @@ interface ApiResponse {
   data?: unknown;
   ref_id?: string | null;
   call_id?: string | null;
+  caller_id?: string | null;
+  request_payload?: Record<string, unknown> | null;
   metadata?: Record<string, string>;
 }
 
@@ -286,6 +288,14 @@ export default async function handler(
     custom_identifier: customIdentifier,
   };
 
+  console.log('\n======================================================');
+  console.log('📞 [SMARTFLO OUTBOUND CALL DISPATCH]');
+  console.log('🎯 Destination Number :', destinationNumber);
+  console.log('🆔 Caller ID (DID)    :', callerId);
+  console.log('👤 Agent Number       :', agentNumber);
+  console.log('📦 Request Body Sent  :', JSON.stringify(requestBody, null, 2));
+  console.log('======================================================\n');
+
   const smartfloHeaders: Record<string, string> = {
     Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
@@ -321,14 +331,23 @@ export default async function handler(
       ? data as Record<string, unknown>
       : {};
 
+    console.log('[SMARTFLO OUTBOUND CALL RESPONSE RECEIVED]:', {
+      status: smartfloResponse.status,
+      caller_id: callerId,
+      responseData,
+    });
+
     if (!smartfloResponse.ok || responseData.success === false) {
       console.error('[Smartflo CRM Click-to-Call] Call initiation rejected by Smartflo:', {
         status: smartfloResponse.status,
+        caller_id: callerId,
         responseData,
       });
       return res.status(502).json({
         success: false,
         message: typeof responseData.message === 'string' ? responseData.message : 'Smartflo could not queue the call.',
+        caller_id: callerId,
+        request_payload: requestBody,
         data: responseData,
       });
     }
@@ -387,6 +406,8 @@ export default async function handler(
       message: typeof responseData.message === 'string' ? responseData.message : 'Originate successfully queued',
       ref_id: refId,
       call_id: callId,
+      caller_id: callerId,
+      request_payload: requestBody,
       metadata: {
         'customer-id': customerId,
         'rynxly_user_id': rynxlyUserId,

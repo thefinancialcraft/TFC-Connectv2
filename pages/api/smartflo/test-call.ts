@@ -113,14 +113,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     ? (selectedAgent.smartflo_agent_id?.trim() || selectedAgent.extension?.trim())
     : (selectedAgent.extension?.trim() || selectedAgent.smartflo_agent_id?.trim());
 
-  console.info('[Smartflo Click-to-Call] Routing target:', {
-    agent_number: targetAgentNumber,
-    agent_id: selectedAgent.smartflo_agent_id,
-    extension: selectedAgent.extension,
-    destination_number: destinationNumber,
-    caller_id: callerId,
-  });
-
   const requestBody = {
     agent_number: targetAgentNumber,
     destination_number: destinationNumber,
@@ -128,6 +120,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     caller_id: callerId,
     custom_identifier: 'test-002',
   };
+
+  console.log('\n======================================================');
+  console.log('📞 [SMARTFLO TEST-CALL DISPATCH]');
+  console.log('🎯 Destination Number :', destinationNumber);
+  console.log('🆔 Caller ID (DID)    :', callerId);
+  console.log('👤 Agent Number       :', targetAgentNumber);
+  console.log('📦 Request Body Sent  :', JSON.stringify(requestBody, null, 2));
+  console.log('======================================================\n');
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 15000);
 
@@ -154,11 +154,21 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const responseData = data && typeof data === 'object' && !Array.isArray(data)
       ? data as Record<string, unknown>
       : {};
+
+    console.log('[SMARTFLO TEST-CALL RESPONSE RECEIVED]:', {
+      status: smartfloResponse.status,
+      caller_id: callerId,
+      responseData,
+    });
+
     if (!smartfloResponse.ok || responseData.success === false) {
       return res.status(502).json({
         success: false,
         error: typeof responseData.message === 'string' ? responseData.message : 'Smartflo could not queue the test call.',
         status: smartfloResponse.status,
+        caller_id: callerId,
+        request_payload: requestBody,
+        data: responseData,
       });
     }
 
@@ -184,6 +194,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       message: typeof responseData.message === 'string' ? responseData.message : 'Originate successfully queued',
       ref_id: typeof responseData.ref_id === 'string' ? responseData.ref_id : null,
       call_id: callId,
+      caller_id: callerId,
+      request_payload: requestBody,
       activated: !activationError,
     });
   } catch (error) {

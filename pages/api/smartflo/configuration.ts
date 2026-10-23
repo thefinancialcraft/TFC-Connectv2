@@ -103,11 +103,15 @@ async function updateUserSmartfloMapping(
 ): Promise<boolean> {
   const { data: profile, error: profileError } = await smartfloAdminClient!
     .from('user_profiles')
-    .select('calling_provider')
-    .eq('user_id', userId)
+    .select('id, user_id, calling_provider')
     .eq('organization_id', organizationId)
+    .or(`user_id.eq.${userId},id.eq.${userId}`)
     .maybeSingle();
-  if (profileError || !profile) return false;
+
+  if (profileError || !profile) {
+    console.warn(`[Smartflo Config] User profile not found for user ${userId} in org ${organizationId}`);
+    return false;
+  }
 
   const provider = profile.calling_provider && typeof profile.calling_provider === 'object'
     ? profile.calling_provider as Record<string, unknown>
@@ -118,14 +122,23 @@ async function updateUserSmartfloMapping(
   const smartflo = provider.smartflo && typeof provider.smartflo === 'object'
     ? provider.smartflo as Record<string, unknown>
     : {};
+
+  const isMappingActive = Boolean(agentId);
+  const smartfloInUse = isMappingActive
+    ? (smartflo.in_use !== undefined ? Boolean(smartflo.in_use) : true)
+    : false;
+
   const callingProvider = {
     ...provider,
-    sim: { enable: sim.enable === true, in_use: sim.in_use === true },
+    sim: {
+      enable: sim.enable !== undefined ? Boolean(sim.enable) : true,
+      in_use: isMappingActive ? !smartfloInUse : true,
+    },
     smartflo: {
       ...smartflo,
-      enable: smartflo.enable === true,
-      in_use: smartflo.in_use === true,
-      is_mapped: Boolean(agentId),
+      enable: isMappingActive,
+      in_use: smartfloInUse,
+      is_mapped: isMappingActive,
       agent_id: agentId,
     },
   };
@@ -133,9 +146,14 @@ async function updateUserSmartfloMapping(
   const { error: updateError } = await smartfloAdminClient!
     .from('user_profiles')
     .update({ calling_provider: callingProvider })
-    .eq('user_id', userId)
-    .eq('organization_id', organizationId);
-  return !updateError;
+    .eq('id', profile.id);
+
+  if (updateError) {
+    console.error(`[Smartflo Config] Error updating calling_provider for user ${userId}:`, updateError);
+    return false;
+  }
+
+  return true;
 }
 
 async function verifySmartfloToken(token: string) {
@@ -574,15 +592,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(400).json({ error: 'Provide a valid Smartflo agent and CRM user mapping.' });
       }
 
+      let targetAuthUserId: string | null = null;
       if (userId) {
         const { data: crmUser, error: crmUserError } = await smartfloAdminClient
           .from('user_profiles')
-          .select('user_id')
-          .eq('user_id', userId)
+          .select('id, user_id')
           .eq('organization_id', admin.organizationId)
+          .or(`user_id.eq.${userId},id.eq.${userId}`)
           .maybeSingle();
         if (crmUserError) return res.status(500).json({ error: 'Unable to verify the CRM user mapping.' });
         if (!crmUser) return res.status(404).json({ error: 'CRM user not found in this organization.' });
+        targetAuthUserId = (crmUser.user_id || crmUser.id) as string;
       }
 
       const { data: currentAgent, error: currentAgentError } = await smartfloAdminClient
@@ -596,7 +616,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const previousUserId = currentAgent.user_id as string | null;
       let previousUserAgentId: string | null = null;
-      if (previousUserId && previousUserId !== userId) {
+      if (previousUserId && previousUserId !== targetAuthUserId) {
         const { data: otherMappings, error: otherMappingsError } = await smartfloAdminClient
           .from('user_smartflo_details')
           .select('smartflo_agent_id')
@@ -610,7 +630,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const { data: updatedAgent, error: mappingError } = await smartfloAdminClient
         .from('user_smartflo_details')
-        .update({ user_id: userId, is_mapped: Boolean(userId) })
+        .update({ user_id: targetAuthUserId, is_mapped: Boolean(targetAuthUserId) })
         .eq('organization_id', admin.organizationId)
         .eq('smartflo_agent_id', agentId)
         .select('smartflo_agent_id, user_id, is_mapped')
@@ -618,7 +638,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (mappingError) return res.status(500).json({ error: 'Unable to save the CRM user mapping.' });
       if (!updatedAgent) return res.status(404).json({ error: 'Smartflo agent not found in this organization.' });
 
-      if (previousUserId && previousUserId !== userId) {
+      if (previousUserId && previousUserId !== targetAuthUserId) {
         const previousUserUpdated = await updateUserSmartfloMapping(
           admin.organizationId,
           previousUserId,
@@ -626,8 +646,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         );
         if (!previousUserUpdated) return res.status(500).json({ error: 'Mapping saved, but previous user provider details could not be cleared.' });
       }
-      if (userId) {
-        const userUpdated = await updateUserSmartfloMapping(admin.organizationId, userId, agentId);
+      if (targetAuthUserId) {
+        // Unassign any other Smartflo agent in this org that was previously mapped to this targetAuthUserId
+        await smartfloAdminClient
+          .from('user_smartflo_details')
+          .update({ user_id: null, is_mapped: false })
+          .eq('organization_id', admin.organizationId)
+          .eq('user_id', targetAuthUserId)
+          .neq('smartflo_agent_id', agentId);
+
+        const userUpdated = await updateUserSmartfloMapping(admin.organizationId, targetAuthUserId, agentId);
         if (!userUpdated) return res.status(500).json({ error: 'Mapping saved, but user provider details could not be updated.' });
       }
 
