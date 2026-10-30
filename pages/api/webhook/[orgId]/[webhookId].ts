@@ -321,19 +321,42 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       try {
         let agentRecord: any = null;
 
-        // Priority 1: Check Assigned Agent
-        if (assignedAgentUserId) {
-          const { data: assignedAgentRec } = await smartfloAdminClient
+        // Helper to find smartflo agent by user_id or profile id
+        const findAgentForUser = async (targetId: string) => {
+          if (!targetId) return null;
+          const { data: direct } = await smartfloAdminClient!
             .from('user_smartflo_details')
             .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
             .eq('organization_id', organizationId)
-            .eq('user_id', assignedAgentUserId)
+            .eq('user_id', targetId)
             .maybeSingle();
+          if (direct) return direct;
 
+          const { data: profile } = await smartfloAdminClient!
+            .from('user_profiles')
+            .select('id, user_id')
+            .eq('organization_id', organizationId)
+            .or(`id.eq.${targetId},user_id.eq.${targetId}`)
+            .maybeSingle();
+          if (profile?.user_id && profile.user_id !== targetId) {
+            const { data: byAuth } = await smartfloAdminClient!
+              .from('user_smartflo_details')
+              .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
+              .eq('organization_id', organizationId)
+              .eq('user_id', profile.user_id)
+              .maybeSingle();
+            if (byAuth) return byAuth;
+          }
+          return null;
+        };
+
+        // Priority 1: Check Assigned Agent
+        if (assignedAgentUserId) {
+          const assignedAgentRec = await findAgentForUser(assignedAgentUserId);
           if (assignedAgentRec) {
             agentRecord = assignedAgentRec;
             routingSource = 'assigned_agent';
-            logStep(`[Webhook-Dialplan:Step 3] 🎯 Target Agent: Assigned User (${assignedAgentUserId})`);
+            logStep(`[Webhook-Dialplan:Step 3] 🎯 Target Agent: Assigned User (${assignedAgentUserId}) -> Ext=${assignedAgentRec.extension}`);
           } else {
             logStep(`[Webhook-Dialplan:Step 3] ⚠️ Assigned agent (${assignedAgentUserId}) has no Smartflo mapping. Checking Last Updated By...`);
           }
@@ -341,17 +364,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Priority 2: If Assigned Agent is null/unmapped, Check Last Updated By User
         if (!agentRecord && lastUpdatedByUserId) {
-          const { data: lastUpdaterRec } = await smartfloAdminClient
-            .from('user_smartflo_details')
-            .select('extension, follow_me_number, smartflo_agent_id, user_id, c2c_routing, agent_name, caller_id, login_id, intercom, smartflo_user_id')
-            .eq('organization_id', organizationId)
-            .eq('user_id', lastUpdatedByUserId)
-            .maybeSingle();
-
+          const lastUpdaterRec = await findAgentForUser(lastUpdatedByUserId);
           if (lastUpdaterRec) {
             agentRecord = lastUpdaterRec;
             routingSource = 'last_updated_by';
-            logStep(`[Webhook-Dialplan:Step 3] 🔄 Routing to Last Updated By User (${lastUpdatedByUserId})`);
+            logStep(`[Webhook-Dialplan:Step 3] 🔄 Routing to Last Updated By User (${lastUpdatedByUserId}) -> Ext=${lastUpdaterRec.extension}`);
           } else {
             logStep(`[Webhook-Dialplan:Step 3] ⚠️ Last Updated By user (${lastUpdatedByUserId}) has no Smartflo mapping. Falling back to Fallback Agent...`);
           }

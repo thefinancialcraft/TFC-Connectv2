@@ -1,5 +1,5 @@
-
 import React from 'react';
+import { isUserPlanExpired } from '../lib/authService';
 
 export default function ExpiryBadge({ expireDate, onClick }: { expireDate: string | null; onClick?: () => void }) {
   if (!expireDate) return (
@@ -21,7 +21,7 @@ export default function ExpiryBadge({ expireDate, onClick }: { expireDate: strin
   let iconClass = 'fi-rr-calendar-clock';
   let text = `${diffDays} Days Left`;
 
-  if (diffDays < 0) {
+  if (diffDays <= 0 || isUserPlanExpired(expireDate)) {
      colorClass = 'bg-red-100 text-red-600';
      iconClass = 'fi-rr-cross-circle';
      text = 'Expired';
@@ -40,4 +40,3 @@ export default function ExpiryBadge({ expireDate, onClick }: { expireDate: strin
     </span>
   );
 }
-

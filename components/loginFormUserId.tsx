@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { supabase } from "../lib/supabase";
+import { isUserPlanExpired } from "../lib/authService";
 import ForgotUserIdForm from "./ForgotUserIdForm";
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import { showError } from "../lib/dialogUtils";
@@ -141,23 +142,44 @@ export default function LoginFormUserId({
           status: profileData?.status
         });
 
-        if (profileData?.profile_complete === false) {
-          console.log("➡️ [Login] Redirecting to profile completion");
-          router.push("/profile-completion");
-          return;
-        }
-
-        // 🛡️ STATUS CHECK: Prevent login if account is inactive or expired
+        // 🛡️ STATUS CHECK: Prevent login if account is expired or inactive
+        const isExpired = isUserPlanExpired(profileData?.expire_at);
         const isInactive = profileData?.status === 'inactive';
-        const isExpired = profileData?.expire_at && new Date(profileData.expire_at) < new Date();
 
-        if (isInactive || isExpired) {
-          console.warn("🚫 [Login] Account inactive or expired. Signing out.");
+        if (isExpired) {
+          console.warn("🚫 [Login] User plan expired (expire_at). Signing out.");
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('plan_expired_signout', 'true');
+            sessionStorage.removeItem('active_user_profile');
+            localStorage.removeItem('cached_user_profile');
+            window.dispatchEvent(new CustomEvent('tfc-plan-expired'));
+          }
           await supabase.auth.signOut();
-          const statusError = "Your account is expired or inactive. Please contact your admin.";
+          const statusError = "Your plan is expired. Please contact your admin for renew.";
           setError(statusError);
           onError?.(statusError);
           setIsLoading(false);
+          return;
+        }
+
+        if (isInactive) {
+          console.warn("🚫 [Login] Account inactive. Signing out.");
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('manual_logout_intended', 'true');
+            sessionStorage.removeItem('active_user_profile');
+            localStorage.removeItem('cached_user_profile');
+          }
+          await supabase.auth.signOut();
+          const statusError = "Your account is inactive. Please contact your admin.";
+          setError(statusError);
+          onError?.(statusError);
+          setIsLoading(false);
+          return;
+        }
+
+        if (profileData?.profile_complete === false) {
+          console.log("➡️ [Login] Redirecting to profile completion");
+          router.push("/profile-completion");
           return;
         }
 

@@ -8,6 +8,8 @@ export interface UserContextType {
   error: string | null;
   statusMessage?: string;
   sessionExpired: boolean;
+  planExpired: boolean;
+  setPlanExpired: (val: boolean) => void;
   refetchUser: (force?: boolean) => Promise<void>;
 }
 
@@ -18,6 +20,8 @@ export const UserContext = createContext<UserContextType>({
   error: null,
   statusMessage: "",
   sessionExpired: false,
+  planExpired: false,
+  setPlanExpired: () => {},
   refetchUser: async () => {},
 });
 

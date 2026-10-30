@@ -8,6 +8,7 @@ import HeroSection from "../../components/HeroSection";
 import ErrorNotification from "../../components/ErrorNotification";
 import NoActiveAccountModal from "@/components/NoActiveAccountModal";
 import { supabase } from "../../lib/supabase";
+import { isUserPlanExpired } from "../../lib/authService";
 import { logSystemEvent } from "../../lib/monitoring";
 import { notifyActivationToFlutter } from "../../lib/flutterBridge";
 
@@ -119,22 +120,41 @@ export default function Login() {
                   .eq('id', profile.id);
               }
 
+              // 🛡️ STATUS CHECK: Prevent login if account is expired or inactive
+              const isExpired = isUserPlanExpired(profile.expire_at);
+              const isInactive = profile.status === 'inactive';
+
+              if (isExpired) {
+                console.warn("🚫 [Login] User plan expired (expire_at). Showing Plan Expired UI.");
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('plan_expired_signout', 'true');
+                  sessionStorage.removeItem('active_user_profile');
+                  localStorage.removeItem('cached_user_profile');
+                  window.dispatchEvent(new CustomEvent('tfc-plan-expired'));
+                }
+                await supabase.auth.signOut();
+                setCheckingSession(false);
+                setError("Your plan is expired. Please contact your admin for renew.");
+                return;
+              }
+
+              if (isInactive) {
+                console.warn("🚫 [Login] Account inactive. Signing out.");
+                if (typeof window !== 'undefined') {
+                  localStorage.setItem('manual_logout_intended', 'true');
+                  sessionStorage.removeItem('active_user_profile');
+                  localStorage.removeItem('cached_user_profile');
+                }
+                await supabase.auth.signOut();
+                setCheckingSession(false);
+                setError("Your account is inactive. Please contact your admin.");
+                return;
+              }
+
               if (profile.profile_complete === false) {
                 console.log("🚀 [Login] Profile incomplete, notifying activation and redirecting...");
                 notifyActivationToFlutter();
                 router.push("/profile-completion");
-                return;
-              }
-
-              // 🛡️ STATUS CHECK: Prevent login if account is inactive or expired
-              const isInactive = profile.status === 'inactive';
-              const isExpired = profile.expire_at && new Date(profile.expire_at) < new Date();
-
-              if (isInactive || isExpired) {
-                console.warn("🚫 [Login] Account inactive or expired. Signing out.");
-                await supabase.auth.signOut();
-                setCheckingSession(false);
-                setError("Your account is expired or inactive. Please contact your admin.");
                 return;
               }
 
@@ -180,11 +200,12 @@ export default function Login() {
               }
 
               // 2. Sign out & clear all session cache
-              await supabase.auth.signOut();
               if (typeof window !== 'undefined') {
+                localStorage.setItem('manual_logout_intended', 'true');
                 sessionStorage.removeItem('active_user_profile');
                 localStorage.removeItem('cached_user_profile');
               }
+              await supabase.auth.signOut();
 
               setUnregisteredEmail(userEmail);
               setShowNoAccountModal(true);

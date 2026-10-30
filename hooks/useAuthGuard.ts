@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import {
   checkAuthAndFetchProfile,
+  isUserPlanExpired,
   UserProfile,
 } from "../lib/authService";
 import { supabase } from "../lib/supabase";
@@ -14,6 +15,8 @@ export interface UseAuthGuardReturn {
   statusMessage: string;
   refetchUser: (force?: boolean) => Promise<void>;
   sessionExpired: boolean;
+  planExpired: boolean;
+  setPlanExpired: (val: boolean) => void;
 }
 
 export function useAuthGuard(): UseAuthGuardReturn {
@@ -24,17 +27,44 @@ export function useAuthGuard(): UseAuthGuardReturn {
   const [mounted, setMounted] = useState(false);
   const [statusMessage, setStatusMessage] = useState("Checking session...");
   const [sessionExpired, setSessionExpired] = useState(false);
+  const [planExpired, setPlanExpiredState] = useState(false);
   const loadingRef = useRef(false);
   const userRef = useRef<UserProfile | null>(null);
+  const planExpiredRef = useRef(false);
+
+  const setPlanExpired = (val: boolean) => {
+    planExpiredRef.current = val;
+    setPlanExpiredState(val);
+    if (val) {
+      setSessionExpired(false);
+    }
+  };
 
   useEffect(() => {
     userRef.current = user;
   }, [user]);
 
+  const handlePlanExpiryLockout = async () => {
+    console.warn("🚫 [Auth] User plan expired (expire_at). Showing Plan Expired UI.");
+    if (typeof window !== "undefined") {
+      localStorage.setItem("plan_expired_signout", "true");
+      sessionStorage.removeItem("active_user_profile");
+      localStorage.removeItem("cached_user_profile");
+    }
+    setPlanExpired(true);
+    setUser(null);
+    userRef.current = null;
+    await supabase.auth.signOut();
+  };
+
   const fetchAuth = async (force = false) => {
     const currentUser = userRef.current;
     // Production Pattern: If we already have a user and aren't forcing a refresh, skip the loading screen and call.
     if (!force && currentUser && !loadingRef.current) {
+        if (isUserPlanExpired(currentUser.expire_at)) {
+            await handlePlanExpiryLockout();
+            return;
+        }
         console.log("🚀 [Auth] User already in memory. Skipping redundant fetch.");
         return;
     }
@@ -61,6 +91,13 @@ export function useAuthGuard(): UseAuthGuardReturn {
         if (sessionProfileStr && !force) {
             try {
                 const cachedProfile = JSON.parse(sessionProfileStr);
+
+                if (isUserPlanExpired(cachedProfile?.expire_at)) {
+                    await handlePlanExpiryLockout();
+                    setLoading(false);
+                    loadingRef.current = false;
+                    return;
+                }
                 
                 // CRITICAL: Even if cached, we must occasionally verify status from DB to catch suspensions
                 // For now, let's allow the UI to show up but trigger a background check if status is important
@@ -69,8 +106,13 @@ export function useAuthGuard(): UseAuthGuardReturn {
                 
                 if (router.pathname.includes('/portal')) {
                     console.log("🔍 [Auth] Background Status Verification Triggered...");
-                    checkAuthAndFetchProfile().then(result => {
+                    checkAuthAndFetchProfile().then(async result => {
                         if (result.user) {
+                            if (isUserPlanExpired(result.user.expire_at)) {
+                                await handlePlanExpiryLockout();
+                                return;
+                            }
+
                             const dbStatus = result.user.status || result.user.accountStatus;
                             const dbApproval = result.user.approvalStatus;
 
@@ -112,6 +154,14 @@ export function useAuthGuard(): UseAuthGuardReturn {
         const result = await checkAuthAndFetchProfile();
         
         if (result.user) {
+          if (isUserPlanExpired(result.user.expire_at)) {
+            await handlePlanExpiryLockout();
+            setLoading(false);
+            loadingRef.current = false;
+            return;
+          }
+
+          setPlanExpired(false);
           if (!userRef.current) setStatusMessage("Finalizing setup...");
           
           setUser(result.user);
@@ -161,8 +211,13 @@ export function useAuthGuard(): UseAuthGuardReturn {
       } else {
         // Not logged in
         setUser(null);
+        if (planExpiredRef.current || (typeof window !== 'undefined' && localStorage.getItem('plan_expired_signout') === 'true')) {
+          if (typeof window !== 'undefined') localStorage.removeItem('plan_expired_signout');
+          setPlanExpired(true);
+          return;
+        }
         if (!isLoginPage && !isPublicLandingPage && !isRootPath) {
-            // If we had a user before, but now we don't, it might be an expiration
+          // If we had a user before, but now we don't, it might be an expiration
           if (userRef.current || typeof window !== 'undefined' && sessionStorage.getItem('active_user_profile')) {
               setSessionExpired(true);
           } else {
@@ -203,10 +258,23 @@ export function useAuthGuard(): UseAuthGuardReturn {
           fetchAuth(false); // Silent check, no loading screen
         }
       } else if (event === 'SIGNED_OUT' || (event === 'USER_UPDATED' && !session)) {
-        // Immediate check for session expiry UI
+        // Immediate check for plan expiry vs manual logout vs session expiry UI
+        const isPlanExpiredSignout = typeof window !== 'undefined' && localStorage.getItem('plan_expired_signout') === 'true';
         const isManualLogout = typeof window !== 'undefined' && localStorage.getItem('manual_logout_intended') === 'true';
         const hasSessionCache = typeof window !== 'undefined' && !!sessionStorage.getItem('active_user_profile');
         
+        if (isPlanExpiredSignout || planExpiredRef.current) {
+            console.log("🚫 [Auth Guard] Plan expired signout detected. Showing Plan Expired UI.");
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('plan_expired_signout');
+                localStorage.removeItem('cached_user_profile');
+                sessionStorage.removeItem('active_user_profile');
+            }
+            setPlanExpired(true);
+            setUser(null);
+            return;
+        }
+
         if (isManualLogout) {
             console.log("👋 [Auth Guard] Manual logout detected. Redirecting...");
             localStorage.removeItem('manual_logout_intended');
@@ -236,6 +304,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
     // ⚡ PROACTIVE LISTENERS
     // 1. Cross-tab logout detection
     const handleStorageChange = (e: StorageEvent) => {
+        if (planExpiredRef.current || localStorage.getItem('plan_expired_signout') === 'true') return;
         if (e.key && e.key.includes('auth-token') && !e.newValue && (userRef.current || sessionStorage.getItem('active_user_profile'))) {
             setSessionExpired(true);
             setUser(null);
@@ -250,9 +319,16 @@ export function useAuthGuard(): UseAuthGuardReturn {
         }
     };
 
+    // 3. Explicit Plan Expired event from login forms
+    const handlePlanExpiredEvent = () => {
+        setPlanExpired(true);
+        setUser(null);
+    };
+
     // Register proactive listeners
     window.addEventListener('storage', handleStorageChange);
     document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('tfc-plan-expired', handlePlanExpiredEvent);
 
     // ⚡ LOCAL-LEVEL HEARTBEAT (Instant LocalStorage Monitor)
     const localHeartbeat = setInterval(() => {
@@ -261,8 +337,9 @@ export function useAuthGuard(): UseAuthGuardReturn {
         const hasToken = Object.keys(localStorage).some(key => key.includes('auth-token'));
         const hasProfile = !!sessionStorage.getItem('active_user_profile');
         const isManualLogout = localStorage.getItem('manual_logout_intended') === 'true';
+        const isPlanExpiredSignout = localStorage.getItem('plan_expired_signout') === 'true';
         
-        if (!hasToken && (userRef.current || hasProfile) && !sessionExpired && !isManualLogout) {
+        if (!hasToken && (userRef.current || hasProfile) && !sessionExpired && !planExpiredRef.current && !isPlanExpiredSignout && !isManualLogout) {
             console.log("🚨 [Auth Guard] Local token missing. Locking system.");
             setSessionExpired(true);
             setUser(null);
@@ -277,6 +354,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
       subscription.unsubscribe();
       window.removeEventListener('storage', handleStorageChange);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('tfc-plan-expired', handlePlanExpiredEvent);
       clearInterval(localHeartbeat);
     };
   }, []); // Empty dependency array: Run ONCE on mount per hook instance. 
@@ -313,7 +391,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
   // 2. Production Pattern: Pure Route Protection on every navigation
   // This runs when the URL changes but does NOT trigger a heavy fetchAuth unless necessary.
   useEffect(() => {
-    if (!mounted || loading || sessionExpired) return;
+    if (!mounted || loading || sessionExpired || planExpired) return;
 
     const isLoginPage = router.pathname === "/login" || router.pathname === "/portal/login";
     const isPublicLandingPage = ["/home", "/signup", "/signup-success", "/contact", "/features", "/pricing", "/faq"].includes(router.pathname);
@@ -325,6 +403,12 @@ export function useAuthGuard(): UseAuthGuardReturn {
             router.push("/login");
         }
     } else {
+        // Check if user's plan has expired during navigation
+        if (isUserPlanExpired(user.expire_at)) {
+            handlePlanExpiryLockout();
+            return;
+        }
+
         // Logged in: Check status for specific redirects
         // If user is on a protected page, enforce status-based routing
         if (!isPublicLandingPage) {
@@ -363,7 +447,7 @@ export function useAuthGuard(): UseAuthGuardReturn {
             }
         }
     }
-  }, [router.pathname, router.asPath, user?.uid, mounted, loading, sessionExpired]);
+  }, [router.pathname, router.asPath, user?.uid, mounted, loading, sessionExpired, planExpired]);
 
-  return { user, loading, error, mounted, statusMessage, refetchUser: fetchAuth, sessionExpired };
+  return { user, loading, error, mounted, statusMessage, refetchUser: fetchAuth, sessionExpired, planExpired, setPlanExpired };
 }

@@ -42,6 +42,26 @@ export interface UserProfile {
   organization_id?: string | null;
   super_admin?: boolean | null;
   user_level?: number | string | null;
+  expire_at?: string | null;
+}
+
+/**
+ * Determine whether a user's plan expiry date (expire_at) has arrived or been crossed.
+ */
+export function isUserPlanExpired(expireAt?: string | null): boolean {
+  if (!expireAt) return false;
+  const now = new Date();
+  const expiryDate = new Date(expireAt);
+  if (isNaN(expiryDate.getTime())) return false;
+  if (expiryDate.getTime() <= now.getTime()) return true;
+
+  // Also check if the calendar date (YYYY-MM-DD) of expire_at has arrived in local time
+  const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  const expireDateStr = expireAt.trim().substring(0, 10);
+  if (/^\d{4}-\d{2}-\d{2}$/.test(expireDateStr) && expireDateStr <= todayStr) {
+    return true;
+  }
+  return false;
 }
 
 export interface AuthResult {
@@ -118,6 +138,7 @@ export async function checkAuthAndFetchProfile(): Promise<AuthResult> {
       holdEndDate: profileData?.hold_end_date || null,
       organization_id: profileData?.organization_id || null,
       super_admin: profileData?.super_admin ?? false,
+      expire_at: profileData?.expire_at || null,
     };
 
     return {

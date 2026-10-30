@@ -19,7 +19,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children, hideSidebar = false, hideHeader = false }: AppLayoutProps) {
   const router = useRouter();
-  const { user, loading: authLoading, error, mounted, statusMessage, sessionExpired } = useUser();
+  const { user, loading: authLoading, error, mounted, statusMessage, sessionExpired, planExpired, setPlanExpired } = useUser();
 
   const handleLogoutClick = useCallback(async () => {
     await handleLogout(router);
@@ -56,6 +56,54 @@ export default function AppLayout({ children, hideSidebar = false, hideHeader = 
     user?.isClient === true && 
     user?.designation?.toLowerCase() === 'agent' &&
     router.pathname === '/portal/dashboard';
+
+  // Plan Expired UI logic (when user's expire_at date has arrived or passed)
+  if (planExpired) {
+    return (
+      <div className="flex flex-col min-h-screen items-center justify-center bg-[#f6f5ff] p-4 text-center">
+        <div className="max-w-md w-full bg-white/80 backdrop-blur-xl p-8 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white animate-in zoom-in duration-300">
+          <div className="w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+              <line x1="16" y1="2" x2="16" y2="6" />
+              <line x1="8" y1="2" x2="8" y2="6" />
+              <line x1="3" y1="10" x2="21" y2="10" />
+              <line x1="12" y1="14" x2="12" y2="17" />
+              <line x1="12" y1="20" x2="12.01" y2="20" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-[#263238] mb-2" style={{ fontFamily: "'Poppins', sans-serif" }}>
+            Your Plan is Expired
+          </h2>
+          <p className="text-[#787E9D] mb-6">
+            Your plan is expired. Please contact your admin for renew to continue using your account.
+          </p>
+
+          <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-6 text-sm text-amber-800 font-medium flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+              <circle cx="12" cy="12" r="10" />
+              <line x1="12" y1="8" x2="12" y2="12" />
+              <line x1="12" y1="16" x2="12.01" y2="16" />
+            </svg>
+            <span>Contact your Admin for Renewal</span>
+          </div>
+
+          <button
+            onClick={() => {
+              setPlanExpired(false);
+              sessionStorage.clear();
+              localStorage.removeItem('cached_user_profile');
+              localStorage.removeItem('plan_expired_signout');
+              window.location.href = '/portal/login';
+            }}
+            className="w-full bg-[#4b33e8] hover:bg-[#3b27c2] text-white font-bold py-4 px-6 rounded-2xl flex items-center justify-center gap-3 transition-all transform active:scale-95 shadow-lg shadow-purple-200"
+          >
+            Back to Login
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   // Session Expired UI logic
   // NOTE: Conditional rendering happens AFTER all hooks are declared
