@@ -54,9 +54,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
-    const host = req.headers.host || 'localhost:3000';
-    const protocol = host.includes('localhost') ? 'http' : 'https';
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || `${protocol}://${host}`;
+    const rawBaseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://www.rynxly.in';
+    const baseUrl = rawBaseUrl.replace(/\/+$/, '');
     const redirectUri = `${baseUrl}/api/meta/callback`;
 
     if (!appId || !appSecret) {

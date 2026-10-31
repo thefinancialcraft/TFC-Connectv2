@@ -1147,7 +1147,16 @@ export default function MetaAdsWorkflowPage() {
                   Callback URL
                 </span>
                 <code className="text-xs font-mono text-[#4b33e8] font-bold break-all">
-                  {typeof window !== 'undefined' ? `${window.location.origin}/api/meta/webhook` : '/api/meta/webhook'}
+                  https://www.rynxly.in/api/meta/webhook
+                </code>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200">
+                <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                  OAuth Redirect URI
+                </span>
+                <code className="text-xs font-mono text-[#1877F2] font-bold break-all">
+                  https://www.rynxly.in/api/meta/callback
                 </code>
               </div>
 
