@@ -131,6 +131,54 @@ export default function WorkflowPage() {
             </div>
           </div>
 
+          {/* Meta (Facebook) Lead Ads Integration Card */}
+          <div className="bg-white rounded-xl border border-gray-200 hover:border-[#1877F2] p-5 transition-colors flex flex-col justify-between group">
+            <div>
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="w-9 h-9 rounded-lg bg-[#1877F2]/10 text-[#1877F2] flex items-center justify-center text-base">
+                  <i className="fi flex fi-brands-facebook"></i>
+                </div>
+                <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                  Active
+                </span>
+              </div>
+
+              <h2 className="text-base font-bold text-gray-900 group-hover:text-[#1877F2] transition-colors">
+                Meta Lead Ads
+              </h2>
+              <p className="text-[11px] text-[#1877F2] font-semibold uppercase tracking-wider">
+                Facebook &amp; Instagram Sync
+              </p>
+
+              <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                Connect Meta Lead Ads and route incoming leads into active CRM campaigns with custom Source Name, Agent / General Pool assignment &amp; Expiry Dates.
+              </p>
+
+              <div className="flex flex-wrap gap-1.5 mt-3 pt-3 border-t border-gray-100">
+                <span className="px-2 py-0.5 rounded bg-gray-50 text-gray-600 border border-gray-200 text-[10px] font-medium">
+                  Real-Time Webhook
+                </span>
+                <span className="px-2 py-0.5 rounded bg-gray-50 text-gray-600 border border-gray-200 text-[10px] font-medium">
+                  Agent / General Pool
+                </span>
+                <span className="px-2 py-0.5 rounded bg-gray-50 text-gray-600 border border-gray-200 text-[10px] font-medium">
+                  Auto Expiry Rules
+                </span>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-3 border-t border-gray-100">
+              <button
+                onClick={() => router.push("/workflow/meta-ads")}
+                className="w-full py-2 px-3 rounded-lg bg-[#1877F2] hover:bg-[#1464cc] text-white text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+              >
+                <span>Connect &amp; Configure Ads</span>
+                <i className="fi flex fi-rr-arrow-right text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+
           {/* Placeholder for Future Workflow: Call Cadence */}
           <div className="bg-gray-50/50 rounded-xl border border-dashed border-gray-200 p-5 flex flex-col justify-between opacity-70">
             <div>

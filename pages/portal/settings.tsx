@@ -12,6 +12,7 @@ import ConsoleLogsTab from "@/components/settings/ConsoleLogsTab";
 import SmartfloIntegrationCard from "@/components/settings/SmartfloIntegrationCard";
 import SmartfloDialerCardPreview from "@/components/settings/SmartfloDialerCardPreview";
 import SmartfloDialerConfiguration from "@/components/settings/SmartfloDialerConfiguration";
+import MetaAdsIntegrationCard from "@/components/settings/MetaAdsIntegrationCard";
 import AccountIssueModal from "@/components/modals/AccountIssueModal";
 
 interface SettingsFormData {
@@ -950,6 +951,9 @@ export default function Settings() {
                     </div>
                     <div id="connected-app-smartflo-dialer" data-app-id="smartflo-dialer" className="h-full">
                       <SmartfloDialerCardPreview onOpenConfiguration={handleOpenSmartfloDialer} />
+                    </div>
+                    <div id="connected-app-meta-ads" data-app-id="meta-ads" className="h-full">
+                      <MetaAdsIntegrationCard organizationId={user?.organization_id} />
                     </div>
                   </div>
                 ) : (
