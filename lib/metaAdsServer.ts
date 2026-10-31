@@ -466,7 +466,7 @@ export async function ingestMetaLeadToCrm(params: {
         organization_id: orgId,
         source_id: sourceId,
         assigned_to: assignedAgentId,
-        status: 'pending',
+        status: 'active',
         attempt_count: 0,
         is_connected: false,
       })
