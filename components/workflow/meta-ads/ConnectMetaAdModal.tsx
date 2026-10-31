@@ -427,7 +427,7 @@ export default function ConnectMetaAdModal({
                       setPageId(e.target.value);
                       if (p) setPageName(p.page_name);
                     }}
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-[#4b33e8]"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white text-black focus:outline-none focus:border-[#4b33e8]"
                   >
                     {pages.map((p) => (
                       <option key={p.page_id} value={p.page_id}>
@@ -441,7 +441,7 @@ export default function ConnectMetaAdModal({
                     value={pageId}
                     onChange={(e) => setPageId(e.target.value)}
                     placeholder="e.g. 10492819283"
-                    className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-[#4b33e8]"
+                    className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white text-black focus:outline-none focus:border-[#4b33e8]"
                   />
                 )}
               </div>
@@ -454,7 +454,7 @@ export default function ConnectMetaAdModal({
                   value={formId}
                   onChange={(e) => setFormId(e.target.value)}
                   placeholder="e.g. 849201928374"
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-[#4b33e8]"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white text-black focus:outline-none focus:border-[#4b33e8]"
                 />
               </div>
               <div>
@@ -469,7 +469,7 @@ export default function ConnectMetaAdModal({
                     setFormName(e.target.value);
                   }}
                   placeholder="e.g. Festive Lead Form"
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-[#4b33e8]"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white text-black focus:outline-none focus:border-[#4b33e8]"
                 />
               </div>
               <div>
@@ -481,7 +481,7 @@ export default function ConnectMetaAdModal({
                   value={adId}
                   onChange={(e) => setAdId(e.target.value)}
                   placeholder="Leave blank for all ads using form"
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white focus:outline-none focus:border-[#4b33e8]"
+                  className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white text-black focus:outline-none focus:border-[#4b33e8]"
                 />
               </div>
             </div>
@@ -520,7 +520,7 @@ export default function ConnectMetaAdModal({
                 value={sourceName}
                 onChange={(e) => setSourceName(e.target.value)}
                 placeholder="e.g. Meta Ad - Diwali Offer"
-                className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white text-gray-900 focus:outline-none focus:border-[#4b33e8]"
+                className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 bg-white text-black focus:outline-none focus:border-[#4b33e8]"
               />
               <p className="text-[10px] text-gray-500 mt-1">
                 Appears in System Logs &amp; Source Analytics for ROI tracking.
@@ -718,7 +718,7 @@ export default function ConnectMetaAdModal({
                   max={365}
                   value={expiryDays}
                   onChange={(e) => setExpiryDays(Math.max(1, Number(e.target.value) || 15))}
-                  className="w-20 px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 bg-white text-center"
+                  className="w-20 px-3 py-1.5 text-xs font-bold rounded-lg border border-gray-300 bg-white text-black text-center"
                 />
                 <span className="text-xs text-gray-600">days from when lead arrives</span>
               </div>
@@ -733,7 +733,7 @@ export default function ConnectMetaAdModal({
                   type="date"
                   value={fixedExpiryDate}
                   onChange={(e) => setFixedExpiryDate(e.target.value)}
-                  className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-300 bg-white"
+                  className="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-300 bg-white text-black"
                 />
               </div>
             )}
@@ -748,10 +748,10 @@ export default function ConnectMetaAdModal({
               <select
                 value={nameFieldKey}
                 onChange={(e) => setNameFieldKey(e.target.value)}
-                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-white"
+                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-white text-black"
               >
                 {questionOptions.map((q) => (
-                  <option key={q.key} value={q.key}>
+                  <option key={q.key} value={q.key} className="text-black">
                     {q.label}
                   </option>
                 ))}
@@ -765,10 +765,10 @@ export default function ConnectMetaAdModal({
               <select
                 value={phoneFieldKey}
                 onChange={(e) => setPhoneFieldKey(e.target.value)}
-                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-white"
+                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-white text-black"
               >
                 {questionOptions.map((q) => (
-                  <option key={q.key} value={q.key}>
+                  <option key={q.key} value={q.key} className="text-black">
                     {q.label}
                   </option>
                 ))}
@@ -782,10 +782,10 @@ export default function ConnectMetaAdModal({
               <select
                 value={duplicateHandling}
                 onChange={(e) => setDuplicateHandling(e.target.value as 'skip' | 'merge')}
-                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-white"
+                className="w-full px-2.5 py-1.5 text-xs rounded-lg border border-gray-300 bg-white text-black"
               >
-                <option value="skip">Skip Duplicate Lead</option>
-                <option value="merge">Merge New Form Details</option>
+                <option value="skip" className="text-black">Skip Duplicate Lead</option>
+                <option value="merge" className="text-black">Merge New Form Details</option>
               </select>
             </div>
           </div>

@@ -14,7 +14,7 @@ export default function MetaAdsWorkflowPage() {
   const router = useRouter();
   const { user, mounted, loading: authLoading } = useUser();
 
-  const [activeTab, setActiveTab] = useState<'discover' | 'connected' | 'logs' | 'webhook_setup'>('discover');
+  const [activeTab, setActiveTab] = useState<'discover' | 'connected' | 'logs'>('discover');
   const [loading, setLoading] = useState(true);
   const [actionBusy, setActionBusy] = useState<string | null>(null);
   const [bannerMessage, setBannerMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -730,19 +730,6 @@ export default function MetaAdsWorkflowPage() {
                 <i className="fi flex fi-rr-time-past text-xs"></i>
                 <span>Lead Sync Activity ({recentLogs.length})</span>
               </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('webhook_setup')}
-                className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
-                  activeTab === 'webhook_setup'
-                    ? 'border-[#4b33e8] text-[#4b33e8]'
-                    : 'border-transparent text-gray-500 hover:text-gray-800'
-                }`}
-              >
-                <i className="fi flex fi-rr-settings-sliders text-xs"></i>
-                <span>Webhook &amp; Developer Info</span>
-              </button>
             </div>
 
         {/* TAB 1: DISCOVER AVAILABLE ADS & CONNECT AD */}
@@ -1129,57 +1116,6 @@ export default function MetaAdsWorkflowPage() {
             )}
           </div>
         )}
-
-        {/* TAB 4: WEBHOOK & META DEVELOPER SETUP GUIDE */}
-        {activeTab === 'webhook_setup' && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-6 space-y-4 max-w-3xl">
-            <h3 className="text-sm font-bold text-gray-900">
-              Meta Developer Webhook Endpoint Configuration
-            </h3>
-            <p className="text-xs text-gray-600 leading-relaxed">
-              To receive live leads from Meta Ads Manager in production, configure the following Webhook Callback URL and Verify Token in your{' '}
-              <strong>Meta for Developers App &gt; Webhooks &gt; Page (`leadgen` field)</strong>:
-            </p>
-
-            <div className="space-y-3">
-              <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200">
-                <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                  Callback URL
-                </span>
-                <code className="text-xs font-mono text-[#4b33e8] font-bold break-all">
-                  https://www.rynxly.in/api/meta/webhook
-                </code>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200">
-                <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                  OAuth Redirect URI
-                </span>
-                <code className="text-xs font-mono text-[#1877F2] font-bold break-all">
-                  https://www.rynxly.in/api/meta/callback
-                </code>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-gray-50 border border-gray-200">
-                <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
-                  Verify Token (Default or from META_WEBHOOK_VERIFY_TOKEN)
-                </span>
-                <code className="text-xs font-mono text-gray-800 font-bold">
-                  tfc_connect_meta_verify_token
-                </code>
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-blue-50/50 border border-blue-200 text-xs text-gray-700 space-y-1">
-                <p className="font-bold text-[#1877F2]">Environment Variables (.env.local):</p>
-                <pre className="text-[11px] font-mono bg-white p-2.5 rounded-lg border border-blue-100 overflow-x-auto">
-{`META_APP_ID=your_facebook_app_id
-META_APP_SECRET=your_facebook_app_secret
-META_WEBHOOK_VERIFY_TOKEN=tfc_connect_meta_verify_token`}
-                </pre>
-              </div>
-            </div>
-          </div>
-        )}
           </>
         )}
       </div>
@@ -1239,7 +1175,7 @@ META_WEBHOOK_VERIFY_TOKEN=tfc_connect_meta_verify_token`}
                         value={oauthAppIdInput}
                         onChange={(e) => setOauthAppIdInput(e.target.value)}
                         placeholder="e.g. 123456789012345"
-                        className="w-full px-3 py-2 text-xs rounded-lg bg-white border border-gray-300 focus:outline-none focus:border-[#1877F2]"
+                        className="w-full px-3 py-2 text-xs rounded-lg bg-white text-black border border-gray-300 focus:outline-none focus:border-[#1877F2]"
                       />
                     </div>
                     <div>
@@ -1252,7 +1188,7 @@ META_WEBHOOK_VERIFY_TOKEN=tfc_connect_meta_verify_token`}
                         value={oauthAppSecretInput}
                         onChange={(e) => setOauthAppSecretInput(e.target.value)}
                         placeholder="Enter Meta App Secret from developers.facebook.com"
-                        className="w-full px-3 py-2 text-xs rounded-lg bg-white border border-gray-300 focus:outline-none focus:border-[#1877F2]"
+                        className="w-full px-3 py-2 text-xs rounded-lg bg-white text-black border border-gray-300 focus:outline-none focus:border-[#1877F2]"
                       />
                     </div>
                     {oauthRedirectUri && (
@@ -1298,7 +1234,7 @@ META_WEBHOOK_VERIFY_TOKEN=tfc_connect_meta_verify_token`}
                   value={manualTokenInput}
                   onChange={(e) => setManualTokenInput(e.target.value)}
                   placeholder="EAA..."
-                  className="w-full px-3 py-2 text-xs rounded-lg border border-gray-300 focus:outline-none focus:border-[#4b33e8]"
+                  className="w-full px-3 py-2 text-xs rounded-lg bg-white text-black border border-gray-300 focus:outline-none focus:border-[#4b33e8]"
                 />
                 <button
                   type="submit"
