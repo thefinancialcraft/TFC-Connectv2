@@ -6,6 +6,7 @@ interface NoActiveAccountModalProps {
   isOpen: boolean;
   onClose: () => void;
   email?: string;
+  initialView?: 'notice' | 'form' | 'signup';
 }
 
 const companyTypes = [
@@ -26,6 +27,7 @@ export default function NoActiveAccountModal({
   isOpen,
   onClose,
   email = '',
+  initialView = 'notice',
 }: NoActiveAccountModalProps) {
   const router = useRouter();
   const [view, setView] = useState<'notice' | 'form' | 'signup' | 'success'>('notice');
@@ -71,13 +73,13 @@ export default function NoActiveAccountModal({
   // Initialize/reset states on open
   useEffect(() => {
     if (isOpen) {
-      setView('notice');
+      setView(initialView || 'notice');
       setDemoWorkEmail(email || '');
       setOwnerEmail(email || '');
       setErrorMessage(null);
       setLoading(false);
     }
-  }, [isOpen, email]);
+  }, [isOpen, email, initialView]);
 
   // Lock body scroll and listen for Escape key
   useEffect(() => {
@@ -103,7 +105,7 @@ export default function NoActiveAccountModal({
   const handleModalClose = () => {
     onClose();
     setTimeout(() => {
-      setView('notice');
+      setView(initialView || 'notice');
       setErrorMessage(null);
     }, 200);
   };
@@ -284,12 +286,12 @@ export default function NoActiveAccountModal({
       >
         {/* Top Header Navigation */}
         <div className="flex items-center justify-between p-4 pb-0">
-          {view === 'form' || view === 'signup' ? (
+          {(view === 'form' || view === 'signup') && initialView === 'notice' ? (
             <button
               type="button"
               onClick={() => {
                 setErrorMessage(null);
-                setView('notice');
+                setView(initialView || 'notice');
               }}
               className="flex items-center gap-1.5 text-xs text-gray-500 hover:text-gray-800 transition"
             >

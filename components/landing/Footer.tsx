@@ -12,9 +12,26 @@ export default function Footer() {
             <div className="text-xl font-bold text-[#4b33e8] mb-2 tracking-tight">
               rynxly.
             </div>
-            <p className="text-gray-500 text-xs leading-relaxed mb-6">
+            <p className="text-gray-500 text-xs leading-relaxed mb-4">
               Rynxly is the #1 **SIM based calling CRM** designed for high-performance sales teams. Track calls, manage leads, and sync mobile data effortlessly with our advanced **sales calling software**.
             </p>
+            <div className="space-y-2 mb-5">
+              <div className="flex items-center gap-4">
+                <img
+                  src="/msme.png"
+                  alt="MSME Logo"
+                  className="h-10 w-auto object-contain"
+                />
+                <img
+                  src="/md in.png"
+                  alt="Made in India Logo"
+                  className="h-10 w-auto object-contain"
+                />
+              </div>
+              <p className="text-xs font-bold text-gray-900">
+                MSME Registered: <span className="font-mono text-[#4b33e8]">UDYAM-UP-28-0214419</span>
+              </p>
+            </div>
             <div className="flex gap-4">
               <a href="https://www.instagram.com/_rynxly" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-[#E1306C] hover:text-white transition-all">
                 <i className="fi fi-brands-instagram flex text-sm"></i>
@@ -61,9 +78,13 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-100 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-400">
-            © {currentYear} Rynxly. All rights reserved.
-          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-xs text-gray-400">
+            <p>© {currentYear} Rynxly. All rights reserved.</p>
+            <span className="hidden sm:inline text-gray-300">•</span>
+            <p className="text-gray-600 font-medium">
+              MSME Registered: <span className="font-mono font-bold text-gray-800">UDYAM-UP-28-0214419</span>
+            </p>
+          </div>
           <div className="flex gap-6 text-xs text-gray-400">
             <a href="#" className="hover:text-gray-600">Privacy</a>
             <a href="#" className="hover:text-gray-600">Terms</a>

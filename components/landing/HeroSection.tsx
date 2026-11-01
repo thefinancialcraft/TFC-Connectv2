@@ -60,10 +60,23 @@ export default function HeroSection() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         
-        {/* Keyword-Focused Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50/50 border border-indigo-100/50 mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
-          <span className="w-2 h-2 rounded-full bg-[#4b33e8] animate-pulse"></span>
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#4b33e8]">The #1 SIM Based Calling CRM Software</span>
+        {/* MSME & Made in India Logos (Top) + Registration Number (Below) */}
+        <div className="relative z-10 flex flex-col items-center justify-center gap-2.5 mb-6">
+          <div className="flex items-center justify-center gap-6">
+            <img
+              src="/msme.png"
+              alt="MSME"
+              className="h-10 sm:h-10 w-auto object-contain"
+            />
+            <img
+              src="/md in.png"
+              alt="Made in India"
+              className="h-10 sm:h-11 w-auto object-contain"
+            />
+          </div>
+          <p className="text-xs mt-1 sm:text-sm font-bold text-[#263238]">
+            MSME Registered: <span className="text-[#4b33e8] font-mono">UDYAM-UP-28-0214419</span>
+          </p>
         </div>
 
         {/* Low Opacity Excel Background */}

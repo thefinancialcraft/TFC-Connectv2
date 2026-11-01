@@ -20,6 +20,7 @@ export default function Login() {
   const [error, setError] = useState("");
   const [checkingSession, setCheckingSession] = useState(true);
   const [showNoAccountModal, setShowNoAccountModal] = useState(false);
+  const [modalInitialView, setModalInitialView] = useState<'notice' | 'signup'>('notice');
   const [unregisteredEmail, setUnregisteredEmail] = useState("");
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function Login() {
 
     // Check if redirected with unregistered flag
     if (router.query.unregistered === "true") {
+      setModalInitialView('notice');
       setShowNoAccountModal(true);
       if (router.query.email) {
         setUnregisteredEmail(router.query.email as string);
@@ -50,6 +52,7 @@ export default function Login() {
           errorDesc.includes("Database error") ||
           errorParam.includes("access_denied")
         ) {
+          setModalInitialView('notice');
           setShowNoAccountModal(true);
           setCheckingSession(false);
           return;
@@ -66,6 +69,7 @@ export default function Login() {
         errStr.includes("UNREGISTERED") ||
         errStr.includes("Database error")
       ) {
+        setModalInitialView('notice');
         setShowNoAccountModal(true);
         setCheckingSession(false);
       } else {
@@ -208,6 +212,7 @@ export default function Login() {
               await supabase.auth.signOut();
 
               setUnregisteredEmail(userEmail);
+              setModalInitialView('notice');
               setShowNoAccountModal(true);
               setCheckingSession(false);
             }
@@ -326,18 +331,33 @@ export default function Login() {
               <SocialLoginButtons formType={formType} onToggleForm={toggleForm} />
             </div>
 
-
-
-
+            {/* Don't have an account? Create one link */}
+            <div className="mt-4 text-center">
+              <p className="text-xs text-[#787E9D]" style={{ fontFamily: "'Poppins', sans-serif" }}>
+                Don&apos;t have an account?{" "}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUnregisteredEmail("");
+                    setModalInitialView("signup");
+                    setShowNoAccountModal(true);
+                  }}
+                  className="font-semibold text-[#4b33e8] hover:text-[#3b25c4] hover:underline transition-colors cursor-pointer"
+                >
+                  Create one
+                </button>
+              </p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* No Active Account Modal Popup */}
+      {/* No Active Account / Create Account Modal Popup */}
       <NoActiveAccountModal
         isOpen={showNoAccountModal}
         onClose={() => setShowNoAccountModal(false)}
         email={unregisteredEmail}
+        initialView={modalInitialView}
       />
     </div>
   );
