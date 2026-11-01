@@ -222,6 +222,15 @@ export default function TermsOfService() {
                                             </li>
                                         ))}
                                     </ul>
+                                    <div className="mt-6 rounded-2xl border border-indigo-100/70 bg-indigo-50/40 p-6 space-y-3">
+                                        <h3 className="text-lg font-bold text-[#263238]">Meta Lead Ads Integration</h3>
+                                        <p>
+                                            An organization administrator may connect a Meta account and configure Facebook or Instagram Lead Ad forms to send submitted lead details into the organization's Rynxly CRM workspace. The organization selects the Page, form, destination campaign, field mapping, assignment rules, and duplicate-handling option. Depending on the form and configuration, imported data may include names, phone numbers, form answers, and identifiers or source details relating to the Page, form, ad, and submission.
+                                        </p>
+                                        <p>
+                                            Rynxly processes these details to create or update CRM lead records, route or assign leads, handle duplicates as configured, and maintain integration and error logs. Further details about collection, use, sharing, and retention are set out in the <a href="/privacy-policy" className="text-indigo-600 font-bold hover:underline">Privacy Policy</a>.
+                                        </p>
+                                    </div>
                                 </div>
                             </section>
 
@@ -246,6 +255,12 @@ export default function TermsOfService() {
                                         ))}
                                     </ul>
                                     <p className="pt-2">You are responsible for maintaining the confidentiality of your account.</p>
+                                    <p>
+                                        If your organization enables the Meta integration, you represent that you are authorized to connect and manage the selected Meta account, Pages, ad accounts, and lead forms on the organization's behalf. Your organization is responsible for selecting appropriate users, campaigns, field mappings, and assignment rules, and for providing any notices and obtaining any permissions or consents required by applicable law before collecting, importing, contacting, or otherwise using lead information.
+                                    </p>
+                                    <p>
+                                        Your organization must use imported lead information only for its permitted business purposes, honor applicable opt-outs and contact preferences, and comply with applicable privacy, marketing, and data-protection requirements and the terms that apply to its use of Meta services.
+                                    </p>
                                 </div>
                             </section>
 
@@ -388,6 +403,7 @@ export default function TermsOfService() {
                                     </p>
                                     <ul className="space-y-2 ml-4">
                                         {[
+                                            "Meta services, including Facebook and Instagram Lead Ads",
                                             "Cloud hosting providers",
                                             "Analytics tools",
                                             "Notification services"
@@ -398,6 +414,12 @@ export default function TermsOfService() {
                                             </li>
                                         ))}
                                     </ul>
+                                    <p>
+                                        Meta is a separate service provider. Connecting a Meta account authorizes Rynxly to access the Meta assets selected by the organization and receive configured lead submissions. Meta may change, limit, or discontinue its services, APIs, permissions, or access tokens, which may interrupt the integration. The organization must follow the terms and policies applicable to its Meta account and use of Meta services.
+                                    </p>
+                                    <p>
+                                        Disconnecting Meta stops future synchronization through that connection but does not automatically remove leads or integration logs already stored in Rynxly. Existing data remains subject to the Privacy Policy and may be managed or deleted by the organization, subject to applicable retention requirements.
+                                    </p>
                                     <p>We are not responsible for the behavior or policies of third-party services.</p>
                                 </div>
                             </section>
