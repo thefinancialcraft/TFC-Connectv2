@@ -445,6 +445,9 @@ export default function PrivacyPolicy() {
                                     <p className="font-bold text-[#263238]">
                                         Users or organization administrators may request deletion of data at any time. Disconnecting a third-party integration stops future synchronization but does not automatically delete data already imported; deletion requests are handled subject to applicable legal and operational retention requirements.
                                     </p>
+                                    <p>
+                                        For step-by-step instructions, see our <a href="/data-deletion" className="font-bold text-indigo-600 hover:underline">Data Deletion Instructions</a> page.
+                                    </p>
                                 </div>
                             </section>
 
