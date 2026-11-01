@@ -227,7 +227,7 @@ export default function PrivacyPolicy() {
                                         ))}
                                     </ul>
                                     <p className="pt-2 font-bold text-[#4b33e8] bg-indigo-50/50 inline-block px-4 py-2 rounded-lg border border-indigo-100/50">
-                                        We do not use your data for advertising or unrelated profiling activities.
+                                        We do not use CRM lead data to build advertising audiences, target ads, or create unrelated profiles.
                                     </p>
                                 </div>
                             </section>
@@ -384,6 +384,24 @@ export default function PrivacyPolicy() {
                                             </li>
                                         ))}
                                     </ul>
+                                    <div className="mt-6 rounded-2xl border border-indigo-100/70 bg-indigo-50/40 p-6 space-y-3">
+                                        <h3 className="text-lg font-bold text-[#263238]">Meta Lead Ads Integration</h3>
+                                        <p>
+                                            If an organization administrator connects a Meta account and configures a Facebook or Instagram Lead Ad form, Rynxly receives submitted lead details through Meta's lead delivery services. The organization chooses the connected Page and form, destination CRM campaign, field mapping, assignment rules, and duplicate handling.
+                                        </p>
+                                        <p>
+                                            Depending on the form and the organization's configuration, information processed may include a lead's name, phone number, answers to other form questions, and source details such as Meta Page, form, ad, platform, lead identifier, and submission time. Rynxly uses this information to create or update CRM lead records, route and assign leads, handle duplicates as configured, and maintain synchronization and error logs.
+                                        </p>
+                                        <p>
+                                            To connect the service, Rynxly processes Meta account identifiers and profile details, connected Page and ad account details, and access credentials authorized by the organization. These credentials are used to access the selected Meta assets and receive configured lead submissions.
+                                        </p>
+                                        <p>
+                                            Imported lead information is available to authorized users in the relevant organization and may be processed by Rynxly's hosting and infrastructure providers to operate the CRM. Rynxly does not sell this information or send imported CRM lead details back to Meta to create advertising audiences or target advertisements. Meta's own terms and privacy policy also apply to use of Meta services.
+                                        </p>
+                                        <p>
+                                            An organization administrator can disconnect the Meta account or deactivate a lead configuration to stop future synchronization. Disconnecting does not automatically delete lead records or synchronization logs already stored in the CRM. Organization administrators may contact Rynxly to request access to or deletion of stored data, subject to applicable legal and operational retention requirements.
+                                        </p>
+                                    </div>
                                     <p className="pt-2 font-bold text-[#263238]">All data sharing is controlled and limited to necessary use cases.</p>
                                 </div>
                             </section>
@@ -425,7 +443,7 @@ export default function PrivacyPolicy() {
                                         Rynxly retains data only for as long as necessary to provide CRM services and meet legal requirements. Data associated with active accounts is maintained to ensure continuous functionality.
                                     </p>
                                     <p className="font-bold text-[#263238]">
-                                        Users may request deletion of their data at any time.
+                                        Users or organization administrators may request deletion of data at any time. Disconnecting a third-party integration stops future synchronization but does not automatically delete data already imported; deletion requests are handled subject to applicable legal and operational retention requirements.
                                     </p>
                                 </div>
                             </section>

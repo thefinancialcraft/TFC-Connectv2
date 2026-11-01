@@ -16,6 +16,7 @@ import Testimonials from '@/components/landing/Testimonials';
 import FAQSection from '@/components/landing/FAQSection';
 import SEOContent from '@/components/landing/SEOContent';
 import IntegrationSection from '@/components/landing/IntegrationSection';
+import MetaLeadShowcase from '@/components/landing/MetaLeadShowcase';
 import UtilityShowcase from '@/components/landing/UtilityShowcase';
 import ReminderShowcase from '@/components/landing/ReminderShowcase';
 import CallEngineShowcase from '@/components/landing/CallEngineShowcase';
@@ -177,6 +178,7 @@ export default function LandingPage() {
         <AppShowcase />
         <ReminderShowcase />
         <CallEngineShowcase />
+        <MetaLeadShowcase />
         <IntegrationSection />
         <UtilityShowcase />
         <ComparisonSection />
