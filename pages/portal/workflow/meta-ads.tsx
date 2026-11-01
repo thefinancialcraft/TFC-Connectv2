@@ -890,7 +890,7 @@ export default function MetaAdsWorkflowPage() {
           </div>
         )}
 
-        {/* TAB 2: CONNECTED AD ROUTES TABLE / CARDS */}
+        {/* TAB 2: CONNECTED AD ROUTES CARDS */}
         {activeTab === 'connected' && (
           <div className="space-y-4">
             {adConfigs.length === 0 ? (
@@ -908,146 +908,199 @@ export default function MetaAdsWorkflowPage() {
                 </button>
               </div>
             ) : (
-              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden">
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left border-collapse">
-                    <thead>
-                      <tr className="bg-gray-50 border-b border-gray-200 text-[10px] font-bold uppercase tracking-wider text-gray-500">
-                        <th className="py-3 px-4">Connected Ad &amp; Form</th>
-                        <th className="py-3 px-4">Target Campaign</th>
-                        <th className="py-3 px-4">Source Name &amp; ID</th>
-                        <th className="py-3 px-4">Assignment Rule</th>
-                        <th className="py-3 px-4">Expiry Date Rule</th>
-                        <th className="py-3 px-4">Synced Leads</th>
-                        <th className="py-3 px-4 text-right">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 text-xs">
-                      {adConfigs.map((cfg) => {
-                        const assignmentBadge =
-                          cfg.assignment_type === 'unassigned'
-                            ? 'General Pool (Unassigned)'
-                            : cfg.assignment_type === 'single_agent'
-                            ? `Agent: ${agentsMap[cfg.assigned_agent_id] || 'Specific Agent'}`
-                            : `Round-Robin (${cfg.assigned_agents_config?.agent_ids?.length || 0} Agents)`;
+              <div className="grid grid-cols-1 gap-4">
+                {adConfigs.map((cfg) => {
+                  const assignmentBadge =
+                    cfg.assignment_type === 'unassigned'
+                      ? 'General Pool (Unassigned)'
+                      : cfg.assignment_type === 'single_agent'
+                      ? `Agent: ${agentsMap[cfg.assigned_agent_id] || 'Specific Agent'}`
+                      : `Round-Robin (${cfg.assigned_agents_config?.agent_ids?.length || 0} Agents)`;
 
-                        const expiryBadge =
-                          cfg.expiry_mode === 'relative_days'
-                            ? `+${cfg.expiry_days || 15} Days from Arrival`
-                            : cfg.expiry_mode === 'fixed_date' && cfg.expiry_date
-                            ? `Fixed: ${new Date(cfg.expiry_date).toLocaleDateString()}`
-                            : 'No Expiry';
+                  const expiryBadge =
+                    cfg.expiry_mode === 'relative_days'
+                      ? `+${cfg.expiry_days || 15} Days from Arrival`
+                      : cfg.expiry_mode === 'fixed_date' && cfg.expiry_date
+                      ? `Fixed: ${new Date(cfg.expiry_date).toLocaleDateString()}`
+                      : 'No Expiry';
 
-                        return (
-                          <tr key={cfg.id} className="hover:bg-gray-50/70 transition-colors">
-                            <td className="py-3.5 px-4">
-                              <p className="font-bold text-gray-900">{cfg.ad_name}</p>
-                              <p className="text-[11px] text-gray-500">
-                                {cfg.page_name} • Form: {cfg.form_name}
-                              </p>
-                            </td>
-
-                            <td className="py-3.5 px-4">
-                              <Link
-                                href={`/campaign/${cfg.campaign_id}`}
-                                className="inline-flex items-center gap-1.5 font-bold text-[#4b33e8] hover:underline"
-                              >
-                                <span>{cfg.campaigns?.name || cfg.campaign_id}</span>
-                                <i className="fi flex fi-rr-arrow-up-right text-[10px]"></i>
-                              </Link>
-                            </td>
-
-                            <td className="py-3.5 px-4">
-                              <p className="font-semibold text-gray-900">{cfg.source_name}</p>
-                              <Link
-                                href={`/system-logs/${cfg.source_id}`}
-                                className="text-[10px] font-mono text-gray-500 hover:text-[#4b33e8] underline"
-                              >
-                                {cfg.source_id}
-                              </Link>
-                            </td>
-
-                            <td className="py-3.5 px-4">
-                              <span
-                                className={`inline-flex items-center px-2.5 py-1 rounded-lg text-[11px] font-semibold ${
-                                  cfg.assignment_type === 'unassigned'
-                                    ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                                    : 'bg-indigo-50 text-indigo-800 border border-indigo-200'
-                                }`}
-                              >
-                                {assignmentBadge}
-                              </span>
-                            </td>
-
-                            <td className="py-3.5 px-4">
-                              <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-gray-100 text-gray-700 text-[11px] font-medium">
-                                {expiryBadge}
-                              </span>
-                            </td>
-
-                            <td className="py-3.5 px-4">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-md">
-                                  {cfg.total_leads_synced || 0} Imported
+                  return (
+                    <div
+                      key={cfg.id}
+                      className={`bg-white rounded-2xl border transition-all overflow-hidden shadow-2xs ${
+                        cfg.is_active
+                          ? 'border-gray-200 hover:border-[#4b33e8]/50'
+                          : 'border-amber-200/80 bg-amber-50/10'
+                      }`}
+                    >
+                      {/* Top Header: Ad Identity & Quick Actions */}
+                      <div className="p-4 sm:p-5 flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gray-100">
+                        <div className="flex items-start gap-3.5">
+                          <div className="w-11 h-11 rounded-xl bg-[#1877F2]/10 border border-[#1877F2]/20 text-[#1877F2] flex items-center justify-center text-lg shrink-0">
+                            <i className="fi flex fi-brands-facebook"></i>
+                          </div>
+                          <div className="space-y-1 min-w-0">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <h3 className="text-sm sm:text-base font-bold text-gray-900 truncate">
+                                {cfg.ad_name}
+                              </h3>
+                              {cfg.is_active ? (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                                  Active Route
                                 </span>
-                                {(cfg.duplicate_leads_skipped || 0) > 0 && (
-                                  <span className="text-[11px] text-gray-500">
-                                    ({cfg.duplicate_leads_skipped} dup)
-                                  </span>
-                                )}
-                              </div>
-                            </td>
+                              ) : (
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                  Paused
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-500">
+                              <span className="inline-flex items-center gap-1 font-medium text-gray-700">
+                                <i className="fi flex fi-rr-flag text-[11px] text-[#1877F2]"></i>
+                                {cfg.page_name || 'Facebook Page'}
+                              </span>
+                              <span className="text-gray-300">•</span>
+                              <span className="inline-flex items-center gap-1">
+                                Form: <strong className="text-gray-700">{cfg.form_name || cfg.form_id}</strong>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
 
-                            <td className="py-3.5 px-4 text-right">
-                              <div className="flex items-center justify-end gap-1.5">
-                                <button
-                                  type="button"
-                                  disabled={actionBusy === `test_${cfg.id}`}
-                                  onClick={() => handleSendTestLead(cfg)}
-                                  className="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 text-[11px] font-bold transition-colors"
-                                  title="Simulate incoming lead"
-                                >
-                                  {actionBusy === `test_${cfg.id}` ? '...' : '+ Test Lead'}
-                                </button>
+                        {/* Action Buttons */}
+                        <div className="flex flex-wrap items-center gap-2 shrink-0">
+                          <button
+                            type="button"
+                            disabled={actionBusy === `test_${cfg.id}`}
+                            onClick={() => handleSendTestLead(cfg)}
+                            className="px-3 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center gap-1.5 shadow-2xs disabled:opacity-50"
+                            title="Simulate incoming lead for this route"
+                          >
+                            <i className="fi flex fi-rr-paper-plane text-[11px]"></i>
+                            <span>{actionBusy === `test_${cfg.id}` ? 'Sending...' : '+ Test Lead'}</span>
+                          </button>
 
-                                <button
-                                  type="button"
-                                  onClick={() => handleOpenConnectAdModal(null, cfg)}
-                                  className="px-2.5 py-1.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 text-[11px] font-semibold transition-colors"
-                                >
-                                  Configure
-                                </button>
+                          <button
+                            type="button"
+                            onClick={() => handleOpenConnectAdModal(null, cfg)}
+                            className="px-3 py-2 rounded-xl border border-gray-200 bg-white hover:border-[#4b33e8] text-gray-700 hover:text-[#4b33e8] text-xs font-bold transition-colors flex items-center gap-1.5"
+                          >
+                            <i className="fi flex fi-rr-settings-sliders text-[11px]"></i>
+                            <span>Configure</span>
+                          </button>
 
-                                <button
-                                  type="button"
-                                  disabled={actionBusy === cfg.id}
-                                  onClick={() => handleToggleConfigActive(cfg)}
-                                  className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold transition-colors ${
-                                    cfg.is_active
-                                      ? 'bg-amber-50 text-amber-700 hover:bg-amber-100'
-                                      : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
-                                  }`}
-                                >
-                                  {cfg.is_active ? 'Pause' : 'Resume'}
-                                </button>
+                          <button
+                            type="button"
+                            disabled={actionBusy === cfg.id}
+                            onClick={() => handleToggleConfigActive(cfg)}
+                            className={`px-3 py-2 rounded-xl border text-xs font-bold transition-colors flex items-center gap-1.5 ${
+                              cfg.is_active
+                                ? 'border-amber-200 bg-amber-50 text-amber-700 hover:bg-amber-100'
+                                : 'border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100'
+                            }`}
+                          >
+                            <i
+                              className={`fi flex text-[11px] ${
+                                cfg.is_active ? 'fi-rr-pause' : 'fi-rr-play'
+                              }`}
+                            ></i>
+                            <span>{cfg.is_active ? 'Pause' : 'Resume'}</span>
+                          </button>
 
-                                <button
-                                  type="button"
-                                  disabled={actionBusy === cfg.id}
-                                  onClick={() => handleDeleteConfig(cfg)}
-                                  className="p-1.5 rounded-lg text-rose-500 hover:bg-rose-50 transition-colors"
-                                  title="Delete configuration"
-                                >
-                                  <i className="fi flex fi-rr-trash text-xs"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
+                          <button
+                            type="button"
+                            disabled={actionBusy === cfg.id}
+                            onClick={() => handleDeleteConfig(cfg)}
+                            className="p-2 rounded-xl border border-rose-100 text-rose-500 hover:bg-rose-50 hover:border-rose-200 transition-colors"
+                            title="Delete configuration"
+                          >
+                            <i className="fi flex fi-rr-trash text-xs"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Middle 4-Column Routing Configuration Summary */}
+                      <div className="p-4 sm:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 bg-gray-50/50">
+                        {/* 1. Target Campaign */}
+                        <div className="p-3 rounded-xl bg-white border border-gray-200/80 space-y-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                            <i className="fi flex fi-rr-bullhorn text-[#4b33e8]"></i>
+                            Target Campaign
+                          </span>
+                          <Link
+                            href={`/campaign/${cfg.campaign_id}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-[#4b33e8] hover:underline truncate max-w-full"
+                          >
+                            <span className="truncate">{cfg.campaigns?.name || cfg.campaign_id}</span>
+                            <i className="fi flex fi-rr-arrow-up-right text-[10px] shrink-0"></i>
+                          </Link>
+                        </div>
+
+                        {/* 2. Source Name & ID */}
+                        <div className="p-3 rounded-xl bg-white border border-gray-200/80 space-y-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                            <i className="fi flex fi-rr-tags text-[#1877F2]"></i>
+                            Source Name &amp; ID
+                          </span>
+                          <div className="flex items-center justify-between gap-2">
+                            <p className="text-xs font-bold text-gray-900 truncate">{cfg.source_name}</p>
+                            <Link
+                              href={`/system-logs/${cfg.source_id}`}
+                              className="px-1.5 py-0.5 rounded bg-gray-100 hover:bg-[#4b33e8]/10 text-[10px] font-mono text-gray-600 hover:text-[#4b33e8] shrink-0 transition-colors"
+                            >
+                              {cfg.source_id}
+                            </Link>
+                          </div>
+                        </div>
+
+                        {/* 3. Lead Assignment Rule */}
+                        <div className="p-3 rounded-xl bg-white border border-gray-200/80 space-y-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                            <i className="fi flex fi-rr-users-alt text-indigo-600"></i>
+                            Assignment Rule
+                          </span>
+                          <p className="text-xs font-bold text-gray-900 truncate">{assignmentBadge}</p>
+                        </div>
+
+                        {/* 4. Expiry Date Rule */}
+                        <div className="p-3 rounded-xl bg-white border border-gray-200/80 space-y-1">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400 flex items-center gap-1.5">
+                            <i className="fi flex fi-rr-calendar-clock text-emerald-600"></i>
+                            Expiry Date Rule
+                          </span>
+                          <p className="text-xs font-bold text-gray-900 truncate">{expiryBadge}</p>
+                        </div>
+                      </div>
+
+                      {/* Bottom Telemetry Bar */}
+                      <div className="px-4 sm:px-5 py-2.5 bg-white border-t border-gray-100 flex flex-wrap items-center justify-between gap-3 text-xs">
+                        <div className="flex flex-wrap items-center gap-4">
+                          <span className="inline-flex items-center gap-1.5 font-semibold text-gray-700">
+                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                            Imported Leads:{' '}
+                            <strong className="text-emerald-700">{cfg.total_leads_synced || 0}</strong>
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 text-gray-500">
+                            Duplicates Filtered:{' '}
+                            <strong className="text-gray-800">{cfg.duplicate_leads_skipped || 0}</strong>
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 text-gray-500">
+                            Duplicate Policy:{' '}
+                            <strong className="text-gray-800 capitalize">{cfg.duplicate_handling || 'skip'}</strong>
+                          </span>
+                        </div>
+
+                        <span className="text-[11px] text-gray-400">
+                          {cfg.last_lead_received_at
+                            ? `Last lead synced: ${new Date(cfg.last_lead_received_at).toLocaleString()}`
+                            : 'Ready to receive leads'}
+                        </span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             )}
           </div>
