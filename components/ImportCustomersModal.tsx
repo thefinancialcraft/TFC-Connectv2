@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { encryptPhone, computePhoneHash } from "../lib/phoneUtils";
 import { logSystemEvent, estimateSize } from "../lib/monitoring";
+import { parseFlexibleDate } from "../lib/dateUtils";
 import { useUser } from "./AppLayout";
 
 interface ImportCustomersModalProps {
@@ -277,35 +278,8 @@ export default function ImportCustomersModal({
                }
             });
 
-            // Robust Date parsing
-            let parsedExpiryDate: string | null = null;
-            if (expiryDate) {
-              try {
-                const cleanDate = expiryDate.toString().replace(/₹/g, "").trim();
-                const parseDMY = (str: string) => {
-                  const match = str.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})$/);
-                  if (match) {
-                    let d = match[1].padStart(2, '0'), m = match[2].padStart(2, '0'), y = match[3];
-                    if (y.length === 2) y = "20" + y;
-                    return `${y}-${m}-${d}`;
-                  }
-                  return null;
-                };
-                const parseYMD = (str: string) => {
-                  const match = str.match(/^(\d{4})[\/\-\.](\d{1,2})[\/\-\.](\d{1,2})$/);
-                  if (match) {
-                    let y = match[1], m = match[2].padStart(2, '0'), d = match[3].padStart(2, '0');
-                    return `${y}-${m}-${d}`;
-                  }
-                  return null;
-                };
-                parsedExpiryDate = parseDMY(cleanDate) || parseYMD(cleanDate);
-                if (!parsedExpiryDate) {
-                  const date = new Date(cleanDate);
-                  if (!isNaN(date.getTime())) parsedExpiryDate = date.toISOString().split("T")[0];
-                }
-              } catch (e) {}
-            }
+            // Robust Date parsing (supports DD-MM-YYYY, Excel serial dates, ISO timestamps)
+            const parsedExpiryDate: string | null = parseFlexibleDate(expiryDate, "dateOnly");
 
             customers.push({
               lead_id: generateLeadId(),

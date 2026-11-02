@@ -3,6 +3,7 @@ import * as XLSX from "xlsx";
 import { supabase } from "@/lib/supabase";
 import { encryptPhone, computePhoneHash } from "@/lib/phoneUtils";
 import { logSystemEvent, estimateSize } from "@/lib/monitoring";
+import { parseFlexibleDate } from "@/lib/dateUtils";
 
 interface AppendLeadsModalProps {
   show: boolean;
@@ -146,7 +147,7 @@ export default function AppendLeadsModal({
 
     try {
       const buffer = await file.arrayBuffer();
-      const workbook = XLSX.read(buffer, { type: "array" });
+      const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
       const rows: Record<string, any>[] = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
@@ -310,17 +311,8 @@ export default function AppendLeadsModal({
             ? customExpiryDate
             : getFieldValue(row, "expiry_date", fieldMapping, mergedFields);
 
-        // Date normalization
-        let parsedExpiryDate: string | null = null;
-        if (expiryVal) {
-          try {
-            const clean = expiryVal.toString().replace(/₹/g, "").trim();
-            const d = new Date(clean);
-            if (!isNaN(d.getTime())) {
-              parsedExpiryDate = d.toISOString();
-            }
-          } catch (e) {}
-        }
+        // Date normalization (supports DD-MM-YYYY, Excel serial dates, ISO timestamps, etc.)
+        const parsedExpiryDate: string | null = parseFlexibleDate(expiryVal, "iso");
 
         // Build customer_details JSON in CRM format
         const detailsObj: Record<string, any> = {};
@@ -772,7 +764,7 @@ export default function AppendLeadsModal({
           customer_name: lead.customer_name,
           phone_no: lead.phone_no,
           phone_search_hash: lead.phone_search_hash,
-          expiry_date: lead.expiry_date,
+          expiry_date: parseFlexibleDate(lead.expiry_date, "iso"),
           customer_details: JSON.stringify(lead.customer_details),
           row_index: lead.row_index,
           upload_status: "pending",
