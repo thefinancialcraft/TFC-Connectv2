@@ -31,7 +31,9 @@ const DEMO_ADS_AND_FORMS = [
     ad_id: 'ad_diwali_special_2026',
     ad_name: 'Diwali Festive Offer - Instant Callback Ad',
     ad_status: 'ACTIVE',
+    meta_campaign_id: 'cmp_1202081928374',
     meta_campaign_name: 'Q4 High Intent Lead Generation',
+    adset_id: 'adset_1202081928375',
     ad_account_id: 'act_9081726354',
     ad_account_name: 'Primary Meta Ads Account (INR)',
     page_id: 'page_tfc_official_101',
@@ -51,7 +53,9 @@ const DEMO_ADS_AND_FORMS = [
     ad_id: 'ad_insurance_renewal_2026',
     ad_name: 'Health & Term Plan Zero-Commission Ad',
     ad_status: 'ACTIVE',
+    meta_campaign_id: 'cmp_1202081928376',
     meta_campaign_name: 'Insurance Renewal Drive - North India',
+    adset_id: 'adset_1202081928377',
     ad_account_id: 'act_9081726354',
     ad_account_name: 'Primary Meta Ads Account (INR)',
     page_id: 'page_tfc_official_101',
@@ -71,7 +75,9 @@ const DEMO_ADS_AND_FORMS = [
     ad_id: 'ad_property_site_visit_2026',
     ad_name: 'Luxury 3BHK Site Visit Booking - Reel Ad',
     ad_status: 'ACTIVE',
+    meta_campaign_id: 'cmp_1202081928378',
     meta_campaign_name: 'Real Estate Site Visits - NCR',
+    adset_id: 'adset_1202081928379',
     ad_account_id: 'act_9081726354',
     ad_account_name: 'Primary Meta Ads Account (INR)',
     page_id: 'page_growth_campaigns_202',
@@ -195,7 +201,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                 const adsRes = await fetch(
                   `${META_GRAPH_BASE_URL}/${encodeURIComponent(
                     actId
-                  )}/ads?fields=id,name,status,campaign{id,name},creative{id,object_story_spec}&limit=50&access_token=${encodeURIComponent(
+                  )}/ads?fields=id,name,status,campaign{id,name},adset{id,name},creative{id,object_story_spec}&limit=50&access_token=${encodeURIComponent(
                     integration.user_access_token
                   )}`
                 );
@@ -213,7 +219,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                         ad_id: ad.id,
                         ad_name: ad.name,
                         ad_status: ad.status || 'ACTIVE',
+                        meta_campaign_id: ad.campaign?.id || null,
                         meta_campaign_name: ad.campaign?.name || 'Meta Campaign',
+                        adset_id: ad.adset?.id || null,
+                        adset_name: ad.adset?.name || null,
                         ad_account_id: actId,
                         ad_account_name: acc.name || actId,
                         page_id: matchedPage?.page_id || pageId,

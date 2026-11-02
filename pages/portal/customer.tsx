@@ -7,6 +7,7 @@ import { logSystemEvent, estimateSize } from "@/lib/monitoring";
 import ImportCustomersModal from "@/components/ImportCustomersModal";
 import AddCustomerModal from "@/components/AddCustomerModal";
 import { formatMaskedPhone, computePhoneHash, decryptPhone } from "@/lib/phoneUtils";
+import CustomSelect from "@/components/workflow/pilotlead/CustomSelect";
 
 interface Customer {
   id: string;
@@ -1296,10 +1297,91 @@ export default function Customer() {
   };
 
   const [isMovingToLive, setIsMovingToLive] = useState(false);
+  const [showMoveToLiveModal, setShowMoveToLiveModal] = useState(false);
+  const [moveToLiveConfig, setMoveToLiveConfig] = useState({
+    campaign_id: "",
+    assignOption: "unassigned" as "unassigned" | "agent" | "keep",
+    assigned_to: "",
+    resetAssignedMember: true,
+    resetCallbacks: true,
+    deleteLogs: false,
+  });
 
-  const handleMoveToLive = async () => {
+  // Available campaigns for Move to Live modal
+  const availableMoveCampaigns = useMemo(() => {
+    if (effectiveBulkOrgId) {
+      return filterStats.campaigns.filter(camp => camp.organization_id === effectiveBulkOrgId);
+    }
+    return filterStats.campaigns;
+  }, [filterStats.campaigns, effectiveBulkOrgId]);
+
+  // Available agents for Move to Live modal based on selected target campaign
+  const availableMoveAgents = useMemo(() => {
+    if (moveToLiveConfig.campaign_id) {
+      const selectedCamp = filterStats.campaigns.find(c => c.id === moveToLiveConfig.campaign_id);
+      const campaignUserIds = selectedCamp?.users?.map((u: any) => u.user_id) || [];
+      if (campaignUserIds.length > 0) {
+        return filterStats.agents.filter(agent => {
+          const orgMatch = !effectiveBulkOrgId || agent.organization_id === effectiveBulkOrgId;
+          const campMatch = campaignUserIds.includes(agent.user_id);
+          return orgMatch && campMatch;
+        });
+      }
+    }
+    if (effectiveBulkOrgId) {
+      return filterStats.agents.filter(agent => agent.organization_id === effectiveBulkOrgId);
+    }
+    return filterStats.agents;
+  }, [filterStats.agents, filterStats.campaigns, effectiveBulkOrgId, moveToLiveConfig.campaign_id]);
+
+  // Formatted options for custom select dropdowns
+  const campaignCustomSelectOptions = useMemo(() => [
+    {
+      value: "",
+      label: "Keep Original Campaign (Default)",
+      icon: "fi-rr-refresh",
+    },
+    ...availableMoveCampaigns.map(camp => ({
+      value: camp.id,
+      label: camp.name,
+      icon: "fi-rr-bullseye-arrow",
+    })),
+  ], [availableMoveCampaigns]);
+
+  const agentCustomSelectOptions = useMemo(() => [
+    {
+      value: "",
+      label: "-- Select Agent --",
+      icon: "fi-rr-user",
+    },
+    ...availableMoveAgents.map(agent => ({
+      value: agent.user_id || agent.id,
+      label: agent.user_name || "Unknown Agent",
+      icon: "fi-rr-user",
+    })),
+  ], [availableMoveAgents]);
+
+  const handleOpenMoveToLiveModal = () => {
     if (!selectedCustomers.size || dataSource !== 'rejected') return;
-    
+    setMoveToLiveConfig({
+      campaign_id: "",
+      assignOption: "unassigned",
+      assigned_to: "",
+      resetAssignedMember: true,
+      resetCallbacks: true,
+      deleteLogs: false,
+    });
+    setShowMoveToLiveModal(true);
+  };
+
+  const handleConfirmMoveToLive = async () => {
+    if (!selectedCustomers.size || dataSource !== 'rejected') return;
+
+    if (moveToLiveConfig.assignOption === 'agent' && !moveToLiveConfig.assigned_to) {
+      alert("Please select an agent to assign the lead(s) to.");
+      return;
+    }
+
     setIsMovingToLive(true);
     try {
       const ids = Array.from(selectedCustomers);
@@ -1315,6 +1397,10 @@ export default function Customer() {
         if (fetchError) throw fetchError;
 
         if (rejectedLeads && rejectedLeads.length > 0) {
+          const targetCustomerIds = Array.from(new Set(
+            rejectedLeads.flatMap(l => [l.customer_id, l.id]).filter(Boolean)
+          ));
+
           const liveCustomers = rejectedLeads.map(lead => {
             const { 
               id,
@@ -1326,21 +1412,68 @@ export default function Customer() {
               ...commonFields 
             } = lead;
 
-            return {
+            const targetCustomerId = customer_id || id;
+            const targetCampaignId = moveToLiveConfig.campaign_id || lead.campaign_id;
+
+            let targetAssignedTo = null;
+            if (moveToLiveConfig.assignOption === 'unassigned') {
+              targetAssignedTo = null;
+            } else if (moveToLiveConfig.assignOption === 'agent') {
+              targetAssignedTo = moveToLiveConfig.assigned_to || null;
+            } else if (moveToLiveConfig.assignOption === 'keep') {
+              targetAssignedTo = moveToLiveConfig.resetAssignedMember ? null : (lead.agent_id || lead.assigned_to || null);
+            }
+
+            const customerPayload: any = {
               ...commonFields,
-              id: customer_id,
-              assigned_to: agent_id,
+              id: targetCustomerId,
+              campaign_id: targetCampaignId,
+              assigned_to: targetAssignedTo,
               status: "active",
               updated_at: new Date().toISOString()
             };
+
+            // Reset Callbacks & Follow-up schedules
+            if (moveToLiveConfig.resetCallbacks) {
+              customerPayload.next_called_at = null;
+              if (customerPayload.disposition === 'Call Back' || customerPayload.disposition === 'Callback') {
+                customerPayload.disposition = null;
+                customerPayload.sub_disposition = null;
+              }
+            }
+
+            // Reset Logs & Activity
+            if (moveToLiveConfig.deleteLogs) {
+              customerPayload.attempt_count = 0;
+              customerPayload.live_notes = null;
+              customerPayload.last_called_at = null;
+              customerPayload.disposition = null;
+              customerPayload.sub_disposition = null;
+            }
+
+            return customerPayload;
           });
 
+          // 1. Upsert restored leads into customers table
           const { error: insertError } = await supabase
             .from("customers")
             .upsert(liveCustomers);
 
           if (insertError) throw insertError;
 
+          // 2. Delete past call_logs if user opted to delete logs
+          if (moveToLiveConfig.deleteLogs && targetCustomerIds.length > 0) {
+            const { error: logDeleteError } = await supabase
+              .from("call_logs")
+              .delete()
+              .in("customer_id", targetCustomerIds);
+
+            if (logDeleteError) {
+              console.warn("Failed to delete old call_logs:", logDeleteError);
+            }
+          }
+
+          // 3. Remove from rejected_leads
           const { error: deleteError } = await supabase
             .from("rejected_leads")
             .delete()
@@ -1350,13 +1483,23 @@ export default function Customer() {
         }
       }
 
+      setShowMoveToLiveModal(false);
       setSelectedCustomers(new Set());
       await fetchCustomers(currentPage);
       
       logSystemEvent({
           event_type: 'WRITE',
           description: `Move to Live: ${ids.length} records restored from rejected_leads`,
-          metadata: { record_count: ids.length, source: 'rejected_leads', target: 'customers' },
+          metadata: { 
+            record_count: ids.length, 
+            source: 'rejected_leads', 
+            target: 'customers',
+            target_campaign: moveToLiveConfig.campaign_id || 'Original',
+            assign_option: moveToLiveConfig.assignOption,
+            assigned_to: moveToLiveConfig.assigned_to || 'None',
+            reset_callbacks: moveToLiveConfig.resetCallbacks,
+            delete_logs: moveToLiveConfig.deleteLogs
+          },
           payload_size: estimateSize(ids),
           user_name: user?.displayName || 'Admin',
           organization_id: user?.organization_id || undefined
@@ -2248,7 +2391,7 @@ export default function Customer() {
                       {/* Move to Live Button - Only for Rejected Data source */}
                       {selectedCustomers.size > 0 && dataSource === 'rejected' && (
                         <button
-                          onClick={handleMoveToLive}
+                          onClick={handleOpenMoveToLiveModal}
                           disabled={isMovingToLive}
                           className="h-10 px-3 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-1.5"
                           title="Move to Live"
@@ -2630,7 +2773,7 @@ export default function Customer() {
                           {/* Move to Live Button - Only for Rejected Data source */}
                           {dataSource === 'rejected' && (
                             <button
-                              onClick={handleMoveToLive}
+                              onClick={handleOpenMoveToLiveModal}
                               disabled={isMovingToLive}
                               className="h-10 px-4 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-2 font-bold text-xs"
                               title="Move to Live"
@@ -4066,6 +4209,262 @@ export default function Customer() {
           </div>
         </div>
       )}
+      {/* Move to Live Configuration Modal */}
+      {showMoveToLiveModal && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 text-xs font-sans">
+          <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl flex flex-col border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+            {/* Modal Header */}
+            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-emerald-50/70 via-white to-white">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+                  <i className="fi flex fi-rr-redo text-sm"></i>
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-800 text-sm">Move to Live (Restore Leads)</h3>
+                </div>
+              </div>
+              <button 
+                type="button"
+                onClick={() => !isMovingToLive && setShowMoveToLiveModal(false)}
+                disabled={isMovingToLive}
+                className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"
+              >
+                <i className="fi fi-rr-cross-small text-xl leading-none"></i>
+              </button>
+            </div>
+            
+            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+              {/* 1. Target Campaign Selection */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <i className="fi fi-rr-bullseye-arrow text-emerald-600"></i>
+                  Target Campaign
+                </label>
+                <CustomSelect
+                  value={moveToLiveConfig.campaign_id}
+                  onChange={(val) => setMoveToLiveConfig(prev => ({ 
+                    ...prev, 
+                    campaign_id: val,
+                    assigned_to: ''
+                  }))}
+                  options={campaignCustomSelectOptions}
+                  searchable={true}
+                  placeholder="Keep Original Campaign (Default)"
+                  size="sm"
+                />
+                <p className="text-[10px] text-gray-400 pl-1">Choose a campaign to transfer the leads to, or keep their existing campaign.</p>
+              </div>
+
+              {/* 2. Agent Assignment */}
+              <div className="space-y-2 pt-2 border-t border-gray-100">
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <i className="fi fi-rr-users-alt text-emerald-600"></i>
+                  Agent Assignment
+                </label>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <div
+                    onClick={() => setMoveToLiveConfig(prev => ({ ...prev, assignOption: 'unassigned', assigned_to: '', resetAssignedMember: true }))}
+                    className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all select-none ${
+                      moveToLiveConfig.assignOption === 'unassigned' 
+                        ? 'border-emerald-500 bg-emerald-50/60 text-emerald-900 font-semibold shadow-xs' 
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
+                    }`}
+                  >
+                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                      moveToLiveConfig.assignOption === 'unassigned' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
+                    }`}>
+                      {moveToLiveConfig.assignOption === 'unassigned' && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-600"></div>
+                      )}
+                    </div>
+                    <div className="text-[11px] leading-tight">
+                      <div>Unassigned Pool</div>
+                      <span className="text-[9px] text-gray-400 font-normal">Available for all</span>
+                    </div>
+                  </div>
+
+                  <div
+                    onClick={() => setMoveToLiveConfig(prev => ({ ...prev, assignOption: 'agent' }))}
+                    className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all select-none ${
+                      moveToLiveConfig.assignOption === 'agent' 
+                        ? 'border-emerald-500 bg-emerald-50/60 text-emerald-900 font-semibold shadow-xs' 
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
+                    }`}
+                  >
+                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                      moveToLiveConfig.assignOption === 'agent' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
+                    }`}>
+                      {moveToLiveConfig.assignOption === 'agent' && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-600"></div>
+                      )}
+                    </div>
+                    <div className="text-[11px] leading-tight">
+                      <div>Specific Agent</div>
+                      <span className="text-[9px] text-gray-400 font-normal">Assign to team member</span>
+                    </div>
+                  </div>
+
+                  <div
+                    onClick={() => setMoveToLiveConfig(prev => ({ ...prev, assignOption: 'keep', assigned_to: '' }))}
+                    className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all select-none ${
+                      moveToLiveConfig.assignOption === 'keep' 
+                        ? 'border-emerald-500 bg-emerald-50/60 text-emerald-900 font-semibold shadow-xs' 
+                        : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
+                    }`}
+                  >
+                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+                      moveToLiveConfig.assignOption === 'keep' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
+                    }`}>
+                      {moveToLiveConfig.assignOption === 'keep' && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-600"></div>
+                      )}
+                    </div>
+                    <div className="text-[11px] leading-tight">
+                      <div>Keep Previous</div>
+                      <span className="text-[9px] text-gray-400 font-normal">Original owner</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Agent Dropdown if 'agent' is selected */}
+                {moveToLiveConfig.assignOption === 'agent' && (
+                  <div className="pt-1 animate-in fade-in duration-100">
+                    <CustomSelect
+                      value={moveToLiveConfig.assigned_to}
+                      onChange={(val) => setMoveToLiveConfig(prev => ({ ...prev, assigned_to: val }))}
+                      options={agentCustomSelectOptions}
+                      searchable={true}
+                      placeholder="-- Select Agent --"
+                      size="sm"
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* 3. Reset Previous Assigned Member (Relevant if 'keep' is selected) */}
+              {moveToLiveConfig.assignOption === 'keep' && (
+                <div 
+                  onClick={() => setMoveToLiveConfig(prev => ({ ...prev, resetAssignedMember: !prev.resetAssignedMember }))}
+                  className={`p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between select-none ${
+                    moveToLiveConfig.resetAssignedMember 
+                      ? 'bg-emerald-50/50 border-emerald-300 shadow-xs' 
+                      : 'bg-gray-50/60 border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <div className="pr-3">
+                    <div className={`font-semibold text-xs flex items-center gap-1.5 ${
+                      moveToLiveConfig.resetAssignedMember ? 'text-emerald-900' : 'text-gray-700'
+                    }`}>
+                      <i className={`fi fi-rr-refresh ${moveToLiveConfig.resetAssignedMember ? 'text-emerald-600' : 'text-gray-400'}`}></i>
+                      Reset Previous Assigned Member?
+                    </div>
+                    <div className="text-[10px] text-gray-500 mt-0.5">If enabled, ignores original owner and leaves lead unassigned.</div>
+                  </div>
+                  
+                  {/* Custom Toggle Switch */}
+                  <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
+                    moveToLiveConfig.resetAssignedMember ? 'bg-emerald-600' : 'bg-gray-300'
+                  }`}>
+                    <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                      moveToLiveConfig.resetAssignedMember ? 'translate-x-4.5' : 'translate-x-1'
+                    }`} />
+                  </div>
+                </div>
+              )}
+
+              {/* 4. Reset Callbacks & Follow-ups */}
+              <div 
+                onClick={() => setMoveToLiveConfig(prev => ({ ...prev, resetCallbacks: !prev.resetCallbacks }))}
+                className={`p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between select-none ${
+                  moveToLiveConfig.resetCallbacks 
+                    ? 'bg-emerald-50/50 border-emerald-300 shadow-xs' 
+                    : 'bg-gray-50/60 border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="pr-3">
+                  <div className={`font-semibold text-xs flex items-center gap-1.5 ${
+                    moveToLiveConfig.resetCallbacks ? 'text-emerald-900' : 'text-gray-700'
+                  }`}>
+                    <i className={`fi fi-rr-time-past ${moveToLiveConfig.resetCallbacks ? 'text-emerald-600' : 'text-gray-400'}`}></i>
+                    Reset Scheduled Callbacks
+                  </div>
+                  <div className="text-[10px] text-gray-500 mt-0.5">Clears scheduled callback timers/dates and resets 'Call Back' disposition.</div>
+                </div>
+                
+                {/* Custom Toggle Switch */}
+                <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
+                  moveToLiveConfig.resetCallbacks ? 'bg-emerald-600' : 'bg-gray-300'
+                }`}>
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                    moveToLiveConfig.resetCallbacks ? 'translate-x-4.5' : 'translate-x-1'
+                  }`} />
+                </div>
+              </div>
+
+              {/* 5. Delete Logs & History */}
+              <div 
+                onClick={() => setMoveToLiveConfig(prev => ({ ...prev, deleteLogs: !prev.deleteLogs }))}
+                className={`p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between select-none ${
+                  moveToLiveConfig.deleteLogs 
+                    ? 'bg-rose-50/60 border-rose-300 shadow-xs' 
+                    : 'bg-gray-50/60 border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="pr-3">
+                  <div className={`font-semibold text-xs flex items-center gap-1.5 ${
+                    moveToLiveConfig.deleteLogs ? 'text-rose-700' : 'text-gray-700'
+                  }`}>
+                    <i className={`fi fi-rr-trash ${moveToLiveConfig.deleteLogs ? 'text-rose-500' : 'text-gray-400'}`}></i>
+                    Delete Past Activity & Call Logs
+                  </div>
+                  <div className="text-[10px] text-rose-600/80 mt-0.5">Permanently clears previous call history and resets attempt counter to 0 (Fresh Lead).</div>
+                </div>
+                
+                {/* Custom Toggle Switch */}
+                <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
+                  moveToLiveConfig.deleteLogs ? 'bg-rose-600' : 'bg-gray-300'
+                }`}>
+                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                    moveToLiveConfig.deleteLogs ? 'translate-x-4.5' : 'translate-x-1'
+                  }`} />
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/60">
+              <button
+                type="button"
+                disabled={isMovingToLive}
+                onClick={() => setShowMoveToLiveModal(false)}
+                className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-white font-medium transition-all text-xs disabled:opacity-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={isMovingToLive || (moveToLiveConfig.assignOption === 'agent' && !moveToLiveConfig.assigned_to)}
+                onClick={handleConfirmMoveToLive}
+                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold uppercase tracking-wider text-xs transition-all shadow-sm shadow-emerald-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isMovingToLive ? (
+                  <>
+                    <div className="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></div>
+                    <span>Moving...</span>
+                  </>
+                ) : (
+                  <>
+                    <i className="fi flex fi-rr-check"></i>
+                    <span>Move to Live ({selectedCustomers.size})</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Unified Bulk Action Modal */}
       {showBulkActionModal && (
         <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/30 backdrop-blur-sm p-4 text-xs font-sans">

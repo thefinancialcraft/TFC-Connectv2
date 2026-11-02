@@ -30,6 +30,17 @@ export default function MetaAdsWorkflowPage() {
   const [pages, setPages] = useState<any[]>([]);
   const [adAccounts, setAdAccounts] = useState<any[]>([]);
   const [discoverableAds, setDiscoverableAds] = useState<DiscoverableMetaAd[]>([]);
+  const [profileImgError, setProfileImgError] = useState(false);
+
+  const profilePicUrl = useMemo(() => {
+    if (pages && pages.length > 0 && pages[0]?.page_id) {
+      return `https://graph.facebook.com/${pages[0].page_id}/picture?type=large`;
+    }
+    if (integration?.meta_user_id) {
+      return `https://graph.facebook.com/${integration.meta_user_id}/picture?type=large`;
+    }
+    return null;
+  }, [pages, integration]);
 
   // Connected Ad Configurations & Logs
   const [adConfigs, setAdConfigs] = useState<any[]>([]);
@@ -478,25 +489,24 @@ export default function MetaAdsWorkflowPage() {
         {/* Breadcrumb & Header */}
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs text-gray-500 mb-1">
-              <Link href="/workflow" className="hover:text-[#4b33e8] font-medium transition-colors">
+            <div className="flex items-center gap-2 text-xs text-gray-500 mb-2">
+              <Link href="/workflow" className="hover:text-gray-900 font-medium transition-colors">
                 Workflow
               </Link>
-              <span>/</span>
-              <span className="text-gray-800 font-semibold">Meta (Facebook) Lead Ads</span>
+              <span className="text-gray-400">›</span>
+              <span className="text-gray-700 font-medium">Meta (Facebook) Lead Ads</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-[#1877F2] text-white flex items-center justify-center text-lg shadow-xs">
-                <i className="fi flex fi-brands-facebook"></i>
+            <div className="flex items-center gap-3.5">
+              <div className="w-11 h-11 rounded-2xl bg-white border border-gray-200/90 shadow-2xs flex items-center justify-center shrink-0">
+                <svg viewBox="0 0 100 68" className="w-7 h-5" fill="none">
+                  <path d="M72.5 10c-9.5 0-16.7 5.7-22.5 13.5C44.2 15.7 37 10 27.5 10 11.8 10 0 22.8 0 38.5 0 54.3 12 67 27.5 67c9.5 0 17-6 22.5-14 5.5 8 13 14 22.5 14C88 67 100 54.3 100 38.5 100 22.8 88.2 10 72.5 10zm-45 44c-8.5 0-15.5-7.5-15.5-15.5S19 23 27.5 23c6 0 11 3.5 14.5 9.5-3.5 6-8.5 21.5-14.5 21.5zm45 0c-6 0-11-15.5-14.5-21.5 3.5-6 8.5-9.5 14.5-9.5 8.5 0 15.5 7.5 15.5 15.5S81 54 72.5 54z" fill="#0866FF"/>
+                </svg>
               </div>
               <div>
-                <h1
-                  className="text-xl sm:text-2xl font-bold text-[#263238]"
-                  style={{ fontFamily: "'Poppins', sans-serif" }}
-                >
+                <h1 className="text-xl sm:text-2xl font-semibold text-gray-800 leading-tight">
                   Meta Lead Ads Integration
                 </h1>
-                <p className="text-xs text-[#787E9D]">
+                <p className="text-xs text-gray-500 mt-0.5">
                   Sync Facebook &amp; Instagram Lead Ads directly to your CRM campaigns.
                 </p>
               </div>
@@ -523,17 +533,17 @@ export default function MetaAdsWorkflowPage() {
                 <button
                   type="button"
                   onClick={() => handleOpenConnectAdModal(null, null)}
-                  className="px-3.5 py-2 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-bold transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-xl border border-gray-200 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium transition-colors flex items-center gap-2 shadow-2xs"
                 >
-                  <i className="fi flex fi-rr-plus text-[11px]"></i>
+                  <i className="fi flex fi-rr-plus text-xs"></i>
                   <span>Connect Custom Form ID</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowConnectAccountModal(true)}
-                  className="px-3.5 py-2 rounded-xl border border-blue-200 bg-blue-50 hover:bg-blue-100 text-[#1877F2] text-xs font-bold transition-colors flex items-center gap-1.5"
+                  className="px-4 py-2.5 rounded-xl bg-[#1c2434] hover:bg-[#2c3646] text-white text-xs font-medium transition-colors flex items-center gap-2 shadow-xs"
                 >
-                  <i className="fi flex fi-rr-refresh text-[11px]"></i>
+                  <i className="fi flex fi-rr-settings text-xs"></i>
                   <span>Account Settings</span>
                 </button>
               </>
@@ -586,17 +596,29 @@ export default function MetaAdsWorkflowPage() {
 
         {/* Connected Account Overview Bar */}
         {connected && integration && (
-          <div className="bg-white rounded-2xl border border-gray-200 p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <div className="w-11 h-11 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-lg">
-                <i className="fi flex fi-rr-check-circle"></i>
+          <div className="bg-white rounded-2xl border border-gray-200/90 p-5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex items-center gap-4">
+              <div className="relative w-10 h-10 rounded-full shrink-0">
+                {profilePicUrl && !profileImgError ? (
+                  <img
+                    src={profilePicUrl}
+                    alt={integration?.meta_user_name || 'Facebook Account'}
+                    onError={() => setProfileImgError(true)}
+                    className="w-10 h-10 rounded-full object-cover border border-gray-200 shadow-2xs"
+                  />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center font-bold text-sm shadow-2xs">
+                    {(integration?.meta_user_name || 'FB').charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-white rounded-full"></span>
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-bold text-gray-900">
-                    {integration.meta_user_name || 'Connected Meta Account'}
+                <div className="flex items-center gap-2.5">
+                  <h2 className="text-sm sm:text-base font-semibold text-gray-800">
+                    {integration.meta_user_name || 'Nimfly Websolution'}
                   </h2>
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/60">
                     Connected
                   </span>
                   {integration.is_sandbox && (
@@ -605,32 +627,36 @@ export default function MetaAdsWorkflowPage() {
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 mt-0.5">
-                  {pages.length} Facebook Page(s) • {adAccounts.length} Ad Account(s) •{' '}
-                  <strong className="text-[#4b33e8]">{adConfigs.length} Connected Ad Route(s)</strong>
+                <p className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                  <span>{pages.length} Facebook Page</span>
+                  <span>•</span>
+                  <span>{adAccounts.length} Ad Account</span>
+                  <span>•</span>
+                  <span className="text-emerald-600 font-medium">{adConfigs.length} Connected Ad Route</span>
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs">
-              <div className="px-3 py-2 rounded-xl bg-gray-50 border border-gray-100">
-                <span className="text-gray-400 block text-[10px] uppercase font-bold">Total Leads Synced</span>
-                <span className="text-sm font-bold text-gray-900">
+            <div className="flex flex-wrap items-center gap-8 md:gap-12">
+              <div>
+                <span className="text-gray-500 block text-xs font-normal">Total Leads Synced</span>
+                <span className="text-xl font-semibold text-gray-800 block mt-0.5">
                   {adConfigs.reduce((acc, c) => acc + (Number(c.total_leads_synced) || 0), 0)}
                 </span>
               </div>
-              <div className="px-3 py-2 rounded-xl bg-gray-50 border border-gray-100">
-                <span className="text-gray-400 block text-[10px] uppercase font-bold">Duplicates Filtered</span>
-                <span className="text-sm font-bold text-gray-900">
+              <div>
+                <span className="text-gray-500 block text-xs font-normal">Duplicates Filtered</span>
+                <span className="text-xl font-semibold text-gray-800 block mt-0.5">
                   {adConfigs.reduce((acc, c) => acc + (Number(c.duplicate_leads_skipped) || 0), 0)}
                 </span>
               </div>
               <button
                 type="button"
                 onClick={handleDisconnectAccount}
-                className="px-3 py-2 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold transition-colors"
+                className="px-4 py-2 rounded-xl border border-rose-200 bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold transition-colors flex items-center gap-1.5 shadow-2xs"
               >
-                Disconnect
+                <i className="fi flex fi-rr-link-slash text-xs"></i>
+                <span>Disconnect</span>
               </button>
             </div>
           </div>
@@ -691,40 +717,40 @@ export default function MetaAdsWorkflowPage() {
         {/* Navigation Tabs & Tab Content — Only visible when Meta Account is connected */}
         {connected && (
           <>
-            <div className="flex items-center gap-2 border-b border-gray-200 overflow-x-auto">
+            <div className="flex items-center gap-6 sm:gap-8 border-b border-gray-200 overflow-x-auto">
               <button
                 type="button"
                 onClick={() => setActiveTab('discover')}
-                className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
+                className={`pb-3 text-xs transition-colors whitespace-nowrap flex items-center gap-2 ${
                   activeTab === 'discover'
-                    ? 'border-[#4b33e8] text-[#4b33e8]'
-                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                    ? 'border-b-2 border-emerald-600 text-gray-800 font-medium'
+                    : 'border-b-2 border-transparent text-gray-500 hover:text-gray-800 font-medium'
                 }`}
               >
-                <i className="fi flex fi-rr-bullhorn text-xs"></i>
+                <i className="fi flex fi-rr-layers text-xs"></i>
                 <span>Available Meta Ads ({discoverableAds.length})</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('connected')}
-                className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
+                className={`pb-3 text-xs transition-colors whitespace-nowrap flex items-center gap-2 ${
                   activeTab === 'connected'
-                    ? 'border-[#4b33e8] text-[#4b33e8]'
-                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                    ? 'border-b-2 border-emerald-600 text-gray-800 font-medium'
+                    : 'border-b-2 border-transparent text-gray-500 hover:text-gray-800 font-medium'
                 }`}
               >
-                <i className="fi flex fi-rr-link-alt text-xs"></i>
+                <i className="fi flex fi-rr-link text-xs"></i>
                 <span>Connected Ad Routes ({adConfigs.length})</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab('logs')}
-                className={`px-4 py-2.5 text-xs font-bold border-b-2 transition-colors whitespace-nowrap flex items-center gap-2 ${
+                className={`pb-3 text-xs transition-colors whitespace-nowrap flex items-center gap-2 ${
                   activeTab === 'logs'
-                    ? 'border-[#4b33e8] text-[#4b33e8]'
-                    : 'border-transparent text-gray-500 hover:text-gray-800'
+                    ? 'border-b-2 border-emerald-600 text-gray-800 font-medium'
+                    : 'border-b-2 border-transparent text-gray-500 hover:text-gray-800 font-medium'
                 }`}
               >
                 <i className="fi flex fi-rr-time-past text-xs"></i>
@@ -758,7 +784,7 @@ export default function MetaAdsWorkflowPage() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {discoverableAds.map((ad, idx) => {
                   const existingRoute = adConfigs.find(
                     (c) =>
@@ -766,48 +792,87 @@ export default function MetaAdsWorkflowPage() {
                       ((ad.ad_id && c.ad_id === ad.ad_id) || (!ad.ad_id && !c.ad_id))
                   );
 
+                  const isArchived = (ad.ad_status || '').toLowerCase() === 'archived';
+
                   return (
                     <div
                       key={`${ad.form_id}_${ad.ad_id || idx}`}
-                      className="bg-white rounded-2xl border border-gray-200 hover:border-[#4b33e8] p-5 transition-all flex flex-col justify-between shadow-2xs"
+                      className="bg-white rounded-2xl border border-gray-200/90 hover:border-gray-300 p-5 transition-all flex flex-col justify-between shadow-2xs"
                     >
                       <div className="space-y-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-blue-50 text-[#1877F2] border border-blue-200">
-                            {ad.page_name}
-                          </span>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className="w-5 h-5 rounded-full bg-[#1877F2] text-white flex items-center justify-center text-[10px] shrink-0">
+                              <i className="fi flex fi-brands-facebook"></i>
+                            </div>
+                            <span className="text-xs text-gray-600 font-normal truncate">
+                              {ad.page_name}
+                            </span>
+                          </div>
                           {existingRoute ? (
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
+                            <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200/70 flex items-center gap-1.5 shrink-0">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                               Connected
                             </span>
+                          ) : isArchived ? (
+                            <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 shrink-0">
+                              Archived
+                            </span>
                           ) : (
-                            <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-gray-100 text-gray-600">
-                              {ad.ad_status || 'ACTIVE'}
+                            <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-50 text-emerald-600 shrink-0">
+                              Active
                             </span>
                           )}
                         </div>
 
                         <div>
-                          <h3 className="text-sm font-bold text-gray-900 leading-snug">
+                          <h3 className="text-sm font-semibold text-gray-800 leading-snug line-clamp-2">
                             {ad.ad_name}
                           </h3>
-                          <p className="text-[11px] text-gray-500 mt-0.5">
-                            Form: <strong className="text-gray-700">{ad.form_name}</strong>
+                          <p className="text-xs text-gray-500 mt-1">
+                            Form: <span className="text-gray-600">{ad.form_name}</span>
                           </p>
+                        </div>
+
+                        {/* Meta Hierarchy IDs */}
+                        <div className="grid grid-cols-2 gap-2 p-2.5 rounded-xl bg-gray-50/80 border border-gray-100 text-[11px]">
+                          <div className="min-w-0">
+                            <span className="text-[10px] text-gray-400 block font-medium uppercase tracking-wider">Campaign ID</span>
+                            <span className="font-mono text-gray-700 truncate block" title={ad.meta_campaign_id || 'All Campaigns'}>
+                              {ad.meta_campaign_id || <span className="text-gray-400 italic font-sans">All Campaigns</span>}
+                            </span>
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-[10px] text-gray-400 block font-medium uppercase tracking-wider">AdSet ID</span>
+                            <span className="font-mono text-gray-700 truncate block" title={ad.adset_id || 'All AdSets'}>
+                              {ad.adset_id || <span className="text-gray-400 italic font-sans">All AdSets</span>}
+                            </span>
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-[10px] text-gray-400 block font-medium uppercase tracking-wider">Ad ID</span>
+                            <span className="font-mono text-gray-700 truncate block" title={ad.ad_id || 'All Ads'}>
+                              {ad.ad_id || <span className="text-gray-400 italic font-sans">All Ads</span>}
+                            </span>
+                          </div>
+                          <div className="min-w-0">
+                            <span className="text-[10px] text-gray-400 block font-medium uppercase tracking-wider">Form ID</span>
+                            <span className="font-mono text-gray-700 truncate block font-medium" title={ad.form_id}>
+                              {ad.form_id || <span className="text-gray-400 italic font-sans">N/A</span>}
+                            </span>
+                          </div>
                         </div>
 
                         {/* Form Questions Preview */}
                         {ad.questions && ad.questions.length > 0 && (
-                          <div className="pt-2 border-t border-gray-100">
-                            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1.5">
+                          <div className="pt-2">
+                            <p className="text-xs font-medium text-gray-500 mb-2">
                               Lead Form Fields ({ad.questions.length})
                             </p>
-                            <div className="flex flex-wrap gap-1">
+                            <div className="flex flex-wrap gap-1.5">
                               {ad.questions.map((q) => (
                                 <span
                                   key={q.key}
-                                  className="px-2 py-0.5 rounded bg-gray-50 text-gray-600 border border-gray-200 text-[10px] font-medium"
+                                  className="px-2.5 py-1 rounded-lg bg-gray-100/80 text-gray-600 text-xs font-normal"
                                 >
                                   {q.label}
                                 </span>
@@ -818,22 +883,22 @@ export default function MetaAdsWorkflowPage() {
 
                         {/* If already connected, show summary of Campaign, Source, Agent & Expiry */}
                         {existingRoute && (
-                          <div className="p-2.5 rounded-xl bg-emerald-50/60 border border-emerald-200/80 text-[11px] space-y-1">
+                          <div className="mt-3 p-3.5 rounded-xl bg-emerald-50/50 border border-emerald-100 text-xs space-y-1.5">
                             <div className="flex items-center justify-between">
-                              <span className="text-gray-500">Target Campaign:</span>
-                              <span className="font-bold text-gray-900">
-                                {existingRoute.campaigns?.name || 'Active Campaign'}
+                              <span className="text-gray-500 font-normal">Target Campaign:</span>
+                              <span className="font-medium text-gray-800">
+                                {existingRoute.campaigns?.name || 'Target Campaign'}
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-gray-500">Source Name:</span>
-                              <span className="font-semibold text-[#4b33e8]">
+                              <span className="text-gray-500 font-normal">Source Name:</span>
+                              <span className="font-medium text-emerald-600">
                                 {existingRoute.source_name}
                               </span>
                             </div>
                             <div className="flex items-center justify-between">
-                              <span className="text-gray-500">Assignment:</span>
-                              <span className="font-semibold text-gray-800">
+                              <span className="text-gray-500 font-normal">Assignment:</span>
+                              <span className="font-medium text-gray-800">
                                 {existingRoute.assignment_type === 'unassigned'
                                   ? 'General Pool'
                                   : existingRoute.assignment_type === 'single_agent'
@@ -849,35 +914,35 @@ export default function MetaAdsWorkflowPage() {
 
                       <div className="mt-4 pt-3 border-t border-gray-100 flex items-center gap-2">
                         {existingRoute ? (
-                          <>
+                          <div className="flex items-center gap-2.5 w-full">
                             <button
                               type="button"
                               onClick={() => handleOpenConnectAdModal(ad, existingRoute)}
-                              className="flex-1 py-2 px-3 rounded-xl border border-gray-200 hover:border-[#4b33e8] text-gray-700 hover:text-[#4b33e8] text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+                              className="flex-1 py-2.5 px-3 rounded-xl border border-gray-200 hover:border-gray-300 bg-white hover:bg-gray-50 text-gray-700 text-xs font-medium transition-all flex items-center justify-center gap-1.5 shadow-2xs"
                             >
-                              <i className="fi flex fi-rr-edit text-[11px]"></i>
+                              <i className="fi flex fi-rr-edit text-xs"></i>
                               <span>Edit Config</span>
                             </button>
                             <button
                               type="button"
                               disabled={actionBusy === `test_${existingRoute.id}`}
                               onClick={() => handleSendTestLead(existingRoute)}
-                              className="py-2 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold transition-colors flex items-center justify-center gap-1.5"
+                              className="flex-1 py-2.5 px-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-medium transition-all flex items-center justify-center gap-1.5 shadow-sm disabled:opacity-50"
                               title="Simulate a Meta Lead submission for this Ad"
                             >
-                              <i className="fi flex fi-rr-paper-plane text-[11px]"></i>
+                              <i className="fi flex fi-rr-play text-[11px]"></i>
                               <span>
                                 {actionBusy === `test_${existingRoute.id}` ? 'Sending...' : 'Test Lead'}
                               </span>
                             </button>
-                          </>
+                          </div>
                         ) : (
                           <button
                             type="button"
                             onClick={() => handleOpenConnectAdModal(ad, null)}
-                            className="w-full py-2.5 px-3 rounded-xl bg-[#4b33e8] hover:bg-[#3d28d0] text-white text-xs font-bold transition-colors flex items-center justify-center gap-2 shadow-2xs"
+                            className="w-full py-2.5 px-4 rounded-xl border border-gray-200 hover:border-gray-300 hover:bg-gray-50 bg-white text-gray-700 text-xs font-medium transition-all flex items-center justify-center gap-2 shadow-2xs"
                           >
-                            <i className="fi flex fi-rr-plug-connection text-xs"></i>
+                            <i className="fi flex fi-rr-link text-xs"></i>
                             <span>Connect Ad &amp; Configure</span>
                           </button>
                         )}

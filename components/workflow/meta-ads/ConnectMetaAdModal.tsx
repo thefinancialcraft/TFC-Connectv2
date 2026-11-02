@@ -6,7 +6,10 @@ export interface DiscoverableMetaAd {
   ad_id: string | null;
   ad_name: string;
   ad_status?: string;
+  meta_campaign_id?: string | null;
   meta_campaign_name?: string;
+  adset_id?: string | null;
+  adset_name?: string;
   ad_account_id?: string;
   ad_account_name?: string;
   page_id: string;
