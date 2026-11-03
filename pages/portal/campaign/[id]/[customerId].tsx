@@ -4137,13 +4137,15 @@ Campaign: ${campaign?.name || campaignId}
 
                                         {/* Interaction & Status Summary (New Addition) */}
                                         <div className="flex  flex-wrap md:flex-nowrap items-center gap-2 px-1 w-full">
-                                            {/* Total Interactions Badge */}
+                                            {/* Total Interactions Badge
                                             <div className="order-1 flex items-center gap-2 px-3 py-1.5 bg-slate-100 rounded-lg border border-slate-200 shrink-0">
                                                 <i className="fi flex  fi-rr-clock-three text-slate-400 text-[10px]"></i>
-                                                <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
+                                               <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
                                                     {(totalAttemptsCount > 0 ? totalAttemptsCount : (customer?.attempt_count || history?.length || 0))} Attempts
-                                                </span>
+                                                </span> 
                                             </div>
+
+                                             */}
 
                                             {/* Last Status Chain - Responsive & Reordered */}
                                             {lastInteraction && (
