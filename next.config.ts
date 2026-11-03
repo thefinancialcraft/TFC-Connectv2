@@ -34,6 +34,11 @@ const nextConfig: NextConfig = {
       { source: '/workflow/:path*', destination: '/portal/workflow/:path*' },
       { source: '/webhook/:orgId/:webhookId*', destination: '/api/webhook/:orgId/:webhookId*' },
       { source: '/webhook/org/:id*', destination: '/api/webhook/org/:id*' },
+      // Reverse Proxy Supabase to mask supabase.co domain in browser
+      {
+        source: '/backend-api/:path*',
+        destination: `${process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://qcglmkmhqvmkugaqvqih.supabase.co'}/:path*`,
+      },
     ];
   },
 };
