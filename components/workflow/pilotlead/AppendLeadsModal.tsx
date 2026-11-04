@@ -147,10 +147,10 @@ export default function AppendLeadsModal({
 
     try {
       const buffer = await file.arrayBuffer();
-      const workbook = XLSX.read(buffer, { type: "array", cellDates: true });
+      const workbook = XLSX.read(buffer, { type: "array", raw: true });
       const firstSheetName = workbook.SheetNames[0];
       const worksheet = workbook.Sheets[firstSheetName];
-      const rows: Record<string, any>[] = XLSX.utils.sheet_to_json(worksheet, { defval: "" });
+      const rows: Record<string, any>[] = XLSX.utils.sheet_to_json(worksheet, { defval: "", raw: true });
 
       if (rows.length === 0) {
         setImportError("Uploaded file is empty or contains no records.");

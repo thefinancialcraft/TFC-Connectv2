@@ -92,6 +92,23 @@ export function formatDate(date: string | Date | null) {
 }
 
 /**
+ * Formats date strictly as DD/MM/YYYY
+ */
+export function formatDateDMY(date: string | Date | null): string {
+  if (!date) return "N/A";
+  try {
+    const d = new Date(date);
+    if (isNaN(d.getTime())) return "N/A";
+    const day = String(d.getUTCDate()).padStart(2, "0");
+    const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+    const year = d.getUTCFullYear();
+    return `${day}/${month}/${year}`;
+  } catch (e) {
+    return "N/A";
+  }
+}
+
+/**
  * Calculates new expiry date by adding months to an existing string or now
  */
 export function calculateNewExpiryDate(currentExpiry: string | null, monthsToAdd: number) {
@@ -153,9 +170,9 @@ export function parseFlexibleDate(
   if (!clean) return null;
 
   // 2. Check if it's an Excel serial number (approx range 20000 to 80000 -> 1954 to 2119)
-  // When SheetJS reads Excel dates without cellDates:true, they appear as numbers (e.g. 46092)
+  // When SheetJS reads Excel dates without cellDates:true, they appear as numbers (e.g. 46092 or 46359.229)
   // If passed directly to new Date("46092"), V8 parses it as year +046092, crashing Postgres!
-  if (!clean.includes('-') && !clean.includes('/') && !clean.includes('.') && !clean.includes(':')) {
+  if (!clean.includes('-') && !clean.includes('/') && !clean.includes(':')) {
     const num = Number(clean);
     if (!isNaN(num) && num >= 20000 && num <= 80000) {
       // Excel epoch: 25569 days between 1900-01-01 and 1970-01-01 (including Excel 1900 leap day bug)

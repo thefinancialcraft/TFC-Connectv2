@@ -262,6 +262,20 @@ export default function WorkflowDashboardPage() {
     }
   };
 
+  const formatDateDMY = (dateStr: string | null) => {
+    if (!dateStr) return '—';
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return '—';
+      const day = String(d.getUTCDate()).padStart(2, '0');
+      const month = String(d.getUTCMonth() + 1).padStart(2, '0');
+      const year = d.getUTCFullYear();
+      return `${day}/${month}/${year}`;
+    } catch (e) {
+      return '—';
+    }
+  };
+
   // Mask phone number for display
   const maskPhone = (encPhone: string | null) => {
     if (!encPhone) return '—';
@@ -690,6 +704,7 @@ export default function WorkflowDashboardPage() {
                           <th className="py-2.5 px-4">Row</th>
                           <th className="py-2.5 px-4">Customer Name</th>
                           <th className="py-2.5 px-4">Phone Number</th>
+                          <th className="py-2.5 px-4">Expiry Date</th>
                           <th className="py-2.5 px-4">Assigned Agent</th>
                           <th className="py-2.5 px-4">Batch #</th>
                           <th className="py-2.5 px-4">Status</th>
@@ -702,6 +717,7 @@ export default function WorkflowDashboardPage() {
                             <td className="py-2.5 px-4 font-mono text-gray-400">{lead.row_index}</td>
                             <td className="py-2.5 px-4 font-bold text-gray-800">{lead.customer_name}</td>
                             <td className="py-2.5 px-4 font-mono text-gray-500">{maskPhone(lead.phone_no)}</td>
+                            <td className="py-2.5 px-4 font-bold text-[#4b33e8]">{formatDateDMY(lead.expiry_date)}</td>
                             <td className="py-2.5 px-4">
                               {lead.assigned_to && agentMap[lead.assigned_to] ? (
                                 <span className="font-semibold text-gray-700">{agentMap[lead.assigned_to]}</span>
