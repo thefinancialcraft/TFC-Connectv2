@@ -8,8 +8,6 @@ export interface CallingCommandResult {
   bridgeConnected: boolean;
 }
 
-
-
 // record 2 
 
 

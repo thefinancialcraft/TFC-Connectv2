@@ -5,10 +5,10 @@ export default function Document() {
     <Html lang="en">
       <Head>
         {/* Favicon - Multiple formats for better compatibility */}
-        <link rel="icon" href="/tty-answer.svg" type="image/svg+xml" />
-        <link rel="alternate icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <link rel="apple-touch-icon" href="/tty-answer.svg" />
+        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/rynxly-app-icon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/rynxly-app-icon.png" type="image/png" />
+        <link rel="apple-touch-icon" href="/rynxly-app-icon.png" />
         <link rel="manifest" href="/site.webmanifest" />
         
         {/* Essential meta tags */}
@@ -21,7 +21,7 @@ export default function Document() {
         <meta property="og:type" content="website" />
         <meta property="og:title" content="Rynxly - The Advanced SIM-Based Calling CRM" />
         <meta property="og:description" content="Advanced SIM-Based Calling CRM for seamless communication" />
-        <meta property="og:image" content="https://rynxly.in/tty-answer.svg" />
+        <meta property="og:image" content="https://rynxly.in/rynxly-app-icon.png" />
         <meta property="og:url" content="https://rynxly.in" />
         
         <link rel="preconnect" href="https://fonts.googleapis.com" />

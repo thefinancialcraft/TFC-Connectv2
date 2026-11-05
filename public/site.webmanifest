@@ -4,14 +4,19 @@
   "description": "Advanced SIM-Based Calling CRM for seamless communication",
   "icons": [
     {
-      "src": "/tty-answer.svg",
+      "src": "/rynxly-app-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
     },
     {
+      "src": "/rynxly-app-icon.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    },
+    {
       "src": "/favicon.ico",
-      "sizes": "48x48",
+      "sizes": "48x48 32x32 16x16",
       "type": "image/x-icon"
     }
   ],
