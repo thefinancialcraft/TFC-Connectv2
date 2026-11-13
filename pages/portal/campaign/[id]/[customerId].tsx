@@ -116,6 +116,7 @@ export default function CallingPage() {
     const [isPlacingCall, setIsPlacingCall] = useState(false);
     const isPlacingCallRef = useRef(false);
     const lastCallPlacedAtRef = useRef(0);
+    const isRecoveringRef = useRef(false);
     const [isEndingCall, setIsEndingCall] = useState(false);
     const [postCall, setPostCall] = useState(false);
     const [callDuration, setCallDuration] = useState(0);
@@ -1747,6 +1748,87 @@ export default function CallingPage() {
         }
     };
 
+    const handleCampaignNotFoundRecovery = async () => {
+        if (isRecoveringRef.current) return;
+        isRecoveringRef.current = true;
+
+        const targetUserId = user?.uid || authUser?.uid;
+        if (!targetUserId) {
+            router.push('/portal/campaign');
+            return;
+        }
+
+        try {
+            console.warn(`🧹 [Recovery] Campaign not found (${campaignId}). Deleting all call_sessions for user ${targetUserId}...`);
+            // 1. Delete all sessions of this user from call_sessions
+            await supabase.from('call_sessions').delete().eq('user_id', targetUserId);
+
+            // 2. Clear local storage / session storage snapshots
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('manual_inspection_snapshot');
+                Object.keys(sessionStorage).forEach((key) => {
+                    if (key.startsWith('tfc_lead_preview_')) {
+                        sessionStorage.removeItem(key);
+                    }
+                });
+            }
+
+            // 3. Reset local states
+            setCustomer(null);
+            setCampaign(null);
+            setError("");
+
+            // 4. Fetch valid active assigned campaigns for this user
+            const orgId = user?.organization_id || authUser?.organization_id;
+            let activeCampsQuery = supabase
+                .from('campaigns')
+                .select('id, name, users')
+                .eq('status', 'active');
+
+            if (orgId) {
+                activeCampsQuery = activeCampsQuery.eq('organization_id', orgId);
+            }
+
+            const { data: allActiveCamps, error: campErr } = await activeCampsQuery;
+            if (campErr) {
+                console.error("❌ [Recovery] Error fetching active campaigns:", campErr);
+            }
+
+            const assigned = (allActiveCamps || []).filter((c: any) => {
+                if (!c.users || !Array.isArray(c.users)) return false;
+                return c.users.some((u: any) => u.user_id === targetUserId || u.uid === targetUserId);
+            });
+
+            console.log(`🔍 [Recovery] Found ${assigned.length} assigned active campaigns for user.`);
+
+            if (assigned.length > 0) {
+                // Try each assigned campaign to assign a fresh lead
+                for (const camp of assigned) {
+                    console.log(`🎯 [Recovery] Requesting fresh lead from campaign ${camp.id} (${camp.name})...`);
+                    const { data: freshLeadId, error: rpcErr } = await supabase.rpc('assign_next_lead', {
+                        p_user_id: targetUserId,
+                        p_campaign_id: camp.id
+                    });
+
+                    if (!rpcErr && freshLeadId) {
+                        console.log(`✅ [Recovery] Fresh lead assigned: ${freshLeadId} in campaign ${camp.id}. Redirecting...`);
+                        router.push(`/portal/campaign/${camp.id}/${freshLeadId}`);
+                        return;
+                    }
+                }
+            }
+        } catch (recoveryErr) {
+            console.error("❌ [Recovery] Exception during recovery:", recoveryErr);
+        } finally {
+            setTimeout(() => {
+                isRecoveringRef.current = false;
+            }, 3000);
+        }
+
+        console.log("ℹ️ [Recovery] No fresh lead available. Redirecting to /portal/campaign");
+        router.push('/portal/campaign');
+    };
+
     const fetchData = async (overrideId?: string) => {
         const idToFetch = overrideId || customerId;
         if (!campaignId || !idToFetch || !user) return;
@@ -1841,11 +1923,20 @@ export default function CallingPage() {
             }
 
             if (!bundleResult || bundleResult.success === false) {
-                throw new Error(bundleResult?.error || "Failed to load lead bundle");
+                const errorMessage = bundleResult?.error || "Failed to load lead bundle";
+                if (errorMessage.toLowerCase().includes("campaign not found")) {
+                    console.warn(`[Fetch] Campaign not found (${campaignId}). Resetting all sessions for user and requesting fresh lead...`);
+                    await handleCampaignNotFoundRecovery();
+                    return;
+                }
+                throw new Error(errorMessage);
             }
 
             if (bundleResult.has_access === false) {
                 console.warn(`[Guard] Access Denied for ${user?.email} to Campaign ${campaignId}. Redirecting.`);
+                if (user?.uid) {
+                    await supabase.from('call_sessions').delete().eq('user_id', user.uid).eq('campaign_id', String(campaignId));
+                }
                 setLoading(false);
                 router.push('/portal/campaign');
                 return;
@@ -2078,6 +2169,11 @@ export default function CallingPage() {
             // (Active call session state was already initialized concurrently in Step 0)
         } catch (err: any) {
             console.error("[Fetch] Error in fetchData:", err);
+            if (err?.message?.toLowerCase().includes("campaign not found")) {
+                console.warn(`[Fetch] Caught 'Campaign not found' in catch block. Resetting all sessions for user and requesting fresh lead...`);
+                await handleCampaignNotFoundRecovery();
+                return;
+            }
             setError(err.message);
         } finally {
             setLoading(false);
