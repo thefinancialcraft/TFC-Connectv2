@@ -1362,7 +1362,7 @@ export default function Customer() {
   ], [availableMoveAgents]);
 
   const handleOpenMoveToLiveModal = () => {
-    if (!selectedCustomers.size || dataSource !== 'rejected') return;
+    if (!selectedCustomers.size || (dataSource !== 'rejected' && dataSource !== 'closed')) return;
     setMoveToLiveConfig({
       campaign_id: "",
       assignOption: "unassigned",
@@ -1375,7 +1375,7 @@ export default function Customer() {
   };
 
   const handleConfirmMoveToLive = async () => {
-    if (!selectedCustomers.size || dataSource !== 'rejected') return;
+    if (!selectedCustomers.size || (dataSource !== 'rejected' && dataSource !== 'closed')) return;
 
     if (moveToLiveConfig.assignOption === 'agent' && !moveToLiveConfig.assigned_to) {
       alert("Please select an agent to assign the lead(s) to.");
@@ -1386,27 +1386,30 @@ export default function Customer() {
     try {
       const ids = Array.from(selectedCustomers);
       const batchSize = 50;
+      const sourceTable = dataSource === "rejected" ? "rejected_leads" : "closed_deals";
 
       for (let i = 0; i < ids.length; i += batchSize) {
         const batch = ids.slice(i, i + batchSize);
-        const { data: rejectedLeads, error: fetchError } = await supabase
-          .from("rejected_leads")
+        const { data: sourceLeads, error: fetchError } = await supabase
+          .from(sourceTable)
           .select("*")
           .in("id", batch);
 
         if (fetchError) throw fetchError;
 
-        if (rejectedLeads && rejectedLeads.length > 0) {
+        if (sourceLeads && sourceLeads.length > 0) {
           const targetCustomerIds = Array.from(new Set(
-            rejectedLeads.flatMap(l => [l.customer_id, l.id]).filter(Boolean)
+            sourceLeads.flatMap((l: any) => [l.customer_id, l.id]).filter(Boolean)
           ));
 
-          const liveCustomers = rejectedLeads.map(lead => {
+          const liveCustomers = sourceLeads.map((lead: any) => {
             const { 
               id,
               customer_id,
               agent_id,
               rejected_at,
+              closed_at,
+              final_disposition,
               status,
               idx,
               ...commonFields 
@@ -1432,6 +1435,12 @@ export default function Customer() {
               status: "active",
               updated_at: new Date().toISOString()
             };
+
+            // If restored from closed deals, clear closed disposition so it enters live pipeline fresh
+            if (dataSource === 'closed') {
+              customerPayload.disposition = null;
+              customerPayload.sub_disposition = null;
+            }
 
             // Reset Callbacks & Follow-up schedules
             if (moveToLiveConfig.resetCallbacks) {
@@ -1473,9 +1482,9 @@ export default function Customer() {
             }
           }
 
-          // 3. Remove from rejected_leads
+          // 3. Remove from source table (rejected_leads or closed_deals)
           const { error: deleteError } = await supabase
-            .from("rejected_leads")
+            .from(sourceTable)
             .delete()
             .in("id", batch);
 
@@ -1489,10 +1498,10 @@ export default function Customer() {
       
       logSystemEvent({
           event_type: 'WRITE',
-          description: `Move to Live: ${ids.length} records restored from rejected_leads`,
+          description: `Move to Live: ${ids.length} records restored from ${sourceTable}`,
           metadata: { 
             record_count: ids.length, 
-            source: 'rejected_leads', 
+            source: sourceTable, 
             target: 'customers',
             target_campaign: moveToLiveConfig.campaign_id || 'Original',
             assign_option: moveToLiveConfig.assignOption,
@@ -2372,36 +2381,35 @@ export default function Customer() {
                     {/* Bulk Action Buttons */}
                     {selectedCustomers.size > 0 && (
                       <>
-                        {dataSource !== 'rejected' && (
-                          <>
-                          <>
-                            <button
-                              onClick={() => setShowBulkActionModal(true)}
-                              className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
-                              title="Bulk Actions"
-                            >
-                              <i className="fi flex fi-rr-menu-dots-vertical text-sm"></i>
-                              <span className="text-xs font-bold uppercase tracking-wider">Actions ({selectedCustomers.size})</span>
-                            </button>
-                          </>
-                          </>
+                        {dataSource === 'live' && (
+                          <button
+                            onClick={handleOpenBulkModal}
+                            className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#4b33e8] to-[#634df0] hover:from-[#3f29d8] hover:to-[#553ee3] text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-sm shadow-indigo-500/25 hover:shadow-md hover:shadow-indigo-500/35 active:scale-95 group"
+                            title="Action"
+                          >
+                            <i className="fi flex fi-rr-bolt text-xs transition-transform group-hover:scale-110"></i>
+                            <span className="text-xs font-bold uppercase tracking-wider">Action</span>
+                            <span className="px-1.5 py-0.5 bg-white/20 text-white rounded-full text-[10px] font-extrabold tracking-tight">
+                              {selectedCustomers.size}
+                            </span>
+                          </button>
                         )}
                       </>
                     )}
-                      {/* Move to Live Button - Only for Rejected Data source */}
-                      {selectedCustomers.size > 0 && dataSource === 'rejected' && (
+                      {/* Move to Live Button - For Rejected and Closed Data sources */}
+                      {selectedCustomers.size > 0 && (dataSource === 'rejected' || dataSource === 'closed') && (
                         <button
                           onClick={handleOpenMoveToLiveModal}
                           disabled={isMovingToLive}
-                          className="h-10 px-3 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-1.5"
+                          className="h-10 px-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white transition-all duration-200 flex items-center justify-center gap-1.5 font-bold text-xs shadow-sm shadow-emerald-500/20 active:scale-95"
                           title="Move to Live"
                         >
                           {isMovingToLive ? (
-                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-emerald-600 border-t-transparent"></div>
+                            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                           ) : (
                             <>
                               <i className="fi flex fi-rr-redo text-sm"></i>
-                              <span className="text-[10px] font-bold">LIVE</span>
+                              <span className="text-[10px] font-bold">LIVE ({selectedCustomers.size})</span>
                             </>
                           )}
                         </button>
@@ -2757,33 +2765,34 @@ export default function Customer() {
                         </div>
                       ) : (
                         <div className="flex items-center gap-2 animate-in fade-in slide-in-from-right-4 duration-300">
-                          {dataSource !== 'rejected' && (
-                            <>
-                              <button
-                                onClick={handleOpenBulkModal}
-                                className="h-10 px-4 border border-indigo-200 rounded-lg bg-indigo-50 hover:bg-indigo-100 transition-colors flex items-center justify-center text-indigo-600 gap-2 shadow-sm shadow-indigo-100"
-                                title="Bulk Actions"
-                              >
-                                <i className="fi flex fi-rr-menu-dots-vertical text-sm"></i>
-                                <span className="text-xs font-bold uppercase tracking-widest">Bulk Actions ({selectedCustomers.size})</span>
-                              </button>
-                            </>
+                          {dataSource === 'live' && (
+                            <button
+                              onClick={handleOpenBulkModal}
+                              className="h-10 px-4 rounded-xl bg-gradient-to-r from-[#4b33e8] to-[#634df0] hover:from-[#3f29d8] hover:to-[#553ee3] text-white transition-all duration-200 flex items-center justify-center gap-2 shadow-sm shadow-indigo-500/25 hover:shadow-md hover:shadow-indigo-500/35 active:scale-95 group"
+                              title="Action"
+                            >
+                              <i className="fi flex fi-rr-bolt text-xs transition-transform group-hover:scale-110"></i>
+                              <span className="text-xs font-bold uppercase tracking-wider">Action</span>
+                              <span className="px-1.5 py-0.5 bg-white/20 text-white rounded-full text-[10px] font-extrabold tracking-tight">
+                                {selectedCustomers.size}
+                              </span>
+                            </button>
                           )}
                           
-                          {/* Move to Live Button - Only for Rejected Data source */}
-                          {dataSource === 'rejected' && (
+                          {/* Move to Live Button - For Rejected and Closed Data sources */}
+                          {(dataSource === 'rejected' || dataSource === 'closed') && (
                             <button
                               onClick={handleOpenMoveToLiveModal}
                               disabled={isMovingToLive}
-                              className="h-10 px-4 border border-emerald-200 rounded-lg bg-emerald-50 hover:bg-emerald-100 transition-colors flex items-center justify-center text-emerald-600 gap-2 font-bold text-xs"
+                              className="h-10 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white transition-all duration-200 flex items-center justify-center gap-2 font-bold text-xs shadow-sm shadow-emerald-500/20 hover:shadow-md hover:shadow-emerald-500/30 active:scale-95"
                               title="Move to Live"
                             >
                               {isMovingToLive ? (
-                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-emerald-600 border-t-transparent"></div>
+                                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
                               ) : (
                                 <>
                                   <i className="fi flex fi-rr-redo text-sm"></i>
-                                  MOVE TO LIVE
+                                  MOVE TO LIVE ({selectedCustomers.size})
                                 </>
                               )}
                             </button>
@@ -4211,33 +4220,39 @@ export default function Customer() {
       )}
       {/* Move to Live Configuration Modal */}
       {showMoveToLiveModal && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4 text-xs font-sans">
-          <div className="bg-white rounded-xl w-full max-w-lg shadow-2xl flex flex-col border border-gray-100 overflow-hidden animate-in fade-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 text-xs font-sans animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl w-full max-w-[560px] shadow-2xl flex flex-col border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-200">
             {/* Modal Header */}
-            <div className="px-5 py-4 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-emerald-50/70 via-white to-white">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                  <i className="fi flex fi-rr-redo text-sm"></i>
+            <div className="px-6 py-4.5 border-b border-gray-100 flex items-center justify-between bg-gradient-to-r from-emerald-50/50 via-white to-white">
+              <div className="flex items-center gap-3.5">
+                <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center border border-emerald-100/80 shadow-xs">
+                  <i className="fi flex fi-rr-redo text-base"></i>
                 </div>
                 <div>
-                  <h3 className="font-bold text-gray-800 text-sm">Move to Live (Restore Leads)</h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-gray-900 text-sm tracking-tight">Move to Live (Restore Leads)</h3>
+                    <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700">
+                      {selectedCustomers.size} {selectedCustomers.size === 1 ? 'Lead' : 'Leads'}
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-gray-500 mt-0.5">Restore selected records back into the active lead pool</p>
                 </div>
               </div>
               <button 
                 type="button"
                 onClick={() => !isMovingToLive && setShowMoveToLiveModal(false)}
                 disabled={isMovingToLive}
-                className="text-gray-400 hover:text-gray-600 p-1 rounded-md hover:bg-gray-100 transition-colors"
+                className="w-8 h-8 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 flex items-center justify-center transition-all active:scale-95"
               >
                 <i className="fi fi-rr-cross-small text-xl leading-none"></i>
               </button>
             </div>
             
-            <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+            <div className="p-6 space-y-5 max-h-[75vh] overflow-y-auto">
               {/* 1. Target Campaign Selection */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                  <i className="fi fi-rr-bullseye-arrow text-emerald-600"></i>
+              <div>
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                  <i className="fi fi-rr-bullseye-arrow text-emerald-600 text-xs"></i>
                   Target Campaign
                 </label>
                 <CustomSelect
@@ -4250,195 +4265,223 @@ export default function Customer() {
                   options={campaignCustomSelectOptions}
                   searchable={true}
                   placeholder="Keep Original Campaign (Default)"
-                  size="sm"
+                  size="md"
                 />
-                <p className="text-[10px] text-gray-400 pl-1">Choose a campaign to transfer the leads to, or keep their existing campaign.</p>
+                <p className="text-[11px] text-gray-400 mt-1.5 pl-0.5">Choose a new campaign destination or leave blank to keep original campaign.</p>
               </div>
 
               {/* 2. Agent Assignment */}
-              <div className="space-y-2 pt-2 border-t border-gray-100">
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-wider flex items-center gap-1.5">
-                  <i className="fi fi-rr-users-alt text-emerald-600"></i>
+              <div className="pt-2">
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                  <i className="fi fi-rr-users text-emerald-600 text-xs"></i>
                   Agent Assignment
                 </label>
                 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   <div
                     onClick={() => setMoveToLiveConfig(prev => ({ ...prev, assignOption: 'unassigned', assigned_to: '', resetAssignedMember: true }))}
-                    className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all select-none ${
+                    className={`flex flex-col justify-between p-3 rounded-xl border cursor-pointer transition-all select-none relative ${
                       moveToLiveConfig.assignOption === 'unassigned' 
-                        ? 'border-emerald-500 bg-emerald-50/60 text-emerald-900 font-semibold shadow-xs' 
-                        : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
+                        ? 'border-emerald-500 bg-emerald-50/40 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20' 
+                        : 'border-gray-200/90 hover:border-gray-300 text-gray-700 bg-white hover:bg-gray-50/60'
                     }`}
                   >
-                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                      moveToLiveConfig.assignOption === 'unassigned' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
-                    }`}>
-                      {moveToLiveConfig.assignOption === 'unassigned' && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-600"></div>
-                      )}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${
+                        moveToLiveConfig.assignOption === 'unassigned' ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        <i className="fi flex fi-rr-inbox"></i>
+                      </div>
+                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                        moveToLiveConfig.assignOption === 'unassigned' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
+                      }`}>
+                        {moveToLiveConfig.assignOption === 'unassigned' && (
+                          <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-[11px] leading-tight">
-                      <div>Unassigned Pool</div>
-                      <span className="text-[9px] text-gray-400 font-normal">Available for all</span>
+                    <div>
+                      <div className="text-xs font-bold leading-tight">Unassigned</div>
+                      <span className="text-[10px] text-gray-400 font-normal">Available for team</span>
                     </div>
                   </div>
 
                   <div
                     onClick={() => setMoveToLiveConfig(prev => ({ ...prev, assignOption: 'agent' }))}
-                    className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all select-none ${
+                    className={`flex flex-col justify-between p-3 rounded-xl border cursor-pointer transition-all select-none relative ${
                       moveToLiveConfig.assignOption === 'agent' 
-                        ? 'border-emerald-500 bg-emerald-50/60 text-emerald-900 font-semibold shadow-xs' 
-                        : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
+                        ? 'border-emerald-500 bg-emerald-50/40 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20' 
+                        : 'border-gray-200/90 hover:border-gray-300 text-gray-700 bg-white hover:bg-gray-50/60'
                     }`}
                   >
-                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                      moveToLiveConfig.assignOption === 'agent' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
-                    }`}>
-                      {moveToLiveConfig.assignOption === 'agent' && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-600"></div>
-                      )}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${
+                        moveToLiveConfig.assignOption === 'agent' ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        <i className="fi flex fi-rr-user-add"></i>
+                      </div>
+                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                        moveToLiveConfig.assignOption === 'agent' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
+                      }`}>
+                        {moveToLiveConfig.assignOption === 'agent' && (
+                          <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-[11px] leading-tight">
-                      <div>Specific Agent</div>
-                      <span className="text-[9px] text-gray-400 font-normal">Assign to team member</span>
+                    <div>
+                      <div className="text-xs font-bold leading-tight">Specific Agent</div>
+                      <span className="text-[10px] text-gray-400 font-normal">Direct assignment</span>
                     </div>
                   </div>
 
                   <div
                     onClick={() => setMoveToLiveConfig(prev => ({ ...prev, assignOption: 'keep', assigned_to: '' }))}
-                    className={`flex items-center gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all select-none ${
+                    className={`flex flex-col justify-between p-3 rounded-xl border cursor-pointer transition-all select-none relative ${
                       moveToLiveConfig.assignOption === 'keep' 
-                        ? 'border-emerald-500 bg-emerald-50/60 text-emerald-900 font-semibold shadow-xs' 
-                        : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
+                        ? 'border-emerald-500 bg-emerald-50/40 text-emerald-950 font-semibold shadow-xs ring-1 ring-emerald-500/20' 
+                        : 'border-gray-200/90 hover:border-gray-300 text-gray-700 bg-white hover:bg-gray-50/60'
                     }`}
                   >
-                    <div className={`w-3.5 h-3.5 rounded-full border flex items-center justify-center shrink-0 transition-all ${
-                      moveToLiveConfig.assignOption === 'keep' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
-                    }`}>
-                      {moveToLiveConfig.assignOption === 'keep' && (
-                        <div className="w-1.5 h-1.5 rounded-full bg-emerald-600"></div>
-                      )}
+                    <div className="flex items-center justify-between mb-2">
+                      <div className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs ${
+                        moveToLiveConfig.assignOption === 'keep' ? 'bg-emerald-500 text-white' : 'bg-gray-100 text-gray-500'
+                      }`}>
+                        <i className="fi flex fi-rr-user-check"></i>
+                      </div>
+                      <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-all ${
+                        moveToLiveConfig.assignOption === 'keep' ? 'border-emerald-600 bg-white' : 'border-gray-300 bg-white'
+                      }`}>
+                        {moveToLiveConfig.assignOption === 'keep' && (
+                          <div className="w-2 h-2 rounded-full bg-emerald-600"></div>
+                        )}
+                      </div>
                     </div>
-                    <div className="text-[11px] leading-tight">
-                      <div>Keep Previous</div>
-                      <span className="text-[9px] text-gray-400 font-normal">Original owner</span>
+                    <div>
+                      <div className="text-xs font-bold leading-tight">Keep Previous</div>
+                      <span className="text-[10px] text-gray-400 font-normal">Original owner</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Agent Dropdown if 'agent' is selected */}
                 {moveToLiveConfig.assignOption === 'agent' && (
-                  <div className="pt-1 animate-in fade-in duration-100">
+                  <div className="mt-3 p-3 bg-gray-50/80 rounded-xl border border-gray-200/80 animate-in fade-in duration-150">
+                    <label className="text-[11px] font-semibold text-gray-600 block mb-1.5">
+                      Select Agent to Receive Leads:
+                    </label>
                     <CustomSelect
                       value={moveToLiveConfig.assigned_to}
                       onChange={(val) => setMoveToLiveConfig(prev => ({ ...prev, assigned_to: val }))}
                       options={agentCustomSelectOptions}
                       searchable={true}
                       placeholder="-- Select Agent --"
-                      size="sm"
+                      size="md"
                     />
+                  </div>
+                )}
+
+                {/* Sub-toggle if 'keep' is selected */}
+                {moveToLiveConfig.assignOption === 'keep' && (
+                  <div 
+                    onClick={() => setMoveToLiveConfig(prev => ({ ...prev, resetAssignedMember: !prev.resetAssignedMember }))}
+                    className="mt-3 p-3 rounded-xl border border-gray-200/80 bg-gray-50/60 hover:bg-gray-50 cursor-pointer flex items-center justify-between transition-all select-none"
+                  >
+                    <div className="pr-3">
+                      <div className="font-semibold text-xs text-gray-800 flex items-center gap-1.5">
+                        <i className="fi fi-rr-refresh text-emerald-600 text-xs"></i>
+                        Reset Previous Assigned Member?
+                      </div>
+                      <div className="text-[11px] text-gray-500 mt-0.5">Leaves lead unassigned if original owner is not in this campaign.</div>
+                    </div>
+                    <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
+                      moveToLiveConfig.resetAssignedMember ? 'bg-emerald-600' : 'bg-gray-300'
+                    }`}>
+                      <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                        moveToLiveConfig.resetAssignedMember ? 'translate-x-4.5' : 'translate-x-1'
+                      }`} />
+                    </div>
                   </div>
                 )}
               </div>
 
-              {/* 3. Reset Previous Assigned Member (Relevant if 'keep' is selected) */}
-              {moveToLiveConfig.assignOption === 'keep' && (
-                <div 
-                  onClick={() => setMoveToLiveConfig(prev => ({ ...prev, resetAssignedMember: !prev.resetAssignedMember }))}
-                  className={`p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between select-none ${
-                    moveToLiveConfig.resetAssignedMember 
-                      ? 'bg-emerald-50/50 border-emerald-300 shadow-xs' 
-                      : 'bg-gray-50/60 border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="pr-3">
-                    <div className={`font-semibold text-xs flex items-center gap-1.5 ${
-                      moveToLiveConfig.resetAssignedMember ? 'text-emerald-900' : 'text-gray-700'
-                    }`}>
-                      <i className={`fi fi-rr-refresh ${moveToLiveConfig.resetAssignedMember ? 'text-emerald-600' : 'text-gray-400'}`}></i>
-                      Reset Previous Assigned Member?
+              {/* 3. Lead Settings & Reset Options (Unified clean card) */}
+              <div className="pt-2">
+                <label className="text-[11px] font-bold text-gray-700 uppercase tracking-wider flex items-center gap-1.5 mb-2">
+                  <i className="fi fi-rr-settings-sliders text-emerald-600 text-xs"></i>
+                  Restoration Settings
+                </label>
+
+                <div className="rounded-xl border border-gray-200/90 bg-white overflow-hidden divide-y divide-gray-100 shadow-xs">
+                  {/* Reset Callbacks */}
+                  <div 
+                    onClick={() => setMoveToLiveConfig(prev => ({ ...prev, resetCallbacks: !prev.resetCallbacks }))}
+                    className={`p-3.5 transition-colors cursor-pointer flex items-center justify-between select-none ${
+                      moveToLiveConfig.resetCallbacks ? 'bg-emerald-50/20 hover:bg-emerald-50/30' : 'hover:bg-gray-50/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 pr-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-sm ${
+                        moveToLiveConfig.resetCallbacks ? 'bg-emerald-100 text-emerald-700' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        <i className="fi flex fi-rr-time-past"></i>
+                      </div>
+                      <div>
+                        <div className="font-semibold text-xs text-gray-800">
+                          Reset Scheduled Callbacks
+                        </div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">Clears pending callback timers & resets 'Call Back' status to fresh</div>
+                      </div>
                     </div>
-                    <div className="text-[10px] text-gray-500 mt-0.5">If enabled, ignores original owner and leaves lead unassigned.</div>
+                    
+                    <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
+                      moveToLiveConfig.resetCallbacks ? 'bg-emerald-600' : 'bg-gray-300'
+                    }`}>
+                      <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                        moveToLiveConfig.resetCallbacks ? 'translate-x-4.5' : 'translate-x-1'
+                      }`} />
+                    </div>
                   </div>
-                  
-                  {/* Custom Toggle Switch */}
-                  <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
-                    moveToLiveConfig.resetAssignedMember ? 'bg-emerald-600' : 'bg-gray-300'
-                  }`}>
-                    <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
-                      moveToLiveConfig.resetAssignedMember ? 'translate-x-4.5' : 'translate-x-1'
-                    }`} />
-                  </div>
-                </div>
-              )}
 
-              {/* 4. Reset Callbacks & Follow-ups */}
-              <div 
-                onClick={() => setMoveToLiveConfig(prev => ({ ...prev, resetCallbacks: !prev.resetCallbacks }))}
-                className={`p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between select-none ${
-                  moveToLiveConfig.resetCallbacks 
-                    ? 'bg-emerald-50/50 border-emerald-300 shadow-xs' 
-                    : 'bg-gray-50/60 border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="pr-3">
-                  <div className={`font-semibold text-xs flex items-center gap-1.5 ${
-                    moveToLiveConfig.resetCallbacks ? 'text-emerald-900' : 'text-gray-700'
-                  }`}>
-                    <i className={`fi fi-rr-time-past ${moveToLiveConfig.resetCallbacks ? 'text-emerald-600' : 'text-gray-400'}`}></i>
-                    Reset Scheduled Callbacks
+                  {/* Delete Logs */}
+                  <div 
+                    onClick={() => setMoveToLiveConfig(prev => ({ ...prev, deleteLogs: !prev.deleteLogs }))}
+                    className={`p-3.5 transition-colors cursor-pointer flex items-center justify-between select-none ${
+                      moveToLiveConfig.deleteLogs ? 'bg-rose-50/20 hover:bg-rose-50/30' : 'hover:bg-gray-50/60'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 pr-3">
+                      <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-sm ${
+                        moveToLiveConfig.deleteLogs ? 'bg-rose-100 text-rose-600' : 'bg-gray-100 text-gray-400'
+                      }`}>
+                        <i className="fi flex fi-rr-trash"></i>
+                      </div>
+                      <div>
+                        <div className="font-semibold text-xs text-gray-800">
+                          Clear History & Activity Logs
+                        </div>
+                        <div className="text-[11px] text-gray-500 mt-0.5">Permanently deletes previous call logs and resets attempts to 0 (Fresh Lead)</div>
+                      </div>
+                    </div>
+                    
+                    <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
+                      moveToLiveConfig.deleteLogs ? 'bg-rose-600' : 'bg-gray-300'
+                    }`}>
+                      <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
+                        moveToLiveConfig.deleteLogs ? 'translate-x-4.5' : 'translate-x-1'
+                      }`} />
+                    </div>
                   </div>
-                  <div className="text-[10px] text-gray-500 mt-0.5">Clears scheduled callback timers/dates and resets 'Call Back' disposition.</div>
-                </div>
-                
-                {/* Custom Toggle Switch */}
-                <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
-                  moveToLiveConfig.resetCallbacks ? 'bg-emerald-600' : 'bg-gray-300'
-                }`}>
-                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
-                    moveToLiveConfig.resetCallbacks ? 'translate-x-4.5' : 'translate-x-1'
-                  }`} />
-                </div>
-              </div>
-
-              {/* 5. Delete Logs & History */}
-              <div 
-                onClick={() => setMoveToLiveConfig(prev => ({ ...prev, deleteLogs: !prev.deleteLogs }))}
-                className={`p-3 rounded-lg border transition-all cursor-pointer flex items-center justify-between select-none ${
-                  moveToLiveConfig.deleteLogs 
-                    ? 'bg-rose-50/60 border-rose-300 shadow-xs' 
-                    : 'bg-gray-50/60 border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="pr-3">
-                  <div className={`font-semibold text-xs flex items-center gap-1.5 ${
-                    moveToLiveConfig.deleteLogs ? 'text-rose-700' : 'text-gray-700'
-                  }`}>
-                    <i className={`fi fi-rr-trash ${moveToLiveConfig.deleteLogs ? 'text-rose-500' : 'text-gray-400'}`}></i>
-                    Delete Past Activity & Call Logs
-                  </div>
-                  <div className="text-[10px] text-rose-600/80 mt-0.5">Permanently clears previous call history and resets attempt counter to 0 (Fresh Lead).</div>
-                </div>
-                
-                {/* Custom Toggle Switch */}
-                <div className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200 ease-in-out ${
-                  moveToLiveConfig.deleteLogs ? 'bg-rose-600' : 'bg-gray-300'
-                }`}>
-                  <span className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out ${
-                    moveToLiveConfig.deleteLogs ? 'translate-x-4.5' : 'translate-x-1'
-                  }`} />
                 </div>
               </div>
             </div>
 
             {/* Modal Footer */}
-            <div className="px-5 py-3 border-t border-gray-100 flex items-center justify-between bg-gray-50/60">
+            <div className="px-6 py-3.5 border-t border-gray-100 flex items-center justify-between bg-gray-50/70">
               <button
                 type="button"
                 disabled={isMovingToLive}
                 onClick={() => setShowMoveToLiveModal(false)}
-                className="px-4 py-2 border border-gray-200 text-gray-600 rounded-lg hover:bg-white font-medium transition-all text-xs disabled:opacity-50"
+                className="px-4 py-2 border border-gray-200 text-gray-600 bg-white rounded-xl hover:bg-gray-50 font-semibold transition-all text-xs active:scale-95 disabled:opacity-50"
               >
                 Cancel
               </button>
@@ -4446,7 +4489,7 @@ export default function Customer() {
                 type="button"
                 disabled={isMovingToLive || (moveToLiveConfig.assignOption === 'agent' && !moveToLiveConfig.assigned_to)}
                 onClick={handleConfirmMoveToLive}
-                className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-bold uppercase tracking-wider text-xs transition-all shadow-sm shadow-emerald-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-5 py-2.5 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-bold uppercase tracking-wider text-xs transition-all shadow-md shadow-emerald-500/20 hover:shadow-emerald-500/30 flex items-center gap-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isMovingToLive ? (
                   <>
@@ -4455,7 +4498,7 @@ export default function Customer() {
                   </>
                 ) : (
                   <>
-                    <i className="fi flex fi-rr-check"></i>
+                    <i className="fi flex fi-rr-check text-xs"></i>
                     <span>Move to Live ({selectedCustomers.size})</span>
                   </>
                 )}

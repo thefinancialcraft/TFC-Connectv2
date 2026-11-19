@@ -8,9 +8,6 @@ export interface CallingCommandResult {
   bridgeConnected: boolean;
 }
 
-// record 2 
-
-
 export async function routeCallingCommand(
   command: CallingBridgeCommand,
   payload: string,
@@ -29,3 +26,8 @@ export async function routeCallingCommand(
     bridgeConnected: dispatchCallingMessage(command, payload),
   };
 }
+
+
+
+
+

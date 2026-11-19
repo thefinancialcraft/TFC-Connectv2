@@ -54,7 +54,7 @@ export function UsersFilters({
               placeholder="Search users..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent transition-all shadow-sm"
+              className="w-full pl-10 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl text-gray-600 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-[#4b33e8] focus:border-transparent transition-all"
               style={{ fontFamily: "'Roboto', sans-serif" }}
             />
           </div>
@@ -62,7 +62,7 @@ export function UsersFilters({
           <div className="relative">
             <button
               onClick={() => setShowFilterDropdown(!showFilterDropdown)}
-              className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 transition-all shadow-sm whitespace-nowrap ${
+              className={`px-4 py-2.5 rounded-xl border flex items-center gap-2 transition-all whitespace-nowrap ${
                 showFilterDropdown
                   ? "border-[#4b33e8] bg-[#4b33e8] text-white"
                   : "border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
@@ -264,7 +264,7 @@ export function UsersFilters({
         <div className="flex items-center gap-3 w-full sm:w-auto">
           <button
             onClick={() => exportToCSV(selectedUsers, allUsers)}
-            className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm font-medium flex items-center justify-center gap-2 whitespace-nowrap"
+            className="flex-1 sm:flex-none px-4 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all font-medium flex items-center justify-center gap-2 whitespace-nowrap"
             title="Export to CSV"
           >
             <i className="fi flex fi-rr-download"></i>
@@ -272,7 +272,7 @@ export function UsersFilters({
           </button>
           <button
             onClick={onAddUserClick}
-            className="flex-1 sm:flex-none px-4 py-2.5 bg-[#4b33e8] hover:bg-[#3d28c7] text-white rounded-xl shadow-lg shadow-indigo-200 transition-all transform hover:-translate-y-0.5 font-medium flex items-center justify-center gap-2 whitespace-nowrap"
+            className="flex-1 sm:flex-none px-4 py-2.5 bg-[#4b33e8] hover:bg-[#3d28c7] text-white rounded-xl transition-all font-medium flex items-center justify-center gap-2 whitespace-nowrap active:scale-95"
           >
             <i className="fi flex fi-rr-user-add"></i>
             <span>Add User</span>
